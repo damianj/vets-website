@@ -23,6 +23,10 @@
         "value": true
       },
       {
+        "name": "bdd_sha_enabled",
+        "value": true
+      },
+      {
         "name": "disability_526_maximum_rating",
         "value": true
       },
