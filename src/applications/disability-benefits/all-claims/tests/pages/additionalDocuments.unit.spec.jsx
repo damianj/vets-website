@@ -171,6 +171,32 @@ describe('526EZ document upload', () => {
     );
   });
 
+  it('should not display alert when new BDD SHA enforcement workflow is enabled', () => {
+    const fakeStore = createStore(() => ({
+      featureToggles: {},
+    }));
+
+    window.sessionStorage.setItem(SAVED_SEPARATION_DATE, daysFromToday(90));
+
+    const { queryByText } = render(
+      <Provider store={fakeStore}>
+        <DefinitionTester
+          arrayPath={arrayPath}
+          pagePerItemIndex={0}
+          definitions={formConfig.defaultDefinitions}
+          schema={schema}
+          data={{
+            ...validDocumentData,
+            disability526NewBddShaEnforcementWorkflowEnabled: true,
+          }}
+          uiSchema={uiSchema}
+        />
+      </Provider>,
+    );
+
+    expect(queryByText(selfAssessmentHeadline)).to.not.exist;
+  });
+
   describe('ui:confirmationField', () => {
     it('should correctly display file names and label for confirmation field', () => {
       const testData = validDocumentData.additionalDocuments;
