@@ -29,19 +29,19 @@ const renderComponent = state => {
 };
 
 function assertShaAlertExists({ container, getByText }) {
-  getByText('A Separation Health Assessment (SHA) Part A is required');
-  getByText(/If you do not include a SHA Part A/);
+  getByText('Submit your Separation Health Assessment');
+  getByText(/Make sure you submit a Separation Health Assessment/);
   const link = container.querySelector('va-link');
   expect(link).to.exist;
   expect(link.getAttribute('text')).to.equal(
-    "Check if you've uploaded a SHA Part A document",
+    "Check if you've uploaded a Separation Health Assessment",
   );
 }
 
 function assertShaAlertNotExists({ container, queryByText }) {
-  expect(queryByText('A Separation Health Assessment (SHA) Part A is required'))
-    .to.not.exist;
-  expect(queryByText(/If you do not include a SHA Part A/)).to.not.exist;
+  expect(queryByText('Submit your Separation Health Assessment')).to.not.exist;
+  expect(queryByText(/Make sure you submit a Separation Health Assessment/)).to
+    .not.exist;
   expect(container.querySelector('va-link')).to.not.exist;
 }
 

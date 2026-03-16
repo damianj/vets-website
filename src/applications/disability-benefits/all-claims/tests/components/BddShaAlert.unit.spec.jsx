@@ -17,14 +17,16 @@ describe('BddShaAlert', () => {
   it('renders the correct headline', () => {
     const { getByText } = renderComponent();
 
-    getByText('A Separation Health Assessment (SHA) Part A is required');
+    getByText('Submit your Separation Health Assessment');
   });
 
   it('renders the body text explaining the SHA requirement', () => {
     const { getByText } = renderComponent();
 
-    getByText(/If you do not include a SHA Part A/);
-    getByText(/will not be able to deliver a decision within 30 days/);
+    getByText(/Make sure you submit a Separation Health Assessment/);
+    getByText(
+      /Submitting this assessment now will help us process your claim faster/,
+    );
   });
 
   it('renders a link to the supporting evidence page', () => {
@@ -33,7 +35,7 @@ describe('BddShaAlert', () => {
 
     expect(link).to.exist;
     expect(link.getAttribute('text')).to.equal(
-      "Check if you've uploaded a SHA Part A document",
+      "Check if you've uploaded a Separation Health Assessment",
     );
     expect(link.getAttribute('href')).to.equal(
       '/supporting-evidence/separation-health-assessment',
