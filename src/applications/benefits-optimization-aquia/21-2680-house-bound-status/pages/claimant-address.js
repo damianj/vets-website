@@ -72,6 +72,10 @@ const customAddressSchema = {
       type: 'string',
       maxLength: 18,
     },
+    state: {
+      type: 'string',
+      maxLength: 2,
+    },
     country: {
       ...addressSchema().properties.country,
       default: 'USA',
