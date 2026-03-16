@@ -1,19 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
-import {
-  VaAlert,
-  VaLink,
-} from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import BasicLink from './BasicLink';
 
-const SHA_PAGE_PATH = 'supporting-evidence/separation-health-assessment';
+const SHA_CHOICE_PAGE_PATH = 'supporting-evidence/separation-health-assessment';
 
-function BddShaAlert({ router }) {
-  const handleLinkClick = event => {
-    event.preventDefault();
-    router.push(SHA_PAGE_PATH);
-  };
-
+export default function BddShaAlert() {
   return (
     <VaAlert status="warning" visible>
       <h2 slot="headline">
@@ -25,20 +16,11 @@ function BddShaAlert({ router }) {
         will not be able to deliver a decision within 30 days after separation.
       </p>
       <p>
-        <VaLink
-          href={`/${SHA_PAGE_PATH}`}
+        <BasicLink
+          path={SHA_CHOICE_PAGE_PATH}
           text="Check if you've uploaded a SHA Part A document"
-          onClick={handleLinkClick}
         />
       </p>
     </VaAlert>
   );
 }
-
-BddShaAlert.propTypes = {
-  router: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default withRouter(BddShaAlert);
