@@ -19,7 +19,7 @@ const SCHEMA_LABELS = {
 export default {
   uiSchema: {
     ...titleUI(TITLE_TEXT),
-    'view:hasClaimDocs': yesNoUI({
+    hasClaimDocs: yesNoUI({
       title: INPUT_LABEL,
       labels: SCHEMA_LABELS,
     }),
@@ -27,9 +27,9 @@ export default {
   },
   schema: {
     type: 'object',
-    required: ['view:hasClaimDocs'],
+    required: ['hasClaimDocs'],
     properties: {
-      'view:hasClaimDocs': yesNoSchema,
+      hasClaimDocs: yesNoSchema,
       'view:addtlInfo': blankSchema,
     },
   },

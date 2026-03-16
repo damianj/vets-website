@@ -15,6 +15,7 @@ import {
   llmUploadAlertUI,
 } from '../../definitions';
 import content from '../../locales/en/content.json';
+import { ATTACHMENT_IDS } from '../../utils/constants';
 
 const TITLE_TEXT = content['resubmission--addtl-docs-title'];
 const INPUT_LABEL = content['resubmission--addtl-docs-label'];
@@ -24,7 +25,10 @@ export default {
     ...titleUI(TITLE_TEXT, ResubmissionAddtlDocsDescription),
     ...descriptionUI(ResubmissionAddtlDocsUploadDescription),
     ...llmUploadAlertUI,
-    claimAddtlDocsUpload: attachmentUI({ label: INPUT_LABEL }),
+    claimAddtlDocsUpload: attachmentUI({
+      label: INPUT_LABEL,
+      attachmentId: ATTACHMENT_IDS.dutyToAssist,
+    }),
     ...llmResponseAlertUI,
   },
   schema: {

@@ -99,7 +99,7 @@ describe('Submit transformer', () => {
           claimStatus: 'resubmission',
           pdiOrClaimNumber: ID_NUMBER_OPTIONS[0],
           'view:champvaEnableClaimResubmitQuestion': true,
-          'view:hasClaimDocs': false,
+          hasClaimDocs: false,
         },
       });
       sinon.assert.calledWithExactly(recordEventStub.firstCall, {

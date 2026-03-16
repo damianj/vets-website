@@ -79,7 +79,7 @@ describe('10-7959a form-config helpers', () => {
       const formData = {
         claimStatus: 'resubmission',
         'view:champvaEnableClaimResubmitQuestion': true,
-        'view:hasClaimDocs': true,
+        hasClaimDocs: true,
       };
       expect(hasClaimDocs(formData)).to.be.true;
     });
@@ -88,7 +88,7 @@ describe('10-7959a form-config helpers', () => {
       const formData = {
         claimStatus: 'resubmission',
         'view:champvaEnableClaimResubmitQuestion': true,
-        'view:hasClaimDocs': false,
+        hasClaimDocs: false,
       };
       expect(hasClaimDocs(formData)).to.be.false;
     });
@@ -97,7 +97,7 @@ describe('10-7959a form-config helpers', () => {
       expect(
         needsDocHelp({
           'view:champvaEnableClaimResubmitQuestion': true,
-          'view:hasClaimDocs': false,
+          hasClaimDocs: false,
           claimStatus: 'resubmission',
         }),
       ).to.be.true;
@@ -115,7 +115,7 @@ describe('10-7959a form-config helpers', () => {
       const formData = {
         claimStatus: 'new',
         'view:champvaEnableClaimResubmitQuestion': true,
-        'view:hasClaimDocs': false,
+        hasClaimDocs: false,
       };
       expect(needsDocHelp(formData)).to.be.false;
     });
@@ -124,7 +124,7 @@ describe('10-7959a form-config helpers', () => {
       const formData = {
         claimStatus: 'resubmission',
         'view:champvaEnableClaimResubmitQuestion': true,
-        'view:hasClaimDocs': true,
+        hasClaimDocs: true,
       };
       expect(needsDocHelp(formData)).to.be.false;
     });

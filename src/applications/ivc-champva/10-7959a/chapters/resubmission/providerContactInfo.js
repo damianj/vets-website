@@ -19,7 +19,7 @@ const INPUT_LABELS = {
 export default {
   uiSchema: {
     ...titleWithFormDataUI(TITLE_TEXT, DESC_TEXT, {
-      dataKey: 'serviceProvider',
+      dataKey: 'providerName',
     }),
     providerPhone: phoneUI(INPUT_LABELS.phone),
     providerFax: phoneUI(INPUT_LABELS.fax),

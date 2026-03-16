@@ -1,4 +1,5 @@
 export const ATTACHMENT_IDS = Object.freeze({
+  dutyToAssist: 'DTA',
   eob: 'EOB',
   meddoc: 'MEDDOC',
 });

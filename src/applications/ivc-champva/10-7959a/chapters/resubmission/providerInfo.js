@@ -24,7 +24,7 @@ const HINT_TEXT = {
 export default {
   uiSchema: {
     ...titleUI(TITLE_TEXT, DESC_TEXT),
-    serviceProvider: textUI({
+    providerName: textUI({
       title: INPUT_LABELS.provider,
       validations: [validateChars],
     }),
@@ -45,9 +45,9 @@ export default {
   },
   schema: {
     type: 'object',
-    required: ['serviceProvider', 'serviceStartDate'],
+    required: ['providerName', 'serviceStartDate'],
     properties: {
-      serviceProvider: textSchema,
+      providerName: textSchema,
       serviceStartDate: currentOrPastDateSchema,
       serviceEndDate: currentOrPastDateSchema,
     },

@@ -86,8 +86,26 @@ export default function submitTransformer(formData, uploadFiles) {
     ? Object.values(formData?.requireSignInLogic).some(value => value === true)
     : false;
 
+  const submitterIsVeteran =
+    formData.relationshipToVeteran === relationshipOptionsSomeoneElse.VETERAN;
+
+  // Move branch of service into aboutYourself when Veteran is submitting
+  const { yourBranchOfService, ...remainingFormData } = formData;
+
+  const transformedFormData = submitterIsVeteran
+    ? {
+        ...remainingFormData,
+        aboutYourself: {
+          ...formData.aboutYourself,
+          ...(yourBranchOfService
+            ? { branchOfService: yourBranchOfService }
+            : {}),
+        },
+      }
+    : formData;
+
   return {
-    ...formData,
+    ...transformedFormData,
     ...transformAddress(formData),
     files: getFiles(uploadFiles),
     SchoolObj: {

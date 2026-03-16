@@ -108,7 +108,7 @@ export default function transformForSubmit(
     const recordDtaEvent =
       form.data['view:champvaEnableClaimResubmitQuestion'] &&
       form.data.claimStatus === 'resubmission' &&
-      form.data['view:hasClaimDocs'] === false;
+      form.data.hasClaimDocs === false;
 
     if (recordDtaEvent) recordEvent({ event: '10-7959a_duty_to_assist' });
     recordEvent({ event: getEventName() });

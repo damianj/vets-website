@@ -194,4 +194,71 @@ describe('Ask VA submit transformer', () => {
     expect(result.phoneNumber).to.be.undefined;
     expect(result.businessPhone).to.be.undefined;
   });
+
+  it('should move branch of service to about_yourself when Veteran is submitting ask-va', () => {
+    const aboutYourself = {
+      first: 'John',
+      last: 'Doe',
+    };
+
+    const formData = {
+      yourBranchOfService: 'Army',
+      school: null,
+      stateOfTheFacility: 'NY',
+      relationshipToVeteran: "I'm the Veteran",
+      aboutYourself,
+    };
+
+    const result = submitTransformer(formData);
+    expect(result.aboutYourself).to.deep.equal({
+      ...aboutYourself,
+      branchOfService: 'Army',
+    });
+    expect(result.yourBranchOfService).to.be.undefined;
+  });
+
+  it('should not throw an error or modify aboutYourself when it is missing and yourBranchOfService is undefined for a Veteran', () => {
+    // This case is unlikely to occur in production, but it is good to have here to avoid regressions.
+    // At some future point it would make sense for the BE to throw an error if this scenario occurs,
+    // but it would be better for the transformer to simply pass through the data without modification
+    // rather than throwing an unexpected error client-side.
+    const formData = {
+      school: null,
+      stateOfTheFacility: 'NY',
+      relationshipToVeteran: "I'm the Veteran",
+      // aboutYourself is intentionally omitted
+      // yourBranchOfService is intentionally undefined
+    };
+
+    const transformCall = () => submitTransformer(formData);
+    expect(transformCall).to.not.throw();
+
+    const result = transformCall();
+    expect(result.aboutYourself).to.eql({}); // This should always be there
+    expect(result.yourBranchOfService).to.be.undefined;
+  });
+
+  it('should preserve existing aboutYourself.branchOfService when yourBranchOfService is undefined for a Veteran', () => {
+    // This case is unlikely to occur in production, but it is good to have here to avoid regressions.
+    // At some future point it would make sense for the BE to throw an error if this scenario occurs,
+    // but it would be better for the transformer to simply pass through the data without modification
+    // rather than throwing an unexpected error client-side.
+    const aboutYourself = {
+      first: 'Jane',
+      last: 'Doe',
+      branchOfService: 'Navy',
+    };
+    const formData = {
+      school: null,
+      stateOfTheFacility: 'CA',
+      relationshipToVeteran: "I'm the Veteran",
+      aboutYourself,
+      // yourBranchOfService is intentionally undefined
+    };
+    const transformCall = () => submitTransformer(formData);
+    expect(transformCall).to.not.throw();
+    const result = transformCall();
+    expect(result.aboutYourself).to.deep.equal(aboutYourself);
+    expect(result.yourBranchOfService).to.be.undefined;
+  });
 });
