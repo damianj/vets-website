@@ -153,6 +153,20 @@ describe('Medication card component', () => {
       },
     };
 
+    const shippedRx = {
+      ...prescriptionsListItem,
+      dispStatus: 'Active: Shipped',
+      isRefillable: false,
+      isTrackable: true,
+      trackingList: [
+        {
+          completeDateTime: new Date().toISOString(),
+          carrier: 'USPS',
+          trackingNumber: '12345678901234',
+        },
+      ],
+    };
+
     it('shows "Refills left" instead of "Refills remaining"', () => {
       const rx = {
         ...prescriptionsListItem,
@@ -235,7 +249,7 @@ describe('Medication card component', () => {
         ...prescriptionsListItem,
         dispStatus: 'Active: Refill in Process',
         isRefillable: false,
-        sortedDispensedDate: null,
+        rxRfRecords: [],
       };
       const { getByTestId, getByText } = setup(rx, managementImprovementsState);
       expect(getByTestId('fill-in-progress-alert')).to.exist;
@@ -252,7 +266,7 @@ describe('Medication card component', () => {
         ...prescriptionsListItem,
         dispStatus: 'Active: Submitted',
         isRefillable: false,
-        sortedDispensedDate: null,
+        rxRfRecords: [],
       };
       const { getByTestId, getByText } = setup(rx, managementImprovementsState);
       expect(getByTestId('fill-in-progress-alert')).to.exist;
@@ -269,7 +283,7 @@ describe('Medication card component', () => {
         ...prescriptionsListItem,
         dispStatus: 'Active: Refill in Process',
         isRefillable: false,
-        sortedDispensedDate: null,
+        rxRfRecords: [],
         refillRemaining: 3,
       };
       const { getByTestId, getByText } = setup(rx, managementImprovementsState);
@@ -284,7 +298,7 @@ describe('Medication card component', () => {
         ...prescriptionsListItem,
         dispStatus: 'Active: Submitted',
         isRefillable: false,
-        sortedDispensedDate: null,
+        rxRfRecords: [],
         refillRemaining: 3,
       };
       const { getByTestId } = setup(rx, managementImprovementsState);
@@ -339,20 +353,10 @@ describe('Medication card component', () => {
     });
 
     it('shows shipped alert with external tracking link for known carrier', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Shipped',
-        isRefillable: false,
-        isTrackable: true,
-        trackingList: [
-          {
-            completeDateTime: new Date().toISOString(),
-            carrier: 'USPS',
-            trackingNumber: '12345678901234',
-          },
-        ],
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
+      const { getByTestId, getByText } = setup(
+        shippedRx,
+        managementImprovementsState,
+      );
       expect(getByTestId('shipped-alert')).to.exist;
       const link = getByText('Get tracking info');
       expect(link).to.have.attribute(
@@ -363,10 +367,7 @@ describe('Medication card component', () => {
 
     it('shows shipped alert with detail page link for unknown carrier', () => {
       const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Shipped',
-        isRefillable: false,
-        isTrackable: true,
+        ...shippedRx,
         trackingList: [
           {
             completeDateTime: new Date().toISOString(),
@@ -384,20 +385,7 @@ describe('Medication card component', () => {
     });
 
     it('shows "Refills left" for recently shipped prescription', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Shipped',
-        isRefillable: false,
-        isTrackable: true,
-        refillRemaining: 3,
-        trackingList: [
-          {
-            completeDateTime: new Date().toISOString(),
-            carrier: 'USPS',
-            trackingNumber: '12345678901234',
-          },
-        ],
-      };
+      const rx = { ...shippedRx, refillRemaining: 3 };
       const { getByTestId } = setup(rx, managementImprovementsState);
       expect(getByTestId('rx-refill-remaining')).to.have.text(
         'Refills left: 3',
@@ -405,57 +393,31 @@ describe('Medication card component', () => {
     });
 
     it('hides old "Shipped on" block for recently shipped prescription', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Shipped',
-        isRefillable: false,
-        isTrackable: true,
-        trackingList: [
-          {
-            completeDateTime: new Date().toISOString(),
-            carrier: 'USPS',
-            trackingNumber: '12345678901234',
-          },
-        ],
-      };
-      const { queryByTestId } = setup(rx, managementImprovementsState);
+      const { queryByTestId } = setup(shippedRx, managementImprovementsState);
       expect(queryByTestId('rx-card-details--shipped-on')).to.be.null;
     });
 
     it('hides ExtraDetails for recently shipped prescription', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Shipped',
-        isRefillable: false,
-        isTrackable: true,
-        trackingList: [
-          {
-            completeDateTime: new Date().toISOString(),
-            carrier: 'USPS',
-            trackingNumber: '12345678901234',
-          },
-        ],
-      };
-      const { container } = setup(rx, managementImprovementsState);
+      const { container } = setup(shippedRx, managementImprovementsState);
       expect(container.querySelector('.shipping-info')).to.be.null;
     });
 
     it('does not show shipped alert when isTrackable is false', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Shipped',
-        isRefillable: true,
-        isTrackable: false,
-        trackingList: [
-          {
-            completeDateTime: new Date().toISOString(),
-            carrier: 'USPS',
-            trackingNumber: '12345678901234',
-          },
-        ],
-      };
+      const rx = { ...shippedRx, isRefillable: true, isTrackable: false };
       const { queryByTestId } = setup(rx, managementImprovementsState);
       expect(queryByTestId('shipped-alert')).to.be.null;
+    });
+
+    it('shows "Fill has shipped" for initial fill with no rxRfRecords', () => {
+      const rx = { ...shippedRx, rxRfRecords: [] };
+      const { getByText } = setup(rx, managementImprovementsState);
+      expect(getByText(/Fill has shipped/)).to.exist;
+    });
+
+    it('shows "Refill has shipped" when rxRfRecords has entries', () => {
+      const rx = shippedRx;
+      const { getByText } = setup(rx, managementImprovementsState);
+      expect(getByText(/Refill has shipped/)).to.exist;
     });
   });
 

@@ -44,7 +44,9 @@ const MedicationsListCard = ({ rx }) => {
   const isFillInProgress =
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_REFILL_IN_PROCESS ||
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_SUBMITTED;
-  const isInitialFill = isFillInProgress && !rx.sortedDispensedDate;
+  const isFirstFill =
+    Array.isArray(rx.rxRfRecords) && rx.rxRfRecords.length === 0;
+  const isInitialFill = isFillInProgress && isFirstFill;
   const isOracleHealthCutoverEnabled = useSelector(
     selectMhvMedicationsOracleHealthCutoverFlag,
   );
@@ -141,7 +143,7 @@ const MedicationsListCard = ({ rx }) => {
             >
               <va-icon icon="local_shipping" size={3} aria-hidden="true" />
               <p className="vads-u-margin-y--0 vads-u-margin-left--1">
-                Refill has shipped.{' '}
+                {isFirstFill ? 'Fill' : 'Refill'} has shipped.{' '}
                 {trackingUrl ? (
                   <a
                     href={trackingUrl}

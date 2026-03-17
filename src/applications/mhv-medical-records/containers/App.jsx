@@ -12,7 +12,6 @@ import {
   MhvSecondaryNav,
   useBackToTop,
 } from '@department-of-veterans-affairs/mhv/exports';
-import { Element } from 'platform/utilities/scroll';
 import {
   DowntimeNotification,
   externalServices,
@@ -21,7 +20,6 @@ import {
 import { getScheduledDowntime } from 'platform/monitoring/DowntimeNotification/actions';
 import MhvServiceRequiredGuard from 'platform/mhv/components/MhvServiceRequiredGuard';
 import MrBreadcrumbs from '../components/MrBreadcrumbs';
-import ScrollToTop from '../components/shared/ScrollToTop';
 import PhrRefresh from '../components/shared/PhrRefresh';
 import TrackedSpinner from '../components/shared/TrackedSpinner';
 import { HeaderSectionProvider } from '../context/HeaderSectionContext';
@@ -155,7 +153,6 @@ const App = ({ children }) => {
             ref={measuredRef}
             className="vads-l-grid-container vads-u-padding-left--2"
           >
-            <Element name="topScrollElement" />
             {mhvMrDown === externalServiceStatus.down && !bypassDowntime ? (
               <>
                 {atLandingPage && <MrBreadcrumbs />}
@@ -187,7 +184,6 @@ const App = ({ children }) => {
               data-dd-action-name="Back to top"
               data-testid="mr-back-to-top"
             />
-            <ScrollToTop />
             <PhrRefresh statusPollBeginDate={statusPollBeginDate} />
           </div>
         </>
