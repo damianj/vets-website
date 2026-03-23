@@ -40,17 +40,58 @@ const createBDDFormData = (overrides = {}) => ({
 });
 
 describe('Supporting Evidence Routing — Scenario Validation', () => {
-  describe('Scenario 1: BDD + Enhancement + SHA-only', () => {
+  /**
+   * Truth table: BDD users with STR upload + other evidence selected.
+   * 2×2 grid of SHA workflow × Supporting Evidence Enhancement flags.
+   */
+  describe('BDD + SHA OFF + Enhancement OFF', () => {
     const formData = createBDDFormData({
-      disability526NewBddShaEnforcementWorkflowEnabled: true,
-      disability526SupportingEvidenceEnhancement: true,
-      disability526SupportingEvidenceFileInputV3: true,
-      'view:hasSeparationHealthAssessment': true,
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      disability526SupportingEvidenceEnhancement: false,
+      disability526SupportingEvidenceFileInputV3: false,
+      'view:hasSeparationHealthAssessment': false,
       'view:hasMedicalRecords': false,
+      'view:uploadServiceTreatmentRecordsQualifier': {
+        'view:hasServiceTreatmentRecordsToUpload': true,
+      },
       'view:selectableEvidenceTypes': {
         'view:hasVaMedicalRecords': false,
         'view:hasPrivateMedicalRecords': false,
-        'view:hasOtherEvidence': false,
+        'view:hasOtherEvidence': true,
+      },
+      'view:uploadPrivateRecordsQualifier': {
+        'view:hasPrivateRecordsToUpload': false,
+      },
+    });
+
+    it('should produce the expected full page sequence', () => {
+      const visible = getVisiblePages(formData);
+      expect(visible).to.deep.equal([
+        'orientation',
+        'serviceTreatmentRecords',
+        'serviceTreatmentRecordsAttachments',
+        'evidenceTypesBDD',
+        'additionalDocuments',
+        'summaryOfEvidence',
+        'howClaimsWork',
+      ]);
+    });
+  });
+
+  describe('BDD + SHA ON + Enhancement OFF', () => {
+    const formData = createBDDFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: true,
+      disability526SupportingEvidenceEnhancement: false,
+      disability526SupportingEvidenceFileInputV3: false,
+      'view:hasSeparationHealthAssessment': true,
+      'view:hasMedicalRecords': false,
+      'view:uploadServiceTreatmentRecordsQualifier': {
+        'view:hasServiceTreatmentRecordsToUpload': true,
+      },
+      'view:selectableEvidenceTypes': {
+        'view:hasVaMedicalRecords': false,
+        'view:hasPrivateMedicalRecords': false,
+        'view:hasOtherEvidence': true,
       },
       'view:uploadPrivateRecordsQualifier': {
         'view:hasPrivateRecordsToUpload': false,
@@ -64,20 +105,59 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
         'separationHealthAssessment',
         'separationHealthAssessmentUpload',
         'serviceTreatmentRecords',
+        'serviceTreatmentRecordsAttachments',
         'evidenceTypesBDD',
+        'additionalDocuments',
         'summaryOfEvidence',
         'howClaimsWork',
       ]);
     });
   });
 
-  describe('Scenario 2: BDD + Enhancement + SHA + Other Evidence', () => {
+  describe('BDD + SHA OFF + Enhancement ON', () => {
+    const formData = createBDDFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      disability526SupportingEvidenceEnhancement: true,
+      disability526SupportingEvidenceFileInputV3: true,
+      'view:hasSeparationHealthAssessment': false,
+      'view:hasMedicalRecords': false,
+      'view:uploadServiceTreatmentRecordsQualifier': {
+        'view:hasServiceTreatmentRecordsToUpload': true,
+      },
+      'view:selectableEvidenceTypes': {
+        'view:hasVaMedicalRecords': false,
+        'view:hasPrivateMedicalRecords': false,
+        'view:hasOtherEvidence': true,
+      },
+      'view:uploadPrivateRecordsQualifier': {
+        'view:hasPrivateRecordsToUpload': false,
+      },
+    });
+
+    it('should produce the expected full page sequence', () => {
+      const visible = getVisiblePages(formData);
+      expect(visible).to.deep.equal([
+        'orientation',
+        'serviceTreatmentRecords',
+        'serviceTreatmentRecordsAttachments',
+        'evidenceTypesBDD',
+        'evidenceChoiceAdditionalDocuments',
+        'summaryOfEvidence',
+        'howClaimsWork',
+      ]);
+    });
+  });
+
+  describe('BDD + SHA ON + Enhancement ON', () => {
     const formData = createBDDFormData({
       disability526NewBddShaEnforcementWorkflowEnabled: true,
       disability526SupportingEvidenceEnhancement: true,
       disability526SupportingEvidenceFileInputV3: true,
       'view:hasSeparationHealthAssessment': true,
-      'view:hasMedicalRecords': true,
+      'view:hasMedicalRecords': false,
+      'view:uploadServiceTreatmentRecordsQualifier': {
+        'view:hasServiceTreatmentRecordsToUpload': true,
+      },
       'view:selectableEvidenceTypes': {
         'view:hasVaMedicalRecords': true,
         'view:hasPrivateMedicalRecords': false,
@@ -95,6 +175,7 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
         'separationHealthAssessment',
         'separationHealthAssessmentUpload',
         'serviceTreatmentRecords',
+        'serviceTreatmentRecordsAttachments',
         'evidenceTypesBDD',
         'vaMedicalRecords',
         'evidenceChoiceAdditionalDocuments',
@@ -104,38 +185,7 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
     });
   });
 
-  describe('Scenario 3: BDD Non-Enhancement (baseline)', () => {
-    const formData = createBDDFormData({
-      disability526NewBddShaEnforcementWorkflowEnabled: true,
-      disability526SupportingEvidenceEnhancement: false,
-      disability526SupportingEvidenceFileInputV3: false,
-      'view:hasSeparationHealthAssessment': true,
-      'view:hasMedicalRecords': false,
-      'view:selectableEvidenceTypes': {
-        'view:hasVaMedicalRecords': false,
-        'view:hasPrivateMedicalRecords': false,
-        'view:hasOtherEvidence': false,
-      },
-      'view:uploadPrivateRecordsQualifier': {
-        'view:hasPrivateRecordsToUpload': false,
-      },
-    });
-
-    it('should produce the expected full page sequence', () => {
-      const visible = getVisiblePages(formData);
-      expect(visible).to.deep.equal([
-        'orientation',
-        'separationHealthAssessment',
-        'separationHealthAssessmentUpload',
-        'serviceTreatmentRecords',
-        'evidenceTypesBDD',
-        'summaryOfEvidence',
-        'howClaimsWork',
-      ]);
-    });
-  });
-
-  describe('Scenario 4: Non-BDD Enhancement (baseline)', () => {
+  describe('Non-BDD Enhancement (baseline)', () => {
     const formData = {
       'view:isBddData': false,
       disability526NewBddShaEnforcementWorkflowEnabled: false,
