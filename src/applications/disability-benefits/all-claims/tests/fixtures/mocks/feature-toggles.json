@@ -27,6 +27,10 @@
         "value": false
       },
       {
+        "name": "disability_526_new_form_navigation_menu",
+        "value": false 
+      },
+      {
         "name": "disability_compensation_toxic_exposure_destruction_modal",
         "value": false
       },

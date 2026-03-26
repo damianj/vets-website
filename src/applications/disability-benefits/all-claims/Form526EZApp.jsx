@@ -233,6 +233,7 @@ export const Form526Entry = ({
     'disability526SupportingEvidenceEnhancement',
     'disability526SupportingEvidenceFileInputV3',
     'disability526NewBddShaEnforcementWorkflowEnabled',
+    'disability526NewFormNavigationMenu',
   ]);
 
   // including this helper to showLoading when feature toggles are loading
