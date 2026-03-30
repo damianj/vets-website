@@ -176,30 +176,59 @@ describe('ConfirmationPage', () => {
     verifyConfirmationPage(undefined, false, submissionStatuses.succeeded);
   });
 
-  it('should render success with BDD SHA alert when submission succeeded with claim id for BDD', () => {
-    verifyConfirmationPage(12345678, true, submissionStatuses.succeeded);
-  });
+  describe('BDD SHA confirmation alert permutations', () => {
+    const renderWithProps = (overrides = {}) => {
+      const store = mockStore(
+        getData({
+          featureToggles: {},
+        }),
+      );
+      const props = {
+        ...defaultProps,
+        submissionStatus: submissionStatuses.succeeded,
+        isSubmittingBDD: false,
+        hasUploadedSha: false,
+        ...overrides,
+      };
 
-  it('should not render BDD SHA alert when user has already uploaded SHA documents', () => {
-    const store = mockStore(
-      getData({
-        featureToggles: {},
-      }),
-    );
-    const props = {
-      ...defaultProps,
-      isSubmittingBDD: true,
-      hasUploadedSha: true,
-      submissionStatus: submissionStatuses.succeeded,
+      return render(
+        <Provider store={store}>
+          <ConfirmationPage {...props} />
+        </Provider>,
+      );
     };
 
-    const { queryByText } = render(
-      <Provider store={store}>
-        <ConfirmationPage {...props} />
-      </Provider>,
-    );
+    it('should not render BDD SHA alert for non-BDD user without SHA upload', () => {
+      const { queryByText } = renderWithProps({
+        isSubmittingBDD: false,
+        hasUploadedSha: false,
+      });
+      expect(queryByText(bddConfirmationHeadline)).to.not.exist;
+    });
 
-    expect(queryByText(bddConfirmationHeadline)).to.not.exist;
+    it('should not render BDD SHA alert for non-BDD user with SHA upload', () => {
+      const { queryByText } = renderWithProps({
+        isSubmittingBDD: false,
+        hasUploadedSha: true,
+      });
+      expect(queryByText(bddConfirmationHeadline)).to.not.exist;
+    });
+
+    it('should render BDD SHA alert for BDD user without SHA upload', () => {
+      const { getByText } = renderWithProps({
+        isSubmittingBDD: true,
+        hasUploadedSha: false,
+      });
+      getByText(bddConfirmationHeadline);
+    });
+
+    it('should not render BDD SHA alert for BDD user who has uploaded SHA', () => {
+      const { queryByText } = renderWithProps({
+        isSubmittingBDD: true,
+        hasUploadedSha: true,
+      });
+      expect(queryByText(bddConfirmationHeadline)).to.not.exist;
+    });
   });
 
   it('should render success when form submitted successfully but submission status has api failure', () => {
