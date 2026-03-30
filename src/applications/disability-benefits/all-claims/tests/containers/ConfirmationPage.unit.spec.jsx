@@ -180,6 +180,28 @@ describe('ConfirmationPage', () => {
     verifyConfirmationPage(12345678, true, submissionStatuses.succeeded);
   });
 
+  it('should not render BDD SHA alert when user has already uploaded SHA documents', () => {
+    const store = mockStore(
+      getData({
+        featureToggles: {},
+      }),
+    );
+    const props = {
+      ...defaultProps,
+      isSubmittingBDD: true,
+      hasUploadedSha: true,
+      submissionStatus: submissionStatuses.succeeded,
+    };
+
+    const { queryByText } = render(
+      <Provider store={store}>
+        <ConfirmationPage {...props} />
+      </Provider>,
+    );
+
+    expect(queryByText(bddConfirmationHeadline)).to.not.exist;
+  });
+
   it('should render success when form submitted successfully but submission status has api failure', () => {
     verifyConfirmationPage('', false, submissionStatuses.apiFailure); // 500
   });

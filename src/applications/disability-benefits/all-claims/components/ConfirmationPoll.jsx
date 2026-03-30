@@ -10,7 +10,7 @@ import { focusElement } from '@department-of-veterans-affairs/platform-utilities
 import ConfirmationPage from '../containers/ConfirmationPage';
 
 import { submissionStatuses, terminalStatuses } from '../constants';
-import { isBDD } from '../utils';
+import { isBDD, hasShaDocumentUploaded } from '../utils';
 
 export class ConfirmationPoll extends React.Component {
   constructor(props) {
@@ -99,6 +99,7 @@ export class ConfirmationPoll extends React.Component {
       submittedAt,
       jobId,
       isSubmittingBDD,
+      hasUploadedSha,
       route,
     } = this.props;
 
@@ -112,6 +113,7 @@ export class ConfirmationPoll extends React.Component {
         disabilities={disabilities}
         submittedAt={submittedAt}
         isSubmittingBDD={isSubmittingBDD}
+        hasUploadedSha={hasUploadedSha}
         route={route}
       />
     );
@@ -174,6 +176,7 @@ function mapStateToProps(state) {
     submittedAt: state.form.submission.timestamp,
     jobId: state.form.submission.response?.attributes?.jobId,
     isSubmittingBDD: isBDD(state.form.data) || false,
+    hasUploadedSha: hasShaDocumentUploaded(state.form.data),
   };
 }
 
@@ -184,6 +187,7 @@ ConfirmationPoll.propTypes = {
     first: PropTypes.string,
     last: PropTypes.string,
   }),
+  hasUploadedSha: PropTypes.bool,
   isSubmittingBDD: PropTypes.bool,
   jobId: PropTypes.string,
   pollRate: PropTypes.number,

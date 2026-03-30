@@ -47,7 +47,8 @@ export default class ConfirmationPage extends React.Component {
         formConfig={props.route?.formConfig}
       >
         <ConfirmationView.SubmissionAlert actions={<></>} content={alertBody} />
-        {props.isSubmittingBDD && <BddConfirmationAlert />}
+        {props.isSubmittingBDD &&
+          !props.hasUploadedSha && <BddConfirmationAlert />}
         <ClaimConfirmationInfo
           claimId={props.claimId}
           conditions={newConditionsNames}
@@ -114,6 +115,7 @@ ConfirmationPage.propTypes = {
   }).isRequired,
   submittedAt: PropTypes.object.isRequired,
   claimId: PropTypes.number,
+  hasUploadedSha: PropTypes.bool,
   isSubmittingBDD: PropTypes.bool,
   jobId: PropTypes.string,
   route: PropTypes.shape({
