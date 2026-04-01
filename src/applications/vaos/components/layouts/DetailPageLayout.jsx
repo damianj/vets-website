@@ -9,7 +9,7 @@ import AppointmentCard from '../AppointmentCard';
 import { APPOINTMENT_STATUS, GA_PREFIX } from '../../utils/constants';
 import { startAppointmentCancel } from '../../appointment-list/redux/actions';
 import AfterVisitSummary from '../AfterVisitSummary';
-import { selectIsPast } from '../../appointment-list/redux/selectors';
+import { selectIsEligibleForAVS } from '../../appointment-list/redux/selectors';
 import {
   selectFeatureTravelPayViewClaimDetails,
   selectFeatureTravelPaySubmitMileageExpense,
@@ -202,7 +202,7 @@ export default function DetailPageLayout({
 
   if (!appointment) return null;
 
-  const isPastAppointment = selectIsPast(appointment);
+  const isEligibleForAvs = selectIsEligibleForAVS(appointment);
   const isNotCanceledAppointment =
     APPOINTMENT_STATUS.cancelled !== appointment.status;
 
@@ -226,11 +226,7 @@ export default function DetailPageLayout({
           isNotCanceledAppointment && (
             <AppointmentTasksSection appointment={appointment} />
           )}
-        {isPastAppointment &&
-          (APPOINTMENT_STATUS.booked === appointment.status ||
-            APPOINTMENT_STATUS.fulfilled === appointment.status) && (
-            <AfterVisitSummary data={appointment} />
-          )}
+        {isEligibleForAvs && <AfterVisitSummary data={appointment} />}
         {children}
         {featureTravelPayViewClaimDetails &&
           isNotCanceledAppointment && (

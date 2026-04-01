@@ -24,10 +24,10 @@ import {
 } from '../../appointment-list/components/AppointmentDateTime';
 import AddToCalendarButton from '../AddToCalendarButton';
 import State from '../State';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
   recordAppointmentDetailsNullStates,
-  captureMissingModalityLogs,
 } from '../../utils/events';
 import ClinicName from './ClinicName';
 

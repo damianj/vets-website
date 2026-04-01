@@ -1,128 +1,91 @@
-import React from 'react';
-import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import {
-  titleUI,
+  textUI,
   radioUI,
   radioSchema,
-  yesNoUI,
-  yesNoSchema,
-  dateOfBirthSchema,
-  dateOfBirthUI,
+  currentOrPastDateUI,
+  titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import VaDateField from 'platform/forms-system/src/js/web-component-fields/VaDateField';
 import {
+  currentYear,
+  parseISODate,
+} from 'platform/forms-system/src/js/helpers';
+import { isValidDate } from 'platform/forms-system/src/js/utilities/validations';
+import {
   applicationInfoFields,
   BRANCH_OF_SERVICE,
-  CONVEYANCE_TYPES,
+  FORM_21_4502,
 } from '../definitions/constants';
+
+const { APPLICATION_INFORMATION: AI } = FORM_21_4502;
+
+const validateDateOfEntry = (errors, value) => {
+  const { day, month, year } = parseISODate(value);
+  const hasAnyDatePart = [day, month, year].some(Boolean);
+  const hasCompleteDate = [day, month, year].every(Boolean);
+
+  if (!value || !hasAnyDatePart) {
+    errors.addError(AI.ERROR_DATE_ENTRY_REQUIRED);
+    return;
+  }
+
+  if (!hasCompleteDate) {
+    errors.addError(AI.ERROR_DATE_ENTRY_INCOMPLETE);
+    return;
+  }
+
+  if (
+    Number(year) < 1900 ||
+    Number(year) > currentYear ||
+    !isValidDate(day, month, year)
+  ) {
+    errors.addError(AI.ERROR_DATE_ENTRY_INVALID);
+  }
+};
 
 /** @type {PageSchema} */
 export default {
   uiSchema: {
-    ...titleUI('Section II: Application information'),
-    'ui:description': (
-      <VaAlert status="info" class="vads-u-margin-top--3" uswds visible>
-        <h2 slot="headline">Service and conveyance details</h2>
-        <p className="vads-u-margin--0">
-          We need information about your military service and the type of
-          vehicle or equipment you are applying for.
-        </p>
-      </VaAlert>
-    ),
+    'ui:options': { preserveHiddenData: true },
+    ...titleUI(AI.TITLE, AI.PAGE_DESCRIPTION),
     [applicationInfoFields.parentObject]: {
+      // 9: Branch of service
       [applicationInfoFields.branchOfService]: radioUI({
-        title: 'Branch of service',
+        title: AI.BRANCH_OF_SERVICE,
         labels: BRANCH_OF_SERVICE,
         required: () => true,
+        errorMessages: {
+          required: AI.ERROR_BRANCH_OF_SERVICE,
+        },
       }),
-      [applicationInfoFields.activeDutyStatus]: yesNoUI({
-        title: 'Are you currently on active duty?',
+      // 11A: Place of entry into active duty
+      [applicationInfoFields.placeOfEntry]: textUI({
+        title: AI.PLACE_OF_ENTRY,
         required: () => true,
+        errorMessages: {
+          required: AI.ERROR_PLACE_OF_ENTRY,
+        },
       }),
-      [applicationInfoFields.placeOfEntry]: {
-        'ui:title': 'Place of entry into active duty',
-        'ui:options': { hideEmptyValueInReview: true },
-      },
+      // 11B: Date of entry into active duty
       [applicationInfoFields.dateOfEntry]: {
-        ...dateOfBirthUI({ hint: 'For example: January 2020' }),
-        'ui:title': 'Date of entry into active duty',
-        'ui:webComponentField': VaDateField,
-        'ui:options': { hideEmptyValueInReview: true },
-      },
-      [applicationInfoFields.placeOfRelease]: {
-        'ui:title': 'Place of release from active duty (if applicable)',
-        'ui:options': { hideEmptyValueInReview: true },
-      },
-      [applicationInfoFields.dateOfRelease]: {
-        ...dateOfBirthUI({ hint: 'For example: March 2024' }),
-        'ui:title': 'Date of release from active duty (if applicable)',
-        'ui:webComponentField': VaDateField,
-        'ui:options': { hideEmptyValueInReview: true },
-      },
-      [applicationInfoFields.vaOfficeLocation]: {
-        'ui:title': 'Location of VA office that has your file (city and state)',
-        'ui:options': { hideEmptyValueInReview: true },
-      },
-      [applicationInfoFields.conveyanceType]: radioUI({
-        title: 'Type of conveyance are you applying for?',
-        labels: CONVEYANCE_TYPES,
-        required: () => true,
-      }),
-      [applicationInfoFields.conveyanceTypeOther]: {
-        'ui:title': 'Specify other type of conveyance',
-        'ui:options': {
-          hideIf: formData =>
-            formData?.applicationInfo?.conveyanceType !== 'other',
-          hideEmptyValueInReview: true,
-        },
-      },
-      [applicationInfoFields.previouslyAppliedConveyance]: yesNoUI({
-        title:
-          'Have you previously applied for an automobile or other conveyance from VA?',
-        required: () => true,
-      }),
-      [applicationInfoFields.previouslyAppliedPlace]: {
-        'ui:title': 'Place where you previously applied',
-        'ui:options': {
-          hideIf: formData =>
-            formData?.applicationInfo?.previouslyAppliedConveyance !== true,
-          hideEmptyValueInReview: true,
-        },
-      },
-      [applicationInfoFields.previouslyAppliedDate]: {
-        ...dateOfBirthUI({ hint: 'Date of your previous application' }),
-        'ui:title': 'Date of previous application',
-        'ui:webComponentField': VaDateField,
-        'ui:options': {
-          hideIf: formData =>
-            formData?.applicationInfo?.previouslyAppliedConveyance !== true,
-          hideEmptyValueInReview: true,
-        },
-      },
-      [applicationInfoFields.appliedDisabilityCompensation]: yesNoUI({
-        title: 'Have you applied for VA disability compensation?',
-        required: () => true,
-      }),
-      [applicationInfoFields.appliedDisabilityCompensationPlace]: {
-        'ui:title':
-          'Name of place where you applied for disability compensation',
-        'ui:options': {
-          hideIf: formData =>
-            formData?.applicationInfo?.appliedDisabilityCompensation !== true,
-          hideEmptyValueInReview: true,
-        },
-      },
-      [applicationInfoFields.dateApplied]: {
-        ...dateOfBirthUI({
-          hint: 'Date you applied for disability compensation',
+        ...currentOrPastDateUI({
+          title: AI.DATE_OF_ENTRY,
+          hint: AI.HINT_DATE_OF_ENTRY,
+          required: () => true,
+          errorMessages: {
+            pattern: AI.ERROR_DATE_ENTRY_INVALID,
+            required: AI.ERROR_DATE_ENTRY_REQUIRED,
+          },
         }),
-        'ui:title': 'Date you applied for disability compensation',
-        'ui:webComponentField': VaDateField,
         'ui:options': {
-          hideIf: formData =>
-            formData?.applicationInfo?.appliedDisabilityCompensation !== true,
-          hideEmptyValueInReview: true,
+          hint: AI.HINT_DATE_OF_ENTRY,
         },
+        'ui:webComponentField': VaDateField,
+        'ui:errorMessages': {
+          pattern: AI.ERROR_DATE_ENTRY_INVALID,
+          required: AI.ERROR_DATE_ENTRY_REQUIRED,
+        },
+        'ui:validations': [validateDateOfEntry],
       },
     },
   },
@@ -135,47 +98,16 @@ export default {
           [applicationInfoFields.branchOfService]: radioSchema(
             Object.keys(BRANCH_OF_SERVICE),
           ),
-          [applicationInfoFields.activeDutyStatus]: yesNoSchema,
           [applicationInfoFields.placeOfEntry]: {
             type: 'string',
             maxLength: 100,
           },
-          [applicationInfoFields.dateOfEntry]: dateOfBirthSchema,
-          [applicationInfoFields.placeOfRelease]: {
-            type: 'string',
-            maxLength: 100,
-          },
-          [applicationInfoFields.dateOfRelease]: dateOfBirthSchema,
-          [applicationInfoFields.vaOfficeLocation]: {
-            type: 'string',
-            maxLength: 200,
-          },
-          [applicationInfoFields.conveyanceType]: radioSchema(
-            Object.keys(CONVEYANCE_TYPES),
-          ),
-          [applicationInfoFields.conveyanceTypeOther]: {
-            type: 'string',
-            maxLength: 100,
-          },
-          [applicationInfoFields.previouslyAppliedConveyance]: yesNoSchema,
-          [applicationInfoFields.previouslyAppliedPlace]: {
-            type: 'string',
-            maxLength: 100,
-          },
-          [applicationInfoFields.previouslyAppliedDate]: dateOfBirthSchema,
-          [applicationInfoFields.appliedDisabilityCompensation]: yesNoSchema,
-          [applicationInfoFields.appliedDisabilityCompensationPlace]: {
-            type: 'string',
-            maxLength: 200,
-          },
-          [applicationInfoFields.dateApplied]: dateOfBirthSchema,
+          [applicationInfoFields.dateOfEntry]: { type: 'string' },
         },
         required: [
           applicationInfoFields.branchOfService,
-          applicationInfoFields.activeDutyStatus,
-          applicationInfoFields.conveyanceType,
-          applicationInfoFields.previouslyAppliedConveyance,
-          applicationInfoFields.appliedDisabilityCompensation,
+          applicationInfoFields.placeOfEntry,
+          applicationInfoFields.dateOfEntry,
         ],
       },
     },

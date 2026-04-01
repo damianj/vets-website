@@ -28,9 +28,9 @@ describe('cave/transformers/dd214 — transformDd214Entry', () => {
 
   describe("Veteran's information section", () => {
     const entry = {
-      VETERAN_NAME: { first: 'John', middle: 'Q', last: 'Smith', suffix: '' },
-      VETERAN_SSN: '123456789',
-      VETERAN_DOB: '1950-03-15',
+      veteranName: { first: 'John', middle: 'Q', last: 'Smith', suffix: '' },
+      veteranSsn: '123456789',
+      veteranDob: '1950-03-15',
     };
 
     it('includes first, middle, last, suffix rows', () => {
@@ -75,15 +75,15 @@ describe('cave/transformers/dd214 — transformDd214Entry', () => {
 
   describe('Service information section', () => {
     const entry = {
-      BRANCH_OF_SERVICE: 'army',
-      GRADE_RATE_RANK: 'E-4',
-      PAY_GRADE: 'E-4',
-      DATE_INDUCTED: '1970-02-03',
-      DATE_ENTERED_ACTIVE_SERVICE: '1970-02-15',
-      DATE_SEPARATED_FROM_SERVICE: '1974-02-14',
-      CAUSE_OF_SEPARATION: 'Expiration of term',
-      SEPARATION_TYPE: 'Discharge',
-      SEPARATION_CODE: 'MBK',
+      branchOfService: 'army',
+      gradeRateRank: 'E-4',
+      payGrade: 'E-4',
+      dateInducted: '1970-02-03',
+      dateEnteredActiveService: '1970-02-15',
+      dateSeparatedFromService: '1974-02-14',
+      causeOfSeparation: 'Expiration of term',
+      separationType: 'Discharge',
+      separationCode: 'MBK',
     };
 
     it('renders branch of service', () => {

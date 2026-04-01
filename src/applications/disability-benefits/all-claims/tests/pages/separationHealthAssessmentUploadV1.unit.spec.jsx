@@ -22,6 +22,12 @@ describe('separationHealthAssessmentUploadV1 page', () => {
       ).to.equal('L702');
     });
 
+    it('enforces minItems: 1 to reject empty file arrays', () => {
+      expect(
+        schema.properties.separationHealthAssessmentUploads.minItems,
+      ).to.equal(1);
+    });
+
     it('limits SHA uploads to 20 files', () => {
       expect(
         schema.properties.separationHealthAssessmentUploads.maxItems,

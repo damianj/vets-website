@@ -1,6 +1,7 @@
 import path from 'path';
 import testForm from 'platform/testing/e2e/cypress/support/form-tester';
 import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-tester/utilities';
+import moment from 'moment';
 import featureToggles from '../fixtures/mocks/feature-toggles.json';
 import user from '../fixtures/mocks/user.json';
 import mockSubmit from '../fixtures/mocks/application-submit.json';
@@ -30,7 +31,15 @@ const testConfig = createTestConfig(
       attestation: ({ afterHook }) => {
         afterHook(() => {
           cy.waitForDateInput('root_attestationDateYear');
-          cy.fillPage();
+
+          const today = moment();
+          cy.fillVaTextInput('root_attestationName', 'John Doe');
+          cy.fillVaMemorableDate(
+            'root_attestationDate',
+            today.format('YYYY-MM-DD'),
+            false,
+          );
+
           cy.tabToSubmitForm();
         });
       },

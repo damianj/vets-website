@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import reviewErrors from '../reviewErrors';
+import formConfig from '../config/form';
 
 describe('reviewErrors', () => {
   const EXPECTED_MESSAGE =
@@ -7,6 +8,11 @@ describe('reviewErrors', () => {
   const EXPECTED_CLAIM_TYPE_REDIRECT = {
     chapterKey: 'disabilities',
     pageKey: 'claimType',
+    navigationType: 'redirect',
+  };
+  const EXPECTED_CONDITIONS_SUMMARY_REDIRECT = {
+    chapterKey: 'disabilities',
+    pageKey: 'Summary',
     navigationType: 'redirect',
   };
 
@@ -40,6 +46,33 @@ describe('reviewErrors', () => {
     errorCases.forEach(errorString => {
       it(`redirects "${errorString}" error to claim-type page`, () => {
         const result = reviewErrors._override(errorString);
+        expect(result).to.deep.equal(EXPECTED_CLAIM_TYPE_REDIRECT);
+      });
+    });
+
+    errorCases.forEach(errorString => {
+      it(`redirects "${errorString}" error to claim-type page when workflow flag is off`, () => {
+        const result = reviewErrors._override(errorString, {
+          formData: { disabilityCompNewConditionsWorkflow: false },
+        });
+        expect(result).to.deep.equal(EXPECTED_CLAIM_TYPE_REDIRECT);
+      });
+    });
+
+    errorCases.forEach(errorString => {
+      it(`redirects "${errorString}" error to Summary page when workflow flag is on`, () => {
+        const result = reviewErrors._override(errorString, {
+          formData: { disabilityCompNewConditionsWorkflow: true },
+        });
+        expect(result).to.deep.equal(EXPECTED_CONDITIONS_SUMMARY_REDIRECT);
+      });
+    });
+
+    errorCases.forEach(errorString => {
+      it(`redirects "${errorString}" error to claim-type page when formData has no workflow flag`, () => {
+        const result = reviewErrors._override(errorString, {
+          formData: { someOtherField: 'hello world' },
+        });
         expect(result).to.deep.equal(EXPECTED_CLAIM_TYPE_REDIRECT);
       });
     });
@@ -130,6 +163,50 @@ describe('reviewErrors', () => {
   describe('default', () => {
     it('handles key not found', () => {
       expect(reviewErrors._override('foo.bar.foo')).to.equal(null);
+    });
+  });
+
+  describe('formConfig.reviewErrors._override (platform integration)', () => {
+    it('exposes _override on the form config reviewErrors', () => {
+      expect(formConfig.reviewErrors._override).to.be.a('function');
+    });
+
+    it('redirects newDisabilities to claim-type page when workflow flag is off', () => {
+      const result = formConfig.reviewErrors._override('newDisabilities', {
+        formData: { disabilityCompNewConditionsWorkflow: false },
+      });
+      expect(result).to.deep.equal(EXPECTED_CLAIM_TYPE_REDIRECT);
+    });
+
+    it('redirects newDisabilities to Summary page when workflow flag is on', () => {
+      const result = formConfig.reviewErrors._override('newDisabilities', {
+        formData: { disabilityCompNewConditionsWorkflow: true },
+      });
+      expect(result).to.deep.equal(EXPECTED_CONDITIONS_SUMMARY_REDIRECT);
+    });
+
+    it('resolves toxic exposure error with platform context shape', () => {
+      const result = formConfig.reviewErrors._override(
+        'toxicExposure.gulfWar1990Details.afghanistan.startDate',
+        { formData: { toxicExposure: {} } },
+      );
+      expect(result).to.deep.equal({
+        chapterKey: 'disabilities',
+        pageKey: 'gulf-war-1990-location-afghanistan',
+      });
+    });
+
+    it('returns null for unrecognized errors with platform context', () => {
+      expect(
+        formConfig.reviewErrors._override('unknown.error.key', {
+          formData: {},
+        }),
+      ).to.equal(null);
+    });
+
+    it('handles missing context gracefully', () => {
+      const result = formConfig.reviewErrors._override('newDisabilities');
+      expect(result).to.deep.equal(EXPECTED_CLAIM_TYPE_REDIRECT);
     });
   });
 });

@@ -12,12 +12,7 @@ export default {
   uiSchema: {
     ...arrayBuilderItemSubsequentPageTitleUI(
       () => 'Property with VA home loan: Disaster damage',
-      ({ formData }) => (
-        <div>
-          <p>Provide VA home loan information for this property.</p>
-          <PropertyAddress formData={formData} />
-        </div>
-      ),
+      ({ formData }) => <PropertyAddress formData={formData} />,
     ),
     naturalDisaster: {
       affected: yesNoUI({

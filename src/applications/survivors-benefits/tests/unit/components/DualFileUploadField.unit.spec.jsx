@@ -1,9 +1,10 @@
 import React from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, act } from '@testing-library/react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
+import * as cave from '../../../cave';
 import DualFileUploadField from '../../../components/DualFileUploadField';
 
 // ---------------------------------------------------------------------------
@@ -44,7 +45,16 @@ const makeProps = (overrides = {}) => ({
 // Tests
 // ---------------------------------------------------------------------------
 describe('<DualFileUploadField />', () => {
-  afterEach(cleanup);
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+    cleanup();
+  });
 
   const render_ = (props = makeProps(), caveEnabled = false) =>
     render(
@@ -81,5 +91,37 @@ describe('<DualFileUploadField />', () => {
     });
     const { container } = render_(props);
     expect(container.querySelector('va-file-input-multiple')).to.exist;
+  });
+
+  it('does NOT call processDocumentWithAutoResolve after uploadDocument resolves', async () => {
+    const processStub = sandbox.stub(cave, 'processDocumentWithAutoResolve');
+    const uploadStub = sandbox
+      .stub(cave, 'uploadDocument')
+      .resolves({ id: 'doc-1', bucket: 'b', pdfKey: 'k' });
+
+    const onChange = sinon.spy();
+    const props = makeProps({
+      childrenProps: {
+        formData: [],
+        onChange,
+        onBlur: sinon.spy(),
+        schema: {},
+        idSchema: { $id: 'root_files' },
+        uiSchema: {},
+      },
+    });
+
+    // Render with caveEnabled so startSecondaryUpload is triggered
+    render_(props, true);
+
+    // Wait for any async side-effects
+    await act(async () => {});
+
+    // uploadDocument may or may not have been called (depends on FILE_ADDED event),
+    // but processDocumentWithAutoResolve must never be called from the component.
+    expect(processStub.called).to.be.false;
+
+    // Suppress unused variable warning — uploadStub is referenced to ensure it's set up
+    expect(uploadStub).to.exist;
   });
 });

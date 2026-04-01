@@ -246,6 +246,119 @@ describe('useSearchFormState hook', () => {
     });
   });
 
+  describe('submitErrorsRef preservation', () => {
+    it('preserves submit errors across unrelated field changes when field is still invalid', () => {
+      const currentQuery = {
+        facilityType: null,
+        serviceType: null,
+        searchString: '',
+        vamcServiceDisplay: null,
+      };
+      const { result } = renderHook(() => useSearchFormState(currentQuery));
+
+      // Simulate submit setting location error
+      act(() => {
+        result.current.setSubmitErrors({ locationChanged: true });
+      });
+
+      // Change an unrelated field (facility type) while location is still empty
+      act(() => {
+        result.current.updateDraftState({ facilityType: 'health' });
+      });
+
+      // Location error should persist because searchString is still empty
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+    });
+
+    it('clears submit error when the corresponding field becomes valid', () => {
+      const currentQuery = {
+        facilityType: null,
+        serviceType: null,
+        searchString: '',
+        vamcServiceDisplay: null,
+      };
+      const { result } = renderHook(() => useSearchFormState(currentQuery));
+
+      // Simulate submit setting location error
+      act(() => {
+        result.current.setSubmitErrors({ locationChanged: true });
+      });
+
+      // Fix the field by entering a location
+      act(() => {
+        result.current.updateDraftState({ searchString: 'Austin, TX' });
+      });
+
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+
+      // Update without changing searchString — error no longer sticky
+      act(() => {
+        result.current.updateDraftState({ facilityType: 'health' });
+      });
+
+      expect(result.current.draftFormState.locationChanged).to.be.false;
+    });
+
+    it('clears service type submit error when facility type changes', () => {
+      const currentQuery = {
+        facilityType: 'provider',
+        serviceType: null,
+        searchString: 'Austin, TX',
+        vamcServiceDisplay: null,
+      };
+      const { result } = renderHook(() => useSearchFormState(currentQuery));
+
+      // Simulate submit setting service type error
+      act(() => {
+        result.current.setSubmitErrors({ serviceTypeChanged: true });
+      });
+
+      // Change facility type away from provider
+      act(() => {
+        result.current.handleFacilityTypeChange({
+          target: { value: 'health' },
+        });
+      });
+
+      // Service type error should be cleared because facility type changed
+      expect(result.current.draftFormState.serviceTypeChanged).to.be.false;
+    });
+
+    it('does not produce sticky errors when editing without a prior submit', () => {
+      const currentQuery = {
+        facilityType: null,
+        serviceType: null,
+        searchString: '',
+        vamcServiceDisplay: null,
+      };
+      const { result } = renderHook(() => useSearchFormState(currentQuery));
+
+      act(() => {
+        result.current.updateDraftState({
+          searchString: 'Austin, TX',
+          facilityType: 'health',
+        });
+      });
+
+      // Flags are true because fields changed from initial values
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+      expect(result.current.draftFormState.facilityTypeChanged).to.be.true;
+
+      // Update without changing any field values
+      act(() => {
+        result.current.updateDraftState({
+          searchString: 'Austin, TX',
+          facilityType: 'health',
+        });
+      });
+
+      // Without submit errors, flags reset because validateForm sees no diff
+      expect(result.current.draftFormState.locationChanged).to.be.false;
+      expect(result.current.draftFormState.facilityTypeChanged).to.be.false;
+      expect(result.current.draftFormState.serviceTypeChanged).to.be.false;
+    });
+  });
+
   describe('validation for CC_PROVIDER', () => {
     it('should mark form invalid when provider type has no serviceType', () => {
       const { result } = renderHook(() =>

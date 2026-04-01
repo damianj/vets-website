@@ -20,3 +20,10 @@ export {
   MILITARY_ZIP_PATTERNS,
   VALIDATION_MESSAGES,
 } from './validators';
+
+// Address validation utilities
+export {
+  prepareAddressForAPI,
+  fetchSuggestedAddress,
+  formatAddress,
+} from './address-validation';

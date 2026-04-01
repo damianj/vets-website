@@ -4,6 +4,7 @@ import * as prescriptionsApiModule from '../../api/prescriptionsApi';
 import allergiesList from '../fixtures/allergiesList.json';
 import medicationInformation from '../fixtures/medicationInformation.json';
 import prescriptionsList from '../fixtures/prescriptionsList.json';
+import prescriptionsListV2 from '../fixtures/prescriptionsListV2.json';
 import singlePrescription from '../fixtures/prescriptionsListItem.json';
 
 export const stubAllergiesApi = ({
@@ -57,19 +58,22 @@ export const stubPrescriptionsApiCache = ({
 
 export const stubPrescriptionsListApi = ({
   sandbox,
-  data = {
-    prescriptions: prescriptionsList.data,
-    meta: prescriptionsList.meta,
-    pagination: prescriptionsList.meta.pagination,
-  },
+  useV2 = false,
+  data,
   error = undefined,
   isLoading = false,
   isFetching = false,
 }) => {
+  const fixture = useV2 ? prescriptionsListV2 : prescriptionsList;
+  const resolvedData = data || {
+    prescriptions: fixture.data,
+    meta: fixture.meta,
+    pagination: fixture.meta.pagination,
+  };
   return sandbox
     .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
     .returns({
-      data,
+      data: resolvedData,
       error,
       isLoading,
       isFetching,

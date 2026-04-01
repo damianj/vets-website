@@ -20,12 +20,12 @@ const retirementPointAccounting = 'Retirement Point Accounting';
 
 describe('DocumentsNeeded', () => {
   describe('VETERAN status', () => {
-    it('should display single document message without hasHomeLoanProperty', () => {
+    it('should display single document message without hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.VETERAN,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty={false} />,
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
       );
       const text = container.textContent;
       expect(text).to.include(
@@ -34,12 +34,12 @@ describe('DocumentsNeeded', () => {
       expect(text).to.not.include(homeLoanEvidence);
     });
 
-    it('should display multiple documents message with hasHomeLoanProperty', () => {
+    it('should display multiple documents message with hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.VETERAN,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty />,
+        <DocumentsNeeded formData={formData} hadPriorLoans />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -59,7 +59,7 @@ describe('DocumentsNeeded', () => {
         },
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty={false} />,
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
       );
       const text = container.textContent;
       expect(text).to.include('You may upload a Statement of Service');
@@ -75,7 +75,7 @@ describe('DocumentsNeeded', () => {
         },
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty={false} />,
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -84,7 +84,7 @@ describe('DocumentsNeeded', () => {
       expect(text).to.not.include(homeLoanEvidence);
     });
 
-    it('should display multiple documents with hasHomeLoanProperty', () => {
+    it('should display multiple documents with hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.ADSM,
         militaryHistory: {
@@ -92,7 +92,7 @@ describe('DocumentsNeeded', () => {
         },
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty />,
+        <DocumentsNeeded formData={formData} hadPriorLoans />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -101,7 +101,7 @@ describe('DocumentsNeeded', () => {
       expect(text).to.include(homeLoanEvidence);
     });
 
-    it('should display all documents with Purple Heart and hasHomeLoanProperty', () => {
+    it('should display all documents with Purple Heart and hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.ADSM,
         militaryHistory: {
@@ -109,7 +109,7 @@ describe('DocumentsNeeded', () => {
         },
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty />,
+        <DocumentsNeeded formData={formData} hadPriorLoans />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -120,12 +120,12 @@ describe('DocumentsNeeded', () => {
   });
 
   describe('NADNA status', () => {
-    it('should display required documents without hasHomeLoanProperty', () => {
+    it('should display required documents without hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.NADNA,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty={false} />,
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -134,12 +134,12 @@ describe('DocumentsNeeded', () => {
       expect(text).to.not.include(homeLoanEvidence);
     });
 
-    it('should display required documents with hasHomeLoanProperty', () => {
+    it('should display required documents with hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.NADNA,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty />,
+        <DocumentsNeeded formData={formData} hadPriorLoans />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -155,7 +155,7 @@ describe('DocumentsNeeded', () => {
         identity: serviceStatuses.DNANA,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty={false} />,
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -165,12 +165,12 @@ describe('DocumentsNeeded', () => {
       expect(text).to.not.include(homeLoanEvidence);
     });
 
-    it('should display required documents with hasHomeLoanProperty', () => {
+    it('should display required documents with hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.DNANA,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty />,
+        <DocumentsNeeded formData={formData} hadPriorLoans />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -182,12 +182,12 @@ describe('DocumentsNeeded', () => {
   });
 
   describe('DRNA status', () => {
-    it('should display required documents without hasHomeLoanProperty', () => {
+    it('should display required documents without hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.DRNA,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty={false} />,
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);
@@ -196,12 +196,12 @@ describe('DocumentsNeeded', () => {
       expect(text).to.not.include(homeLoanEvidence);
     });
 
-    it('should display required documents with hasHomeLoanProperty', () => {
+    it('should display required documents with hadPriorLoans', () => {
       const formData = {
         identity: serviceStatuses.DRNA,
       };
       const { container } = render(
-        <DocumentsNeeded formData={formData} hasHomeLoanProperty />,
+        <DocumentsNeeded formData={formData} hadPriorLoans />,
       );
       const text = container.textContent;
       expect(text).to.include(multipleDocuments);

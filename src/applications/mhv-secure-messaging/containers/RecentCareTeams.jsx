@@ -23,6 +23,7 @@ const RECENT_RECIPIENTS_LABEL = 'Select a team you want to message';
 const RECENT_RECIPIENTS_HINT = `This list only includes teams that you've sent messages to in the last 6 months. If you want to contact another team, select "A different care team."`;
 
 const OTHER_VALUE = 'other';
+const DIFFERENT_CARE_TEAM = 'A different care team';
 const { Paths } = Constants;
 
 const RecentCareTeams = () => {
@@ -254,7 +255,12 @@ const RecentCareTeams = () => {
               />
             );
           })}
-        <VaRadioOption label="A different care team" tile value={OTHER_VALUE} />
+        <VaRadioOption
+          label={DIFFERENT_CARE_TEAM}
+          data-dd-action-name={DIFFERENT_CARE_TEAM}
+          tile
+          value={OTHER_VALUE}
+        />
       </VaRadio>
       <VaButton
         className="vads-u-width--full small-screen:vads-u-width--auto"

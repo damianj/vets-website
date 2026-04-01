@@ -14,6 +14,7 @@ import { formatAddress } from 'platform/forms/address/helpers';
 import recordEvent from 'platform/monitoring/record-event';
 import { focusElement, waitForRenderThenFocus } from 'platform/utilities/ui';
 import { setData } from 'platform/forms-system/exportsFile';
+import { isMinimalHeaderPath } from 'platform/forms-system/src/js/patterns/minimal-header';
 import { ContactInfoFormAppConfigContext } from '../components/ContactInfoFormAppConfigContext';
 import * as VAP_SERVICE from '../constants';
 import {
@@ -259,6 +260,12 @@ class AddressValidationView extends React.Component {
     );
   };
 
+  // header level varies when using minimal header flow
+  getDynamicHeader = base => {
+    const level = isMinimalHeaderPath() ? base - 2 : base;
+    return `h${level}`;
+  };
+
   renderAddressOption = (address, id = 'userEntered') => {
     const {
       confirmedSuggestions,
@@ -279,6 +286,7 @@ class AddressValidationView extends React.Component {
         ? 'Suggested addresses:'
         : 'Suggested address:';
 
+    const Header = this.getDynamicHeader(5);
     return (
       <div key={id} className="address-validation-container">
         {isFirstOptionOrEnabled && hasConfirmedSuggestions ? (
@@ -287,7 +295,7 @@ class AddressValidationView extends React.Component {
             label={
               id === 'userEntered' ? 'Address you entered:' : puralizedAddress
             }
-            labelHeaderLevel={5}
+            labelHeaderLevel={isMinimalHeaderPath() ? 3 : 5}
             onVaValueChange={event => {
               this.onChangeSelectedAddress(address, event.detail.value);
             }}
@@ -325,9 +333,9 @@ class AddressValidationView extends React.Component {
           </VaRadio>
         ) : (
           <>
-            <h5 className="vads-u-margin-top--3 vads-u-padding-top--0">
+            <Header className="vads-u-margin-top--3 vads-u-padding-top--0">
               Address you entered:
-            </h5>
+            </Header>
             <div className="vads-u-display--flex vads-u-flex-direction--column vads-u-padding-bottom--1p5">
               <span
                 className="dd-privacy-hidden"
@@ -377,6 +385,8 @@ class AddressValidationView extends React.Component {
     const shouldShowSuggestions =
       confirmedSuggestions && confirmedSuggestions.length > 0;
 
+    const AlertHeader = this.getDynamicHeader(4);
+
     return (
       <>
         {/*
@@ -393,9 +403,12 @@ class AddressValidationView extends React.Component {
             role="alert"
           >
             {addressValidationMessage.headline && (
-              <h4 id="address-validation-alert-heading" slot="headline">
+              <AlertHeader
+                id="address-validation-alert-heading"
+                slot="headline"
+              >
                 {addressValidationMessage.headline}
-              </h4>
+              </AlertHeader>
             )}
             <addressValidationMessage.ModalText
               editFunction={this.onEditClick}

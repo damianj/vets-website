@@ -2,11 +2,9 @@ import { expect } from 'chai';
 import formConfig from '../../../config/form';
 import transformForSubmit from '../../../config/submitTransformer';
 import { toHash } from '../../../../shared/utilities';
-import {
-  NOT_SHARED,
-  FIELD_NAME as SHARED_ADDRESS_FIELD_NAME,
-} from '../../../components/FormPages/AddressSelectionPage';
+import { NOT_SHARED } from '../../../components/FormFields/AddressSelectionField';
 
+const SHARED_ADDRESS_FIELD_NAME = 'view:sharesAddressWith';
 const APPLICANT_SSN = '345345345';
 const SSN_HASH = toHash(APPLICANT_SSN);
 

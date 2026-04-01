@@ -22,9 +22,7 @@ export default function prefillTransformer(pages, formData, metadata, state) {
             last: userFullName.last || formData?.fullName?.last,
           }
         : formData?.fullName,
-      dateOfBirth: isUserVeteran
-        ? dateOfBirth || formData?.dateOfBirth
-        : formData?.dateOfBirth,
+      dateOfBirth: dateOfBirth || formData?.dateOfBirth,
       ...(formData?.veteran?.ssn && {
         idNumber: { ssn: formData.veteran.ssn },
       }),

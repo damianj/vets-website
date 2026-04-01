@@ -65,7 +65,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'No results found for Accredited attorney within 50 miles of 11111 sorted by Distance (closest to farthest)';
+      'No results found for “Accredited attorney” within “50 miles” of “11111” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -123,7 +123,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'No results found for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+      'No results found for “Accredited attorney” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -158,7 +158,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'Showing 1 result for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 1 result for “Accredited attorney” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -193,7 +193,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'Showing 11 - 12 of 12 results for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 11 - 12 of 12 results for “Accredited attorney” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -227,7 +227,7 @@ describe('SearchResultsHeader', () => {
       </Provider>,
     );
     const expectedString =
-      'Showing 5 results for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 5 results for “Accredited attorney” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -262,7 +262,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'Showing 1-10 of 12 results for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 1-10 of 12 results for “Accredited attorney” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -297,7 +297,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'Showing 11 - 20 of 25 results for Accredited claims agent within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 11 - 20 of 25 results for “Accredited claims agent” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -332,7 +332,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'Showing 11 - 20 of 25 results for Accredited claims agent within 50 miles of new york sorted by Last name (A-Z)';
+      'Showing 11 - 20 of 25 results for “Accredited claims agent” within “50 miles” of “new york” sorted by “Last name (A-Z)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -367,7 +367,7 @@ describe('SearchResultsHeader', () => {
     );
 
     const expectedString =
-      'No results found for Accredited claims agent within 50 miles of new york sorted by Distance (closest to farthest)';
+      'No results found for “Accredited claims agent” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -456,7 +456,7 @@ describe('SearchResultsHeader', () => {
       </Provider>,
     );
     const expectedString =
-      'Showing 5 results for Accredited VSO Representative, American Legion within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 5 results for “Accredited VSO Representative”, “American Legion” within “50 miles” of“ new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -491,7 +491,7 @@ describe('SearchResultsHeader', () => {
       </Provider>,
     );
     const expectedString =
-      'Showing 5 results for Accredited VSO Representative within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 5 results for “Accredited VSO Representative” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters
@@ -526,7 +526,7 @@ describe('SearchResultsHeader', () => {
       </Provider>,
     );
     const expectedString =
-      'Showing 5 results for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+      'Showing 5 results for “Accredited attorney” within “50 miles” of “new york” sorted by “Distance (closest to farthest)”';
     const actualString = wrapper.find('#search-results-subheader').text();
 
     // Remove whitespaces and special characters

@@ -271,10 +271,7 @@ describe('Recent care teams', () => {
 
     // Wait for recent recipients to load
     cy.wait('@recentRecipients');
-    PatientInterstitialPage.getStartMessageLink()
-      .should('have.attr', 'href')
-      .and('include', Paths.RECENT_CARE_TEAMS);
-    PatientInterstitialPage.getStartMessageLink().click();
+    PatientInterstitialPage.clickStartMessageLink(true);
     GeneralFunctionsPage.verifyPageHeader(Data.RECENT_RECIPIENTS_HEADER);
 
     // Navigate forward to select care team
@@ -320,13 +317,8 @@ describe('Recent care teams', () => {
     // Wait for recent recipients to load before clicking continue
     cy.wait('@recentRecipients');
 
-    // Ensure the link href is updated to point to recent care teams
-    cy.get('[data-testid="start-message-link"]')
-      .should('have.attr', 'href')
-      .and('include', Paths.RECENT_CARE_TEAMS);
-
     // Forward: Interstitial → Recent care teams
-    PatientInterstitialPage.getStartMessageLink().click();
+    PatientInterstitialPage.clickStartMessageLink(true);
     GeneralFunctionsPage.verifyPageHeader(Data.RECENT_RECIPIENTS_HEADER);
     cy.location('pathname').should(
       'equal',

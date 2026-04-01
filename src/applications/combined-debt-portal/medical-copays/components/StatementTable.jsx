@@ -1,42 +1,19 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
-
 import PropTypes from 'prop-types';
-import { VaPagination } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import {
   formatDate,
   formatISODateToMMDDYYYY,
-  setPageFocus,
   showVHAPaymentHistory,
 } from '../../combined/utils/helpers';
+import Pagination from '../../combined/components/Pagination';
+import usePagination from '../../combined/hooks/usePagination';
 
 const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
     useSelector(state => state),
   );
   const columns = ['Date', 'Description', 'Billing Reference', 'Amount'];
-
-  const MAX_ROWS = 10;
-
-  const paginate = (array, pageSize, pageNumber) => {
-    return array?.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-  };
-
-  const getPaginationText = (
-    currentPage,
-    pageSize,
-    totalItems,
-    label = 'charges',
-  ) => {
-    if (totalItems === 0) {
-      return `Showing 0 ${label}`;
-    }
-
-    const start = (currentPage - 1) * pageSize + 1;
-    const end = Math.min(currentPage * pageSize, totalItems);
-
-    return `Showing ${start}-${end} of ${totalItems} ${label}`;
-  };
 
   const normalizedCharges = shouldShowVHAPaymentHistory
     ? charges.map(item => ({
@@ -56,45 +33,31 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
         details: charge.details ?? [],
       }));
 
-  const [currentData, setCurrentData] = useState(
-    paginate(normalizedCharges, MAX_ROWS, 1),
+  const filteredCharges = normalizedCharges.filter(
+    charge =>
+      typeof charge.description === 'string' &&
+      !charge.description.startsWith('&nbsp;'),
   );
-  const [currentPage, setCurrentPage] = useState(1);
 
-  function onPageChange(page) {
-    setCurrentData(paginate(normalizedCharges, MAX_ROWS, page));
-    setCurrentPage(page);
-    setPageFocus(`va-table`);
-  }
+  const tableRef = useRef(null);
 
-  const numPages = Math.ceil(normalizedCharges?.length / MAX_ROWS);
+  const ITEM_TYPE = 'charges';
 
-  const paginationText = getPaginationText(
-    currentPage,
-    MAX_ROWS,
-    normalizedCharges?.length,
-    'charges',
-  );
+  // Customize this hook with itemsPerPage/MAX_ROWS as second param if needed
+  const pagination = usePagination(filteredCharges);
+  const paginationText = pagination.getPaginationText(ITEM_TYPE);
 
   const getStatementDateRange = () => {
-    if (
-      !selectedCopay?.statementStartDate ||
-      !selectedCopay?.statementEndDate
-    ) {
-      if (normalizedCharges?.length > MAX_ROWS) {
-        return `This statement shows your current charges. ${paginationText}.`;
-      }
-      return 'This statement shows your current charges.';
-    }
-
     const startDate = formatDate(selectedCopay.statementStartDate);
     const endDate = formatDate(selectedCopay.statementEndDate);
 
-    if (normalizedCharges?.length > MAX_ROWS) {
-      return `This statement shows charges you received between ${startDate} and ${endDate}. ${paginationText}.`;
+    if (!startDate || !endDate) {
+      return 'This statement shows your current charges.';
     }
+
     return `This statement shows charges you received between ${startDate} and ${endDate}.`;
   };
+
   const renderDescription = charge => (
     <div>
       <div>
@@ -170,51 +133,47 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
         Most recent statement charges
       </h2>
 
-      <div key={`table-wrapper-${currentPage}`}>
+      <div key={`table-wrapper-${pagination.currentPage}`}>
         <va-table
+          ref={tableRef}
+          id="statement-charges-table"
+          tabindex={pagination.hasPagination ? '-1' : undefined}
           table-title={getStatementDateRange()}
           table-title-summary={paginationText}
           scrollable={false}
           table-type="bordered"
           full-width
           unbounded
+          class="vads-u-display--block"
         >
           <va-table-row>
             {columns.map((col, index) => (
               <span key={`table-header-${index}`}>{col}</span>
             ))}
           </va-table-row>
-
-          {currentData
-            .filter(
-              charge =>
-                typeof charge.description === 'string' &&
-                !charge.description.startsWith('&nbsp;'),
-            )
-            .map((charge, index) => (
-              <va-table-row key={`${charge.pDRefNo || index}`}>
-                <span data-testId="statement-date">{getDate(charge)}</span>
-                <span data-testId="statement-description">
-                  {renderDescription(charge)}
-                </span>
-                <span data-testId="statement-reference">
-                  {getReference(charge)}
-                </span>
-                <span data-testId="statement-transaction-amount">
-                  {formatCurrency(charge.amount)}
-                </span>
-              </va-table-row>
-            ))}
+          {pagination.currentItems.map((charge, index) => (
+            <va-table-row key={index}>
+              <span data-testId="statement-date">{getDate(charge)}</span>
+              <span data-testId="statement-description">
+                {renderDescription(charge)}
+              </span>
+              <span data-testId="statement-reference">
+                {getReference(charge)}
+              </span>
+              <span data-testId="statement-transaction-amount">
+                {formatCurrency(charge.amount)}
+              </span>
+            </va-table-row>
+          ))}
         </va-table>
       </div>
-
-      {normalizedCharges.length > MAX_ROWS ? (
-        <VaPagination
-          onPageSelect={e => onPageChange(e.detail.page)}
-          page={currentPage}
-          pages={numPages}
-        />
-      ) : null}
+      <Pagination
+        currentPage={pagination.currentPage}
+        totalItems={pagination.totalItems}
+        itemsPerPage={pagination.itemsPerPage}
+        onPageChange={page => pagination.onPageChangeWFocus(page, tableRef)}
+        ariaLabel="Most recent statement charges pagination navigation"
+      />
     </>
   );
 };

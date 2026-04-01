@@ -19,7 +19,7 @@ describe('<ClaimsFilter>', () => {
   });
 
   [
-    { selected: 'in progress', expectedIndex: '0' },
+    { selected: 'in-progress', expectedIndex: '0' },
     { selected: 'closed', expectedIndex: '1' },
     { selected: 'all', expectedIndex: '2' },
   ].forEach(({ selected, expectedIndex }) => {
@@ -59,7 +59,7 @@ describe('<ClaimsFilter>', () => {
 
     // This should not throw an error
     const event = new CustomEvent('vaButtonClick', {
-      detail: { value: 'in progress' },
+      detail: { value: 'in-progress' },
       bubbles: true,
     });
 

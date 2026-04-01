@@ -47,6 +47,8 @@ export const SearchForm = props => {
     handleFacilityTypeChange,
     handleServiceTypeChange,
     selectedServiceType,
+    setSubmitErrors,
+    clearSubmitErrors,
   } = useSearchFormState(currentQuery);
 
   // Synchronize URL params, Redux, and draft state
@@ -94,6 +96,8 @@ export const SearchForm = props => {
     mobileMapUpdateEnabled,
     selectMobileMapPin,
     setSearchInitiated,
+    setSubmitErrors,
+    clearSubmitErrors,
   });
 
   const locationInputFieldRef = useRef(null);

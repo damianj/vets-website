@@ -22,6 +22,7 @@ class MockReferralListResponse {
    * @param {string} options.categoryOfCare - Type of care
    * @param {string} options.referralNumber - Referral number
    * @param {string} options.expirationDate - Date in YYYY-MM-DD format
+   * @param {boolean} options.onlineSchedule - Whether the referral can be scheduled online
    * @returns {Object} A referral object
    */
   static createReferral({
@@ -32,6 +33,7 @@ class MockReferralListResponse {
     referralNumber = `VA${Math.floor(1000 + Math.random() * 9000)}`,
     expirationDate = format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
     stationId = '659',
+    onlineSchedule = true,
   } = {}) {
     return {
       id,
@@ -42,6 +44,7 @@ class MockReferralListResponse {
         referralNumber,
         uuid: id,
         expirationDate,
+        onlineSchedule,
       },
     };
   }
@@ -80,6 +83,13 @@ class MockReferralListResponse {
         referralNumber: 'VA0000007123',
         expirationDate: format(addMonths(today, 5), formatStr),
         stationId: '123',
+      }),
+      MockReferralListResponse.createReferral({
+        id: 'not-online-schedulable',
+        categoryOfCare: 'OPTOMETRY',
+        referralNumber: 'VA0000007456',
+        expirationDate: format(addMonths(today, 4), formatStr),
+        onlineSchedule: false,
       }),
       MockReferralListResponse.createReferral({
         id: 'appointment-submit-error',

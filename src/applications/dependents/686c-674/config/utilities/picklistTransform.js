@@ -4,6 +4,33 @@ import { PICKLIST_DATA, PICKLIST_REMOVAL_FLAG } from '../constants';
 import { getV2Destination } from '../dataMappings';
 
 /**
+ * Cleans up address data by trimming whitespace and removing empty fields.
+ * @param {object} data - address data object
+ * @param {string} data.city - city name
+ * @param {string} data.country - country name
+ * @param {string} data.state - state name
+ * @param {string} data.street - street address
+ * @param {string} [data.street2] - optional second street address line
+ * @param {string} data.postalCode - postal code
+ * @returns {object} - cleaned address data object
+ */
+export function cleanupAddressData(data = {}) {
+  if (typeof data !== 'object' || data === null) {
+    return data;
+  }
+  return Object.entries(data).reduce((acc, [key, value]) => {
+    if (typeof value === 'string') {
+      if (value.trim() !== '') {
+        acc[key] = value.trim();
+      }
+    } else {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+}
+
+/**
  * Transforms V3 picklist location data to V2 location format.
  *
  * Handles both US and international locations:
@@ -207,7 +234,7 @@ function transformStepchildByFlag(item) {
       ...baseData,
       dateStepchildLeftHousehold: item.endDate,
       whoDoesTheStepchildLiveWith: item.whoDoesTheStepchildLiveWith || {},
-      address: item.address || {},
+      address: cleanupAddressData(item.address || {}),
       livingExpensesPaid: supportingStepchild
         ? 'More than half'
         : 'Less than half',

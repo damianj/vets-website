@@ -38,12 +38,20 @@ export function useVaDateCommon(props) {
     );
   };
 
+  const hasAnyValue = (vals = {}) => {
+    return (
+      (!!vals.year && Number(vals.year) !== 0) ||
+      (!!vals.month && Number(vals.month) !== 0) ||
+      (!monthYearOnly && !!vals.day && Number(vals.day) !== 0)
+    );
+  };
+
   function onDateChange(event, newValue) {
     const date = newValue ?? event.target.value ?? undefined;
     const newValues = parseISODate(date);
     setValues(newValues);
 
-    if (isIncomplete(newValues)) {
+    if (isIncomplete(newValues) && !hasAnyValue(newValues)) {
       props.childrenProps.onChange(undefined);
     } else {
       props.childrenProps.onChange(formatter(newValues));

@@ -4,10 +4,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { DocumentTypeSelect } from '../../../pages/uploadDocuments';
-import {
-  serviceStatuses,
-  entitlementRestorationOptions,
-} from '../../../constants';
+import { serviceStatuses } from '../../../constants';
 
 const mockStore = configureStore([]);
 
@@ -35,15 +32,12 @@ describe('DocumentTypeSelect component', () => {
     expect(options[0].textContent).to.equal('Discharge papers (DD214)');
   });
 
-  it('should show Discharge papers and Loan evidence for VETERAN with one-time restoration', () => {
+  it('should show Discharge papers and Loan evidence for VETERAN with prior loans', () => {
     const { container } = renderWithStore({
       identity: serviceStatuses.VETERAN,
-      relevantPriorLoans: [
-        {
-          entitlementRestoration:
-            entitlementRestorationOptions.ONE_TIME_RESTORATION,
-        },
-      ],
+      loanHistory: {
+        hadPriorLoans: true,
+      },
     });
 
     const options = container.querySelectorAll('option');

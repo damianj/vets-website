@@ -177,14 +177,14 @@ describe('cave/workflow', () => {
 
       const result = await processDocument({ id: 'doc-1' }, FAST);
       const entry = result.dd214[0];
-      expect(entry.VETERAN_NAME).to.deep.equal({
+      expect(entry.veteranName).to.deep.equal({
         first: 'John',
         middle: 'Q',
         last: 'Smith',
         suffix: undefined,
       });
-      expect(entry.BRANCH_OF_SERVICE).to.equal('army');
-      expect(entry.VETERAN_DOB).to.equal('1950-03-15');
+      expect(entry.branchOfService).to.equal('Army');
+      expect(entry.veteranDob).to.equal('1950-03-15');
     });
   });
 
@@ -239,8 +239,8 @@ describe('cave/workflow', () => {
         [],
         FAST,
       );
-      // BRANCH_OF_SERVICE was null → should be filled from form's serviceBranch
-      expect(result.dd214[0].BRANCH_OF_SERVICE).to.equal('navy');
+      // branchOfService was null → should be filled from form's serviceBranch
+      expect(result.dd214[0].branchOfService).to.equal('navy');
     });
   });
 });

@@ -1,9 +1,9 @@
 import { textareaUI } from 'platform/forms-system/src/js/web-component-patterns';
 
 export const detailsQuestion =
-  'How should we limit our request for your medical information?';
+  'What do you want your information request to be limited to?';
 export const detailsHint =
-  'For example, you want your doctor to release only information for certain treatment dates or health conditions.';
+  'For example, you want your doctor to release only treatment dates or certain types of disabilities.';
 export const detailsError = 'Tell us how to limit our request';
 
 export default {

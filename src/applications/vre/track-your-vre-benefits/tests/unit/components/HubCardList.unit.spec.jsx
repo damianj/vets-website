@@ -43,21 +43,20 @@ describe('HubCardList', () => {
     expect(links[2].getAttribute('href')).to.equal('/career-planning');
   });
 
-  it('renders only Career Planning for step 4', () => {
+  it('renders nothing for step 4', () => {
     const { container } = renderWithProviders(<HubCardList step={4} />);
     const links = container.querySelectorAll('va-link');
-    expect(links.length).to.equal(1);
-    expect(links[0].getAttribute('href')).to.equal('/career-planning');
+    expect(links.length).to.equal(0);
   });
 
-  it('renders only Career Planning for step 3 when the current step is active', () => {
+  it('renders all cards for step 3 when the current step is active', () => {
     const { container, getByText } = renderWithProviders(
       <HubCardList step={3} stateList={[{}, {}, { status: 'ACTIVE' }]} />,
     );
     const links = container.querySelectorAll('va-link');
 
-    expect(links.length).to.equal(1);
-    expect(links[0].getAttribute('href')).to.equal('/career-planning');
+    expect(links.length).to.equal(3);
+    expect(links[2].getAttribute('href')).to.equal('/career-planning');
     getByText(/Initial Evaluation Counselor Meeting/i);
   });
 
@@ -82,16 +81,10 @@ describe('HubCardList', () => {
     expect(links.length).to.equal(3);
   });
 
-  it('renders a single Career Planning description for step 5', () => {
-    const { container, queryByText } = renderWithProviders(
-      <HubCardList step={5} />,
-    );
-    const links = container.querySelectorAll('va-link');
-    const paragraphs = container.querySelectorAll('p');
+  it('returns null for step 5', () => {
+    const { container } = renderWithProviders(<HubCardList step={5} />);
 
-    expect(links.length).to.equal(1);
-    expect(paragraphs.length).to.equal(1);
-    expect(queryByText(/Initial Evaluation Counselor Meeting/i)).to.equal(null);
+    expect(container.innerHTML.trim()).to.equal('');
   });
 
   it('returns null for step 6 when the current status is COMPLETE', () => {
@@ -127,24 +120,6 @@ describe('HubCardList', () => {
 
     expect(links.length).to.equal(1);
     expect(links[0].getAttribute('href')).to.equal('/career-planning');
-  });
-
-  it('pushes the career-planning route when the internal link is clicked', () => {
-    const { container, getByTestId } = render(
-      <Provider store={makeStore()}>
-        <MemoryRouter initialEntries={['/']}>
-          <HubCardList step={4} />
-          <LocationDisplay />
-        </MemoryRouter>
-      </Provider>,
-    );
-    const link = container.querySelector('va-link[href="/career-planning"]');
-
-    userEvent.click(link);
-
-    expect(getByTestId('location-display').textContent).to.equal(
-      '/career-planning',
-    );
   });
 
   it('does not push router history for a non-router VA.gov link', () => {

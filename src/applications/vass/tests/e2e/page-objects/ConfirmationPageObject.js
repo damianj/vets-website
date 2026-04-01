@@ -171,10 +171,6 @@ export class ConfirmationPageObject extends PageObject {
    */
   assertAddToCalendarButton() {
     cy.findByTestId('add-to-calendar-button').should('exist');
-    cy.findByTestId('add-to-calendar-link')
-      .should('exist')
-      .and('have.attr', 'href')
-      .and('match', /^data:text\/calendar;charset=utf-8,/);
     return this;
   }
 

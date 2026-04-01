@@ -46,7 +46,6 @@ const FacilityType = ({
       data-testid="facility-type"
     >
       <VaSelect
-        key={showError ? 'select-with-error' : 'select-without-error'}
         required
         id="facility-type-dropdown"
         className={

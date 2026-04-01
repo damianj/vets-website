@@ -64,7 +64,7 @@ jobs:
     if: ${{ github.event.inputs.bypass_freeze != 'true' && needs.holiday-checker.outputs.is_holiday == 'true' }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack (COP) - Code Freeze Enabled (Early)
         uses: ./.github/workflows/slack-notify

@@ -1,8 +1,10 @@
+/* eslint-disable camelcase */
 import sharedTransformForSubmit from '../../shared/config/submit-transformer';
 import {
   applicationInfoFields,
-  vehicleReceiptFields,
   veteranFields,
+  BRANCH_OF_SERVICE,
+  CONVEYANCE_TYPES,
 } from '../definitions/constants';
 
 const stringOrUndefined = value => {
@@ -34,112 +36,190 @@ const pruneEmpty = value => {
 
 const buildAddress = address => {
   if (!address || typeof address !== 'object') return undefined;
+  const rawCountry = stringOrUndefined(address.country) || 'USA';
+  const country = rawCountry === 'US' ? 'USA' : rawCountry;
   const result = {
     street: stringOrUndefined(address.street),
     street2: stringOrUndefined(address.street2),
     city: stringOrUndefined(address.city),
     state: stringOrUndefined(address.state),
-    postalCode: stringOrUndefined(address.postalCode),
-    country: stringOrUndefined(address.country) || 'US',
+    postal_code: stringOrUndefined(address.postalCode),
+    country,
   };
   return pruneEmpty(result);
 };
 
+// Schema fullName: first, middleinitial, last (no suffix)
 const buildFullName = fullName => {
   if (!fullName || typeof fullName !== 'object') return undefined;
+  const { middle } = fullName;
+  const normalizedMiddle =
+    typeof middle === 'string' && middle.trim().length > 0
+      ? middle.trim().charAt(0)
+      : undefined;
   return pruneEmpty({
     first: stringOrUndefined(fullName.first),
-    middle: stringOrUndefined(fullName.middle),
+    middle: normalizedMiddle,
     last: stringOrUndefined(fullName.last),
   });
 };
 
-const formatPhone = phone => {
+const splitPhone = phone => {
   if (phone == null) return undefined;
-  if (typeof phone === 'string') return stringOrUndefined(phone);
-  if (typeof phone === 'object' && phone.contact)
-    return stringOrUndefined(String(phone.contact));
+
+  let raw = '';
+  let countryCode;
+
+  if (typeof phone === 'string') {
+    raw = phone;
+  } else if (typeof phone === 'object' && phone.contact) {
+    raw = String(phone.contact);
+    countryCode = phone.callingCode;
+  }
+
+  const digits = (raw || '').replace(/\D/g, '');
+
+  let normalizedDigits = digits;
+  if (digits.length === 11 && digits[0] === '1') {
+    normalizedDigits = digits.slice(1);
+    if (countryCode == null) {
+      countryCode = 1;
+    }
+  }
+
+  if (normalizedDigits.length !== 10) {
+    return undefined;
+  }
+
+  const result = {
+    area_code: normalizedDigits.slice(0, 3),
+    number: normalizedDigits.slice(3),
+  };
+
+  if (countryCode != null) {
+    result.country_code = String(countryCode);
+  }
+
+  return result;
+};
+
+const mapBranchOfService = value => {
+  if (!value) return undefined;
+  return BRANCH_OF_SERVICE[value] || value;
+};
+
+const mapVehicleType = applicationInfo => {
+  const type = applicationInfo?.[applicationInfoFields.conveyanceType];
+  if (!type) return undefined;
+
+  if (type === 'other') {
+    return stringOrUndefined(
+      applicationInfo?.[applicationInfoFields.conveyanceTypeOther],
+    );
+  }
+
+  return CONVEYANCE_TYPES[type] || type;
+};
+
+const buildInternationalPhone = phone => {
+  const parsed = splitPhone(phone);
+  if (!parsed) {
+    return undefined;
+  }
+
+  if (!parsed.country_code && phone?.callingCode != null) {
+    parsed.country_code = String(phone.callingCode);
+  }
+
+  return parsed;
+};
+
+const buildDomesticPhone = phone => {
+  const parsed = splitPhone(phone);
+  if (!parsed) {
+    return undefined;
+  }
+
+  delete parsed.country_code;
+  return parsed;
+};
+
+const booleanOrUndefined = value => {
+  if (typeof value === 'boolean') {
+    return value;
+  }
   return undefined;
 };
 
 const buildSubmissionPayload = data => {
   const veteran = data?.veteran || {};
   const applicationInfo = data?.applicationInfo || {};
-  const vehicleReceipt = data?.vehicleReceipt || {};
+  const statementOfTruthSignature = stringOrUndefined(
+    data.statementOfTruthSignature,
+  );
 
   const payload = {
-    veteranFullName: buildFullName(veteran.fullName),
-    veteranSocialSecurityNumber: stringOrUndefined(veteran.ssn),
-    vaFileNumber: stringOrUndefined(veteran.vaFileNumber),
-    veteranServiceNumber: stringOrUndefined(veteran.veteranServiceNumber),
-    dateOfBirth: stringOrUndefined(veteran.dateOfBirth),
-    veteranAddress: buildAddress(veteran.address),
-    plannedAddress: buildAddress(veteran.plannedAddress),
+    form_number: data.formNumber,
+    full_name: buildFullName(veteran.fullName),
+    dob: stringOrUndefined(veteran.dateOfBirth),
+    ssn: stringOrUndefined(veteran.ssn),
+    va_file_number: stringOrUndefined(veteran.vaFileNumber),
+    va_service_number: stringOrUndefined(veteran.veteranServiceNumber),
+    phone_number: buildDomesticPhone(veteran.homePhone),
+    international_phone_number: buildInternationalPhone(veteran.alternatePhone),
     email: stringOrUndefined(veteran.email),
-    agreeToElectronicCorrespondence:
+    electronic_correspondence: booleanOrUndefined(
       veteran[veteranFields.agreeToElectronicCorrespondence],
-    veteranPhone: formatPhone(veteran.homePhone),
-    alternatePhone: formatPhone(veteran.alternatePhone),
-    branchOfService: stringOrUndefined(
+    ),
+    current_mailing_address: buildAddress(veteran.address),
+    planned_mailing_address: buildAddress(veteran.plannedAddress),
+    branch_of_service: mapBranchOfService(
       applicationInfo[applicationInfoFields.branchOfService],
     ),
-    activeDutyStatus: applicationInfo[applicationInfoFields.activeDutyStatus],
-    placeOfEntry: stringOrUndefined(
+    active_duty: booleanOrUndefined(
+      applicationInfo[applicationInfoFields.currentlyOnActiveDuty],
+    ),
+    place_of_entry: stringOrUndefined(
       applicationInfo[applicationInfoFields.placeOfEntry],
     ),
-    dateOfEntry: stringOrUndefined(
+    date_of_entry: stringOrUndefined(
       applicationInfo[applicationInfoFields.dateOfEntry],
     ),
-    placeOfRelease: stringOrUndefined(
+    place_of_release: stringOrUndefined(
       applicationInfo[applicationInfoFields.placeOfRelease],
     ),
-    dateOfRelease: stringOrUndefined(
+    date_of_release: stringOrUndefined(
       applicationInfo[applicationInfoFields.dateOfRelease],
     ),
-    vaOfficeLocation: stringOrUndefined(
-      applicationInfo[applicationInfoFields.vaOfficeLocation],
-    ),
-    conveyanceType: stringOrUndefined(
-      applicationInfo[applicationInfoFields.conveyanceType],
-    ),
-    conveyanceTypeOther: stringOrUndefined(
-      applicationInfo[applicationInfoFields.conveyanceTypeOther],
-    ),
-    previouslyAppliedConveyance:
-      applicationInfo[applicationInfoFields.previouslyAppliedConveyance],
-    previouslyAppliedPlace: stringOrUndefined(
-      applicationInfo[applicationInfoFields.previouslyAppliedPlace],
-    ),
-    previouslyAppliedDate: stringOrUndefined(
-      applicationInfo[applicationInfoFields.previouslyAppliedDate],
-    ),
-    appliedDisabilityCompensation:
+    applied_for_compensation: booleanOrUndefined(
       applicationInfo[applicationInfoFields.appliedDisabilityCompensation],
-    appliedDisabilityCompensationPlace: stringOrUndefined(
-      applicationInfo[applicationInfoFields.appliedDisabilityCompensationPlace],
     ),
-    dateApplied: stringOrUndefined(
+    date_applied_for_compensation: stringOrUndefined(
       applicationInfo[applicationInfoFields.dateApplied],
     ),
-    certifyLicensing: data?.certifyLicensing,
-    certifyNoPriorGrant: data?.certifyNoPriorGrant,
-    vehicleMake: stringOrUndefined(vehicleReceipt[vehicleReceiptFields.make]),
-    vehicleModel: stringOrUndefined(vehicleReceipt[vehicleReceiptFields.model]),
-    vehicleYear: stringOrUndefined(vehicleReceipt[vehicleReceiptFields.year]),
-    vehicleVin: stringOrUndefined(vehicleReceipt[vehicleReceiptFields.vin]),
-    purchasePrice: stringOrUndefined(
-      vehicleReceipt[vehicleReceiptFields.purchasePrice],
+    location_of_office: stringOrUndefined(
+      applicationInfo[applicationInfoFields.vaOfficeLocation],
     ),
-    dateOfSale: stringOrUndefined(
-      vehicleReceipt[vehicleReceiptFields.dateOfSale],
+    vehicle_type: mapVehicleType(applicationInfo),
+    previously_applied: booleanOrUndefined(
+      applicationInfo[applicationInfoFields.previouslyAppliedConveyance],
     ),
-    sellerName: stringOrUndefined(
-      vehicleReceipt[vehicleReceiptFields.sellerName],
+    date_of_previous_application: stringOrUndefined(
+      applicationInfo[applicationInfoFields.previouslyAppliedDate],
     ),
-    sellerAddress: buildAddress(
-      vehicleReceipt[vehicleReceiptFields.sellerAddress],
+    previous_application_location: stringOrUndefined(
+      applicationInfo[applicationInfoFields.previouslyAppliedPlace],
     ),
-    hasDriversLicense: vehicleReceipt[vehicleReceiptFields.hasDriversLicense],
+    veteran_will_operate_vehicle:
+      applicationInfo[applicationInfoFields.driverOrPassenger] === 'driver',
+    statement_of_truth_signature: statementOfTruthSignature,
+    signature_date: (() => {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+        2,
+        '0',
+      )}-${String(now.getDate()).padStart(2, '0')}`;
+    })(),
   };
 
   return pruneEmpty(payload) || {};
@@ -152,16 +232,7 @@ export default function transformForSubmit(formConfig, form) {
     }),
   );
 
-  const { formNumber, ...formData } = transformed;
-  const payload = buildSubmissionPayload(formData);
-  const stringifiedPayload = JSON.stringify(payload);
+  const payload = buildSubmissionPayload(transformed);
 
-  return JSON.stringify({
-    formNumber,
-    // API contract requires this snake_case key
-    // eslint-disable-next-line camelcase
-    automobile_adaptive_claim: {
-      form: stringifiedPayload,
-    },
-  });
+  return JSON.stringify(payload);
 }

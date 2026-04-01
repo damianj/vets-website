@@ -71,6 +71,7 @@ export const schema = {
   properties: {
     separationHealthAssessmentUploads: {
       ...getAttachmentsSchema(SHA_ATTACHMENT_ID),
+      minItems: 1,
       maxItems: MAXIMUM_NUMBER_OF_FILES,
     },
   },

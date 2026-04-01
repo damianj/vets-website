@@ -239,16 +239,15 @@
 }
 
 .claimant-overview {
-  .poa-request-details__list--info {
+  .poa-request-details__list {
     margin-top: 0;
   }
 
-  .poa-request-details__list--info li {
-    display: flex;
+  .poa-request-details__list--info li.claimant-detail-row {
     border-bottom: 1px solid $vads-color-base-light;
   }
 
-  .poa-request-details__list--info li:first-child {
+  .poa-request-details__list--info li.claimant-detail-row:first-child {
     border-top: 1px solid $vads-color-base-light;
   }
 

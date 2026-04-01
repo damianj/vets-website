@@ -22,7 +22,7 @@ describe('profile utilities', () => {
   describe('getContent', () => {
     it('should return default content', () => {
       // If this number changes, update the docs
-      expect(Object.keys(content).length).to.eql(40);
+      expect(Object.keys(content).length).to.eql(44);
       expect(content.alertContent).to.contain('your application');
     });
     it('should return content with custom app name', () => {

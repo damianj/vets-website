@@ -45,6 +45,7 @@ const Notice5103 = ({
   return (
     <>
       <Header id="header">{content.header}</Header>
+      {content.description}
       <VaCheckbox
         label={content.label}
         name="5103"
@@ -53,9 +54,7 @@ const Notice5103 = ({
         checked={data.form5103Acknowledged}
         required
         enable-analytics
-      >
-        <div slot="description">{content.descriptionInCheckbox}</div>
-      </VaCheckbox>
+      />
       <Notice5103Details />
       <div className="form-nav-buttons vads-u-margin-y--4">
         {onReviewPage && (

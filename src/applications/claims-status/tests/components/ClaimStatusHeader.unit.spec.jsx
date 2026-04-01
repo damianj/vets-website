@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { expect } from 'chai';
 
 import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
 
 import ClaimStatusHeader from '../../components/ClaimStatusHeader';
+import { renderWithReduxAndRouter } from '../utils';
 
 describe('<ClaimStatusHeader>', () => {
   context('when the claim doesnt have tracked items', () => {
@@ -29,7 +29,7 @@ describe('<ClaimStatusHeader>', () => {
           },
         },
       };
-      const { container, getByText } = render(
+      const { container, getByText } = renderWithReduxAndRouter(
         <ClaimStatusHeader claim={claim} />,
       );
       expect($('.claim-status-header-container', container)).to.exist;
@@ -58,7 +58,7 @@ describe('<ClaimStatusHeader>', () => {
           },
         },
       };
-      const { container, queryByText } = render(
+      const { container, queryByText } = renderWithReduxAndRouter(
         <ClaimStatusHeader claim={claim} />,
       );
       expect($('.claim-status-header-container', container)).to.exist;
@@ -105,7 +105,7 @@ describe('<ClaimStatusHeader>', () => {
           ],
         },
       };
-      const { container, getByText } = render(
+      const { container, getByText } = renderWithReduxAndRouter(
         <ClaimStatusHeader claim={claim} />,
       );
       expect($('.claim-status-header-container', container)).to.exist;
@@ -134,7 +134,7 @@ describe('<ClaimStatusHeader>', () => {
           },
         },
       };
-      const { container, queryByText } = render(
+      const { container, queryByText } = renderWithReduxAndRouter(
         <ClaimStatusHeader claim={claim} />,
       );
       expect($('.claim-status-header-container', container)).to.exist;

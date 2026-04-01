@@ -4,14 +4,14 @@ import { VaLink } from '@department-of-veterans-affairs/component-library/dist/r
 import { serviceStatuses } from '../constants';
 
 const UploadInformation = props => {
-  const { hasHomeLoanProperty, formData } = props;
+  const { hadPriorLoans, formData } = props;
 
   const showStatementOfService = [
     serviceStatuses.VETERAN,
     serviceStatuses.ADSM,
     serviceStatuses.NADNA,
   ].includes(formData?.identity);
-  if (!showStatementOfService && !props.hasHomeLoanProperty) {
+  if (!showStatementOfService && !props.hadPriorLoans) {
     return null;
   }
 
@@ -34,7 +34,7 @@ const UploadInformation = props => {
             </p>
           </va-accordion-item>
         )}
-        {hasHomeLoanProperty && (
+        {hadPriorLoans && (
           <va-accordion-item>
             <h3 slot="headline">
               Type of evidence to show a VA loan was paid in full
@@ -69,7 +69,7 @@ const UploadInformation = props => {
 
 UploadInformation.propTypes = {
   formData: PropTypes.object,
-  hasHomeLoanProperty: PropTypes.bool,
+  hadPriorLoans: PropTypes.bool,
 };
 
 export default UploadInformation;

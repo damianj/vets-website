@@ -17,16 +17,9 @@ const ApplicationDiscontinuedAlert = ({ discontinuedReason, resCaseId }) => {
     dispatch(downloadCh31PdfLetter(resCaseId));
   };
 
-  let downloadErrorMessage = null;
-  const notFound = downloadError?.status === 404;
-
-  if (notFound) {
-    downloadErrorMessage =
-      'Letter not found. Contact your counselor for additional information.';
-  } else if (downloadError) {
-    downloadErrorMessage =
-      "We can't download your letter right now. Please try again later.";
-  }
+  const downloadErrorMessage = downloadError
+    ? "We can't download your letter right now. Please try again later."
+    : null;
 
   return (
     <div className="vads-u-margin-y--3">
@@ -35,11 +28,8 @@ const ApplicationDiscontinuedAlert = ({ discontinuedReason, resCaseId }) => {
         status="error"
         visible
       >
-        <h3 slot="headline">Your Chapter 31 claim has been discontinued</h3>
-        <p>
-          Your VR&E Chapter 31 claim has been discontinued for the following
-          reasons:
-        </p>
+        <h2 slot="headline">We discontinued your VR&E benefits</h2>
+        <p>We discontinued your VR&E benefits for these reasons:</p>
         <p>{discontinuedReason || 'No reason provided.'}</p>
         {downloadErrorMessage ? (
           <p aria-live="assertive" role="alert">
@@ -47,7 +37,10 @@ const ApplicationDiscontinuedAlert = ({ discontinuedReason, resCaseId }) => {
           </p>
         ) : (
           <>
-            <p>View your detailed letter and next steps.</p>
+            <p>
+              You can download the decision letter for information about our
+              decision and next steps.
+            </p>
             <p>If you need more information, contact your counselor.</p>
             {isDownloading ? (
               <va-loading-indicator

@@ -82,6 +82,17 @@ export const selectHasProofOfAttendance = state => {
   });
 };
 
+export const selectPOADocument = state => {
+  const documents = selectAllDocuments(state) ?? [];
+  const prefix = `${PROOF_OF_ATTENDANCE_FILENAME}.`;
+  return (
+    documents.find(doc => {
+      const filename = doc.filename?.toLowerCase();
+      return filename?.startsWith(prefix) && !doc.expenseId;
+    }) ?? null
+  );
+};
+
 export const selectUnsavedChangesModal = state =>
   state.travelPay.complexClaim.unsavedChangesModal || {
     visible: false,

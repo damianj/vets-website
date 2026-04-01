@@ -634,6 +634,12 @@ class PatientInboxPage {
       name: new RegExp(Alerts.ERROR_LOADING_RECIPIENTS_HEADER),
     });
   };
+
+  validateBlockedTriageGroupAlert = () => {
+    cy.get(Locators.ALERTS.BLOCKED_GROUP)
+      .find('h2')
+      .should('contain.text', Alerts.BLOCKED.HEADER);
+  };
 }
 
 export default new PatientInboxPage();

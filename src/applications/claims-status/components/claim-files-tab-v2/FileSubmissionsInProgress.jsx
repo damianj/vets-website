@@ -17,7 +17,7 @@ const generateInProgressDocs = evidenceSubmissions => {
     .filter(es => es.uploadStatus !== 'FAILED' && es.uploadStatus !== 'SUCCESS')
     .map(es => ({
       ...es,
-      uploadStatusDisplayValue: 'SUBMISSION IN PROGRESS',
+      uploadStatusDisplayValue: 'Submission in progress',
     }));
 };
 
@@ -114,6 +114,7 @@ const FileSubmissionsInProgress = ({ claim }) => {
                     <DocumentCard
                       variant="in-progress"
                       index={itemIndex}
+                      statusBadgeStatus="info"
                       statusBadgeText={statusBadgeText}
                       headingRef={el => {
                         headingRefs.current[itemIndex] = el;

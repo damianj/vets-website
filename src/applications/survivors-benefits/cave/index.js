@@ -6,3 +6,4 @@ export {
   processDocument,
   processDocumentWithAutoResolve,
 } from './workflow';
+export { useCaveProcessingManager } from './useCaveProcessingManager';

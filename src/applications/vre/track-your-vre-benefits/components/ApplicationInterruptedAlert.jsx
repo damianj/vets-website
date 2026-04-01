@@ -9,9 +9,9 @@ const ApplicationInterruptedAlert = ({ interruptedReason }) => {
         status="error"
         visible
       >
-        <h3 slot="headline">
+        <h2 slot="headline">
           Your VR&E Chapter 31 benefits have been interrupted
-        </h3>
+        </h2>
         <p>
           Your VR&E Chapter 31 benefits have been interrupted for the following
           reasons:

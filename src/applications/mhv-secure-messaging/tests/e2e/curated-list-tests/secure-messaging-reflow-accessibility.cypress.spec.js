@@ -73,11 +73,7 @@ describe('SM WCAG 1.4.10 Reflow - Recent Care Teams', () => {
     cy.wait('@recentRecipients');
 
     // Wait for href to be /recent before clicking to avoid race condition
-    PatientInterstitialPage.getStartMessageLink()
-      .should('have.attr', 'href')
-      .and('include', '/recent');
-
-    PatientInterstitialPage.getStartMessageLink().click();
+    PatientInterstitialPage.clickStartMessageLink(true);
 
     // Verify the page loaded correctly
     cy.findByTestId(Locators.RECENT_CARE_TEAMS_RADIO_GROUP_TEST_ID).should(
@@ -130,11 +126,7 @@ describe('SM WCAG 1.4.10 Reflow - Recent Care Teams', () => {
     cy.wait('@recentRecipients');
 
     // Wait for href to be /recent before clicking to avoid race condition
-    PatientInterstitialPage.getStartMessageLink()
-      .should('have.attr', 'href')
-      .and('include', '/recent');
-
-    PatientInterstitialPage.getStartMessageLink().click();
+    PatientInterstitialPage.clickStartMessageLink(true);
 
     // Verify the page loaded
     cy.findByTestId(Locators.RECENT_CARE_TEAMS_RADIO_GROUP_TEST_ID).should(

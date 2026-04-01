@@ -5,11 +5,10 @@ import claimDetailsOpenNoEvidenceSubmissionsNoSupportingDocs from './fixtures/mo
 import claimDetailsOpenOneEvidenceSubmissionNoSupportingDocs from './fixtures/mocks/lighthouse/claim-detail-open-one-evidence-submission-no-supporting-docs.json';
 import claimDetailsOpenNoEvidenceSubmissionsOneSupportingDocs from './fixtures/mocks/lighthouse/claim-detail-open-no-evidence-submissions-one-supporting-docs.json';
 import claimDetailsOpenOneEvidenceSubmissionOneSupportingDocs from './fixtures/mocks/lighthouse/claim-detail-open-one-evidence-submission-one-supporting-docs.json';
-import featureToggleDocumentUploadStatusEnabled from './fixtures/mocks/lighthouse/feature-toggle-document-upload-status-enabled.json';
-import featureToggleDisabled from './fixtures/mocks/lighthouse/feature-toggle-disabled.json';
 import claimDetailsOpenManySupportingDocs from './fixtures/mocks/lighthouse/claim-detail-open-many-supporting-docs.json';
 import claimDetailsOpenManyEvidenceSubmissions from './fixtures/mocks/lighthouse/claim-detail-open-many-evidence-submissions.json';
 import claimDetailsOpenWithFailedSubmissions from './fixtures/mocks/lighthouse/claim-detail-open-with-failed-submissions.json';
+import featureToggleClaimDetailV2Enabled from './fixtures/mocks/lighthouse/feature-toggle-claim-detail-v2-enabled.json';
 import { SUBMIT_TEXT } from '../../constants';
 import {
   getFileInputElement,
@@ -19,18 +18,6 @@ import {
   clickSubmitButton,
 } from './file-upload-helpers';
 import { assertDataLayerEvent, clearDataLayer } from './analytics-helpers';
-
-describe('Claim Files Test', () => {
-  it('Gets files properly - C30822', () => {
-    const trackClaimsPage = new TrackClaimsPageV2();
-    trackClaimsPage.loadPage(claimsList, claimDetailsOpen);
-    trackClaimsPage.verifyInProgressClaim(false);
-    trackClaimsPage.verifyNumberOfFiles(10); // would only show 10 multi-file submissions due to pagination
-    trackClaimsPage.verifyClaimEvidence(3, 'Reviewed by VA');
-    cy.expandAccordions();
-    cy.axeCheck();
-  });
-});
 
 // If there's a primary alert, a user can see that alert on the files tab and click "details"
 describe('Primary Alert Test', () => {
@@ -55,17 +42,6 @@ describe('Secondary Alert Test', () => {
   });
 });
 
-describe('Need To Mail Documents Test', () => {
-  it('Shows data when a user clicks "Need to mail your documents?"', () => {
-    const trackClaimsPage = new TrackClaimsPageV2();
-    trackClaimsPage.loadPage(claimsList, claimDetailsOpen);
-    trackClaimsPage.verifyInProgressClaim(false);
-    trackClaimsPage.navigateToFilesTab();
-    trackClaimsPage.verifyNeedToMailDocuments();
-    cy.axeCheck();
-  });
-});
-
 describe('Upload Files Test', () => {
   it('shows the user an error if no file is selected', () => {
     const trackClaimsPage = new TrackClaimsPageV2();
@@ -86,7 +62,7 @@ describe('Upload Files Test', () => {
   });
 });
 
-describe('Claim Files Test - Show Document Upload Status Enabled', () => {
+describe('Claim Files Test - Show Document Upload Status', () => {
   const testCases = [
     {
       description:
@@ -121,13 +97,7 @@ describe('Claim Files Test - Show Document Upload Status Enabled', () => {
   testCases.forEach(testCase => {
     it(testCase.description, () => {
       const trackClaimsPage = new TrackClaimsPageV2();
-      trackClaimsPage.loadPage(
-        claimsList,
-        testCase.fixture,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
-      );
+      trackClaimsPage.loadPage(claimsList, testCase.fixture);
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
 
@@ -142,13 +112,7 @@ describe('Claim Files Test - Show Document Upload Status Enabled', () => {
 
   it('uploads a file and shows success alert with anchor link', () => {
     const trackClaimsPage = new TrackClaimsPageV2();
-    trackClaimsPage.loadPage(
-      claimsList,
-      claimDetailsOpen,
-      true,
-      false,
-      featureToggleDocumentUploadStatusEnabled,
-    );
+    trackClaimsPage.loadPage(claimsList, claimDetailsOpen, true);
     trackClaimsPage.verifyInProgressClaim(true);
     trackClaimsPage.navigateToFilesTab();
     trackClaimsPage.submitFilesForReview(true);
@@ -179,13 +143,7 @@ describe('Claim Files Test - Show Document Upload Status Enabled', () => {
   context('Files Received - more than 5 files received', () => {
     it('shows the user a show more button', () => {
       const trackClaimsPage = new TrackClaimsPageV2();
-      trackClaimsPage.loadPage(
-        claimsList,
-        claimDetailsOpen,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
-      );
+      trackClaimsPage.loadPage(claimsList, claimDetailsOpen);
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
       trackClaimsPage.verifyFilesReceived(5);
@@ -194,13 +152,7 @@ describe('Claim Files Test - Show Document Upload Status Enabled', () => {
 
     it('after clicking show more, the user sees all files', () => {
       const trackClaimsPage = new TrackClaimsPageV2();
-      trackClaimsPage.loadPage(
-        claimsList,
-        claimDetailsOpenManySupportingDocs,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
-      );
+      trackClaimsPage.loadPage(claimsList, claimDetailsOpenManySupportingDocs);
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
       trackClaimsPage.verifyFilesReceived(5);
@@ -220,9 +172,6 @@ describe('Claim Files Test - Show Document Upload Status Enabled', () => {
       trackClaimsPage.loadPage(
         claimsList,
         claimDetailsOpenManyEvidenceSubmissions,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
       );
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.verifyFileSubmissionsInProgress(5);
@@ -237,9 +186,6 @@ describe('Claim Files Test - Show Document Upload Status Enabled', () => {
       trackClaimsPage.loadPage(
         claimsList,
         claimDetailsOpenManyEvidenceSubmissions,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
       );
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.verifyFileSubmissionsInProgress(5);
@@ -266,142 +212,87 @@ describe('Upload Type 2 Error Alert', () => {
     Date.now() - 10 * 24 * 60 * 60 * 1000,
   ).toISOString();
 
-  context(
-    "when the 'cst_show_document_upload_status' feature toggle is disabled",
-    () => {
-      it('should NOT display the alert', () => {
-        const claimDetailsWithTwoFailures = {
-          ...claimDetailsOpenWithFailedSubmissions,
-          data: {
-            ...claimDetailsOpenWithFailedSubmissions.data,
-            attributes: {
-              ...claimDetailsOpenWithFailedSubmissions.data.attributes,
-              evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
-                .slice(0, 2)
-                .map(submission => ({
-                  ...submission,
-                  failedDate: fiveDaysAgo,
-                  acknowledgementDate: tomorrow,
-                })),
+  it('should display the alert when there are failed submissions within last 30 days', () => {
+    const claimDetailsWithTwoFailures = {
+      ...claimDetailsOpenWithFailedSubmissions,
+      data: {
+        ...claimDetailsOpenWithFailedSubmissions.data,
+        attributes: {
+          ...claimDetailsOpenWithFailedSubmissions.data.attributes,
+          evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
+            .slice(0, 2)
+            .map((submission, index) => ({
+              ...submission,
+              failedDate: index === 0 ? fiveDaysAgo : twoDaysAgo,
+              acknowledgementDate: tomorrow,
+            })),
+        },
+      },
+    };
+    const trackClaimsPage = new TrackClaimsPageV2();
+
+    trackClaimsPage.loadPage(claimsList, claimDetailsWithTwoFailures);
+    trackClaimsPage.verifyInProgressClaim(false);
+    trackClaimsPage.navigateToFilesTab();
+    // Verify alert is visible
+    trackClaimsPage.verifyUploadType2ErrorAlert();
+    // Verify files are displayed in chronological order (most recent first)
+    trackClaimsPage.verifyUploadType2ErrorAlertFileOrder([
+      'medical-records.pdf',
+      'authorization-form-signed.pdf',
+    ]);
+    // Verify link to files we couldn't receive page
+    trackClaimsPage.verifyUploadType2ErrorAlertLink();
+    cy.axeCheck();
+  });
+
+  it('should display only first item (sorted by most recent failedDate) and count for remaining failed submissions', () => {
+    const claimDetailsWithSortedFailures = {
+      ...claimDetailsOpenWithFailedSubmissions,
+      data: {
+        ...claimDetailsOpenWithFailedSubmissions.data,
+        attributes: {
+          ...claimDetailsOpenWithFailedSubmissions.data.attributes,
+          evidenceSubmissions: [
+            {
+              ...claimDetailsOpenWithFailedSubmissions.data.attributes
+                .evidenceSubmissions[0],
+              fileName: 'file-1.pdf',
+              failedDate: twoDaysAgo,
+              acknowledgementDate: tomorrow,
             },
-          },
-        };
-        const trackClaimsPage = new TrackClaimsPageV2();
-
-        trackClaimsPage.loadPage(
-          claimsList,
-          claimDetailsWithTwoFailures,
-          false,
-          false,
-          featureToggleDisabled,
-        );
-        trackClaimsPage.verifyInProgressClaim(false);
-        trackClaimsPage.navigateToFilesTab();
-        // Verify alert is NOT present when toggle is disabled
-        trackClaimsPage.verifyUploadType2ErrorAlertNotPresent();
-        cy.axeCheck();
-      });
-    },
-  );
-
-  context(
-    "when the 'cst_show_document_upload_status' feature toggle is enabled",
-    () => {
-      it('should display the alert when there are failed submissions within last 30 days', () => {
-        const claimDetailsWithTwoFailures = {
-          ...claimDetailsOpenWithFailedSubmissions,
-          data: {
-            ...claimDetailsOpenWithFailedSubmissions.data,
-            attributes: {
-              ...claimDetailsOpenWithFailedSubmissions.data.attributes,
-              evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
-                .slice(0, 2)
-                .map((submission, index) => ({
-                  ...submission,
-                  failedDate: index === 0 ? fiveDaysAgo : twoDaysAgo,
-                  acknowledgementDate: tomorrow,
-                })),
+            {
+              ...claimDetailsOpenWithFailedSubmissions.data.attributes
+                .evidenceSubmissions[1],
+              fileName: 'file-3.pdf',
+              failedDate: tenDaysAgo,
+              acknowledgementDate: tomorrow,
             },
-          },
-        };
-        const trackClaimsPage = new TrackClaimsPageV2();
-
-        trackClaimsPage.loadPage(
-          claimsList,
-          claimDetailsWithTwoFailures,
-          false,
-          false,
-          featureToggleDocumentUploadStatusEnabled,
-        );
-        trackClaimsPage.verifyInProgressClaim(false);
-        trackClaimsPage.navigateToFilesTab();
-        // Verify alert is visible
-        trackClaimsPage.verifyUploadType2ErrorAlert();
-        // Verify files are displayed in chronological order (most recent first)
-        trackClaimsPage.verifyUploadType2ErrorAlertFileOrder([
-          'medical-records.pdf',
-          'authorization-form-signed.pdf',
-        ]);
-        // Verify link to files we couldn't receive page
-        trackClaimsPage.verifyUploadType2ErrorAlertLink();
-        cy.axeCheck();
-      });
-
-      it('should display only first item (sorted by most recent failedDate) and count for remaining failed submissions', () => {
-        const claimDetailsWithSortedFailures = {
-          ...claimDetailsOpenWithFailedSubmissions,
-          data: {
-            ...claimDetailsOpenWithFailedSubmissions.data,
-            attributes: {
-              ...claimDetailsOpenWithFailedSubmissions.data.attributes,
-              evidenceSubmissions: [
-                {
-                  ...claimDetailsOpenWithFailedSubmissions.data.attributes
-                    .evidenceSubmissions[0],
-                  fileName: 'file-1.pdf',
-                  failedDate: twoDaysAgo,
-                  acknowledgementDate: tomorrow,
-                },
-                {
-                  ...claimDetailsOpenWithFailedSubmissions.data.attributes
-                    .evidenceSubmissions[1],
-                  fileName: 'file-3.pdf',
-                  failedDate: tenDaysAgo,
-                  acknowledgementDate: tomorrow,
-                },
-                {
-                  ...claimDetailsOpenWithFailedSubmissions.data.attributes
-                    .evidenceSubmissions[2],
-                  fileName: 'file-2.pdf',
-                  failedDate: fiveDaysAgo,
-                  acknowledgementDate: tomorrow,
-                },
-              ],
+            {
+              ...claimDetailsOpenWithFailedSubmissions.data.attributes
+                .evidenceSubmissions[2],
+              fileName: 'file-2.pdf',
+              failedDate: fiveDaysAgo,
+              acknowledgementDate: tomorrow,
             },
-          },
-        };
+          ],
+        },
+      },
+    };
 
-        const trackClaimsPage = new TrackClaimsPageV2();
+    const trackClaimsPage = new TrackClaimsPageV2();
 
-        trackClaimsPage.loadPage(
-          claimsList,
-          claimDetailsWithSortedFailures,
-          false,
-          false,
-          featureToggleDocumentUploadStatusEnabled,
-        );
-        trackClaimsPage.verifyInProgressClaim(false);
-        trackClaimsPage.navigateToFilesTab();
-        // Verify alert is visible
-        trackClaimsPage.verifyUploadType2ErrorAlert();
-        // Verify the most recent file (by failedDate) is displayed
-        trackClaimsPage.verifyUploadType2ErrorAlertFileName('file-1.pdf');
-        // Verify "And X more" message
-        trackClaimsPage.verifyUploadType2ErrorAlertMultipleFilesMessage(2);
-        cy.axeCheck();
-      });
-    },
-  );
+    trackClaimsPage.loadPage(claimsList, claimDetailsWithSortedFailures);
+    trackClaimsPage.verifyInProgressClaim(false);
+    trackClaimsPage.navigateToFilesTab();
+    // Verify alert is visible
+    trackClaimsPage.verifyUploadType2ErrorAlert();
+    // Verify the most recent file (by failedDate) is displayed
+    trackClaimsPage.verifyUploadType2ErrorAlertFileName('file-1.pdf');
+    // Verify "And X more" message
+    trackClaimsPage.verifyUploadType2ErrorAlertMultipleFilesMessage(2);
+    cy.axeCheck();
+  });
 });
 
 describe('Failed Submissions in Progress Empty State', () => {
@@ -433,13 +324,7 @@ describe('Failed Submissions in Progress Empty State', () => {
       };
 
       const trackClaimsPage = new TrackClaimsPageV2();
-      trackClaimsPage.loadPage(
-        claimsList,
-        claimDetailsWithOnlyFailedUploads,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
-      );
+      trackClaimsPage.loadPage(claimsList, claimDetailsWithOnlyFailedUploads);
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
 
@@ -484,9 +369,6 @@ describe('Failed Submissions in Progress Empty State', () => {
       trackClaimsPage.loadPage(
         claimsList,
         claimDetailsOpenNoEvidenceSubmissionsOneSupportingDocs,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
       );
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
@@ -519,9 +401,6 @@ describe('Failed Submissions in Progress Empty State', () => {
       trackClaimsPage.loadPage(
         claimsList,
         claimDetailsOpenWithFailedSubmissions,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
       );
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
@@ -560,7 +439,7 @@ describe('Failed Submissions in Progress Empty State', () => {
       cy.intercept(
         'GET',
         '/v0/feature_toggles?*',
-        featureToggleDocumentUploadStatusEnabled,
+        featureToggleClaimDetailV2Enabled,
       );
       cy.intercept('GET', '/v0/benefits_claims', claimsList);
       cy.intercept(
@@ -625,9 +504,6 @@ describe('Failed Submissions in Progress Empty State', () => {
       trackClaimsPage.loadPage(
         claimsList,
         claimDetailsOpenWithFailedSubmissions,
-        false,
-        false,
-        featureToggleDocumentUploadStatusEnabled,
       );
       trackClaimsPage.verifyInProgressClaim(false);
       trackClaimsPage.navigateToFilesTab();
@@ -683,13 +559,7 @@ describe('Failed Submissions in Progress Empty State', () => {
 describe('Type 1 Unknown Upload Errors', () => {
   const setupTest = () => {
     const trackClaimsPage = new TrackClaimsPageV2();
-    trackClaimsPage.loadPage(
-      claimsList,
-      claimDetailsOpen,
-      false,
-      false,
-      featureToggleDocumentUploadStatusEnabled,
-    );
+    trackClaimsPage.loadPage(claimsList, claimDetailsOpen);
     trackClaimsPage.verifyInProgressClaim(true);
     trackClaimsPage.navigateToFilesTab();
     cy.injectAxe();
@@ -758,47 +628,6 @@ describe('Type 1 Unknown Upload Errors', () => {
     cy.axeCheck();
   });
 
-  it('should not display Type 1 Unknown error alert when feature flag is disabled', () => {
-    const trackClaimsPage = new TrackClaimsPageV2();
-    trackClaimsPage.loadPage(claimsList, claimDetailsOpen);
-    trackClaimsPage.verifyInProgressClaim(true);
-    trackClaimsPage.navigateToFilesTab();
-    cy.injectAxe();
-
-    cy.intercept('POST', '/v0/benefits_claims/*/benefits_documents', {
-      statusCode: 500,
-      body: {
-        errors: [
-          {
-            title: 'Internal Server Error',
-            code: '500',
-            status: '500',
-          },
-        ],
-      },
-    }).as('uploadRequest');
-
-    uploadFile('test-document.txt');
-    getFileInputElement(0)
-      .find('va-select')
-      .should('be.visible');
-    selectDocumentType(0, 'L034');
-
-    clickSubmitButton(SUBMIT_TEXT);
-    cy.wait('@uploadRequest');
-
-    cy.get('.claims-alert').should(
-      'not.contain.text',
-      'We need you to submit files by mail or in person',
-    );
-
-    cy.get('.claims-alert')
-      .should('be.visible')
-      .and('contain.text', 'Error uploading');
-
-    cy.axeCheck();
-  });
-
   it('should persist Type 1 Unknown error alert when navigating between Files and Status tabs', () => {
     setupTest();
     setupUnknownErrorMock();
@@ -836,13 +665,7 @@ describe('Google Analytics', () => {
   const setupAnalyticsTest = () => {
     const trackClaimsPage = new TrackClaimsPageV2();
 
-    trackClaimsPage.loadPage(
-      claimsList,
-      claimDetailsOpen,
-      false,
-      false,
-      featureToggleDocumentUploadStatusEnabled,
-    );
+    trackClaimsPage.loadPage(claimsList, claimDetailsOpen);
     trackClaimsPage.verifyInProgressClaim(true);
     trackClaimsPage.navigateToFilesTab();
   };

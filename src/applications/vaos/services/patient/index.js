@@ -492,12 +492,15 @@ export async function fetchFlowEligibilityAndClinics({
       (removeFacilityConfigCheck && typeOfCareRequiresCheck) ||
       (keepFacilityConfigCheck &&
         directTypeOfCareSettings.patientHistoryRequired);
-    const filteredPastAppointments = typeOfCareRequiresCheck
-      ? filterPastAppointmentsByTypeOfCare(
-          results.pastAppointments,
-          typeOfCare.id,
-        )
-      : results.pastAppointments;
+    // Guard: pastAppointments are not fetched for Cerner sites (shouldFetchClinics
+    // excludes isCerner), so skip filtering to avoid calling .filter() on undefined
+    const filteredPastAppointments =
+      typeOfCareRequiresCheck && !isCerner
+        ? filterPastAppointmentsByTypeOfCare(
+            results.pastAppointments,
+            typeOfCare.id,
+          )
+        : results.pastAppointments;
     if (
       !isCerner &&
       requiresMatchingClinics &&

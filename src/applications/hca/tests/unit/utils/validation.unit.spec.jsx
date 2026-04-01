@@ -268,6 +268,12 @@ describe('hca `validateCurrency` form validation', () => {
     expect(fieldSpy.called).to.be.true;
   });
 
+  it('should set error message when value has multiple decimals', () => {
+    const { errors } = getData();
+    validateCurrency(errors, '12.345.00');
+    expect(fieldSpy.called).to.be.true;
+  });
+
   it('should not set error message when value includes dollar sign', () => {
     const { errors } = getData();
     validateCurrency(errors, '$234,234');

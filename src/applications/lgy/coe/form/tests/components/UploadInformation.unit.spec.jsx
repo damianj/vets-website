@@ -44,7 +44,7 @@ describe('UploadInformation component', () => {
       const { getByTestId } = render(
         <UploadInformation
           formData={{ identity: serviceStatuses.VETERAN }}
-          hasHomeLoanProperty
+          hadPriorLoans
         />,
       );
       const accordion = getByTestId('document-upload-accordion');
@@ -58,7 +58,7 @@ describe('UploadInformation component', () => {
       const { getByTestId } = render(
         <UploadInformation
           formData={{ identity: serviceStatuses.DNANA }}
-          hasHomeLoanProperty
+          hadPriorLoans
         />,
       );
       const accordion = getByTestId('document-upload-accordion');
@@ -72,7 +72,7 @@ describe('UploadInformation component', () => {
       const { getByTestId } = render(
         <UploadInformation
           formData={{ identity: serviceStatuses.VETERAN }}
-          hasHomeLoanProperty
+          hadPriorLoans
         />,
       );
       const accordion = getByTestId('document-upload-accordion');

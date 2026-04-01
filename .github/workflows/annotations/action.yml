@@ -19,7 +19,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: yuzutech/annotations-action@0e061a6e3ac848299310b6429b60d67cafd4e7f8
+    - uses: yuzutech/annotations-action@0e061a6e3ac848299310b6429b60d67cafd4e7f8 # v0.5.0
       with:
         repo-token: ${{ inputs.token }}
         title: ${{ inputs.check_title }}

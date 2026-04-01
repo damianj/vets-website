@@ -96,7 +96,13 @@ class ReviewCollapsibleChapter extends React.Component {
 
     // Update form errors & rawErrors in redux state
     const { errors } = isValidForm(form, pageList);
-    const cleanedErrors = reduceErrors(errors, pageList, reviewErrors);
+    const formData = form.data;
+    const cleanedErrors = reduceErrors(
+      errors,
+      pageList,
+      reviewErrors,
+      formData,
+    );
     this.props.setFormErrors({
       rawErrors: errors,
       errors: cleanedErrors,
@@ -105,12 +111,12 @@ class ReviewCollapsibleChapter extends React.Component {
     // check if current page has any errors; reviewErrors override needed for
     // custom pages
     const pageKey =
-      reviewErrors?._override?.(key, { pageKey: key, index })?.pageKey ||
-      scrollElementKey;
+      reviewErrors?._override?.(key, { pageKey: key, index, formData })
+        ?.pageKey || scrollElementKey;
     const hasErrors = cleanedErrors.some(error => {
       const errorPageKey =
-        reviewErrors?._override?.(error.pageKey, error)?.pageKey ||
-        getPageKey(error);
+        reviewErrors?._override?.(error.pageKey, { ...error, formData })
+          ?.pageKey || getPageKey(error);
       return errorPageKey === pageKey;
     });
 

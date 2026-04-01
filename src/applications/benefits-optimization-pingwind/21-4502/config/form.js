@@ -8,18 +8,28 @@ import {
   getNextPagePath,
 } from 'platform/forms-system/src/js/routing';
 import manifest from '../manifest.json';
+import { FORM_21_4502 } from '../definitions/constants';
 
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
 import getHelp from '../../shared/components/GetFormHelp';
 import transformForSubmit from './submit-transformer';
 
-import informationRequiredPage from '../pages/informationRequired';
-import personalInformation from '../pages/personalInformation';
-import contactInformation from '../pages/contactInformation';
+import EligibilityFormPage from '../pages/eligibility';
+import personalInfoBasic from '../pages/personalInfoBasic';
+import contactInfo from '../pages/contactInfo';
+import address from '../pages/address';
+import serviceStatus from '../pages/serviceStatus';
+import plannedAddress from '../pages/plannedAddress';
 import applicationInformation from '../pages/applicationInformation';
+import { qualifyingDisabilitiesPage as qualifyingDisabilitiesPageConfig } from '../pages/qualifyingDisabilities';
+import currentServiceStatus from '../pages/currentServiceStatus';
+import veteranStatusInformation from '../pages/veteranStatusInformation';
+import veteranDisabilityCompensation from '../pages/veteranDisabilityCompensation';
+import vehicleDetails from '../pages/vehicleDetails';
+import vehicleUse from '../pages/vehicleUse';
+import previousVehicleApplication from '../pages/previousVehicleApplication';
 import certification from '../pages/certification';
-import vehicleReceipt from '../pages/vehicleReceipt';
 
 const handleFormLoaded = props => {
   const {
@@ -45,7 +55,7 @@ const handleFormLoaded = props => {
 const formConfig = {
   rootUrl: manifest.rootUrl,
   urlPrefix: '/',
-  submitUrl: `${environment.API_URL}/automobile_adaptive_equipment/v0/form4502`,
+  submitUrl: `${environment.API_URL}/simple_forms_api/v1/simple_forms`,
   trackingPrefix: 'ss-4502-',
   defaultDefinitions: {},
   dev: {
@@ -57,9 +67,9 @@ const formConfig = {
   preSubmitInfo: {
     statementOfTruth: {
       body:
-        'I confirm that the information in this form is accurate and has been represented correctly.',
+        'I confirm that the identifying information in this form is accurate and has been represented correctly.',
       messageAriaDescribedby:
-        'I confirm that the information in this form is accurate and has been represented correctly.',
+        'I confirm that the identifying information in this form is accurate and has been represented correctly.',
       fullNamePath: 'veteran.fullName',
     },
   },
@@ -85,21 +95,21 @@ const formConfig = {
       'Please sign in again to continue your application for automobile or adaptive equipment.',
   },
   hideUnauthedStartLink: true,
-  title:
-    'Application for Automobile or Other Conveyance and Adaptive Equipment (VA 21-4502)',
-  subTitle: 'Please complete this form as accurately as you can.',
+  title: FORM_21_4502.FORM_CONFIG.TITLE,
+  subTitle: FORM_21_4502.FORM_CONFIG.SUB_TITLE,
   customText: {
     appType: 'veteran application',
-    submitButtonText: 'Submit',
+    finishAppLaterMessage: 'Finish this application later',
+    submitButtonText: 'Submit Application',
+    reviewPageTitle: 'Review and sign',
+    reviewPageFormTitle: '',
   },
+  showSaveLinkAfterButtons: false,
   ...minimalHeaderFormConfigOptions({
     breadcrumbList: [
       { href: '/', label: 'VA.gov home' },
       { href: '/disability', label: 'Disability' },
-      {
-        href: '/disability/eligibility',
-        label: 'Eligibility',
-      },
+      { href: '/disability/eligibility', label: 'Eligibility' },
       {
         href: '/disability/eligibility/automobile-adaptive-equipment',
         label: 'Automobile or adaptive equipment',
@@ -108,59 +118,183 @@ const formConfig = {
   }),
 
   chapters: {
-    informationRequiredChapter: {
-      title: 'Information we are required to share',
+    eligibilityChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_ELIGIBILITY,
+      hideOnReviewPage: true,
       pages: {
-        informationRequiredPage,
+        eligibilityPage: {
+          path: 'eligibility',
+          title: FORM_21_4502.FORM_CONFIG.CHAPTER_ELIGIBILITY,
+          CustomPage: EligibilityFormPage,
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: { type: 'object', properties: {} },
+        },
       },
     },
     veteranIdChapter: {
-      title: 'Veteran identification and contact',
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_VETERAN_ID,
       pages: {
-        personalInformationPage: {
+        personalInfoBasicPage: {
           path: 'personal-information',
-          title: 'Personal information',
-          uiSchema: personalInformation.uiSchema,
-          schema: personalInformation.schema,
-        },
-        contactInformationPage: {
-          path: 'contact-information',
-          title: 'Contact information',
-          uiSchema: contactInformation.uiSchema,
-          schema: contactInformation.schema,
+          title: FORM_21_4502.FORM_CONFIG.PAGE_PERSONAL_INFO,
+          uiSchema: personalInfoBasic.uiSchema,
+          schema: personalInfoBasic.schema,
         },
       },
     },
-    applicationInfoChapter: {
-      title: 'Application information',
+    contactChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_CONTACT,
+      pages: {
+        contactInfoPage: {
+          path: 'contact-information',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_CONTACT,
+          uiSchema: contactInfo.uiSchema,
+          schema: contactInfo.schema,
+          updateFormData: (oldData, newData) => {
+            const alt = newData?.veteran?.alternatePhone;
+            if (
+              alt &&
+              (!alt.contact || String(alt.contact).trim() === '') &&
+              (alt.callingCode === null || alt.callingCode === undefined)
+            ) {
+              return {
+                ...newData,
+                veteran: {
+                  ...newData.veteran,
+                  alternatePhone: {
+                    ...alt,
+                    callingCode: 1,
+                    countryCode: alt.countryCode || 'US',
+                  },
+                },
+              };
+            }
+            return newData;
+          },
+        },
+      },
+    },
+    addressChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_ADDRESS,
+      pages: {
+        addressPage: {
+          path: 'address',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_ADDRESS,
+          uiSchema: address.uiSchema,
+          schema: address.schema,
+        },
+      },
+    },
+    serviceStatusChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_SERVICE_STATUS,
+      pages: {
+        serviceStatusPage: {
+          path: 'service-status',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_SERVICE_STATUS,
+          uiSchema: serviceStatus.uiSchema,
+          schema: serviceStatus.schema,
+        },
+        plannedAddressPage: {
+          path: 'planned-address',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_PLANNED_ADDRESS,
+          uiSchema: plannedAddress.uiSchema,
+          schema: plannedAddress.schema,
+          depends: formData =>
+            formData?.applicationInfo?.activeDutyStatus === true,
+        },
+      },
+    },
+    applicationAndServiceInformationChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_APPLICATION,
       pages: {
         applicationInformationPage: {
           path: 'application-information',
-          title: 'Service and conveyance details',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_APPLICATION_INFO,
           uiSchema: applicationInformation.uiSchema,
           schema: applicationInformation.schema,
         },
       },
     },
-    certificationChapter: {
-      title: 'Certification',
+    qualifyingDisabilitiesChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_QUALIFYING,
       pages: {
-        certificationPage: {
-          path: 'certification',
-          title: 'Certification and signature',
-          uiSchema: certification.uiSchema,
-          schema: certification.schema,
+        qualifyingDisabilitiesPage: {
+          path: 'qualifying-disabilities',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_QUALIFYING,
+          uiSchema: qualifyingDisabilitiesPageConfig.uiSchema,
+          schema: qualifyingDisabilitiesPageConfig.schema,
         },
       },
     },
-    vehicleReceiptChapter: {
-      title: 'Vehicle receipt (optional)',
+    serviceRecordChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_SERVICE_RECORD,
       pages: {
-        vehicleReceiptPage: {
-          path: 'vehicle-receipt',
-          title: 'Receipt for automobile or conveyance',
-          uiSchema: vehicleReceipt.uiSchema,
-          schema: vehicleReceipt.schema,
+        currentServiceStatusPage: {
+          path: 'current-service-status',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_CURRENT_SERVICE,
+          uiSchema: currentServiceStatus.uiSchema,
+          schema: currentServiceStatus.schema,
+        },
+        veteranStatusInformationPage: {
+          path: 'veteran-status-information',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_VETERAN_STATUS,
+          uiSchema: veteranStatusInformation.uiSchema,
+          schema: veteranStatusInformation.schema,
+          depends: formData =>
+            formData?.applicationInfo?.currentlyOnActiveDuty === false,
+        },
+        veteranDisabilityCompensationPage: {
+          path: 'veteran-disability-compensation',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_DISABILITY,
+          uiSchema: veteranDisabilityCompensation.uiSchema,
+          schema: veteranDisabilityCompensation.schema,
+          depends: formData =>
+            formData?.applicationInfo?.currentlyOnActiveDuty === false,
+        },
+      },
+    },
+    conveyanceTypeChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_CONVEYANCE,
+      pages: {
+        vehicleDetailsPage: {
+          path: 'vehicle-details',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_VEHICLE_DETAILS,
+          uiSchema: vehicleDetails.uiSchema,
+          schema: vehicleDetails.schema,
+        },
+      },
+    },
+    vehicleUseChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_VEHICLE_USE,
+      pages: {
+        vehicleUsePage: {
+          path: 'vehicle-use',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_VEHICLE_USE,
+          uiSchema: vehicleUse.uiSchema,
+          schema: vehicleUse.schema,
+        },
+      },
+    },
+    previousVehicleApplicationChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_PREVIOUS_VEHICLE,
+      pages: {
+        previousVehicleApplicationPage: {
+          path: 'previous-vehicle-application',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_PREVIOUS_VEHICLE,
+          uiSchema: previousVehicleApplication.uiSchema,
+          schema: previousVehicleApplication.schema,
+        },
+      },
+    },
+    certificationChapter: {
+      title: FORM_21_4502.FORM_CONFIG.CHAPTER_CERTIFICATION,
+      pages: {
+        certificationPage: {
+          path: 'certification',
+          title: FORM_21_4502.FORM_CONFIG.PAGE_CERTIFICATION,
+          uiSchema: certification.uiSchema,
+          schema: certification.schema,
         },
       },
     },

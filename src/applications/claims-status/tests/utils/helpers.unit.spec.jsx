@@ -43,6 +43,7 @@ import {
   makeAuthRequest,
   mockData,
   roundToNearest,
+  formatDateShortMonth,
   sentenceCase,
   setPageFocus,
   setTabDocumentTitle,
@@ -1626,46 +1627,30 @@ describe('Disability benefits helpers: ', () => {
 
   describe('getUploadErrorMessage', () => {
     context('when error is due to a duplicate upload', () => {
-      [
-        {
-          description: 'showDocumentUploadStatus is false (default)',
-          showDocumentUploadStatus: false,
-          expectedAnchor: ANCHOR_LINKS.documentsFiled,
-        },
-        {
-          description: 'showDocumentUploadStatus is true',
-          showDocumentUploadStatus: true,
-          expectedAnchor: ANCHOR_LINKS.filesReceived,
-        },
-      ].forEach(({ description, showDocumentUploadStatus, expectedAnchor }) => {
-        it(`should return a specific duplicate error message with file name when ${description}`, () => {
-          const claimId = '14568432';
-          const error = {
-            fileName: 'my-document.pdf',
-            errors: [
-              {
-                detail: 'DOC_UPLOAD_DUPLICATE',
-              },
-            ],
-          };
+      it('should return a specific duplicate error message with file name', () => {
+        const claimId = '14568432';
+        const error = {
+          fileName: 'my-document.pdf',
+          errors: [
+            {
+              detail: 'DOC_UPLOAD_DUPLICATE',
+            },
+          ],
+        };
+        const expectedAnchor = ANCHOR_LINKS.filesReceived;
 
-          const result = getUploadErrorMessage(
-            error,
-            claimId,
-            showDocumentUploadStatus,
-          );
-          expect(result.title).to.equal(
-            "You've already uploaded my-document.pdf",
-          );
-          expect(result.type).to.equal('error');
-          const { getByText, container } = render(result.body);
-          getByText(/It can take up to 2 days for the file to show up in/i);
-          expect($('va-link', container)).to.exist;
-          const link = $('va-link', container);
-          expect(link.getAttribute('href')).to.equal(
-            `/track-claims/your-claims/${claimId}/files#${expectedAnchor}`,
-          );
-        });
+        const result = getUploadErrorMessage(error, claimId);
+        expect(result.title).to.equal(
+          "You've already uploaded my-document.pdf",
+        );
+        expect(result.type).to.equal('error');
+        const { getByText, container } = render(result.body);
+        getByText(/It can take up to 2 days for the file to show up in/i);
+        expect($('va-link', container)).to.exist;
+        const link = $('va-link', container);
+        expect(link.getAttribute('href')).to.equal(
+          `/track-claims/your-claims/${claimId}/files#${expectedAnchor}`,
+        );
       });
 
       it('should use a generic name if fileName is missing', () => {
@@ -2122,6 +2107,72 @@ describe('Disability benefits helpers: ', () => {
         );
 
         expect(result).to.equal(null);
+      });
+    });
+  });
+
+  describe('formatDateShortMonth', () => {
+    context('abbreviated months (Jan, Feb, Aug, Oct, Nov, Dec)', () => {
+      it('formats January with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-01-15')).to.equal('Jan. 15, 2025');
+      });
+
+      it('formats February with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-02-28')).to.equal('Feb. 28, 2025');
+      });
+
+      it('formats August with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-08-01')).to.equal('Aug. 1, 2025');
+      });
+
+      it('formats October with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-10-31')).to.equal('Oct. 31, 2025');
+      });
+
+      it('formats November with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-11-11')).to.equal('Nov. 11, 2025');
+      });
+
+      it('formats December with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-12-25')).to.equal('Dec. 25, 2025');
+      });
+    });
+
+    context('September abbreviates to Sept (not Sep)', () => {
+      it('formats September as Sept. with period', () => {
+        expect(formatDateShortMonth('2025-09-21')).to.equal('Sept. 21, 2025');
+      });
+    });
+
+    context('long-form months (March, April, May, June, July)', () => {
+      it('formats March without abbreviation', () => {
+        expect(formatDateShortMonth('2025-03-15')).to.equal('March 15, 2025');
+      });
+
+      it('formats April without abbreviation', () => {
+        expect(formatDateShortMonth('2025-04-01')).to.equal('April 1, 2025');
+      });
+
+      it('formats May without abbreviation', () => {
+        expect(formatDateShortMonth('2025-05-05')).to.equal('May 5, 2025');
+      });
+
+      it('formats June without abbreviation', () => {
+        expect(formatDateShortMonth('2025-06-30')).to.equal('June 30, 2025');
+      });
+
+      it('formats July without abbreviation', () => {
+        expect(formatDateShortMonth('2025-07-04')).to.equal('July 4, 2025');
+      });
+    });
+
+    context('invalid input', () => {
+      it('returns Invalid date for non-date string', () => {
+        expect(formatDateShortMonth('not-a-date')).to.equal('Invalid date');
+      });
+
+      it('returns Invalid date for empty string', () => {
+        expect(formatDateShortMonth('')).to.equal('Invalid date');
       });
     });
   });

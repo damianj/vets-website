@@ -4,9 +4,27 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { setLowAuthFormData } from '../slices/formSlice';
 import { setVassToken, getVassToken } from '../../utils/auth';
 import { createInvalidTokenError } from '../../services/mocks/utils/errors';
+import { SERVER_ERROR_CODES } from '../../utils/constants';
 
 const api = async (url, options, ...rest) => {
-  return apiRequest(`${environment.API_URL}${url}`, options, ...rest);
+  try {
+    return await apiRequest(`${environment.API_URL}${url}`, options, ...rest);
+  } catch (error) {
+    if (error?.errors) {
+      throw error;
+    }
+    const normalized = new Error(
+      error?.error || error?.message || 'An unknown error occurred',
+    );
+    normalized.errors = [
+      {
+        code: SERVER_ERROR_CODES.SERVICE_ERROR,
+        detail: error?.error || error?.message || 'An unknown error occurred',
+        status: error?.status,
+      },
+    ];
+    throw normalized;
+  }
 };
 
 /**

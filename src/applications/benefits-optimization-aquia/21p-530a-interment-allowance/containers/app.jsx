@@ -24,11 +24,19 @@ export const App = ({ location, children }) => {
   const {
     useToggleValue,
     useToggleLoadingValue,
+    useFormFeatureToggleSync,
     TOGGLE_NAMES,
   } = useFeatureToggle();
 
   const isLoadingFeatures = useToggleLoadingValue();
   const formEnabled = useToggleValue(TOGGLE_NAMES.form530aEnabled);
+
+  useFormFeatureToggleSync([
+    {
+      toggleName: 'bioAquiaUspsAddressValidation',
+      formKey: 'view:bioAquiaUspsAddressValidation',
+    },
+  ]);
 
   // Initialize Datadog RUM for form monitoring
   useDatadogRum('21p-530a');

@@ -1,25 +1,28 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import fs from 'fs';
-import { registerFonts, knownFonts } from '../registerFonts';
+import { registerFonts, knownFonts, fallbackFonts } from '../registerFonts';
 
 describe('registerFonts', () => {
   let doc;
   let fetchStub;
   let existsSyncStub;
   let writeFileSyncStub;
+  let consoleErrorStub;
 
   beforeEach(() => {
     doc = { registerFont: sinon.stub() };
     fetchStub = sinon.stub(global, 'fetch');
     existsSyncStub = sinon.stub(fs, 'existsSync').throws(new Error('ENOENT'));
     writeFileSyncStub = sinon.stub(fs, 'writeFileSync');
+    consoleErrorStub = sinon.stub(console, 'error');
   });
 
   afterEach(() => {
     fetchStub.restore();
     existsSyncStub.restore();
     writeFileSyncStub.restore();
+    consoleErrorStub.restore();
   });
 
   describe('knownFonts', () => {
@@ -38,54 +41,61 @@ describe('registerFonts', () => {
     });
   });
 
-  describe('downloadAndRegisterFont error context', () => {
-    it('includes font name and URL when fetch rejects', async () => {
-      const originalError = new Error('Failed to fetch');
-      fetchStub.rejects(originalError);
+  describe('fallbackFonts', () => {
+    it('maps every knownFont to a built-in PDFKit fallback', () => {
+      Object.keys(knownFonts).forEach(font => {
+        expect(fallbackFonts).to.have.property(font);
+      });
+    });
+  });
 
-      try {
-        await registerFonts(doc, ['Bitter-Bold']);
-        expect.fail('should have thrown');
-      } catch (error) {
-        expect(error.message).to.include(
-          'Failed to download or register font Bitter-Bold',
-        );
-        expect(error.message).to.include('/generated/bitter-bold.ttf');
-        expect(error.message).to.include('Failed to fetch');
-        expect(error.cause).to.equal(originalError);
-      }
+  describe('downloadAndRegisterFont fallback behavior', () => {
+    it('registers fallback font when fetch rejects', async () => {
+      fetchStub.rejects(new Error('Failed to fetch'));
+
+      await registerFonts(doc, ['Bitter-Bold']);
+      expect(doc.registerFont.calledOnce).to.be.true;
+      expect(doc.registerFont.firstCall.args[0]).to.equal('Bitter-Bold');
+      expect(doc.registerFont.firstCall.args[1]).to.equal('Helvetica-Bold');
+      expect(consoleErrorStub.called).to.be.true;
     });
 
-    it('includes font name and URL when arrayBuffer fails', async () => {
-      const originalError = new Error('body stream error');
+    it('registers fallback font when arrayBuffer fails', async () => {
       fetchStub.resolves({
-        arrayBuffer: sinon.stub().rejects(originalError),
+        ok: true,
+        arrayBuffer: sinon.stub().rejects(new Error('body stream error')),
       });
 
-      try {
-        await registerFonts(doc, ['SourceSansPro-Regular']);
-        expect.fail('should have thrown');
-      } catch (error) {
-        expect(error.message).to.include(
-          'Failed to download or register font SourceSansPro-Regular',
-        );
-        expect(error.message).to.include(
-          '/generated/sourcesanspro-regular-webfont.ttf',
-        );
-        expect(error.message).to.include('body stream error');
-        expect(error.cause).to.equal(originalError);
-      }
+      await registerFonts(doc, ['SourceSansPro-Regular']);
+      expect(doc.registerFont.calledOnce).to.be.true;
+      expect(doc.registerFont.firstCall.args[0]).to.equal(
+        'SourceSansPro-Regular',
+      );
+      expect(doc.registerFont.firstCall.args[1]).to.equal('Helvetica');
+      expect(consoleErrorStub.called).to.be.true;
+    });
+
+    it('registers fallback font on HTTP error response', async () => {
+      fetchStub.resolves({ ok: false, status: 403 });
+
+      await registerFonts(doc, ['Bitter-Bold']);
+      expect(doc.registerFont.calledOnce).to.be.true;
+      expect(doc.registerFont.firstCall.args[0]).to.equal('Bitter-Bold');
+      expect(doc.registerFont.firstCall.args[1]).to.equal('Helvetica-Bold');
+      expect(consoleErrorStub.called).to.be.true;
     });
 
     it('downloads and registers font on success', async () => {
       const fakeBuffer = new ArrayBuffer(8);
       fetchStub.resolves({
+        ok: true,
         arrayBuffer: sinon.stub().resolves(fakeBuffer),
       });
 
       await registerFonts(doc, ['Bitter-Bold']);
       expect(doc.registerFont.calledOnce).to.be.true;
       expect(doc.registerFont.firstCall.args[0]).to.equal('Bitter-Bold');
+      expect(consoleErrorStub.called).to.be.false;
     });
   });
 });

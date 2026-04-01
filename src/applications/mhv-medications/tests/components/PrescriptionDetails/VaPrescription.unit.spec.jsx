@@ -15,14 +15,33 @@ import { dataDogActionNames } from '../../../util/dataDogConstants';
 describe('vaPrescription details container', () => {
   const prescription = rxDetailsResponse.data.attributes;
   const newRx = { ...prescription, phoneNumber: '1234567891' };
-  const setup = (rx = newRx, ffEnabled = true) => {
+  const setup = (rx = newRx, stateOverrides = {}) => {
+    const {
+      featureToggles: featureToggleOverrides = {},
+      user: userOverrides = {},
+      ...restOverrides
+    } = stateOverrides;
+
     return renderWithStoreAndRouterV6(<VaPrescription {...rx} />, {
       initialState: {
         featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvMedicationsDisplayDocumentationContent]: ffEnabled,
+          [FEATURE_FLAG_NAMES.mhvMedicationsDisplayDocumentationContent]: true,
           [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: false,
           [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]: false,
+          [FEATURE_FLAG_NAMES.mhvMedicationsOracleHealthCutover]: false,
+          ...featureToggleOverrides,
         },
+        user: {
+          profile: {
+            vaProfile: {
+              ohMigrationInfo: {
+                migrationSchedules: [],
+              },
+            },
+            ...userOverrides.profile,
+          },
+        },
+        ...restOverrides,
       },
       reducers: {},
       initialEntries: ['/prescriptions/1234567891'],
@@ -65,6 +84,31 @@ describe('vaPrescription details container', () => {
     ).to.be.true;
   });
 
+  it('does not render refill link on details page when Oracle Health transition (p4/p5) blocks refills', () => {
+    const refillableRx = { ...newRx, isRefillable: true, stationNumber: '989' };
+    const screen = setup(refillableRx, {
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvMedicationsOracleHealthCutover]: true,
+      },
+      user: {
+        profile: {
+          vaProfile: {
+            ohMigrationInfo: {
+              migrationSchedules: [
+                {
+                  phases: { current: 'p4' },
+                  facilities: [{ facilityId: '989' }],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+
+    expect(screen.queryByTestId('refill-nav-link')).to.not.exist;
+  });
+
   it('displays the formatted ordered date', () => {
     const screen = setup();
     const formattedDate = screen.getAllByText(
@@ -90,7 +134,7 @@ describe('vaPrescription details container', () => {
       ...prescription,
       rxRfRecords: [{ cmopNdcNumber: '12345' }],
     };
-    const screen = setup(rxWithCmop, true);
+    const screen = setup(rxWithCmop);
     const learnMoreLink = screen.getAllByText(
       'Learn more about this medication',
     );

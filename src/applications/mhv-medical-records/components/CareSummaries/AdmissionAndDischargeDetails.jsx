@@ -24,9 +24,11 @@ import {
   generateNotesIntro,
   generateDischargeSummaryContent,
 } from '../../util/pdfHelpers/notes';
+import { formatAddendaTxt } from '../../util/txtHelpers/notes';
 import DownloadSuccessAlert from '../shared/DownloadSuccessAlert';
 import HeaderSection from '../shared/HeaderSection';
 import LabelValue from '../shared/LabelValue';
+import AddendaList from './AddendaList';
 
 const AdmissionAndDischargeDetails = props => {
   const { record, runningUnitTest } = props;
@@ -87,7 +89,7 @@ Date discharged: ${record.dischargeDate}\n
 Discharged by: ${record.dischargedBy}\n
 ${txtLine}\n\n
 Summary\n
-${record.summary}`;
+${record.summary}${formatAddendaTxt(record.addenda)}`;
 
     generateTextFile(
       content,
@@ -181,6 +183,11 @@ ${record.summary}`;
             monospace
           />
         </div>
+        {record.addenda?.length > 0 && (
+          <div className="test-results-container">
+            <AddendaList addenda={record.addenda} />
+          </div>
+        )}
       </HeaderSection>
       <div className="vads-u-margin-y--4 vads-u-border-top--1px vads-u-border-color--gray-light" />
       <DownloadingRecordsInfo description="CS&N Detail" />

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { serviceStatuses } from '../constants';
 
 const DocumentsNeeded = props => {
-  const { hasHomeLoanProperty, formData } = props;
+  const { hadPriorLoans, formData } = props;
 
   const requiredDocumentMessages = {
     [serviceStatuses.VETERAN]: (
       <>
-        {hasHomeLoanProperty ? (
+        {hadPriorLoans ? (
           <>
             <p>
               You may upload any of the recommended listed documents to support
@@ -32,8 +32,7 @@ const DocumentsNeeded = props => {
     ),
     [serviceStatuses.ADSM]: (
       <>
-        {formData?.militaryHistory?.purpleHeartRecipient ||
-        hasHomeLoanProperty ? (
+        {formData?.militaryHistory?.purpleHeartRecipient || hadPriorLoans ? (
           <>
             <p>
               You may upload any of the recommended listed documents to support
@@ -44,7 +43,7 @@ const DocumentsNeeded = props => {
               {formData?.militaryHistory?.purpleHeartRecipient && (
                 <li>A copy of your Purple Heart certificate</li>
               )}
-              {hasHomeLoanProperty && (
+              {hadPriorLoans && (
                 <li>Evidence a VA loan was paid in full, if applicable</li>
               )}
             </ul>
@@ -66,7 +65,7 @@ const DocumentsNeeded = props => {
             Creditable number of years served or Retirement Points Statement or
             equivalent
           </li>
-          {hasHomeLoanProperty && (
+          {hadPriorLoans && (
             <li>Evidence a VA loan was paid in full, if applicable</li>
           )}
         </ul>
@@ -88,7 +87,7 @@ const DocumentsNeeded = props => {
             Proof of character of service such as a DD214 with accompanying
             DD214-1, or Department of Defense Discharge Certificate
           </li>
-          {hasHomeLoanProperty && (
+          {hadPriorLoans && (
             <li>Evidence a VA loan was paid in full, if applicable</li>
           )}
         </ul>
@@ -106,7 +105,7 @@ const DocumentsNeeded = props => {
             Proof of character of service such as a DD214 with accompanying
             DD214-1, or Department of Defense Discharge Certificate
           </li>
-          {hasHomeLoanProperty && (
+          {hadPriorLoans && (
             <li>Evidence a VA loan was paid in full, if applicable</li>
           )}
         </ul>
@@ -119,7 +118,7 @@ const DocumentsNeeded = props => {
 
 DocumentsNeeded.propTypes = {
   formData: PropTypes.object,
-  hasHomeLoanProperty: PropTypes.bool,
+  hadPriorLoans: PropTypes.bool,
 };
 
 export default DocumentsNeeded;

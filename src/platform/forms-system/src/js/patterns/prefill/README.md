@@ -327,6 +327,7 @@ Displays and allows inline editing of contact information (email, phones, mailin
   editContactInfoHeadingLevel: '2',  // Heading level for edit pages
   prefillPatternEnabled: true,  // Enable prefill pattern styling
   disableMockContactInfo: true,  // Disable mock data in tests
+  showProfileAlert: true,  // Show blue info alert on edit pages ("changes will also be reflected on your profile")
   
   // Conditional display
   depends: formData => formData.applicantType === 'veteran',

@@ -3,8 +3,6 @@ import claimsList from './fixtures/mocks/lighthouse/claims-list.json';
 import claimDetails from './fixtures/mocks/lighthouse/claim-detail-closed.json';
 import claimDetailsOpen from './fixtures/mocks/lighthouse/claim-detail-open.json';
 import claimDetailsOpenWithFailedSubmissions from './fixtures/mocks/lighthouse/claim-detail-open-with-failed-submissions.json';
-import featureToggleDocumentUploadStatusEnabled from './fixtures/mocks/lighthouse/feature-toggle-document-upload-status-enabled.json';
-import featureToggleDisabled from './fixtures/mocks/lighthouse/feature-toggle-disabled.json';
 
 describe('When feature toggle cst_claim_phases disabled', () => {
   context(
@@ -288,122 +286,67 @@ describe('Upload Type 2 Error Alert on Status Tab', () => {
     Date.now() - 10 * 24 * 60 * 60 * 1000,
   ).toISOString();
 
-  context(
-    "when the 'cst_show_document_upload_status' feature toggle is disabled",
-    () => {
-      it('should NOT display the alert', () => {
-        const claimDetailsWithTwoFailures = {
-          ...claimDetailsOpenWithFailedSubmissions,
-          data: {
-            ...claimDetailsOpenWithFailedSubmissions.data,
-            attributes: {
-              ...claimDetailsOpenWithFailedSubmissions.data.attributes,
-              evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
-                .slice(0, 2)
-                .map(submission => ({
-                  ...submission,
-                  failedDate: fiveDaysAgo,
-                  acknowledgementDate: tomorrow,
-                })),
-            },
-          },
-        };
+  it('should display the alert when there are failed submissions within last 30 days', () => {
+    const claimDetailsWithTwoFailures = {
+      ...claimDetailsOpenWithFailedSubmissions,
+      data: {
+        ...claimDetailsOpenWithFailedSubmissions.data,
+        attributes: {
+          ...claimDetailsOpenWithFailedSubmissions.data.attributes,
+          evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
+            .slice(0, 2)
+            .map((submission, index) => ({
+              ...submission,
+              failedDate: index === 0 ? tenDaysAgo : fiveDaysAgo,
+              acknowledgementDate: tomorrow,
+            })),
+        },
+      },
+    };
+    const trackClaimsPage = new TrackClaimsPageV2();
 
-        const trackClaimsPage = new TrackClaimsPageV2();
-        trackClaimsPage.loadPage(
-          claimsList,
-          claimDetailsWithTwoFailures,
-          false,
-          false,
-          featureToggleDisabled,
-        );
-        trackClaimsPage.verifyInProgressClaim(false);
-        // Verify alert is NOT present when toggle is disabled
-        trackClaimsPage.verifyUploadType2ErrorAlertNotPresent();
+    trackClaimsPage.loadPage(claimsList, claimDetailsWithTwoFailures);
+    trackClaimsPage.verifyInProgressClaim(false);
+    // Alert should be visible on the Status tab
+    trackClaimsPage.verifyUploadType2ErrorAlert(true);
+    // Verify files are displayed in chronological order (most recent first)
+    trackClaimsPage.verifyUploadType2ErrorAlertFileOrder([
+      'medical-records.pdf',
+      'authorization-form-signed.pdf',
+    ]);
 
-        cy.axeCheck();
-      });
-    },
-  );
+    cy.axeCheck();
+  });
 
-  context(
-    "when the 'cst_show_document_upload_status' feature toggle is enabled",
-    () => {
-      it('should display the alert when there are failed submissions within last 30 days', () => {
-        const claimDetailsWithTwoFailures = {
-          ...claimDetailsOpenWithFailedSubmissions,
-          data: {
-            ...claimDetailsOpenWithFailedSubmissions.data,
-            attributes: {
-              ...claimDetailsOpenWithFailedSubmissions.data.attributes,
-              evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
-                .slice(0, 2)
-                .map((submission, index) => ({
-                  ...submission,
-                  failedDate: index === 0 ? tenDaysAgo : fiveDaysAgo,
-                  acknowledgementDate: tomorrow,
-                })),
-            },
-          },
-        };
-        const trackClaimsPage = new TrackClaimsPageV2();
+  it('should NOT show "nothing needed" message when failed submissions exist', () => {
+    // Use only first 2 failed submissions with dynamic dates
+    const claimDetailsWithTwoFailures = {
+      ...claimDetailsOpenWithFailedSubmissions,
+      data: {
+        ...claimDetailsOpenWithFailedSubmissions.data,
+        attributes: {
+          ...claimDetailsOpenWithFailedSubmissions.data.attributes,
+          evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
+            .slice(0, 2)
+            .map(submission => ({
+              ...submission,
+              failedDate: fiveDaysAgo,
+              acknowledgementDate: tomorrow,
+            })),
+        },
+      },
+    };
 
-        trackClaimsPage.loadPage(
-          claimsList,
-          claimDetailsWithTwoFailures,
-          false,
-          false,
-          featureToggleDocumentUploadStatusEnabled,
-        );
-        trackClaimsPage.verifyInProgressClaim(false);
-        // Alert should be visible on the Status tab
-        trackClaimsPage.verifyUploadType2ErrorAlert(true);
-        // Verify files are displayed in chronological order (most recent first)
-        trackClaimsPage.verifyUploadType2ErrorAlertFileOrder([
-          'medical-records.pdf',
-          'authorization-form-signed.pdf',
-        ]);
+    const trackClaimsPage = new TrackClaimsPageV2();
+    trackClaimsPage.loadPage(claimsList, claimDetailsWithTwoFailures);
+    trackClaimsPage.verifyInProgressClaim(false);
 
-        cy.axeCheck();
-      });
+    // Verify alert is visible
+    trackClaimsPage.verifyUploadType2ErrorAlert(true);
 
-      it('should NOT show "nothing needed" message when failed submissions exist', () => {
-        // Use only first 2 failed submissions with dynamic dates
-        const claimDetailsWithTwoFailures = {
-          ...claimDetailsOpenWithFailedSubmissions,
-          data: {
-            ...claimDetailsOpenWithFailedSubmissions.data,
-            attributes: {
-              ...claimDetailsOpenWithFailedSubmissions.data.attributes,
-              evidenceSubmissions: claimDetailsOpenWithFailedSubmissions.data.attributes.evidenceSubmissions
-                .slice(0, 2)
-                .map(submission => ({
-                  ...submission,
-                  failedDate: fiveDaysAgo,
-                  acknowledgementDate: tomorrow,
-                })),
-            },
-          },
-        };
+    // Verify "nothing needed" message is NOT present
+    cy.get('.no-documents').should('not.exist');
 
-        const trackClaimsPage = new TrackClaimsPageV2();
-        trackClaimsPage.loadPage(
-          claimsList,
-          claimDetailsWithTwoFailures,
-          false,
-          false,
-          featureToggleDocumentUploadStatusEnabled,
-        );
-        trackClaimsPage.verifyInProgressClaim(false);
-
-        // Verify alert is visible
-        trackClaimsPage.verifyUploadType2ErrorAlert(true);
-
-        // Verify "nothing needed" message is NOT present
-        cy.get('.no-documents').should('not.exist');
-
-        cy.axeCheck();
-      });
-    },
-  );
+    cy.axeCheck();
+  });
 });

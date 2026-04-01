@@ -25,7 +25,10 @@ import {
   careFrequencyLabels,
 } from '../../../../utils/labels';
 import { transformDate } from '../../05-claim-information/helpers';
-import { formatCurrency } from '../../../../utils/helpers';
+import {
+  formatCurrency,
+  shouldSkipExpensePages,
+} from '../../../../utils/helpers';
 
 function introDescription() {
   return (
@@ -38,6 +41,11 @@ function introDescription() {
         Examples of unreimbursed care expenses include payments to in-home care
         providers, nursing homes, or other care facilities that insurance won’t
         cover.
+      </p>
+      <p>
+        <span className="vads-u-font-weight--bold">Note: </span>
+        We use your expenses to lower the income we count toward your claim. If
+        you have no income to report, you do not need to list any expenses.
       </p>
 
       <va-additional-info trigger="Additional documents we may ask for">
@@ -282,6 +290,7 @@ const datePage = {
           return careExpense?.noCareEndDate === true;
         },
       },
+      'End date must be after the start date',
     ),
     noCareEndDate: checkboxUI('No end date'),
   },
@@ -305,7 +314,7 @@ const costPage = {
       labels: careFrequencyLabels,
     }),
     paymentAmount: currencyUI({
-      title: 'How much is each payment?',
+      title: 'How much is the payment?',
       max: 999999999,
     }),
     ratePerHour: {
@@ -352,63 +361,46 @@ const costPage = {
   },
 };
 
-const SKIP_NO_INCOME_VALUE = ['NO_INCOME'];
-export const isCareExpensesSkipped = formData =>
-  !!formData.survivorsBenefitsForm2025VersionEnabled &&
-  SKIP_NO_INCOME_VALUE.includes(formData?.moreThanFourIncomeSources);
-
 export const careExpensesPages = arrayBuilderPages(options, pageBuilder => ({
   careExpensesIntro: pageBuilder.introPage({
     title: 'Care expenses',
     path: 'financial-information/care-expenses',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isCareExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: introPage.uiSchema,
     schema: introPage.schema,
   }),
   careExpensesSummary: pageBuilder.summaryPage({
     title: 'Care expenses',
     path: 'financial-information/care-expenses/add',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isCareExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: summaryPage.uiSchema,
     schema: summaryPage.schema,
   }),
   careTypePage: pageBuilder.itemPage({
     title: 'Type of care',
     path: 'financial-information/care-expenses/:index/type-of-care',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isCareExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: typeOfCarePage.uiSchema,
     schema: typeOfCarePage.schema,
   }),
   careRecipientPage: pageBuilder.itemPage({
     title: 'Care recipient and provider name',
     path: 'financial-information/care-expenses/:index/recipient-provider',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isCareExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: recipientPage.uiSchema,
     schema: recipientPage.schema,
   }),
   careDatesPage: pageBuilder.itemPage({
     title: 'Dates of care',
     path: 'financial-information/care-expenses/:index/dates',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isCareExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: datePage.uiSchema,
     schema: datePage.schema,
   }),
   careCostPage: pageBuilder.itemPage({
     title: 'Cost of care',
     path: 'financial-information/care-expenses/:index/cost',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isCareExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: costPage.uiSchema,
     schema: costPage.schema,
   }),

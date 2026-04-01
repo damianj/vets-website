@@ -1,6 +1,7 @@
 import {
   LABS_AND_TESTS_DISPLAY_DISPLAY_MAP,
   OBSERVATION_DISPLAY_DISPLAY_MAP,
+  interpretationMap,
 } from '../constants';
 
 export const generateLabsIntro = record => {
@@ -62,32 +63,47 @@ export const generateGenericContent = record => {
         },
       ],
       sectionSeparators: false,
-      items: record.observations.map(item => ({
-        header: item.testCode,
-        items: [
-          {
-            title: 'Result',
-            value: item.value?.text,
-            inline: true,
-          },
-          ...observationKeys
-            .filter(key => {
-              const v = item[key];
-              return Array.isArray(v) ? v.length > 0 : Boolean(v);
-            })
-            .map(key => {
-              let val = item[key];
-              if (Array.isArray(val)) val = val.join('\n');
-              if (key === 'status' && typeof val === 'string' && val.length)
-                val = val.charAt(0).toUpperCase() + val.slice(1);
-              return {
-                title: OBSERVATION_DISPLAY_DISPLAY_MAP[key],
-                value: val,
-                inline: true,
-              };
-            }),
-        ],
-      })),
+      items: record.observations.map(item => {
+        const interpretationDisplay = item.interpretation
+          ? interpretationMap[item.interpretation] || item.interpretation
+          : null;
+
+        return {
+          header: item.testCode,
+          items: [
+            {
+              title: 'Result',
+              value: item.value?.text,
+              inline: true,
+            },
+            ...(interpretationDisplay
+              ? [
+                  {
+                    title: OBSERVATION_DISPLAY_DISPLAY_MAP.interpretation,
+                    value: interpretationDisplay,
+                    inline: true,
+                  },
+                ]
+              : []),
+            ...observationKeys
+              .filter(key => {
+                const v = item[key];
+                return Array.isArray(v) ? v.length > 0 : Boolean(v);
+              })
+              .map(key => {
+                let val = item[key];
+                if (Array.isArray(val)) val = val.join('\n');
+                if (key === 'status' && typeof val === 'string' && val.length)
+                  val = val.charAt(0).toUpperCase() + val.slice(1);
+                return {
+                  title: OBSERVATION_DISPLAY_DISPLAY_MAP[key],
+                  value: val,
+                  inline: true,
+                };
+              }),
+          ],
+        };
+      }),
     };
     rv.results = results;
   }

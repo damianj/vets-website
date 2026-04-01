@@ -128,8 +128,8 @@ describe('Form Configuration', () => {
       expect(page.schema).to.exist;
     });
 
-    it('should have exactly 1 page in employer information chapter', () => {
-      expect(Object.keys(chapter.pages)).to.have.lengthOf(1);
+    it('should have exactly 2 pages in employer information chapter', () => {
+      expect(Object.keys(chapter.pages)).to.have.lengthOf(2);
     });
   });
 

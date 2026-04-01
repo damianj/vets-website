@@ -11,6 +11,7 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { arrayBuilderPages } from 'platform/forms-system/src/js/patterns/array-builder';
 import { formatReviewDate } from 'platform/forms-system/src/js/helpers';
+import serviceBranchLabels from 'platform/forms-system/src/js/web-component-patterns/content/serviceBranch.json';
 
 const TOGGLE_KEY = 'view:coeFormRebuildCveteam';
 
@@ -19,10 +20,12 @@ const options = {
   nounSingular: 'service period',
   nounPlural: 'service periods',
   required: true,
-  maxItems: 20,
   isItemIncomplete: item => !item?.serviceBranch || !item?.dateRange?.from,
   text: {
-    getItemName: item => item?.serviceBranch?.label || item?.serviceBranch,
+    getItemName: item =>
+      item?.serviceBranch?.label ||
+      serviceBranchLabels[(item?.serviceBranch)]?.label ||
+      item?.serviceBranch,
     cardDescription: item =>
       `${formatReviewDate(item?.dateRange?.from)} - ${formatReviewDate(
         item?.dateRange?.to,
@@ -54,9 +57,25 @@ const options = {
         </>
       );
     },
+    deleteDescription: ({ getItemName, itemData, index, formData }) => {
+      const itemName = getItemName(itemData, index, formData);
+      return (
+        <>
+          <p>
+            If you delete this service period, you’ll lose the information you
+            entered
+            {itemName ? ` for "${itemName}"` : ''}.
+          </p>
+          <p>
+            We’ll take you back to where you can add another service period.
+          </p>
+        </>
+      );
+    },
     deleteYes: () => 'Yes, delete',
     deleteNo: () => 'No, keep',
     cancelEditTitle: () => 'Cancel editing this service period?',
+    cancelAddTitle: () => 'Cancel adding this service period?',
     cancelEditDescription: () =>
       "If you cancel, you'll lose any changes you made to this service period. We'll take you back to where you can review your service periods.",
     cancelEditYes: () => 'Yes, cancel editing',
@@ -89,10 +108,12 @@ const summaryPage = {
       {
         title: 'Do you have a service period to add?',
         labels: { Y: 'Yes', N: 'No' },
+        labelHeaderLevel: 'p',
       },
       {
         title: 'Do you have another service period to add?',
         labels: { Y: 'Yes', N: 'No' },
+        labelHeaderLevel: 'p',
       },
     ),
   },

@@ -77,18 +77,31 @@ const getSortedItems = itemsFiled => {
 
 const getStatusBadgeText = item => {
   if (item.type === 'additional_evidence_item') {
-    return 'On File';
+    return 'On file';
   }
   if (item.text) {
     if (item.text.includes('Reviewed')) {
       return 'Reviewed by VA';
     }
     if (item.text === 'No longer needed') {
-      return 'On File';
+      return 'On file';
     }
     return item.text;
   }
   return null;
+};
+
+const getStatusBadgeStatus = item => {
+  if (item.type === 'additional_evidence_item') {
+    return 'success';
+  }
+  if (item.text) {
+    if (item.text.includes('Reviewed') || item.text === 'No longer needed') {
+      return 'success';
+    }
+    return 'info';
+  }
+  return undefined;
 };
 
 const FilesReceived = ({ claim }) => {
@@ -138,6 +151,7 @@ const FilesReceived = ({ claim }) => {
             >
               {currentPageItems.map((item, itemIndex) => {
                 const statusBadgeText = getStatusBadgeText(item);
+                const statusBadgeStatus = getStatusBadgeStatus(item);
                 const { document } = item;
                 const fileName = document?.originalFileName || null;
                 const documentType = document?.documentTypeLabel || null;
@@ -148,6 +162,7 @@ const FilesReceived = ({ claim }) => {
                     <DocumentCard
                       index={itemIndex}
                       variant="received"
+                      statusBadgeStatus={statusBadgeStatus}
                       statusBadgeText={statusBadgeText}
                       headingRef={el => {
                         headingRefs.current[itemIndex] = el;

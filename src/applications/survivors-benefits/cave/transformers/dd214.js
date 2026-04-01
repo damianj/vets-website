@@ -2,7 +2,7 @@ import { sanitize, formatIsoDate, maskSsn } from './helpers';
 
 export const transformDd214Entry = data => {
   const entry = data || {};
-  const name = entry.VETERAN_NAME || {};
+  const name = entry.veteranName || {};
   return [
     {
       heading: "Veteran's information",
@@ -13,9 +13,9 @@ export const transformDd214Entry = data => {
         { label: 'Suffix', value: sanitize(name.suffix) },
         {
           label: 'Social Security number',
-          value: maskSsn(entry.VETERAN_SSN),
+          value: maskSsn(entry.veteranSsn),
         },
-        { label: 'Date of birth', value: formatIsoDate(entry.VETERAN_DOB) },
+        { label: 'Date of birth', value: formatIsoDate(entry.veteranDob) },
       ],
     },
     {
@@ -23,28 +23,28 @@ export const transformDd214Entry = data => {
       rows: [
         {
           label: 'Branch of service',
-          value: sanitize(entry.BRANCH_OF_SERVICE),
+          value: sanitize(entry.branchOfService),
         },
         {
           label: 'Grade, rate, or rank',
-          value: sanitize(entry.GRADE_RATE_RANK),
+          value: sanitize(entry.gradeRateRank),
         },
-        { label: 'Pay grade', value: sanitize(entry.PAY_GRADE) },
-        { label: 'Date inducted', value: formatIsoDate(entry.DATE_INDUCTED) },
+        { label: 'Pay grade', value: sanitize(entry.payGrade) },
+        { label: 'Date inducted', value: formatIsoDate(entry.dateInducted) },
         {
           label: 'Date entered active service',
-          value: formatIsoDate(entry.DATE_ENTERED_ACTIVE_SERVICE),
+          value: formatIsoDate(entry.dateEnteredActiveService),
         },
         {
           label: 'Date separated active service',
-          value: formatIsoDate(entry.DATE_SEPARATED_FROM_SERVICE),
+          value: formatIsoDate(entry.dateSeparatedFromService),
         },
         {
           label: 'Cause of separation',
-          value: sanitize(entry.CAUSE_OF_SEPARATION),
+          value: sanitize(entry.causeOfSeparation),
         },
-        { label: 'Separation type', value: sanitize(entry.SEPARATION_TYPE) },
-        { label: 'Separation code', value: sanitize(entry.SEPARATION_CODE) },
+        { label: 'Separation type', value: sanitize(entry.separationType) },
+        { label: 'Separation code', value: sanitize(entry.separationCode) },
       ],
     },
   ];

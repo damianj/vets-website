@@ -36,8 +36,11 @@ describe('<NeedHelp>', () => {
     const { container } = render(<NeedHelp item={item} />);
     expect($('va-need-help', container)).to.exist;
     expect($$('va-telephone', container).length).to.equal(2);
-    const alias = container.querySelector('.vads-u-font-weight--bold');
-    expect(alias.textContent).to.include('VA Form 21-4142');
+    const boldElements = $$('.vads-u-font-weight--bold', container);
+    expect(boldElements[0].textContent).to.include(
+      'authorization to Disclose Information',
+    );
+    expect(boldElements[1].textContent).to.include('VA Form 21-4142');
   });
 
   it('should render aliases with commas and "or" correctly', () => {

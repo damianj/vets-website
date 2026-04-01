@@ -11,6 +11,7 @@ import prefillTransformer from '@bio-aquia/21p-530a-interment-allowance/config/p
 import manifest from '@bio-aquia/21p-530a-interment-allowance/manifest.json';
 import { transform } from '@bio-aquia/21p-530a-interment-allowance/config/submit-transform/transform';
 import { customSubmit } from '@bio-aquia/shared/utils';
+import { createAddressValidationPage } from '@bio-aquia/shared/components/pages/AddressValidationPage';
 
 import { ConfirmationPage } from '@bio-aquia/21p-530a-interment-allowance/components/confirmation-page';
 import { IntroductionPage } from '@bio-aquia/21p-530a-interment-allowance/components/introduction-page';
@@ -92,6 +93,19 @@ const formConfig = {
           title: 'Mailing address',
           uiSchema: burialOrganizationMailingAddressPage.uiSchema,
           schema: burialOrganizationMailingAddressPage.schema,
+        },
+        mailingAddressValidation: {
+          title: 'Confirm mailing address',
+          path: 'organization-mailing-address-validation',
+          depends: formData =>
+            formData?.['view:bioAquiaUspsAddressValidation'] === true,
+          CustomPage: createAddressValidationPage({
+            addressPath: 'burialInformation.recipientOrganization.address',
+            title: 'Confirm mailing address',
+          }),
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: { type: 'object', properties: {} },
         },
       },
     },

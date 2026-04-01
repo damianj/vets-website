@@ -1,17 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Toggler } from 'platform/utilities/feature-toggles';
-
+import { Toggler } from '~/platform/utilities/feature-toggles';
 import { clearNotification } from '../actions';
 import ClaimDetailLayout from '../components/ClaimDetailLayout';
 import AdditionalEvidencePage from '../components/claim-files-tab/AdditionalEvidencePage';
 import ClaimFileHeader from '../components/claim-files-tab/ClaimFileHeader';
-import DocumentsFiled from '../components/claim-files-tab/DocumentsFiled';
 import OtherWaysToSendYourDocuments from '../components/claim-files-tab-v2/OtherWaysToSendYourDocuments';
 import FileSubmissionsInProgress from '../components/claim-files-tab-v2/FileSubmissionsInProgress';
 import FilesReceived from '../components/claim-files-tab-v2/FilesReceived';
 import FilesWeCouldntReceiveEntryPoint from '../components/claim-files-tab-v2/FilesWeCouldntReceiveEntryPoint';
+import ReviewRequestsAlert from '../components/claim-files-tab/ReviewRequestsAlert';
 import UploadType2ErrorAlert from '../components/UploadType2ErrorAlert';
 import withRouter from '../utils/withRouter';
 
@@ -22,6 +21,7 @@ import {
   setTabDocumentTitle,
   getFailedSubmissionsWithinLast30Days,
 } from '../utils/helpers';
+import { getFilesNeeded } from '../utils/trackedItemContent';
 import {
   setUpPage,
   isTab,
@@ -128,28 +128,27 @@ class FilesPage extends React.Component {
     return (
       <div className="claim-files">
         <ClaimFileHeader isOpen={isOpen} />
-        <Toggler toggleName={Toggler.TOGGLE_NAMES.cstShowDocumentUploadStatus}>
+        <UploadType2ErrorAlert
+          failedSubmissions={failedSubmissionsWithinLast30Days}
+          isStatusPage={false}
+        />
+        <Toggler
+          toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
+        >
           <Toggler.Enabled>
-            <UploadType2ErrorAlert
-              failedSubmissions={failedSubmissionsWithinLast30Days}
-              isStatusPage={false}
-            />
-            <AdditionalEvidencePage additionalEvidenceTitle="Upload additional evidence" />
-            <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
-            <FileSubmissionsInProgress claim={claim} />
-            <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
-            <FilesReceived claim={claim} />
-            <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
-            <FilesWeCouldntReceiveEntryPoint
-              evidenceSubmissions={evidenceSubmissions}
-            />
-            <OtherWaysToSendYourDocuments />
+            {getFilesNeeded(trackedItems).length > 0 && <ReviewRequestsAlert />}
           </Toggler.Enabled>
-          <Toggler.Disabled>
-            <AdditionalEvidencePage />
-            <DocumentsFiled claim={claim} />
-          </Toggler.Disabled>
         </Toggler>
+        <AdditionalEvidencePage additionalEvidenceTitle="Upload additional evidence" />
+        <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
+        <FileSubmissionsInProgress claim={claim} />
+        <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
+        <FilesReceived claim={claim} />
+        <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
+        <FilesWeCouldntReceiveEntryPoint
+          evidenceSubmissions={evidenceSubmissions}
+        />
+        <OtherWaysToSendYourDocuments />
       </div>
     );
   }

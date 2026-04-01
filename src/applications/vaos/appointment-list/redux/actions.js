@@ -1,7 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
 import { selectPatientFacilities } from '@department-of-veterans-affairs/platform-user/cerner-dsot/selectors';
-import * as Sentry from '@sentry/browser';
 import {
   selectFeatureCCDirectScheduling,
   selectSystemIds,
@@ -224,7 +223,8 @@ export function fetchFutureAppointments({ includeRequests = true } = {}) {
           ?.filter(appt => appt.videoData.kind === VIDEO_TYPES.clinic)
           .some(appt => !appt.location?.stationId)
       ) {
-        Sentry.captureMessage('VAOS clinic based appointment missing sta6aid');
+        const errorMessage = 'VAOS clinic based appointment missing sta6aid';
+        captureError(new Error(errorMessage), true, errorMessage);
       }
     } catch (error) {
       captureError(error);

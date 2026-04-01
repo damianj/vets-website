@@ -34,7 +34,9 @@
           "postalCode": "56790"
         },
         "applicantPhone": "5555551234",
-        "applicantGender": "male",
+        "applicantGender": {
+          "gender": "male"
+        },
         "applicantRelationshipToSponsor": {
           "relationshipToVeteran": "child"
         },

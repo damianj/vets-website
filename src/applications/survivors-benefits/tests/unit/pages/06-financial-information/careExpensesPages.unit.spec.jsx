@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { render } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import {
   DefinitionTester,
   getFormDOM,
@@ -16,6 +16,69 @@ import {
 } from '../../../../utils/labels';
 
 const arrayPath = 'careExpenses';
+
+const pageNames = [
+  'careExpensesIntro',
+  'careExpensesSummary',
+  'careTypePage',
+  'careRecipientPage',
+  'careDatesPage',
+  'careCostPage',
+];
+
+describe('Care Expenses Pages — depends', () => {
+  pageNames.forEach(pageName => {
+    describe(pageName, () => {
+      let depends;
+
+      beforeEach(() => {
+        depends = careExpensesPages[pageName].depends;
+      });
+
+      it('returns true when survivorsBenefitsForm2025VersionEnabled is false', () => {
+        expect(depends({ survivorsBenefitsForm2025VersionEnabled: false })).to
+          .be.true;
+      });
+
+      it('returns true when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is not in skip list', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'ONE_TO_FOUR_SOURCES',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is not set', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is NO_INCOME but survivorsPension is not true', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns false when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is NO_INCOME', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.false;
+      });
+    });
+  });
+});
 
 describe('Care Expenses Pages', () => {
   describe('typeOfCarePage with feature toggle', () => {
@@ -156,7 +219,7 @@ describe('Care Expenses Pages', () => {
     });
 
     const vaPaymentAmount = $(
-      'va-text-input[label*="How much is each payment?"]',
+      'va-text-input[label*="How much is the payment?"]',
       formDOM,
     );
     expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
@@ -201,7 +264,7 @@ describe('Care Expenses Pages', () => {
     });
 
     const vaPaymentAmount = $(
-      'va-text-input[label*="How much is each payment?"]',
+      'va-text-input[label*="How much is the payment?"]',
       formDOM,
     );
     expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
@@ -254,6 +317,36 @@ describe('Care Expenses Pages', () => {
     // After checking, end date should be hidden
     endDate = $$('va-memorable-date[label*="Care end date"]', formDOM);
     expect(endDate[0]).to.not.exist;
+  });
+
+  it('should check error message when end date is before start date', async () => {
+    const { careDatesPage } = careExpensesPages;
+    const formData = {
+      careDateRange: { from: '2021-01-31', to: '2020-01-01' },
+      noCareEndDate: false,
+    };
+    const testData = { [arrayPath]: [formData] };
+    const { container } = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={careDatesPage.schema}
+        uiSchema={careDatesPage.uiSchema}
+        pagePerItemIndex={0}
+        data={testData}
+      />,
+    );
+
+    fireEvent.submit($('form', container));
+
+    await waitFor(() => {
+      const endDateField = $(
+        'va-memorable-date[label*="Care end date"]',
+        container,
+      );
+      expect(endDateField.getAttribute('error')).to.equal(
+        'End date must be after the start date',
+      );
+    });
   });
 
   it('should check if isItemIncomplete', () => {

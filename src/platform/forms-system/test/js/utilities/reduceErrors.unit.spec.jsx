@@ -727,6 +727,166 @@ describe('Process form validation errors', () => {
     const result = reduceErrors(raw, pages);
     expect(result[0].message).to.equal('Validation error');
   });
+
+  describe('formData threading to _override', () => {
+    it('should pass formData to _override in the __errors branch', () => {
+      const pages = [];
+      const mockFormData = { firstName: 'Jane', lastName: 'Doe' };
+      let capturedArg2;
+      const raw = [
+        {
+          myField: {
+            __errors: ['Some error'],
+          },
+        },
+      ];
+      const reviewErrors = {
+        _override: (_err, arg2) => {
+          capturedArg2 = arg2;
+          return { chapterKey: 'ch1', pageKey: 'pg1' };
+        },
+      };
+      reduceErrors(raw, pages, reviewErrors, mockFormData);
+      expect(capturedArg2).to.have.property('formData');
+      expect(capturedArg2.formData).to.deep.equal(mockFormData);
+      // Original error properties are also preserved
+      expect(capturedArg2).to.have.property('__errors');
+      expect(capturedArg2.__errors).to.deep.equal(['Some error']);
+    });
+
+    it('should pass formData to _override in the property error branch', () => {
+      const pages = [];
+      const mockFormData = { status: 'active' };
+      let capturedArg2;
+      const raw = [
+        {
+          property: 'instance.someField',
+          message: 'requires property "someField"',
+          name: 'required',
+          argument: 'someField',
+          stack: 'instance requires property "someField"',
+        },
+      ];
+      const reviewErrors = {
+        _override: (_err, arg2) => {
+          capturedArg2 = arg2;
+          return { chapterKey: 'ch2', pageKey: 'pg2' };
+        },
+      };
+      reduceErrors(raw, pages, reviewErrors, mockFormData);
+      expect(capturedArg2).to.have.property('formData');
+      expect(capturedArg2.formData).to.deep.equal(mockFormData);
+    });
+
+    it('should pass undefined formData to _override when formData is not provided', () => {
+      const pages = [];
+      let capturedArg2;
+      const raw = [
+        {
+          myField: {
+            __errors: ['Error message'],
+          },
+        },
+      ];
+      const reviewErrors = {
+        _override: (_err, arg2) => {
+          capturedArg2 = arg2;
+          return { chapterKey: 'ch1', pageKey: 'pg1' };
+        },
+      };
+      reduceErrors(raw, pages, reviewErrors);
+      expect(capturedArg2).to.have.property('formData');
+      expect(capturedArg2.formData).to.be.undefined;
+    });
+
+    it('should allow _override to use formData for conditional logic', () => {
+      const pages = [];
+      const mockFormData = { useNewWorkflow: true };
+      const raw = [
+        {
+          conditions: {
+            __errors: ['Missing conditions'],
+          },
+        },
+      ];
+      const reviewErrors = {
+        _override: (_err, arg2) => {
+          if (arg2?.formData?.useNewWorkflow) {
+            return {
+              chapterKey: 'disabilities',
+              pageKey: 'Summary',
+              navigationType: 'redirect',
+            };
+          }
+          return {
+            chapterKey: 'disabilities',
+            pageKey: 'claimType',
+            navigationType: 'redirect',
+          };
+        },
+      };
+      const result = reduceErrors(raw, pages, reviewErrors, mockFormData);
+      expect(result[0].pageKey).to.equal('Summary');
+      expect(result[0].navigationType).to.equal('redirect');
+    });
+
+    it('should return claimType when formData indicates old workflow', () => {
+      const pages = [];
+      const mockFormData = { useNewWorkflow: false };
+      const raw = [
+        {
+          conditions: {
+            __errors: ['Missing conditions'],
+          },
+        },
+      ];
+      const reviewErrors = {
+        _override: (_err, arg2) => {
+          if (arg2?.formData?.useNewWorkflow) {
+            return {
+              chapterKey: 'disabilities',
+              pageKey: 'Summary',
+              navigationType: 'redirect',
+            };
+          }
+          return {
+            chapterKey: 'disabilities',
+            pageKey: 'claimType',
+            navigationType: 'redirect',
+          };
+        },
+      };
+      const result = reduceErrors(raw, pages, reviewErrors, mockFormData);
+      expect(result[0].pageKey).to.equal('claimType');
+      expect(result[0].navigationType).to.equal('redirect');
+    });
+
+    it('should preserve existing error object properties alongside formData', () => {
+      const pages = [];
+      const mockFormData = { name: 'test' };
+      let capturedArg2;
+      const raw = [
+        {
+          myField: {
+            __errors: ['Error A', 'Error B'],
+            stack: 'some.stack',
+            argument: 'myField',
+          },
+        },
+      ];
+      const reviewErrors = {
+        _override: (_err, arg2) => {
+          capturedArg2 = arg2;
+          return null;
+        },
+      };
+      reduceErrors(raw, pages, reviewErrors, mockFormData);
+      expect(capturedArg2.__errors).to.deep.equal(['Error A', 'Error B']);
+      expect(capturedArg2.stack).to.equal('some.stack');
+      expect(capturedArg2.argument).to.equal('myField');
+      expect(capturedArg2.formData).to.deep.equal(mockFormData);
+    });
+  });
 });
 
 describe('getPropertyInfo', () => {

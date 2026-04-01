@@ -15,7 +15,7 @@ describe('STEM claim cards', () => {
   };
 
   beforeEach(() => {
-    mockFeatureToggles({ showDocumentUploadStatus: true });
+    mockFeatureToggles();
     mockClaimsEndpoint();
     mockAppealsEndpoint();
 
@@ -47,42 +47,78 @@ describe('STEM claim cards', () => {
     cy.axeCheck();
   });
 
-  context('when there are upload errors', () => {
-    it('should display upload error alert for failed submissions within last 30 days', () => {
-      setupStemCardsTest([
-        createStemClaim({
-          evidenceSubmissions: [
-            createEvidenceSubmission({
-              uploadStatus: 'FAILED',
-              acknowledgementDate: '2050-01-01T00:00:00.000Z',
-            }),
-          ],
-        }),
-      ]);
+  describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
+    context('when enabled', () => {
+      beforeEach(() => {
+        mockFeatureToggles({
+          cstAlertImprovementsEvidenceRequests: true,
+        });
+      });
 
-      cy.get('va-alert').findByText(
-        'We need you to resubmit files for this claim.',
-      );
+      it('should display action tag when failed submissions exist', () => {
+        setupStemCardsTest([
+          createStemClaim({
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2050-01-01T00:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
 
-      cy.axeCheck();
+        cy.get('va-tag-status[text="Action may be needed"]');
+        cy.get('va-alert[status="error"]').should('not.exist');
+
+        cy.axeCheck();
+      });
+
+      it('should not display action tag when no failed submissions exist', () => {
+        setupStemCardsTest([createStemClaim({})]);
+
+        cy.get('va-tag-status').should('not.exist');
+
+        cy.axeCheck();
+      });
     });
 
-    it('should not display upload error alert for failed submissions older than 30 days', () => {
-      setupStemCardsTest([
-        createStemClaim({
-          evidenceSubmissions: [
-            createEvidenceSubmission({
-              id: 301,
-              acknowledgementDate: '2020-01-01T12:00:00.000Z',
-              failedDate: '2019-12-01T12:00:00.000Z',
-            }),
-          ],
-        }),
-      ]);
+    context('when disabled', () => {
+      it('should display upload error alert for failed submissions within last 30 days', () => {
+        setupStemCardsTest([
+          createStemClaim({
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2050-01-01T00:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
 
-      cy.get('va-alert[status="error"]').should('not.exist');
+        cy.get('va-alert').findByText(
+          'We need you to resubmit files for this claim.',
+        );
+        cy.get('va-tag-status').should('not.exist');
 
-      cy.axeCheck();
+        cy.axeCheck();
+      });
+
+      it('should not display upload error alert for failed submissions older than 30 days', () => {
+        setupStemCardsTest([
+          createStemClaim({
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2020-01-01T12:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
+
+        cy.get('va-alert[status="error"]').should('not.exist');
+
+        cy.axeCheck();
+      });
     });
   });
 });

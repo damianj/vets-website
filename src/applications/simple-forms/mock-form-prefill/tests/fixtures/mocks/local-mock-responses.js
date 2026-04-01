@@ -8,6 +8,10 @@ const mockSipGet = require('./sip-get.json');
 const mockSubmit = require('./application-submit.json');
 const mockVamcEhr = require('./vamc-ehr.json');
 const mockProfileStatus = require('./profile-status.json');
+const mockAddressValidation = require('./address-validation.json');
+const mockProfileTelephones = require('./profile-telephones.json');
+const mockProfileAddresses = require('./profile-addresses.json');
+const mockProfileEmailAddresses = require('./profile-email-addresses.json');
 
 const responses = {
   'GET /v0/user': mockUser,
@@ -18,6 +22,10 @@ const responses = {
   'GET /v0/in_progress_forms/FORM-MOCK-PREFILL': mockSipGet.body,
   'PUT /v0/in_progress_forms/FORM-MOCK-PREFILL': mockSipPut.body,
   'GET /v0/profile/status/*': mockProfileStatus,
+  'POST /v0/profile/address_validation': mockAddressValidation,
+  'PUT /v0/profile/telephones': mockProfileTelephones,
+  'PUT /v0/profile/addresses': mockProfileAddresses,
+  'PUT /v0/profile/email_addresses': mockProfileEmailAddresses,
   'POST /v0/api': mockSubmit,
 };
 

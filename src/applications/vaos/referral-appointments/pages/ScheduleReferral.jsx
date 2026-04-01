@@ -44,6 +44,7 @@ export default function ScheduleReferral(props) {
   };
 
   const canScheduleAppointment =
+    currentReferral.onlineSchedule &&
     currentReferral.provider?.npi &&
     !currentReferral.hasAppointments &&
     stationIdValid;

@@ -25,31 +25,28 @@ const DEFAULT_FEATURES = [
 ];
 
 /**
+ * Toggles in active rollout that tests need to exercise in ON/OFF state.
+ * Maps camelCase option keys to snake_case feature flag names.
+ */
+const ACTIVE_TOGGLES = {
+  cstClaimsListFilter: 'cst_claims_list_filter',
+  cstAlertImprovementsEvidenceRequests:
+    'cst_alert_improvements_evidence_requests',
+};
+
+/**
  * Stubs feature toggles for E2E tests.
  *
- * @param {Object} options - Configuration options
- * @param {boolean} options.showDocumentUploadStatus - Toggle for document upload status feature
- * @param {boolean} options.cstClaimsListFilter - Toggle for claims list filter feature
+ * @param {Object} options - Optional feature toggles to enable/disable
  */
-export const mockFeatureToggles = ({
-  showDocumentUploadStatus,
-  cstClaimsListFilter,
-} = {}) => {
+export const mockFeatureToggles = (options = {}) => {
   const features = [...DEFAULT_FEATURES];
 
-  if (showDocumentUploadStatus !== undefined) {
-    features.push({
-      name: 'cst_show_document_upload_status',
-      value: showDocumentUploadStatus,
-    });
-  }
-
-  if (cstClaimsListFilter !== undefined) {
-    features.push({
-      name: 'cst_claims_list_filter',
-      value: cstClaimsListFilter,
-    });
-  }
+  Object.entries(ACTIVE_TOGGLES).forEach(([key, name]) => {
+    if (options[key] !== undefined) {
+      features.push({ name, value: options[key] });
+    }
+  });
 
   cy.intercept('GET', '/v0/feature_toggles*', { data: { features } });
   // Always needed to prevent real API calls, but not used by claims-status

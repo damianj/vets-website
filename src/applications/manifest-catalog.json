@@ -1,7 +1,7 @@
 {
   "title": "VA.gov Applications Manifest Catalog",
   "description": "Catalog of all applications in src/applications with their manifest.json metadata for reference",
-  "totalApplications": 152,
+  "totalApplications": 153,
   "applications": [
     {
       "directoryPath": "src/applications/_mock-form",
@@ -265,7 +265,7 @@
       "directoryPath": "src/applications/edu-benefits/0989",
       "appName": "22-0989 Request education benefit entitlement restoration online",
       "entryName": "0989-edu-benefits",
-      "rootUrl": "/forms/22-0989/request-education-benefit-entitlement-restoration"
+      "rootUrl": "/forms/22-0989/request-entitlement-restoration"
     },
     {
       "directoryPath": "src/applications/edu-benefits/0994",

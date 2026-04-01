@@ -176,7 +176,35 @@ describe('CurrencyField', () => {
 
     expect(onBlur.calledOnce).to.be.true;
     expect(onBlur.args[0][0]).to.equal('test'); // field name
-    expect(onChange.args[0][0]).to.equal(987.65);
+    expect(onChange.args[0][0]).to.equal(987.65); // non-digit characters ignored, rounded down
+  });
+
+  it('should keep malformed multiple-decimal input invalid on blur', async () => {
+    const onBlur = sinon.spy();
+    const onChange = sinon.spy();
+    const props = getProps({ onBlur, onChange });
+
+    const { container } = render(<CurrencyField {...props} />);
+    const input = $('va-text-input', container);
+    input.value = '12.345.00';
+    await fireEvent.blur(input, { target: { name: '12.345.00' } });
+
+    expect(onBlur.calledOnce).to.be.true;
+    expect(onBlur.args[0][0]).to.equal('test');
+    expect(onChange.args[0][0]).to.equal('12.345.00');
+  });
+
+  it('should keep malformed multiple-decimal input invalid on input', async () => {
+    const onChange = sinon.spy();
+    const props = getProps({ onChange });
+
+    const { container } = render(<CurrencyField {...props} />);
+    const input = $('va-text-input', container);
+    input.value = '12.345.00';
+    await fireEvent.input(input, { target: { name: '12.345.00' } });
+
+    expect(onChange.calledOnce).to.be.true;
+    expect(onChange.args[0][0]).to.equal('12.345.00');
   });
 
   it('should handle an invalid value', async () => {

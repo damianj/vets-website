@@ -19,10 +19,10 @@ import {
 import AddToCalendarButton from '../AddToCalendarButton';
 import Address from '../Address';
 import NewTabAnchor from '../NewTabAnchor';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
   recordAppointmentDetailsNullStates,
-  captureMissingModalityLogs,
 } from '../../utils/events';
 import ClinicName from './ClinicName';
 

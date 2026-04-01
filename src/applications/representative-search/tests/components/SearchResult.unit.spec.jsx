@@ -343,7 +343,7 @@ describe('SearchResults', () => {
       .querySelector('.associated-organizations-info va-additional-info')
       .getAttribute('trigger');
 
-    expect(triggerButton).to.equal('See associated organizations');
+    expect(triggerButton).to.equal('Check organizations for Test Officer');
   });
 
   it('renders distance information when distance is provided', () => {

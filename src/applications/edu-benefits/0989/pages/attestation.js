@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 // @ts-check
 import {
   currentOrPastDateUI,
@@ -8,8 +9,17 @@ import {
   textSchema,
   descriptionUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { parseISODate } from 'platform/forms-system/src/js/helpers';
 
 import { validateNameMatchesUser } from '../helpers';
+
+function validateTodaysDate(errors, fieldData, _formData) {
+  const { day, month, year } = parseISODate(fieldData);
+  const momentDate = moment({ day, month: parseInt(month, 10) - 1, year });
+  if (!momentDate.isSame(moment().endOf('day'), 'day')) {
+    errors.addError("You must enter today's date");
+  }
+}
 
 /** @type {PageSchema} */
 export default {
@@ -43,8 +53,11 @@ export default {
     attestationDate: {
       ...currentOrPastDateUI({
         title: 'Date',
+        hint: "Enter today's date",
+        removeDateHint: true,
         required: () => true,
         monthSelect: false,
+        validations: [validateTodaysDate],
       }),
       'ui:errorMessages': {
         required: 'You must enter a date',

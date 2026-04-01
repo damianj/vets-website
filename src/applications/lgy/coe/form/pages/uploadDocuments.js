@@ -7,18 +7,13 @@ import {
   fileInputMultipleSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { VaSelect } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { serviceStatuses, entitlementRestorationOptions } from '../constants';
+import { serviceStatuses } from '../constants';
 import { FILE_TYPES } from '../../status/constants';
 import { UploadDocumentsReview } from '../components/UploadDocumentsReview';
 import UploadInformation from '../components/UploadInformation';
 import DocumentsNeeded from '../components/DocumentsNeeded';
 
-const containsOneTimeRestoration = formData =>
-  formData?.relevantPriorLoans?.some(
-    loan =>
-      loan?.entitlementRestoration ===
-      entitlementRestorationOptions.ONE_TIME_RESTORATION,
-  );
+const hadPriorLoans = formData => formData?.loanHistory?.hadPriorLoans;
 
 export const DocumentTypeSelect = () => {
   const formData = useSelector(state => state?.form?.data);
@@ -48,7 +43,7 @@ export const DocumentTypeSelect = () => {
     );
   }
 
-  if (containsOneTimeRestoration(formData)) {
+  if (hadPriorLoans(formData)) {
     requiredDocumentTypes.push('Loan evidence');
   }
 
@@ -68,22 +63,12 @@ export const DocumentTypeSelect = () => {
 };
 
 export const getUiSchema = () => ({
-  ...titleUI('Upload documents', ({ formData }) => {
-    const hasOneTimeRestoration = containsOneTimeRestoration(formData);
-    const hasHomeLoanProperty = !!formData?.relevantPriorLoans?.length;
-    return (
-      <>
-        <DocumentsNeeded
-          formData={formData}
-          hasHomeLoanProperty={hasHomeLoanProperty}
-        />
-        <UploadInformation
-          formData={formData}
-          hasOneTimeRestoration={hasOneTimeRestoration}
-        />
-      </>
-    );
-  }),
+  ...titleUI('Upload documents', ({ formData }) => (
+    <>
+      <DocumentsNeeded formData={formData} hadPriorLoans={hadPriorLoans} />
+      <UploadInformation formData={formData} hadPriorLoans={hadPriorLoans} />
+    </>
+  )),
   files2: fileInputMultipleUI({
     title: 'Select a file to upload',
     required: false,

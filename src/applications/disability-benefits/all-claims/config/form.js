@@ -727,8 +727,7 @@ const formConfig = {
          */
         privateMedicalRecordsUpload: {
           title: 'Upload non-VA treatment records',
-          path:
-            'supporting-evidence/private-medical-records-upload-enhancement',
+          path: 'supporting-evidence/private-medical-records-upload-evidence',
           depends: formData =>
             formData.disability526SupportingEvidenceEnhancement &&
             formData.disability526SupportingEvidenceFileInputV3 &&
@@ -743,8 +742,7 @@ const formConfig = {
          */
         privateMedicalRecordsUploadV1: {
           title: 'Upload non-VA treatment records',
-          path:
-            'supporting-evidence/private-medical-records-upload-enhancement-v1',
+          path: 'supporting-evidence/private-medical-records-upload-file',
           depends: formData =>
             formData.disability526SupportingEvidenceEnhancement &&
             !formData.disability526SupportingEvidenceFileInputV3 &&
@@ -819,7 +817,7 @@ const formConfig = {
          */
         evidenceChoiceAdditionalDocuments: {
           title: 'Upload supporting documents and additional forms',
-          path: 'supporting-evidence/additional-evidence-enhancement',
+          path: 'supporting-evidence/additional-evidence-upload-file',
           depends: formData =>
             hasOtherEvidence(formData) &&
             formData.disability526SupportingEvidenceEnhancement &&
@@ -833,7 +831,7 @@ const formConfig = {
          */
         evidenceChoiceAdditionalDocumentsV1: {
           title: 'Upload supporting documents and additional forms',
-          path: 'supporting-evidence/additional-evidence-enhancement-v1',
+          path: 'supporting-evidence/additional-evidence-upload',
           depends: formData =>
             hasOtherEvidence(formData) &&
             formData.disability526SupportingEvidenceEnhancement &&

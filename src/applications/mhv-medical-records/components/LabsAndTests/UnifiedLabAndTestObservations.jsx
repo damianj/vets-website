@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import UnifiedLabAndTestObservationDetail from './UnifiedLabAndTestObservationDetail';
 import ItemList from '../shared/ItemList';
-import { OBSERVATION_DISPLAY_LABELS } from '../../util/constants';
+import {
+  OBSERVATION_DISPLAY_LABELS,
+  interpretationMap,
+} from '../../util/constants';
 
 const UnifiedLabAndTestObservations = props => {
   const { results } = props;
@@ -10,6 +13,10 @@ const UnifiedLabAndTestObservations = props => {
   return (
     <ul className="result-cards">
       {results.map((result, idx) => {
+        const interpretationDisplay = result.interpretation
+          ? interpretationMap[result.interpretation] || result.interpretation
+          : null;
+
         return (
           <li key={idx}>
             <h3
@@ -25,6 +32,13 @@ const UnifiedLabAndTestObservations = props => {
                 value={result.value.text}
                 ddActionName="[lab and tests - result]"
               />
+              {interpretationDisplay && (
+                <UnifiedLabAndTestObservationDetail
+                  header={OBSERVATION_DISPLAY_LABELS.INTERPRETATION}
+                  value={interpretationDisplay}
+                  ddActionName="[lab and tests - interpretation]"
+                />
+              )}
               <UnifiedLabAndTestObservationDetail
                 header={OBSERVATION_DISPLAY_LABELS.REFERENCE_RANGE}
                 value={result.referenceRange}

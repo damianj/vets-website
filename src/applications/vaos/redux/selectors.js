@@ -88,6 +88,9 @@ export const selectFeatureTravelPayViewClaimDetails = state =>
 export const selectFeatureTravelPaySubmitMileageExpense = state =>
   toggleValues(state).travelPaySubmitMileageExpense;
 
+export const selectFeatureTravelPayEnableCommunityCare = state =>
+  toggleValues(state).travelPayEnableCommunityCare;
+
 export const selectPendingAppointments = createSelector(
   state => state.appointments.pending,
   pending =>

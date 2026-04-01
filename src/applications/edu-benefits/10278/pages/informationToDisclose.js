@@ -6,7 +6,6 @@ import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
 import {
   VaCheckbox,
   VaCheckboxGroup,
-  VaTextInput,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import {
   buildValidateAtLeastOne,
@@ -14,7 +13,6 @@ import {
   DISCLOSURE_OPTIONS,
   getFullName,
   getThirdPartyName,
-  validateOtherText,
   InformationToDiscloseReviewField as ReviewField,
 } from '../helpers';
 
@@ -24,10 +22,8 @@ export const InformationToDiscloseReviewField = props => (
     disclosureKeys={DISCLOSURE_KEYS}
     options={DISCLOSURE_OPTIONS}
     dataKey="claimInformation"
-    otherTextKey="otherText"
   />
 );
-const OTHER_TEXT_MAX = 30;
 const DisclosureIntro = ({ claimantName, thirdPartyName }) => (
   <>
     <p>
@@ -39,7 +35,6 @@ const DisclosureIntro = ({ claimantName, thirdPartyName }) => (
 );
 
 const getChecked = e => Boolean(e?.detail?.checked);
-const getValue = e => e?.detail?.value ?? '';
 
 const validateAtLeastOne = buildValidateAtLeastOne(DISCLOSURE_KEYS);
 
@@ -94,10 +89,6 @@ const InformationToDiscloseField = props => {
         next[k] = checked;
       });
 
-      if (!checked) {
-        next.otherText = '';
-      }
-
       onChange(next);
     },
     [formData, keys, onChange],
@@ -107,31 +98,10 @@ const InformationToDiscloseField = props => {
     (key, checked) => {
       const next = { ...(formData || {}), [key]: checked };
 
-      if (key === 'other' && !checked) {
-        next.otherText = '';
-      }
-
       onChange(next);
     },
     [formData, onChange],
   );
-
-  const setOtherExplanation = useCallback(
-    value => {
-      onChange({ ...(formData || {}), otherText: value });
-    },
-    [formData, onChange],
-  );
-
-  const otherChecked = Boolean(formData?.other);
-  const otherHasText = (formData?.otherText || '').trim().length > 0;
-  const otherNeedsError = otherChecked && !otherHasText;
-
-  const otherErrorMessage = errorSchema?.otherText?.__errors?.[0];
-  const computedOtherError =
-    hasAttemptedContinue && otherNeedsError && otherErrorMessage
-      ? otherErrorMessage
-      : undefined;
 
   // Wrapper id for the whole object field
   const wrapperId = idSchema?.$id || 'claimInformation';
@@ -188,23 +158,6 @@ const InformationToDiscloseField = props => {
                   {description}
                 </div>
               ) : null}
-
-              {key === 'other' &&
-                otherChecked && (
-                  <div className="vads-u-margin-left--3 vads-u-margin-top--1">
-                    <VaTextInput
-                      id={idSchema?.otherText?.$id}
-                      label="Specify other information you’d like to disclose"
-                      required={otherChecked}
-                      charcount
-                      maxlength={OTHER_TEXT_MAX}
-                      value={formData?.otherText || ''}
-                      error={computedOtherError}
-                      onVaInput={e => setOtherExplanation(getValue(e))}
-                      onVaChange={e => setOtherExplanation(getValue(e))}
-                    />
-                  </div>
-                )}
             </div>
           );
         })}
@@ -220,7 +173,7 @@ export default {
     claimInformation: {
       'ui:field': InformationToDiscloseField,
       'ui:reviewField': InformationToDiscloseReviewField,
-      'ui:validations': [validateAtLeastOne, validateOtherText],
+      'ui:validations': [validateAtLeastOne],
     },
   },
 
@@ -235,8 +188,6 @@ export default {
           paymentHistory: { type: 'boolean' },
           amountOwed: { type: 'boolean' },
           minor: { type: 'boolean' },
-          other: { type: 'boolean' },
-          otherText: { type: 'string', maxLength: OTHER_TEXT_MAX },
         },
       },
     },

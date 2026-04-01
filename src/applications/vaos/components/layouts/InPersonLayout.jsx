@@ -8,10 +8,10 @@ import {
 import { selectConfirmedAppointmentData } from '../../appointment-list/redux/selectors';
 import { getRealFacilityId } from '../../utils/appointment';
 import { APPOINTMENT_STATUS } from '../../utils/constants';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
   recordAppointmentDetailsNullStates,
-  captureMissingModalityLogs,
 } from '../../utils/events';
 import Address from '../Address';
 import AddToCalendarButton from '../AddToCalendarButton';

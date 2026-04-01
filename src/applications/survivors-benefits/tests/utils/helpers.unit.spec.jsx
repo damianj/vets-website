@@ -11,6 +11,7 @@ import {
   isProductionEnv,
   showMultiplePageResponse,
   addStyleToShadowDomOnPages,
+  shouldSkipExpensePages,
 } from '../../utils/helpers';
 
 describe('534 EZ Form Helper Utils', () => {
@@ -118,6 +119,66 @@ describe('534 EZ Form Helper Utils', () => {
 
     window.sessionStorage.setItem('showMultiplePageResponse', 'false');
     expect(showMultiplePageResponse()).to.be.false;
+  });
+
+  describe('shouldSkipExpensePages', () => {
+    it('returns false when 2025 flag is disabled', () => {
+      expect(
+        shouldSkipExpensePages({
+          survivorsBenefitsForm2025VersionEnabled: false,
+          claims: { survivorsPension: true },
+          moreThanFourIncomeSources: 'NO_INCOME',
+        }),
+      ).to.be.false;
+    });
+
+    it('returns false when survivorsPension is not true', () => {
+      expect(
+        shouldSkipExpensePages({
+          survivorsBenefitsForm2025VersionEnabled: true,
+          moreThanFourIncomeSources: 'NO_INCOME',
+        }),
+      ).to.be.false;
+    });
+
+    it('returns false when moreThanFourIncomeSources is ONE_TO_FOUR_SOURCES', () => {
+      expect(
+        shouldSkipExpensePages({
+          survivorsBenefitsForm2025VersionEnabled: true,
+          claims: { survivorsPension: true },
+          moreThanFourIncomeSources: 'ONE_TO_FOUR_SOURCES',
+        }),
+      ).to.be.false;
+    });
+
+    it('returns false when moreThanFourIncomeSources is MORE_THAN_FIVE_SOURCES', () => {
+      expect(
+        shouldSkipExpensePages({
+          survivorsBenefitsForm2025VersionEnabled: true,
+          claims: { survivorsPension: true },
+          moreThanFourIncomeSources: 'MORE_THAN_FIVE_SOURCES',
+        }),
+      ).to.be.false;
+    });
+
+    it('returns false when moreThanFourIncomeSources is not set', () => {
+      expect(
+        shouldSkipExpensePages({
+          survivorsBenefitsForm2025VersionEnabled: true,
+          claims: { survivorsPension: true },
+        }),
+      ).to.be.false;
+    });
+
+    it('returns true when flag is enabled, survivorsPension is true, and moreThanFourIncomeSources is NO_INCOME', () => {
+      expect(
+        shouldSkipExpensePages({
+          survivorsBenefitsForm2025VersionEnabled: true,
+          claims: { survivorsPension: true },
+          moreThanFourIncomeSources: 'NO_INCOME',
+        }),
+      ).to.be.true;
+    });
   });
 
   it('addStyleToShadowDomOnPages injects a stylesheet', async () => {

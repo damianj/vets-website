@@ -29,6 +29,12 @@ describe('Interstitial page', () => {
       featureToggles: {
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow]: isNewFlow,
       },
+      sm: {
+        recipients: {
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
+        },
+      },
     };
   };
 
@@ -194,6 +200,8 @@ describe('Interstitial page', () => {
               { id: 1, name: 'Team 1' },
               { id: 2, name: 'Team 2' },
             ],
+            noAssociations: false,
+            allTriageGroupsBlocked: false,
           },
         },
       };
@@ -222,6 +230,8 @@ describe('Interstitial page', () => {
         sm: {
           recipients: {
             recentRecipients: [],
+            noAssociations: false,
+            allTriageGroupsBlocked: false,
           },
         },
       };
@@ -262,6 +272,8 @@ describe('Interstitial page', () => {
             { id: 3, name: 'Team 3' },
           ],
           recentRecipients: undefined,
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -290,6 +302,8 @@ describe('Interstitial page', () => {
         recipients: {
           allRecipients: [{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }],
           recentRecipients: [{ id: 1, name: 'Team 1' }],
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -319,6 +333,8 @@ describe('Interstitial page', () => {
             { id: 1, name: 'Team 1' },
             { id: 2, name: 'Team 2' },
           ],
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -381,6 +397,8 @@ describe('Interstitial page', () => {
       sm: {
         recipients: {
           recentRecipients: [],
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -405,6 +423,8 @@ describe('Interstitial page', () => {
       sm: {
         recipients: {
           recentRecipients: [],
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -440,6 +460,8 @@ describe('Interstitial page', () => {
             { id: 1, name: 'Team 1' },
             { id: 2, name: 'Team 2' },
           ],
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -467,6 +489,8 @@ describe('Interstitial page', () => {
       sm: {
         recipients: {
           recentRecipients: [],
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
         },
       },
     };
@@ -526,5 +550,206 @@ describe('Interstitial page', () => {
     // Wait a bit to ensure no redirect happens
     await new Promise(resolve => setTimeout(resolve, 100));
     expect(history.location.pathname).to.equal('/new-message/');
+  });
+
+  describe('loading state', () => {
+    it('shows loading indicator while waiting for recipients API call', () => {
+      const stateWithUndefinedRecipients = {
+        ...initialState(),
+        sm: {
+          recipients: {
+            allRecipients: [],
+            recentRecipients: undefined,
+            noAssociations: undefined,
+            allTriageGroupsBlocked: undefined,
+            error: undefined,
+          },
+        },
+      };
+
+      setup({ customState: stateWithUndefinedRecipients });
+
+      // Should show loading indicator
+      const loadingIndicator = document.querySelector('va-loading-indicator');
+      expect(loadingIndicator).to.exist;
+      expect(loadingIndicator.getAttribute('message')).to.equal('Loading...');
+
+      // Should not show the page content
+      expect(document.querySelector('.interstitial-page')).to.not.exist;
+    });
+
+    it('exits loading state when recipients API call fails', () => {
+      const stateWithError = {
+        ...initialState(),
+        sm: {
+          recipients: {
+            allRecipients: [],
+            recentRecipients: undefined,
+            noAssociations: undefined,
+            allTriageGroupsBlocked: undefined,
+            error: true,
+          },
+        },
+      };
+
+      setup({ customState: stateWithError });
+
+      // Should show loading indicator for redirect
+      const loadingIndicator = document.querySelector('va-loading-indicator');
+      expect(loadingIndicator).to.exist;
+      expect(loadingIndicator.getAttribute('message')).to.equal('Loading...');
+
+      // Should not still be in initial loading state
+      // (verified by the fact that it's showing the redirect loading state)
+    });
+
+    it('shows loading indicator when noAssociations is true before redirect', () => {
+      const stateWithNoAssociations = {
+        ...initialState(),
+        sm: {
+          recipients: {
+            allRecipients: [],
+            recentRecipients: undefined,
+            noAssociations: true,
+            allTriageGroupsBlocked: false,
+            error: false,
+          },
+        },
+      };
+
+      setup({ customState: stateWithNoAssociations });
+
+      // Should show loading indicator for redirect
+      const loadingIndicator = document.querySelector('va-loading-indicator');
+      expect(loadingIndicator).to.exist;
+      expect(loadingIndicator.getAttribute('message')).to.equal('Loading...');
+
+      // Should not show the page content
+      expect(document.querySelector('.interstitial-page')).to.not.exist;
+    });
+
+    it('shows loading indicator when allTriageGroupsBlocked is true before redirect', () => {
+      const stateWithAllBlocked = {
+        ...initialState(),
+        sm: {
+          recipients: {
+            allRecipients: [],
+            recentRecipients: undefined,
+            noAssociations: false,
+            allTriageGroupsBlocked: true,
+            error: false,
+          },
+        },
+      };
+
+      setup({ customState: stateWithAllBlocked });
+
+      // Should show loading indicator for redirect
+      const loadingIndicator = document.querySelector('va-loading-indicator');
+      expect(loadingIndicator).to.exist;
+      expect(loadingIndicator.getAttribute('message')).to.equal('Loading...');
+
+      // Should not show the page content
+      expect(document.querySelector('.interstitial-page')).to.not.exist;
+    });
+
+    it('shows page content when data is loaded and no redirect conditions', () => {
+      const stateWithValidData = {
+        ...initialState(),
+        sm: {
+          recipients: {
+            allRecipients: [{ id: 1, name: 'Team 1' }],
+            recentRecipients: [],
+            noAssociations: false,
+            allTriageGroupsBlocked: false,
+            error: false,
+          },
+        },
+      };
+
+      const screen = setup({ customState: stateWithValidData });
+
+      // Should not show loading indicator
+      expect(document.querySelector('va-loading-indicator')).to.not.exist;
+
+      // Should show the page content
+      expect(screen.getByText(/Only use messages for/)).to.exist;
+      expect(screen.getByText(/non-urgent/)).to.exist;
+    });
+  });
+
+  it('redirects to inbox when noAssociations is true', async () => {
+    const stateWithNoAssociations = {
+      ...initialState(true),
+      sm: {
+        recipients: {
+          allRecipients: [],
+          recentRecipients: undefined,
+          noAssociations: true,
+          allTriageGroupsBlocked: false,
+          error: false,
+        },
+      },
+    };
+
+    const { history } = renderWithStoreAndRouter(<InterstitialPage />, {
+      initialState: stateWithNoAssociations,
+      reducers: reducer,
+      path: '/new-message/',
+    });
+
+    await waitFor(() => {
+      expect(history.location.pathname).to.equal(Paths.INBOX);
+    });
+  });
+
+  it('redirects to inbox when allTriageGroupsBlocked is true', async () => {
+    const stateWithAllBlocked = {
+      ...initialState(true),
+      sm: {
+        recipients: {
+          allRecipients: [],
+          recentRecipients: undefined,
+          noAssociations: false,
+          allTriageGroupsBlocked: true,
+          error: false,
+        },
+      },
+    };
+
+    const { history } = renderWithStoreAndRouter(<InterstitialPage />, {
+      initialState: stateWithAllBlocked,
+      reducers: reducer,
+      path: '/new-message/',
+    });
+
+    await waitFor(() => {
+      expect(history.location.pathname).to.equal(Paths.INBOX);
+    });
+  });
+
+  it('redirects to inbox when recipientsError is true', async () => {
+    const stateWithError = {
+      ...initialState(true),
+      sm: {
+        recipients: {
+          allRecipients: [],
+          recentRecipients: undefined,
+          noAssociations: undefined,
+          allTriageGroupsBlocked: undefined,
+          error: true,
+        },
+      },
+    };
+
+    const { history } = renderWithStoreAndRouter(<InterstitialPage />, {
+      initialState: stateWithError,
+      reducers: reducer,
+      path: '/new-message/',
+    });
+
+    await waitFor(() => {
+      expect(history.location.pathname).to.equal(Paths.INBOX);
+    });
   });
 });

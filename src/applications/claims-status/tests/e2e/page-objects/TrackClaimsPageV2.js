@@ -202,20 +202,6 @@ class TrackClaimsPageV2 {
     );
   }
 
-  verifyNumberOfFiles(number) {
-    cy.get('.tabs li:nth-child(2) > a')
-      .click()
-      .then(() => {
-        cy.get('.additional-evidence-container').should('be.visible');
-        cy.injectAxeThenAxeCheck();
-      });
-    cy.get('a.tab.tab--current').should('contain', 'Files');
-    cy.get('.documents-filed-container > ol > li').should(
-      'have.length',
-      number,
-    );
-  }
-
   verifyFilesReceived(number) {
     cy.get('.tabs li:nth-child(2) > a')
       .click()
@@ -407,7 +393,7 @@ class TrackClaimsPageV2 {
     cy.axeCheck();
   }
 
-  submitFilesForReview(showDocumentUploadStatus = false) {
+  submitFilesForReview() {
     cy.intercept('POST', `/v0/benefits_claims/189685/benefits_documents`, {
       body: {},
     }).as('documents');
@@ -475,10 +461,7 @@ class TrackClaimsPageV2 {
       });
     });
 
-    const alertHeading = showDocumentUploadStatus
-      ? 'Document submission started on'
-      : 'We received your file upload';
-    cy.get('va-alert h2').should('contain', alertHeading);
+    cy.get('va-alert h2').should('contain', 'Document submission started on');
   }
 
   submitFilesShowsError() {
@@ -922,21 +905,6 @@ class TrackClaimsPageV2 {
   navigateToFilesTab() {
     cy.get('#tabFiles').click();
     cy.url().should('contain', '/your-claims/189685/files');
-  }
-
-  verifyNeedToMailDocuments() {
-    cy.get('.additional-evidence-container va-additional-info')
-      .shadow()
-      .find('.additional-info-title')
-      .should('contain', 'Need to mail your documents?');
-    cy.get('.additional-evidence-container va-additional-info')
-      .shadow()
-      .find('a')
-      .click();
-    cy.get('.additional-evidence-container va-additional-info').should(
-      'contain',
-      'Please upload your documents online here to help us process your claim quickly.',
-    );
   }
 
   verifyFirstPartyFriendlyEvidenceRequest() {

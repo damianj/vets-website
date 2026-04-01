@@ -128,5 +128,78 @@ describe('printHelper', () => {
       formatUserDobStub.restore();
       getNameDateAndTimeStub.restore();
     });
+
+    it('should include interpretation in TXT output when present', () => {
+      const formatNameFirstLastStub = sinon
+        .stub(helpers, 'formatNameFirstLast')
+        .returns('John Doe');
+      const formatUserDobStub = sinon
+        .stub(helpers, 'formatUserDob')
+        .returns('01/01/1980');
+      const getNameDateAndTimeStub = sinon
+        .stub(helpers, 'getNameDateAndTime')
+        .returns('2025-04-10');
+
+      const recordWithInterpretation = {
+        ...mockRecord,
+        observations: [
+          {
+            testCode: 'Glucose',
+            value: { text: '250 mg/dL' },
+            referenceRange: '70 - 110',
+            status: 'final',
+            interpretation: 'H',
+            comments: '',
+          },
+        ],
+      };
+
+      const result = txtPrinter({
+        record: recordWithInterpretation,
+        user: mockUser,
+      });
+
+      expect(result.body).to.include('Interpretation: High');
+
+      formatNameFirstLastStub.restore();
+      formatUserDobStub.restore();
+      getNameDateAndTimeStub.restore();
+    });
+
+    it('should not include interpretation line when absent', () => {
+      const formatNameFirstLastStub = sinon
+        .stub(helpers, 'formatNameFirstLast')
+        .returns('John Doe');
+      const formatUserDobStub = sinon
+        .stub(helpers, 'formatUserDob')
+        .returns('01/01/1980');
+      const getNameDateAndTimeStub = sinon
+        .stub(helpers, 'getNameDateAndTime')
+        .returns('2025-04-10');
+
+      const recordWithoutInterpretation = {
+        ...mockRecord,
+        observations: [
+          {
+            testCode: 'Sodium',
+            value: { text: '140 mmol/L' },
+            referenceRange: '136 - 145',
+            status: 'final',
+            comments: '',
+          },
+        ],
+      };
+
+      const result = txtPrinter({
+        record: recordWithoutInterpretation,
+        user: mockUser,
+      });
+
+      expect(result.body).to.not.include('Interpretation:');
+
+      formatNameFirstLastStub.restore();
+      formatUserDobStub.restore();
+      getNameDateAndTimeStub.restore();
+    });
   });
 });

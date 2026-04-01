@@ -1,0 +1,302 @@
+{
+  "vaDependentsNetWorthAndPension": true,
+  "vaDependentsDuplicateModals": true,
+  "useV2": true,
+  "veteranInformation": {
+    "fullName": { "first": "Pauline", "middle": "E", "last": "Foster" },
+    "ssn": "796330625",
+    "birthDate": "1976-06-09",
+    "ssnLastFour": "0625",
+    "vaFileLastFour": "0625",
+    "isInReceiptOfPension": -1
+  },
+  "veteranContactInformation": {
+    "phoneNumber": "8008885555",
+    "emailAddress": "pauline.foster@example.com",
+    "electronicCorrespondence": true,
+    "veteranAddress": {
+      "view:militaryBaseDescription": {},
+      "country": "USA",
+      "street": "4826 Orchid Dr",
+      "city": "Brownsville",
+      "state": "TX",
+      "postalCode": "78526"
+    }
+  },
+  "view:checkVeteranPension": true,
+  "view:addOrRemoveDependents": { "add": true, "remove": true },
+  "view:addDependentOptions": {
+    "addSpouse": true,
+    "addChild": true,
+    "addDisabledChild": true,
+    "report674": true
+  },
+  "view:addDependentOptionsDescription": {},
+  "view:removeDependentOptions": {
+    "reportDivorce": true,
+    "reportDeath": true,
+    "reportStepchildNotInHousehold": true,
+    "reportMarriageOfChildUnder18": true,
+    "reportChild18OrOlderIsNotAttendingSchool": true
+  },
+  "view:selectable686Options": {
+    "addSpouse": true,
+    "addChild": true,
+    "addDisabledChild": true,
+    "report674": true,
+    "reportDivorce": true,
+    "reportDeath": true,
+    "reportStepchildNotInHousehold": true,
+    "reportMarriageOfChildUnder18": true,
+    "reportChild18OrOlderIsNotAttendingSchool": true
+  },
+  "dependents": {
+    "hasDependents": true,
+    "awarded": [
+      {
+        "fullName": { "first": "SPOUSY", "last": "FOSTER" },
+        "dateOfBirth": "1980-07-07",
+        "ssn": "702023332",
+        "relationshipToVeteran": "Spouse",
+        "awardIndicator": "Y"
+      },
+      {
+        "fullName": { "first": "PENNY", "last": "FOSTER" },
+        "dateOfBirth": "2014-08-08",
+        "ssn": "793473479",
+        "relationshipToVeteran": "Child",
+        "awardIndicator": "Y"
+      }
+    ],
+    "notAwarded": []
+  },
+  "spouseInformation": {
+    "fullName": { "first": "Marcus", "middle": "J", "last": "Foster-Spouse" },
+    "birthDate": "1978-03-15",
+    "isVeteran": true,
+    "ssn": "333445555",
+    "vaFileNumber": "987654321",
+    "serviceNumber": "W123456"
+  },
+  "doesLiveWithSpouse": {
+    "spouseDoesLiveWithVeteran": false,
+    "spouseIncome": "Y",
+    "currentSpouseReasonForSeparation": "OTHER",
+    "other": "Work and property management reasons",
+    "address": {
+      "view:militaryBaseDescription": {},
+      "isMilitary": true,
+      "country": "USA",
+      "street": "PSC 555 Box 1234",
+      "city": "APO",
+      "state": "AE",
+      "postalCode": "09012"
+    }
+  },
+  "currentMarriageInformation": {
+    "date": "2020-06-15",
+    "outsideUsa": true,
+    "location": { "city": "London", "country": "GBR" },
+    "typeOfMarriage": "OTHER",
+    "typeOther": "Married by ship captain at sea",
+    "view:marriageTypeInformation": {}
+  },
+  "view:cancelAddSpouse": {},
+  "spouseMarriageHistory": [],
+  "veteranMarriageHistory": [],
+  "view:completedVeteranFormerMarriage": false,
+  "view:completedSpouseFormerMarriage": false,
+  "spouseSupportingDocuments": [
+    {
+      "name": "marriage-certificate-scan.pdf",
+      "confirmationCode": "0a6fc362-f125-4796-84c9-c13435363329",
+      "attachmentId": "",
+      "isEncrypted": false
+    }
+  ],
+  "childrenToAdd": [
+    {
+      "fullName": { "first": "StepChild", "middle": "D", "last": "Foster" },
+      "ssn": "111223333",
+      "birthDate": "2012-04-19",
+      "birthLocation": {
+        "location": { "city": "Fakesville", "state": "CA", "postalCode": "90210" }
+      },
+      "isBiologicalChild": false,
+      "relationshipType": "STEPCHILD",
+      "relationshipToChild": { "stepchild": true, "adopted": true },
+      "view:commonEvidenceInfo": {},
+      "view:stepchildAdditionalEvidenceDescription": {},
+      "view:adoptedAdditionalEvidenceDescription": {},
+      "isBiologicalChildOfSpouse": false,
+      "view:biologicalParentInfo": {},
+      "biologicalParentName": { "first": "John", "last": "BioDad" },
+      "biologicalParentSsn": "444556666",
+      "biologicalParentDob": "1985-09-19",
+      "doesChildHaveDisability": true,
+      "doesChildHavePermanentDisability": true,
+      "view:disabilityInfo": {},
+      "hasChildEverBeenMarried": true,
+      "marriageEndReason": "Other",
+      "marriageEndDate": "2024-08-18",
+      "marriageEndDescription": "Marriage annulled by court",
+      "doesChildLiveWithYou": false,
+      "address": {
+        "view:militaryBaseDescription": {},
+        "country": "USA",
+        "street": "123 Fake St",
+        "city": "Fakesville",
+        "state": "CA",
+        "postalCode": "90210"
+      },
+      "livingWith": { "first": "John", "middle": "G", "last": "BioDad" },
+      "dateEnteredHousehold": "2021-05-19",
+      "incomeInLastYear": "Y"
+    }
+  ],
+  "view:completedAddChild": false,
+  "childSupportingDocuments": [
+    {
+      "name": "birth-certificate-stepchild.pdf",
+      "confirmationCode": "e13a641a-23e0-4e08-aa0f-bfc1b3e61519",
+      "attachmentId": "",
+      "isEncrypted": false
+    }
+  ],
+  "studentInformation": [
+    {
+      "fullName": { "first": "StudentOne", "middle": "M", "last": "Foster" },
+      "ssn": "555667777",
+      "birthDate": "2004-04-19",
+      "relationshipToStudent": "stepchild",
+      "address": {
+        "view:militaryBaseDescription": {},
+        "country": "USA",
+        "street": "789 College Ave",
+        "city": "Austin",
+        "state": "TX",
+        "postalCode": "78701"
+      },
+      "wasMarried": true,
+      "marriageDate": "2024-06-15",
+      "typeOfProgramOrBenefit": "ch35",
+      "tuitionIsPaidByGovAgency": true,
+      "programName": "Federal Tuition Assistance",
+      "view:programExamples": {},
+      "benefitPaymentDate": "2024-01-19",
+      "schoolInformation": {
+        "name": "University of Texas",
+        "studentIsEnrolledFullTime": false,
+        "dateFullTimeEnded": "2025-02-12",
+        "studentDidAttendSchoolLastTerm": true,
+        "lastTermSchoolInformation": {
+          "name": "University of Texas",
+          "termBegin": "2024-08-19",
+          "dateTermEnded": "2024-12-15"
+        },
+        "isSchoolAccredited": true,
+        "view:accredited": {},
+        "currentTermDates": {
+          "officialSchoolStartDate": "2025-01-13",
+          "expectedStudentStartDate": "2025-01-15",
+          "expectedGraduationDate": "2027-05-15"
+        }
+      },
+      "claimsOrReceivesPension": true,
+      "studentIncome": "Y",
+      "studentDidEarnIncomePastYear": true,
+      "studentEarningsFromSchoolYear": {
+        "earningsFromAllEmployment": "5000",
+        "annualSocialSecurityPayments": "0",
+        "otherAnnuitiesIncome": "0",
+        "allOtherIncome": "200"
+      },
+      "studentExpectedEarningsNextYear": {
+        "earningsFromAllEmployment": "6000",
+        "annualSocialSecurityPayments": "0",
+        "otherAnnuitiesIncome": "0",
+        "allOtherIncome": "300"
+      },
+      "studentNetworthInformation": {
+        "savings": "1500",
+        "securities": "0",
+        "realProperty": "0"
+      },
+      "remarks": "Student is on academic scholarship and working part-time."
+    }
+  ],
+  "view:completedStudent": false,
+  "reportDivorce": {
+    "fullName": { "first": "Lauren", "middle": "Q", "last": "Quinlan-Mock" },
+    "birthDate": "1990-09-25",
+    "ssn": "999887777",
+    "date": "2024-06-01",
+    "divorceLocation": { "location": { "city": "Austin", "state": "TX" } },
+    "reasonMarriageEnded": "Other",
+    "explanationOfOther": "Marriage dissolved by foreign tribunal decree",
+    "spouseIncome": "N",
+    "view:cancelDivorce": {}
+  },
+  "stepChildren": [
+    {
+      "fullName": { "first": "StepKid", "middle": "L", "last": "LeftHome" },
+      "ssn": "888776655",
+      "birthDate": "2012-02-19",
+      "dateStepchildLeftHousehold": "2025-01-02",
+      "whoDoesTheStepchildLiveWith": { "first": "Jane", "last": "OtherParent" },
+      "supportingStepchild": true,
+      "livingExpensesPaid": "More than half",
+      "address": {
+        "view:militaryBaseDescription": {},
+        "country": "USA",
+        "street": "123 Other St",
+        "city": "Las Vegas",
+        "state": "NV",
+        "postalCode": "89101"
+      }
+    }
+  ],
+  "view:completedHouseholdChild": false,
+  "deaths": [
+    {
+      "fullName": { "first": "DeceasedChild", "middle": "A", "last": "Foster" },
+      "ssn": "777665544",
+      "birthDate": "2000-06-19",
+      "dependentType": "CHILD",
+      "childStatus": { "childUnder18": true },
+      "dependentDeathDate": "2024-11-05",
+      "dependentDeathLocation": {
+        "outsideUsa": false,
+        "location": { "city": "Miami", "state": "FL" }
+      },
+      "deceasedDependentIncome": "N"
+    }
+  ],
+  "view:completedDependent": false,
+  "childMarriage": [
+    {
+      "fullName": { "first": "MarriedMinor", "middle": "C", "last": "Foster" },
+      "ssn": "333221100",
+      "birthDate": "2008-05-10",
+      "dateMarried": "2025-02-14",
+      "dependentIncome": "N"
+    }
+  ],
+  "view:completedMarriedChild": false,
+  "childStoppedAttendingSchool": [
+    {
+      "fullName": { "first": "DropoutKid", "middle": "E", "last": "Foster" },
+      "ssn": "222110099",
+      "birthDate": "2006-01-30",
+      "dateChildLeftSchool": "2025-01-15",
+      "dependentIncome": "N"
+    }
+  ],
+  "view:completedChildStoppedAttendingSchool": false,
+  "view:householdIncome": true,
+  "householdIncome": false,
+  "view:additionalEvidenceDescription": {},
+  "daysTillExpires": 365,
+  "statementOfTruthSignature": "Pauline E Foster",
+  "statementOfTruthCertified": true
+}

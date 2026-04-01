@@ -95,6 +95,8 @@ export default function ClaimsListItem({ claim }) {
     () => getFailedSubmissionsWithinLast30Days(evidenceSubmissions),
     [evidenceSubmissions],
   );
+  const showActionTag =
+    showAlert || failedSubmissionsWithinLast30Days.length > 0;
 
   return (
     <ClaimCard
@@ -113,25 +115,33 @@ export default function ClaimsListItem({ claim }) {
         {humanStatus && <p>{humanStatus}</p>}
         <p>{getLastUpdated(claim)}</p>
       </div>
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.cstShowDocumentUploadStatus}>
+      <Toggler
+        toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
+      >
         <Toggler.Enabled>
+          {showActionTag && (
+            <va-tag-status status="warning" text="Action may be needed" />
+          )}
+        </Toggler.Enabled>
+        <Toggler.Disabled>
           <UploadType2ErrorAlertSlim
             claimId={claim.id}
             failedSubmissions={failedSubmissionsWithinLast30Days}
           />
-        </Toggler.Enabled>
+          {showAlert && (
+            <va-alert status="info" slim>
+              <span className="vads-u-font-weight--bold">
+                We requested more information from you:
+              </span>{' '}
+              Check the claim details to learn more.
+              <div className="vads-u-margin-top--2">
+                This message will go away when we finish reviewing your
+                response.
+              </div>
+            </va-alert>
+          )}
+        </Toggler.Disabled>
       </Toggler>
-      {showAlert && (
-        <va-alert status="info" slim>
-          <span className="vads-u-font-weight--bold">
-            We requested more information from you:
-          </span>{' '}
-          Check the claim details to learn more.
-          <div className="vads-u-margin-top--2">
-            This message will go away when we finish reviewing your response.
-          </div>
-        </va-alert>
-      )}
       <ClaimCard.Link ariaLabel={ariaLabel} href={href} />
     </ClaimCard>
   );

@@ -1064,7 +1064,7 @@ describe('prescriptionsApi', () => {
   describe('transformPrescriptionDocumentationResponse', () => {
     const mockHtml = '<html><body>Test content</body></html>';
 
-    it('should return sanitized HTML when feature flag is enabled (true)', () => {
+    it('should return sanitized HTML', () => {
       const mockResponse = {
         data: {
           attributes: {
@@ -1072,44 +1072,12 @@ describe('prescriptionsApi', () => {
           },
         },
       };
-      const mockState = {
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvMedicationsEnableKramesHtmlSanitization]: true,
-          loading: false,
-        },
-      };
 
-      const result = transformPrescriptionDocumentationResponse(
-        mockResponse,
-        mockState,
-      );
+      const result = transformPrescriptionDocumentationResponse(mockResponse);
 
       // The result should be different from the original HTML since it's sanitized
       expect(result).to.not.equal(mockHtml);
       expect(result).to.be.a('string');
-    });
-
-    it('should return unsanitized HTML when feature flag is disabled (false)', () => {
-      const mockResponse = {
-        data: {
-          attributes: {
-            html: mockHtml,
-          },
-        },
-      };
-      const mockState = {
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvMedicationsEnableKramesHtmlSanitization]: false,
-          loading: false,
-        },
-      };
-
-      const result = transformPrescriptionDocumentationResponse(
-        mockResponse,
-        mockState,
-      );
-
-      expect(result).to.equal(mockHtml);
     });
 
     it('should return null when html is missing', () => {
@@ -1118,17 +1086,8 @@ describe('prescriptionsApi', () => {
           attributes: {},
         },
       };
-      const mockState = {
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvMedicationsEnableKramesHtmlSanitization]: true,
-          loading: false,
-        },
-      };
 
-      const result = transformPrescriptionDocumentationResponse(
-        mockResponse,
-        mockState,
-      );
+      const result = transformPrescriptionDocumentationResponse(mockResponse);
 
       expect(result).to.be.null;
     });

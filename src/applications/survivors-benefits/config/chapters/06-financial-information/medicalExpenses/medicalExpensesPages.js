@@ -19,15 +19,17 @@ import {
 } from '../../../../utils/labels';
 import { transformDate } from '../../05-claim-information/helpers';
 import { customTextSchema } from '../../../definitions';
-import { formatCurrency } from '../../../../utils/helpers';
+import {
+  formatCurrency,
+  shouldSkipExpensePages,
+} from '../../../../utils/helpers';
 
 function introDescription() {
   return (
     <div>
       <p className="vads-u-margin-top--0">
         We’ll now ask about medical or certain other expenses that aren’t
-        reimbursed. You may add up to 6 medical, last, burial, or other
-        expenses.
+        reimbursed. You may add up to 6 medical or other expenses.
       </p>
       <p>These types of expenses can include:</p>
       <ul>
@@ -48,9 +50,14 @@ function introDescription() {
           <span className="vads-u-font-weight--bold">
             Last or burial expenses{' '}
           </span>
-          that you paid for the last illness and burial of a spouse or child
+          that you paid related to the last illness or burial of the Veteran
         </li>
       </ul>
+      <p>
+        <span className="vads-u-font-weight--bold">Note: </span>
+        We use your expenses to lower the income we count toward your claim. If
+        you have no income to report, you do not need to list any expenses.
+      </p>
 
       <va-additional-info trigger="How to report monthly recurring expenses">
         <p>
@@ -130,14 +137,14 @@ export const options = {
         </span>
       </div>
     ),
-    summaryTitle: 'Review your medical, last, burial, and other expenses',
+    summaryTitle: 'Review your medical and other expenses',
   },
 };
 
 const introPage = {
   uiSchema: {
     ...arrayBuilderItemFirstPageTitleUI({
-      title: 'Medical, last, burial, and other expenses',
+      title: 'Medical and other expenses',
       nounSingular: options.nounSingular,
       nounPlural: options.nounPlural,
     }),
@@ -239,7 +246,7 @@ const frequencyCostPage = {
       labels: frequencyLabels,
     }),
     paymentAmount: currencyUI({
-      title: 'How much is each payment?',
+      title: 'How much is the payment?',
       max: 999999999.0,
     }),
   },
@@ -253,55 +260,39 @@ const frequencyCostPage = {
   },
 };
 
-const SKIP_NO_INCOME_VALUE = ['NO_INCOME'];
-
-const isMedicalExpensesSkipped = formData =>
-  !!formData.survivorsBenefitsForm2025VersionEnabled &&
-  SKIP_NO_INCOME_VALUE.includes(formData?.moreThanFourIncomeSources);
-
 export const medicalExpensesPages = arrayBuilderPages(options, pageBuilder => ({
   medicalExpensesIntro: pageBuilder.introPage({
-    title: 'Medical, last, burial, and other expenses',
+    title: 'Medical and other expenses',
     path: 'financial-information/medical-expenses',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isMedicalExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: introPage.uiSchema,
     schema: introPage.schema,
   }),
   medicalExpensesSummary: pageBuilder.summaryPage({
-    title: 'Medical, last, burial, and other expenses',
+    title: 'Medical and other expenses',
     path: 'financial-information/medical-expenses/add',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isMedicalExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: summaryPage.uiSchema,
     schema: summaryPage.schema,
   }),
   medicalRecipientPage: pageBuilder.itemPage({
     title: 'Medical recipient and provider name',
     path: 'financial-information/medical-expenses/:index/recipient-provider',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isMedicalExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: recipientPage.uiSchema,
     schema: recipientPage.schema,
   }),
   medicalPurposeDatePage: pageBuilder.itemPage({
     title: 'Expense purpose and date',
     path: 'financial-information/medical-expenses/:index/purpose-date',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isMedicalExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: purposeDatePage.uiSchema,
     schema: purposeDatePage.schema,
   }),
   medicalFrequencyCostPage: pageBuilder.itemPage({
     title: 'Frequency and cost of expense',
     path: 'financial-information/medical-expenses/:index/frequency-cost',
-    depends: formData =>
-      formData?.survivorsBenefitsForm2025VersionEnabled &&
-      !isMedicalExpensesSkipped(formData),
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: frequencyCostPage.uiSchema,
     schema: frequencyCostPage.schema,
   }),

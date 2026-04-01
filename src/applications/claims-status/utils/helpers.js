@@ -1105,6 +1105,31 @@ export const buildDateFormatter = (formatString = DATE_FORMATS.LONG_DATE) => {
   };
 };
 
+// VA content style guide: abbreviate months when space is limited, with periods.
+// Don't abbreviate March, April, May, June, July. September abbreviates to "Sept."
+// Jan., Feb., Aug., Sept., Oct., Nov., Dec.
+// https://design.va.gov/content-style-guide/dates-and-numbers#dates
+const VA_LONG_FORM_MONTHS = [2, 3, 4, 5, 6];
+
+// Formats an ISO date string with VA-style abbreviated months
+// e.g. "Jan. 15, 2025", "Sept. 21, 2025", "March 15, 2025"
+export const formatDateShortMonth = dateString => {
+  const date = parseISO(dateString);
+
+  if (!isValid(date)) {
+    return 'Invalid date';
+  }
+
+  if (VA_LONG_FORM_MONTHS.includes(date.getMonth())) {
+    return format(date, 'MMMM d, yyyy');
+  }
+
+  const monthText = format(date, 'MMM');
+  const abbreviatedMonth = monthText === 'Sep' ? 'Sept.' : `${monthText}.`;
+
+  return `${abbreviatedMonth} ${format(date, 'd')}, ${format(date, 'yyyy')}`;
+};
+
 // Helper: Format time in VA.gov standard (h:mm a.m./p.m.)
 const formatTimeVaStyle = date => {
   const time = format(date, 'h:mm a').toLowerCase();
@@ -1353,17 +1378,11 @@ export function setPageFocus(lastPage, loading) {
   }
 }
 
-export const getUploadErrorMessage = (
-  error,
-  claimId,
-  showDocumentUploadStatus = false,
-) => {
+export const getUploadErrorMessage = (error, claimId) => {
   if (error?.errors?.[0]?.detail === 'DOC_UPLOAD_DUPLICATE') {
     const filesPath = `/track-claims/your-claims/${claimId}/files`;
     const isOnFilesPage = window.location.pathname === filesPath;
-    const anchorLink = showDocumentUploadStatus
-      ? ANCHOR_LINKS.filesReceived
-      : ANCHOR_LINKS.documentsFiled;
+    const anchorLink = ANCHOR_LINKS.filesReceived;
     const linkHref = isOnFilesPage
       ? `#${anchorLink}`
       : `${filesPath}#${anchorLink}`;

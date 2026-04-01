@@ -113,10 +113,7 @@ import InsuranceInformationPage from '../components/FormPages/InsuranceInformati
 // declare schema definitions
 const { date } = FULL_SCHEMA.definitions;
 
-/**
- * NOTE: Prefill message data values can be found in
- * `vets-api/config/form_profile_mappings/1010ez.yml`
- */
+/** @type {FormConfig}  */
 const formConfig = {
   rootUrl: manifest.rootUrl,
   urlPrefix: '/',
@@ -158,18 +155,21 @@ const formConfig = {
       path: 'check-your-personal-information',
       component: PersonalInformationPage,
       pageKey: 'verify-personal-information',
+      allowDirectAccess: false,
     },
     {
       path: 'va-benefits-package',
       component: AuthBenefitsPackagePage,
       pageKey: 'auth-va-benefits-package',
       depends: includeRegOnlyAuthQuestions,
+      allowDirectAccess: false,
     },
     {
       path: 'care-for-service-connected-conditions',
       component: AuthRegistrationOnlyPage,
       pageKey: 'auth-reg-only-confirmation',
       depends: showRegOnlyAuthConfirmation,
+      allowDirectAccess: false,
     },
   ],
   confirmation: ConfirmationPage,

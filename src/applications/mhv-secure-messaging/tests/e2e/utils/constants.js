@@ -504,6 +504,7 @@ export const Data = {
     PROFILE_SIGNATURE: `/profile/message-signature`,
     HOME: '/my-health/secure-messages/',
     CONTACT_LIST: '/my-health/secure-messages/contact-list/',
+    RECENT_CARE_TEAMS: '/my-health/secure-messages/new-message/recent/',
     SELECT_CARE_TEAM:
       '/my-health/secure-messages/new-message/select-care-team/',
     CARE_TEAM_HELP: '/my-health/secure-messages/new-message/care-team-help/',

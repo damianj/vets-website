@@ -1,7 +1,7 @@
 import TrackClaimsPageV2 from './page-objects/TrackClaimsPageV2';
 import claimsList from './fixtures/mocks/lighthouse/claims-list.json';
 import claimDetailsOpen from './fixtures/mocks/lighthouse/claim-detail-open.json';
-import featureToggleDocumentUploadStatusDisabled from './fixtures/mocks/lighthouse/feature-toggle-document-upload-status-disabled.json';
+import featureToggleClaimDetailV2Enabled from './fixtures/mocks/lighthouse/feature-toggle-claim-detail-v2-enabled.json';
 
 describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
   // Timezone test data constants
@@ -32,7 +32,7 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
     cy.intercept(
       'GET',
       '/v0/feature_toggles?*',
-      featureToggleDocumentUploadStatusDisabled,
+      featureToggleClaimDetailV2Enabled,
     );
 
     cy.login();
@@ -70,12 +70,9 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
     trackClaimsPage.submitFilesForReview();
   };
 
-  // Helper to verify timezone message content in Recent Activity or Documents Filed
-  const verifyTimezoneMessage = (timezone, selector) => {
-    cy.contains('h3', selector)
-      .parent()
-      .find('p')
-      .first()
+  // Helper to verify timezone message content
+  const verifyTimezoneMessage = timezone => {
+    cy.get('[data-testid="timezone-discrepancy-message-text"]')
       .should('be.visible')
       .invoke('text')
       .then(text => {
@@ -89,21 +86,16 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
   };
 
   // Helper to verify NO timezone message appears
-  const verifyNoTimezoneMessage = selector => {
-    cy.contains('h3', selector)
-      .parent()
-      .find('p')
-      .first()
-      .invoke('text')
-      .then(text => {
-        expect(text).not.to.include('Files uploaded');
-      });
+  const verifyNoTimezoneMessage = () => {
+    cy.get('[data-testid="timezone-discrepancy-message-text"]').should(
+      'not.exist',
+    );
   };
 
   // Helper to verify upload notification heading and time format
   const verifyUploadNotificationHeading = () => {
     cy.get('va-alert h2')
-      .should('contain.text', 'We received your file upload on')
+      .should('contain.text', 'Document submission started on')
       .and('contain.text', 'at');
 
     cy.get('va-alert h2')
@@ -137,7 +129,7 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
       setupWithTimezone(TIMEZONES.CST.offset);
 
       cy.get('.recent-activity-container').should('be.visible');
-      verifyTimezoneMessage(TIMEZONES.CST, 'Recent activity');
+      verifyTimezoneMessage(TIMEZONES.CST);
 
       cy.axeCheck();
     });
@@ -146,7 +138,7 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
       setupWithTimezone(TIMEZONES.JST.offset);
 
       cy.get('.recent-activity-container').should('be.visible');
-      verifyTimezoneMessage(TIMEZONES.JST, 'Recent activity');
+      verifyTimezoneMessage(TIMEZONES.JST);
 
       cy.axeCheck();
     });
@@ -155,7 +147,7 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
       setupWithTimezone(TIMEZONES.UTC.offset);
 
       cy.get('.recent-activity-container').should('be.visible');
-      verifyNoTimezoneMessage('Recent activity');
+      verifyNoTimezoneMessage();
 
       cy.axeCheck();
     });
@@ -165,8 +157,8 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
     it('should display "after" message for CST timezone', () => {
       setupWithTimezone(TIMEZONES.CST.offset, true);
 
-      cy.get('.documents-filed-container').should('be.visible');
-      verifyTimezoneMessage(TIMEZONES.CST, 'Documents filed');
+      cy.get('.file-submissions-in-progress-container').should('be.visible');
+      verifyTimezoneMessage(TIMEZONES.CST);
 
       cy.axeCheck();
     });
@@ -174,8 +166,8 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
     it('should display "before" message for JST timezone', () => {
       setupWithTimezone(TIMEZONES.JST.offset, true);
 
-      cy.get('.documents-filed-container').should('be.visible');
-      verifyTimezoneMessage(TIMEZONES.JST, 'Documents filed');
+      cy.get('.file-submissions-in-progress-container').should('be.visible');
+      verifyTimezoneMessage(TIMEZONES.JST);
 
       cy.axeCheck();
     });
@@ -183,8 +175,8 @@ describe('Date Discrepancy Mitigation - Timezone Awareness', () => {
     it('should NOT display timezone message for UTC timezone', () => {
       setupWithTimezone(TIMEZONES.UTC.offset, true);
 
-      cy.get('.documents-filed-container').should('be.visible');
-      verifyNoTimezoneMessage('Documents filed');
+      cy.get('.file-submissions-in-progress-container').should('be.visible');
+      verifyNoTimezoneMessage();
 
       cy.axeCheck();
     });

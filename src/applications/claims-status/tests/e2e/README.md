@@ -82,10 +82,10 @@ phases.forEach(({ status, expected }) => {
 Group feature flag tests in a dedicated `describe` block using named parameters:
 
 ```javascript
-describe('Feature flag: cstShowDocumentUploadStatus', () => {
+describe('Feature flag: cstSomeFeatureFlag', () => {
   context('when enabled', () => {
     beforeEach(() => {
-      mockFeatureToggles({ showDocumentUploadStatus: true });
+      mockFeatureToggles({ someFeatureFlag: true });
     });
 
     it('should show the new behavior', () => {
@@ -95,7 +95,7 @@ describe('Feature flag: cstShowDocumentUploadStatus', () => {
 
   context('when disabled', () => {
     beforeEach(() => {
-      mockFeatureToggles({ showDocumentUploadStatus: false });
+      mockFeatureToggles({ someFeatureFlag: false });
     });
 
     it('should show the old behavior', () => {

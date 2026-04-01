@@ -73,6 +73,7 @@ export const schema = {
   properties: {
     separationHealthAssessmentUploads: {
       ...fileInputMultipleSchema(),
+      minItems: 1,
       maxItems: 20,
     },
   },

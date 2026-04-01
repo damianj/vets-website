@@ -129,6 +129,9 @@ const uiSchema = {
     'ui:autocomplete': 'country',
     'ui:webComponentField': VaSelectField,
     'ui:required': formData => !formData[MILITARY_BASE_DATA],
+    'ui:errorMessages': {
+      required: 'Select a country',
+    },
     'ui:options': {
       updateSchema: (formData, _schema, _uiSchema) => {
         const data = formData || {};
@@ -158,7 +161,7 @@ const uiSchema = {
     'ui:webComponentField': VaTextInputField,
     'ui:autocomplete': 'address-line1',
     'ui:errorMessages': {
-      required: 'Street address is required',
+      required: 'Enter a street address',
       pattern: `Please enter a valid street address under ${STREET_LINE_MAX_LENGTH} characters`,
     },
     'ui:validations': [validateAsciiCharacters],
@@ -185,7 +188,7 @@ const uiSchema = {
     'ui:webComponentField': VaTextInputField,
     'ui:autocomplete': 'address-level2',
     'ui:errorMessages': {
-      required: 'City is required',
+      required: 'Enter a city',
       pattern: `Please enter a valid city under ${CITY_MAX_LENGTH} characters`,
     },
     'ui:validations': [validateAsciiCharacters],
@@ -221,8 +224,8 @@ const uiSchema = {
     'ui:webComponentField': VaSelectField,
     'ui:autocomplete': 'address-level1',
     'ui:errorMessages': {
-      required: 'State or territory is required',
-      pattern: `Please enter a valid state or territory`,
+      required: 'Enter a valid State, Province, or Region',
+      pattern: `Enter a valid State, Province, or Region`,
     },
     'ui:options': {
       hideIf: formData => formData.countryCodeIso3 !== USA.COUNTRY_ISO3_CODE,
@@ -255,7 +258,7 @@ const uiSchema = {
     'ui:webComponentField': VaTextInputField,
     'ui:autocomplete': 'address-level1',
     'ui:errorMessages': {
-      pattern: `Please enter a valid state, province, or region under ${STATE_MAX_LENGTH} characters`,
+      pattern: `Enter a valid State, Province, or Region`,
     },
     'ui:options': {
       hideIf: formData => formData.countryCodeIso3 === USA.COUNTRY_ISO3_CODE,
@@ -267,8 +270,8 @@ const uiSchema = {
     'ui:webComponentField': VaTextInputField,
     'ui:autocomplete': 'postal-code',
     'ui:errorMessages': {
-      required: 'Zip code is required',
-      pattern: 'Zip code must be 5 digits',
+      required: 'Enter a valid 5-digit zip code',
+      pattern: 'Enter a valid 5-digit zip code',
     },
     'ui:options': {
       widgetClassNames: 'usa-input-medium',

@@ -178,12 +178,20 @@ const RecipientsSelect = ({
 
   useEffect(
     () => {
-      if (defaultValue) {
+      if (defaultValue && comboBoxRef.current) {
         const recipient =
           recipientsList.find(r => +r.id === +defaultValue) || {};
-        comboBoxRef.current?.shadowRoot
-          ?.querySelector('input')
-          ?.setAttribute('value', recipient?.name);
+        const { shadowRoot } = comboBoxRef.current;
+        if (shadowRoot) {
+          const comboBoxEl = shadowRoot.querySelector('.usa-combo-box');
+          const selectEl = shadowRoot.querySelector('.usa-combo-box__select');
+          const inputEl = shadowRoot.querySelector('.usa-combo-box__input');
+          if (comboBoxEl && selectEl && inputEl) {
+            selectEl.value = String(defaultValue);
+            inputEl.value = recipient?.name || '';
+            comboBoxEl.classList.add('usa-combo-box--pristine');
+          }
+        }
       }
     },
     [defaultValue, recipientsList],

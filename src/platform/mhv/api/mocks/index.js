@@ -97,6 +97,7 @@ const responses = {
   // Personal information like preferredName
   'GET /v0/profile/personal_information': personalInformation,
   'GET /my_health/v1/prescriptions': prescriptions.generateMockPrescriptions(),
+  'GET /my_health/v2/prescriptions': prescriptions.v2PrescriptionsHandler,
   'GET /my_health/v1/prescriptions/:id': (req, res) => {
     const { id } = req.params;
     const data = {

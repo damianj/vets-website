@@ -189,6 +189,7 @@ export default {
         keepInPageOnReview: true,
         doNotScroll: true,
         confirmRemove: true,
+        itemAriaLabel: item => `doctor: ${item?.doctorName || 'Doctor'}`,
         updateSchema: (
           _fieldData,
           schema,
@@ -356,6 +357,10 @@ export default {
             confirmRemoveDescription:
               'Are you sure you want to remove this date?',
             addAnotherText: 'Add another treatment date',
+            itemAriaLabel: ({ from, to, startDate, endDate } = {}) =>
+              `Date: ${[from || startDate, to || endDate]
+                .filter(Boolean)
+                .join(' to ')}`,
             updateSchema: updateTreatmentDateSchema,
           },
           items: {

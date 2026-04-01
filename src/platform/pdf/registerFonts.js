@@ -12,6 +12,19 @@ export const knownFonts = {
   'RobotoMono-Regular': 'robotomono-regular.ttf',
 };
 
+// Built-in PDFKit fonts that require no download.
+// Used as fallbacks when custom font downloads fail (e.g. page backgrounded on
+// mobile, Safari fetch failures, corporate proxies blocking .ttf requests).
+export const fallbackFonts = {
+  'Bitter-Bold': 'Helvetica-Bold',
+  'Bitter-Regular': 'Helvetica',
+  'SourceSansPro-Bold': 'Helvetica-Bold',
+  'SourceSansPro-Regular': 'Helvetica',
+  'SourceSansPro-Light': 'Helvetica',
+  'SourceSansPro-Italic': 'Helvetica-Oblique',
+  'RobotoMono-Regular': 'Courier',
+};
+
 const registerLocalFont = (doc, font) => {
   try {
     if (fs.existsSync(`src/site/assets/fonts/${knownFonts[font]}`)) {
@@ -30,18 +43,27 @@ const downloadAndRegisterFont = async (doc, font) => {
   const url = `${bucket}/generated/${knownFonts[font]}`;
   try {
     const request = await fetch(url);
+    if (!request.ok) {
+      throw new Error(`HTTP ${request.status}`);
+    }
     const binaryFont = await request.arrayBuffer();
     const encodedFont = Buffer.from(binaryFont).toString('base64');
     fs.writeFileSync(knownFonts[font], encodedFont);
     doc.registerFont(font, knownFonts[font]);
   } catch (error) {
-    const wrappedError = new Error(
-      `Failed to download or register font ${font} from ${url}: ${
-        error.message
-      }`,
+    const fallback = fallbackFonts[font];
+    if (fallback) {
+      // Register the built-in font under the custom font name so templates
+      // that reference e.g. 'Bitter-Bold' still work with degraded styling.
+      doc.registerFont(font, fallback);
+    }
+    // Log the failure but don't throw — the fallback font allows PDF
+    // generation to continue with degraded styling instead of failing entirely.
+    // eslint-disable-next-line no-console
+    console.error(
+      `Failed to download font ${font} from ${url}, using fallback ${fallback ||
+        'none'}: ${error.message}`,
     );
-    wrappedError.cause = error;
-    throw wrappedError;
   }
 };
 

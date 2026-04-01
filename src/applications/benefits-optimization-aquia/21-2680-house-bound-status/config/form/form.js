@@ -21,6 +21,7 @@ import { IntroductionPage } from '@bio-aquia/21-2680-house-bound-status/containe
 import { ConfirmationPage } from '@bio-aquia/21-2680-house-bound-status/containers/confirmation-page';
 import { submitTransformer } from '@bio-aquia/21-2680-house-bound-status/config/submit-transformer';
 import { customSubmit } from '@bio-aquia/shared/utils';
+import { createAddressValidationPage } from '@bio-aquia/shared/components/pages/AddressValidationPage';
 import manifest from '@bio-aquia/21-2680-house-bound-status/manifest.json';
 
 // Import page configurations (uiSchema and schema)
@@ -141,6 +142,19 @@ const formConfig = {
           uiSchema: veteranAddressUiSchema,
           schema: veteranAddressSchema,
         },
+        veteranAddressValidation: {
+          title: 'Confirm Veteran address',
+          path: 'veteran-address-validation',
+          depends: formData =>
+            formData?.['view:bioAquiaUspsAddressValidation'] === true,
+          CustomPage: createAddressValidationPage({
+            addressPath: 'veteranAddress.veteranAddress',
+            title: "Confirm Veteran's address",
+          }),
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: { type: 'object', properties: {} },
+        },
       },
     },
 
@@ -204,6 +218,20 @@ const formConfig = {
           // Hidden when veteran is claimant
           depends: formData =>
             formData?.claimantRelationship?.relationship !== 'veteran',
+        },
+        claimantAddressValidation: {
+          title: 'Confirm claimant address',
+          path: 'claimant-address-validation',
+          depends: formData =>
+            formData?.claimantRelationship?.relationship !== 'veteran' &&
+            formData?.['view:bioAquiaUspsAddressValidation'] === true,
+          CustomPage: createAddressValidationPage({
+            addressPath: 'claimantAddress.claimantAddress',
+            title: "Confirm claimant's address",
+          }),
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: { type: 'object', properties: {} },
         },
         claimantContact: {
           path: 'claimant-contact',
@@ -343,6 +371,20 @@ const formConfig = {
           schema: hospitalizationFacilitySchema,
           depends: formData =>
             formData?.hospitalizationStatus?.isCurrentlyHospitalized === true,
+        },
+        hospitalizationFacilityAddressValidation: {
+          title: 'Confirm hospital address',
+          path: 'hospitalization-facility-address-validation',
+          depends: formData =>
+            formData?.hospitalizationStatus?.isCurrentlyHospitalized === true &&
+            formData?.['view:bioAquiaUspsAddressValidation'] === true,
+          CustomPage: createAddressValidationPage({
+            addressPath: 'hospitalizationFacility.facilityAddress',
+            title: 'Confirm hospital address',
+          }),
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: { type: 'object', properties: {} },
         },
       },
     },

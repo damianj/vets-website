@@ -37,11 +37,26 @@ describe('Medical Records - SCDF Radiology Images List', () => {
     cy.wait('@labs-and-test-list');
     cy.wait('@imagingStudies');
 
+    // Verify the SCDF images ready alert appears on the list page
+    cy.get('[data-testid="alert-scdf-images-ready"]').should('be.visible');
+    cy.get('[data-testid="scdf-radiology-view-images"]')
+      .should('have.length', 1)
+      .first()
+      .should('contain.text', 'CT HEAD W/O CONTRAST')
+      .and('contain.text', '3 images');
+
     LabsAndTests.selectRadiologyRecord({
       labName: 'CT HEAD W/O CONTRAST',
     });
 
     cy.wait('@imagingThumbnails');
+
+    // Verify the "Images ready" alert appears on the detail page
+    cy.get('[data-testid="alert-images-ready"]').should('be.visible');
+    cy.get('[data-testid="images-ready-view-link"]').should(
+      'contain.text',
+      '3 images',
+    );
 
     LabsAndTests.clickViewAllImages();
 

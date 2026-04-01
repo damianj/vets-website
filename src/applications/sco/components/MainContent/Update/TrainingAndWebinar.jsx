@@ -14,6 +14,11 @@ const TrainingAndWebinar = () => {
         pText="Essential training for VA student enrollment certifications and compliance."
       />
       <LiSpanAndVaLinkAndPTag
+        href="https://benefits.va.gov/gibill/resources/education_resources/school_certifying_officials/covered-educational-institutions.asp"
+        hrefText="Covered Educational Institutions"
+        pText="Educational institutions that have enrolled 20 or more individuals using educational assistance under Title 38, United States Code, during the previous calendar year."
+      />
+      <LiSpanAndVaLinkAndPTag
         href="https://vba-tpss.vbatraining.org/assess/trkSignIn?refid=XSCO"
         hrefText="SCO Training Portal"
         pText="Access to the training portal for school officials."

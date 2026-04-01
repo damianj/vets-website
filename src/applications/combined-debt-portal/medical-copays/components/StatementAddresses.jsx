@@ -37,13 +37,13 @@ const StatementAddresses = ({ copay }) => {
       statementAddress2: station?.staTAddress2,
       statementAddress3: station?.staTAddress3,
       statementCity: station?.city,
-      statementZip: station?.ziPCde,
+      statementZip: station?.ziPCdeOutput,
       statementState: station?.state,
-      recipientAddress1: station?.recipientAddress1,
-      recipientAddress2: station?.recipientAddress2,
-      recipientAddress3: station?.recipientAddress3,
+      recipientAddress1: copay?.pHAddress1,
+      recipientAddress2: copay?.pHAddress2,
+      recipientAddress3: copay?.pHAddress3,
       recipientCity: copay?.pHCity,
-      recipientZip: copay?.pHZipCde,
+      recipientZip: copay?.pHZipCdeOutput,
       recipientState: copay?.pHState,
     };
   };

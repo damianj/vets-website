@@ -14,7 +14,6 @@ describe('useFeatureToggles', () => {
       featureToggles: {
         loading: true,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientCombobox]: false,
-        [FEATURE_FLAG_NAMES.mhvSecureMessagingMilestone2AAL]: false,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingReadReceipts]: false,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCustomFoldersRedesign]: false,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingLargeAttachments]: false,
@@ -38,7 +37,6 @@ describe('useFeatureToggles', () => {
       featureToggles: {
         loading: false,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientCombobox]: true,
-        [FEATURE_FLAG_NAMES.mhvSecureMessagingMilestone2AAL]: true,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingReadReceipts]: true,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCustomFoldersRedesign]: true,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingLargeAttachments]: true,
@@ -59,7 +57,6 @@ describe('useFeatureToggles', () => {
       featureTogglesLoading: false,
       isComboBoxEnabled: true,
       readReceiptsEnabled: true,
-      isAalEnabled: true,
       customFoldersRedesignEnabled: true,
       largeAttachmentsEnabled: true,
       isDowntimeBypassEnabled: true,

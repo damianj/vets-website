@@ -3,6 +3,7 @@
 // - sharedUtils.js (formatting, name helpers, conditional required checks)
 // - arrayBuilderHelpers.js (ArrayBuilder-specific logic and utilities)
 // - sessionHelpers.js (localStorage/sessionStorage/browser-based logic)
+// - follow best practices
 
 import get from 'platform/utilities/data/get';
 import { capitalize } from 'lodash';

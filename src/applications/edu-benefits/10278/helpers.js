@@ -8,7 +8,6 @@ export const DISCLOSURE_KEYS = [
   'paymentHistory',
   'amountOwed',
   'minor',
-  'other',
 ];
 
 export const DISCLOSURE_OPTIONS = {
@@ -19,10 +18,6 @@ export const DISCLOSURE_OPTIONS = {
   minor: {
     title: 'Minor claimants only',
     description: 'This is for change of address or direct deposit',
-  },
-  other: {
-    title: 'Other',
-    description: "Third parties can't initiate any changes to your record",
   },
 };
 
@@ -82,21 +77,6 @@ export const buildValidateAtLeastOne = disclosureKeys => (
   }
 };
 
-/** If "other" is checked, require otherText */
-export const validateOtherText = (errors, fieldData) => {
-  if (fieldData?.other) {
-    const val = (fieldData?.otherText || '').trim();
-    if (!val) {
-      const msg = 'Enter other information';
-      if (errors?.otherText?.addError) {
-        errors.otherText.addError(msg);
-      } else {
-        errors.addError(msg);
-      }
-    }
-  }
-};
-
 export const validateTerminationDate = (errors, dateString) => {
   const { day, month, year } = parseISODate(dateString);
 
@@ -117,22 +97,21 @@ export const validateTerminationDate = (errors, dateString) => {
 
 export const ClaimInformationDescription = ({ formData }) => {
   const claimInformation = formData?.claimInformation;
+  claimInformation.other = Boolean(formData?.claimInformationOther);
   const claimInformationKeys = Object.keys(claimInformation);
-  const claimInformationLabels = claimInformationKeys
-    .filter(key => key !== 'otherText')
-    .map((key, index) => {
-      if (!claimInformation[key]) {
-        return null;
-      }
+  const claimInformationLabels = claimInformationKeys.map((key, index) => {
+    if (!claimInformation[key]) {
+      return null;
+    }
 
-      const specialLabels = {
-        minor: 'Change of address or direct deposit (minor claimants only)',
-        other: `Other: ${claimInformation.otherText}`,
-      };
+    const specialLabels = {
+      minor: 'Change of address or direct deposit (minor claimants only)',
+      other: `Other: ${formData?.claimInformationOther}`,
+    };
 
-      const label = specialLabels[key] || DISCLOSURE_OPTIONS[key];
-      return <li key={index}>{label}</li>;
-    });
+    const label = specialLabels[key] || DISCLOSURE_OPTIONS[key];
+    return <li key={index}>{label}</li>;
+  });
   return (
     <va-card background>
       <div>
@@ -148,6 +127,7 @@ export const ClaimInformationDescription = ({ formData }) => {
 ClaimInformationDescription.propTypes = {
   formData: PropTypes.shape({
     claimInformation: PropTypes.object,
+    claimInformationOther: PropTypes.string,
   }),
 };
 
@@ -156,7 +136,6 @@ export const InformationToDiscloseReviewField = ({
   disclosureKeys,
   options,
   dataKey,
-  otherTextKey,
 }) => {
   const formDataFromChildren = children?.props?.formData;
 
@@ -167,7 +146,6 @@ export const InformationToDiscloseReviewField = ({
       : formDataFromChildren || {};
 
   const isSelected = key => Boolean(value?.[key]);
-  const otherText = (value?.[otherTextKey] || '').trim();
 
   return (
     <>
@@ -177,11 +155,7 @@ export const InformationToDiscloseReviewField = ({
 
         let ddValue = '';
 
-        if (key === 'other') {
-          if (isSelected('other')) {
-            ddValue = otherText || 'Selected';
-          }
-        } else if (isSelected(key)) {
+        if (isSelected(key)) {
           ddValue = 'Selected';
         }
 
@@ -210,5 +184,4 @@ InformationToDiscloseReviewField.propTypes = {
   dataKey: PropTypes.string,
   disclosureKeys: PropTypes.arrayOf(PropTypes.string),
   options: PropTypes.object,
-  otherTextKey: PropTypes.string,
 };

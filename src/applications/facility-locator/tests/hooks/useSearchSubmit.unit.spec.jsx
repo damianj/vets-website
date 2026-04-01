@@ -35,6 +35,8 @@ describe('useSearchSubmit hook', () => {
     mobileMapUpdateEnabled: false,
     selectMobileMapPin: sinon.spy(),
     setSearchInitiated: sinon.spy(),
+    setSubmitErrors: sinon.spy(),
+    clearSubmitErrors: sinon.spy(),
   });
 
   const createMockEvent = () => ({
@@ -325,6 +327,54 @@ describe('useSearchSubmit hook', () => {
       });
 
       expect(props.onSubmit.calledOnce).to.be.true;
+    });
+  });
+
+  describe('validation - simultaneous errors', () => {
+    it('should set both locationChanged and serviceTypeChanged for CC_PROVIDER with no searchString', () => {
+      const props = getDefaultProps();
+      props.draftFormState = {
+        ...getDefaultDraftFormState(),
+        facilityType: LocationType.CC_PROVIDER,
+        serviceType: null,
+        searchString: '',
+      };
+      props.selectedServiceType = null;
+      const { result } = renderHook(() => useSearchSubmit(props));
+
+      act(() => {
+        result.current.handleSubmit(createMockEvent());
+      });
+
+      expect(props.setDraftFormState.calledOnce).to.be.true;
+      const updater = props.setDraftFormState.firstCall.args[0];
+      const newState = updater(props.draftFormState);
+      expect(newState.locationChanged).to.be.true;
+      expect(newState.serviceTypeChanged).to.be.true;
+      expect(newState.isValid).to.be.false;
+      expect(props.onSubmit.called).to.be.false;
+    });
+
+    it('should set both locationChanged and facilityTypeChanged when both are empty', () => {
+      const props = getDefaultProps();
+      props.draftFormState = {
+        ...getDefaultDraftFormState(),
+        facilityType: null,
+        searchString: '',
+      };
+      const { result } = renderHook(() => useSearchSubmit(props));
+
+      act(() => {
+        result.current.handleSubmit(createMockEvent());
+      });
+
+      expect(props.setDraftFormState.calledOnce).to.be.true;
+      const updater = props.setDraftFormState.firstCall.args[0];
+      const newState = updater(props.draftFormState);
+      expect(newState.locationChanged).to.be.true;
+      expect(newState.facilityTypeChanged).to.be.true;
+      expect(newState.isValid).to.be.false;
+      expect(props.onSubmit.called).to.be.false;
     });
   });
 

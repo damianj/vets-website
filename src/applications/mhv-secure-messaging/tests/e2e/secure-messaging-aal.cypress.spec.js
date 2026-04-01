@@ -5,19 +5,11 @@ import { AXE_CONTEXT, Locators, Paths } from './utils/constants';
 import mockEhrData from './fixtures/userResponse/vamc-ehr-cerner-mixed.json';
 import mockPretransitionedCernerFacilitiesUser from './fixtures/userResponse/user-cerner-mixed-pretransitioned.json';
 import mockFacilities from './fixtures/facilityResponse/cerner-facility-mock-data.json';
-import mockFeatureToggles from './fixtures/toggles-response.json';
 
 describe('SECURE MESSAGING AAL', () => {
-  const customFeatureToggles = GeneralFunctionsPage.updateFeatureToggles([
-    {
-      name: 'mhv_secure_messaging_milestone_2_aal',
-      value: true,
-    },
-  ]);
-
   describe('AAL tests for non OH user', () => {
     it('should submit API call to log Launch Messages AAL', () => {
-      SecureMessagingSite.login(customFeatureToggles);
+      SecureMessagingSite.login();
       cy.intercept('POST', Paths.AAL, {
         statusCode: 204,
       }).as('submitLaunchMessagingAal');
@@ -37,23 +29,12 @@ describe('SECURE MESSAGING AAL', () => {
       });
       cy.injectAxeThenAxeCheck(AXE_CONTEXT);
     });
-
-    it('should not submit API call to log Launch Messages AAL when feature flag is disabled', () => {
-      SecureMessagingSite.login();
-      cy.intercept('POST', Paths.AAL, {
-        statusCode: 204,
-      }).as('submitLaunchMessagingAal');
-      PatientInboxPage.loadInboxMessages();
-
-      cy.get('@submitLaunchMessagingAal.all').should('have.length', 0);
-      cy.injectAxeThenAxeCheck(AXE_CONTEXT);
-    });
   });
 
   describe('AAL tests for OH user', () => {
     it('should submit API call to log Launch My VA Health AAL', () => {
       SecureMessagingSite.login(
-        customFeatureToggles,
+        GeneralFunctionsPage.updateFeatureToggles([]),
         mockEhrData,
         true,
         mockPretransitionedCernerFacilitiesUser,
@@ -82,28 +63,6 @@ describe('SECURE MESSAGING AAL', () => {
           product: 'sm',
         });
       });
-    });
-
-    it('should not submit API call to log Launch My VA Health AAL when feature flag is disabled', () => {
-      SecureMessagingSite.login(
-        mockFeatureToggles,
-        mockEhrData,
-        true,
-        mockPretransitionedCernerFacilitiesUser,
-        mockFacilities,
-      );
-      cy.intercept('POST', Paths.AAL, {
-        statusCode: 204,
-      }).as('submitLaunchMessagingAal');
-      PatientInboxPage.loadInboxMessages();
-
-      cy.injectAxeThenAxeCheck(AXE_CONTEXT);
-
-      cy.get(Locators.ALERTS.CERNER_ALERT)
-        .find('va-link-action')
-        .click();
-
-      cy.get('@submitLaunchMessagingAal.all').should('have.length', 0);
     });
   });
 });

@@ -55,7 +55,7 @@ class YourClaimsPageV2 extends React.Component {
       page: YourClaimsPageV2.getPageFromURL(props),
       claimsFilter: props.cstClaimsListFilterEnabled
         ? sessionStorage.getItem('claimsFilter') || FILTER_VALUES.IN_PROGRESS
-        : FILTER_VALUES.IN_PROGRESS,
+        : FILTER_VALUES.ALL,
     };
   }
 
@@ -301,31 +301,37 @@ class YourClaimsPageV2 extends React.Component {
             )}
             {content}
             <ClaimLetterSection />
-            <h2 id="what-if-i-dont-see-my-appeal">
-              What if I can't find my claim, decision review, or appeal?
-            </h2>
             {cstClaimsListFilterEnabled ? (
               <>
+                <h2 id="if-you-cant-find-your-appeal">
+                  If you can't find your claim, decision review, or appeal
+                </h2>
                 <h3>We might still be processing it</h3>
                 <p>
                   If you recently submitted a claim or requested a Higher-Level
-                  Review or Board Appeal, we might still be processing it. Check
-                  back for updates.
+                  Review or Board Appeal, we might still be processing it. You
+                  can check back for updates.
                 </p>
                 <h3>We may have combined your claims</h3>
                 <p>
-                  If you turn in a new claim while we're reviewing another one,
-                  we may combine your claims. We'll add any new information to
-                  your existing claim. You may not see a separate entry for the
-                  new claim. You don't need to do anything.
+                  If you submit a new claim while we're reviewing an existing
+                  one, we may combine your claims. If we combine your claims,
+                  we'll add any new information to your existing claim. This
+                  means you may not find your new claim in your list. You don't
+                  need to do anything.
                 </p>
               </>
             ) : (
-              <p>
-                If you recently submitted a claim or requested a Higher Level
-                Review or Board appeal, we might still be processing it. Check
-                back for updates.
-              </p>
+              <>
+                <h2 id="what-if-i-dont-see-my-appeal">
+                  What if I can't find my claim, decision review, or appeal?
+                </h2>
+                <p>
+                  If you recently submitted a claim or requested a Higher Level
+                  Review or Board appeal, we might still be processing it. Check
+                  back for updates.
+                </p>
+              </>
             )}
             <TravelClaimsSection />
             <FeaturesWarning />

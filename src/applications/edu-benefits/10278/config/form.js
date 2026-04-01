@@ -30,6 +30,7 @@ import {
   thirdPartyPersonName,
   thirdPartyPersonAddress,
   discloseInformation,
+  informationToDiscloseOther,
   lengthOfRelease,
   securitySetup,
   securitySetupPinPassword,
@@ -239,6 +240,12 @@ const formConfig = {
             }
             goPath('/third-party-person-details-1');
           },
+        },
+        informationToDiscloseOther: {
+          path: 'information-to-disclose-other',
+          title: 'Other information to disclose',
+          uiSchema: informationToDiscloseOther.uiSchema,
+          schema: informationToDiscloseOther.schema,
         },
       },
     },

@@ -248,33 +248,4 @@ describe('static <Footer> minimal-footer with various options', () => {
 
     expectMinimalFooterExists(container);
   });
-
-  // Fallback tests: old content-build without #footer-minimal
-  it('should render minimal footer using fallback data attributes', () => {
-    const { container } = setup({
-      footerHTML: '<div id="footerNav" data-minimal-footer="true"></div>',
-      path: '/introduction',
-    });
-
-    expectMinimalFooterExists(container);
-  });
-
-  it('should not render minimal footer using fallback when false', () => {
-    const { container } = setup({
-      footerHTML: '<div id="footerNav" data-minimal-footer="false"></div>',
-      path: '/introduction',
-    });
-
-    expectMinimalFooterDoesNotExist(container);
-  });
-
-  it('should not render minimal footer using fallback on excluded path', () => {
-    const { container } = setup({
-      footerHTML:
-        '<div id="footerNav" data-minimal-footer="true" data-minimal-exclude-paths="[&quot;/introduction&quot;]"></div>',
-      path: '/introduction',
-    });
-
-    expectMinimalFooterDoesNotExist(container);
-  });
 });

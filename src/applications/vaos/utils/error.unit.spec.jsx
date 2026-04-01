@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { datadogRum } from '@datadog/browser-rum';
-import { captureError, getErrorCodes } from './error';
+import * as eventsModule from './events';
+import {
+  captureError,
+  captureMissingModalityLogs,
+  getErrorCodes,
+} from './error';
 
 describe('VAOS Utils: error', () => {
   let sandbox;
@@ -103,6 +108,95 @@ describe('VAOS Utils: error', () => {
         title: 'vaos_server_error: X',
       });
       expect(addErrorStub.firstCall.args[1].data).to.deep.equal(data);
+    });
+  });
+
+  describe('captureMissingModalityLogs', () => {
+    it('should send Error and modality context to Datadog without GA vaos-error', () => {
+      const recordVaosErrorStub = sandbox.stub(eventsModule, 'recordVaosError');
+      const appointment = {
+        type: 'va',
+        modality: undefined,
+        vaos: {
+          apiData: {
+            start: '2025-01-01',
+            created: '2024-12-01',
+            status: 'booked',
+            past: false,
+            pending: false,
+            future: true,
+            serviceType: 'primaryCare',
+            serviceCategory: null,
+            kind: 'clinic',
+            telehealth: { vvsKind: 'VIDEO', atlas: null },
+            extension: { vvsVistaVideoAppt: false },
+            modality: null,
+            providerName: null,
+            providerServiceId: 'ps-1',
+            referral: null,
+            referralId: null,
+          },
+          isCerner: false,
+        },
+      };
+
+      captureMissingModalityLogs(appointment);
+
+      expect(recordVaosErrorStub.called).to.be.false;
+      expect(addErrorStub.calledOnce).to.be.true;
+      const errArg = addErrorStub.firstCall.args[0];
+      expect(errArg).to.be.instanceOf(Error);
+      expect(errArg.message).to.equal(
+        'VAOS appointment with missing modality: undefined.',
+      );
+      expect(addErrorStub.firstCall.args[1]).to.deep.include({
+        app: 'VAOS',
+        kind: 'vaos_exception',
+        title: 'VAOS appointment with missing modality: undefined.',
+      });
+      expect(addErrorStub.firstCall.args[1].data).to.deep.equal({
+        start: '2025-01-01',
+        created: '2024-12-01',
+        status: 'booked',
+        past: false,
+        pending: false,
+        future: true,
+        serviceType: 'primaryCare',
+        serviceCategory: null,
+        kind: 'clinic',
+        vvsKind: 'VIDEO',
+        hasAtlas: false,
+        vvsVideoAppt: false,
+        apiModality: null,
+        hasProviderName: false,
+        providerServiceId: 'ps-1',
+        hasReferral: false,
+        referralId: null,
+        type: 'va',
+        modality: undefined,
+        isCerner: false,
+      });
+    });
+
+    it('should attach metadataError when building context throws', () => {
+      const appointment = {
+        type: 'va',
+        modality: null,
+        vaos: {},
+      };
+
+      captureMissingModalityLogs(appointment);
+
+      expect(addErrorStub.calledOnce).to.be.true;
+      expect(addErrorStub.firstCall.args[0].message).to.equal(
+        'VAOS appointment with missing modality: null.',
+      );
+      expect(addErrorStub.firstCall.args[1].data).to.have.property(
+        'metadataError',
+      );
+      expect(
+        addErrorStub.firstCall.args[1].data.metadataError,
+      ).to.be.instanceOf(Error);
     });
   });
 });

@@ -19,6 +19,10 @@ const responses = {
           name: 'form214140_validate_dob',
           value: false,
         },
+        {
+          name: 'form_21_4140_minimal_header',
+          value: true,
+        },
       ],
     },
   },

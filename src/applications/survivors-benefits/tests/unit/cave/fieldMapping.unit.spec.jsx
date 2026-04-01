@@ -73,30 +73,39 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns VETERAN_NAME when first is present', () => {
-          const name = { first: 'John', last: '' };
+        it('getArtifactValue returns veteranName when both first and last are present', () => {
+          const name = { first: 'John', last: 'Smith' };
           expect(
-            artifact.getArtifactValue({ VETERAN_NAME: name }),
+            artifact.getArtifactValue({ veteranName: name }),
           ).to.deep.equal(name);
         });
 
-        it('getArtifactValue returns VETERAN_NAME when last is present', () => {
-          const name = { first: '', last: 'Smith' };
+        it('getArtifactValue returns null when only first is present', () => {
           expect(
-            artifact.getArtifactValue({ VETERAN_NAME: name }),
-          ).to.deep.equal(name);
+            artifact.getArtifactValue({
+              veteranName: { first: 'John', last: '' },
+            }),
+          ).to.be.null;
+        });
+
+        it('getArtifactValue returns null when only last is present', () => {
+          expect(
+            artifact.getArtifactValue({
+              veteranName: { first: '', last: 'Smith' },
+            }),
+          ).to.be.null;
         });
 
         it('getArtifactValue returns null when neither first nor last', () => {
           expect(
             artifact.getArtifactValue({
-              VETERAN_NAME: { first: '', last: '' },
+              veteranName: { first: '', last: '' },
             }),
           ).to.be.null;
         });
 
-        it('getArtifactValue returns null when VETERAN_NAME is null', () => {
-          expect(artifact.getArtifactValue({ VETERAN_NAME: null })).to.be.null;
+        it('getArtifactValue returns null when veteranName is null', () => {
+          expect(artifact.getArtifactValue({ veteranName: null })).to.be.null;
         });
 
         it('formatArtifactValue returns formatted name', () => {
@@ -105,10 +114,10 @@ describe('cave/fieldMapping', () => {
           ).to.equal('John Smith');
         });
 
-        it('setArtifactValue sets VETERAN_NAME', () => {
+        it('setArtifactValue sets veteranName', () => {
           const canonical = { first: 'Jane', last: 'Doe' };
           expect(
-            artifact.setArtifactValue({}, canonical).VETERAN_NAME,
+            artifact.setArtifactValue({}, canonical).veteranName,
           ).to.deep.equal(canonical);
         });
       });
@@ -118,22 +127,30 @@ describe('cave/fieldMapping', () => {
           a => a.artifactKey === 'deathCertificates',
         );
 
-        it('getArtifactValue returns DECENDENT_FULL_NAME when first is present', () => {
-          const name = { first: 'Pat', last: '' };
+        it('getArtifactValue returns decendentFullName when both first and last are present', () => {
+          const name = { first: 'Pat', last: 'Smith' };
           expect(
-            artifact.getArtifactValue({ DECENDENT_FULL_NAME: name }),
+            artifact.getArtifactValue({ decendentFullName: name }),
           ).to.deep.equal(name);
         });
 
+        it('getArtifactValue returns null when only first is present', () => {
+          expect(
+            artifact.getArtifactValue({
+              decendentFullName: { first: 'Pat', last: '' },
+            }),
+          ).to.be.null;
+        });
+
         it('getArtifactValue returns null when no name parts', () => {
-          expect(artifact.getArtifactValue({ DECENDENT_FULL_NAME: null })).to.be
+          expect(artifact.getArtifactValue({ decendentFullName: null })).to.be
             .null;
         });
 
-        it('setArtifactValue sets DECENDENT_FULL_NAME', () => {
+        it('setArtifactValue sets decendentFullName', () => {
           const canonical = { first: 'Pat', last: 'Veteran' };
           expect(
-            artifact.setArtifactValue({}, canonical).DECENDENT_FULL_NAME,
+            artifact.setArtifactValue({}, canonical).decendentFullName,
           ).to.deep.equal(canonical);
         });
       });
@@ -184,14 +201,14 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns VETERAN_SSN', () => {
+        it('getArtifactValue returns veteranSsn', () => {
           expect(
-            artifact.getArtifactValue({ VETERAN_SSN: '123456789' }),
+            artifact.getArtifactValue({ veteranSsn: '123456789' }),
           ).to.equal('123456789');
         });
 
         it('getArtifactValue returns null for empty string', () => {
-          expect(artifact.getArtifactValue({ VETERAN_SSN: '' })).to.be.null;
+          expect(artifact.getArtifactValue({ veteranSsn: '' })).to.be.null;
         });
 
         it('getArtifactValue returns null when field missing', () => {
@@ -206,9 +223,9 @@ describe('cave/fieldMapping', () => {
           );
         });
 
-        it('setArtifactValue strips non-digits and sets VETERAN_SSN', () => {
+        it('setArtifactValue strips non-digits and sets veteranSsn', () => {
           const result = artifact.setArtifactValue({}, '123-45-6789');
-          expect(result.VETERAN_SSN).to.equal('123456789');
+          expect(result.veteranSsn).to.equal('123456789');
         });
       });
 
@@ -217,20 +234,20 @@ describe('cave/fieldMapping', () => {
           a => a.artifactKey === 'deathCertificates',
         );
 
-        it('getArtifactValue returns DECENDENT_SSN', () => {
+        it('getArtifactValue returns decendentSsn', () => {
           expect(
-            artifact.getArtifactValue({ DECENDENT_SSN: '987654321' }),
+            artifact.getArtifactValue({ decendentSsn: '987654321' }),
           ).to.equal('987654321');
         });
 
         it('getArtifactValue returns null for missing/empty', () => {
-          expect(artifact.getArtifactValue({ DECENDENT_SSN: null })).to.be.null;
+          expect(artifact.getArtifactValue({ decendentSsn: null })).to.be.null;
           expect(artifact.getArtifactValue({})).to.be.null;
         });
 
-        it('setArtifactValue strips non-digits and sets DECENDENT_SSN', () => {
+        it('setArtifactValue strips non-digits and sets decendentSsn', () => {
           const result = artifact.setArtifactValue({}, '987-65-4321');
-          expect(result.DECENDENT_SSN).to.equal('987654321');
+          expect(result.decendentSsn).to.equal('987654321');
         });
       });
     });
@@ -263,11 +280,11 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns VETERAN_DOB or null', () => {
+        it('getArtifactValue returns veteranDob or null', () => {
           expect(
-            artifact.getArtifactValue({ VETERAN_DOB: '1950-03-15' }),
+            artifact.getArtifactValue({ veteranDob: '1950-03-15' }),
           ).to.equal('1950-03-15');
-          expect(artifact.getArtifactValue({ VETERAN_DOB: '' })).to.be.null;
+          expect(artifact.getArtifactValue({ veteranDob: '' })).to.be.null;
         });
 
         it('formatArtifactValue formats an ISO date', () => {
@@ -276,9 +293,9 @@ describe('cave/fieldMapping', () => {
           );
         });
 
-        it('setArtifactValue sets VETERAN_DOB', () => {
+        it('setArtifactValue sets veteranDob', () => {
           expect(
-            artifact.setArtifactValue({}, '1950-03-15').VETERAN_DOB,
+            artifact.setArtifactValue({}, '1950-03-15').veteranDob,
           ).to.equal('1950-03-15');
         });
       });
@@ -309,10 +326,10 @@ describe('cave/fieldMapping', () => {
           a => a.artifactKey === 'deathCertificates',
         );
 
-        it('getArtifactValue returns DECENDENT_DATE_OF_DEATH or null', () => {
+        it('getArtifactValue returns decendentDateOfDeath or null', () => {
           expect(
             artifact.getArtifactValue({
-              DECENDENT_DATE_OF_DEATH: '2020-01-05',
+              decendentDateOfDeath: '2020-01-05',
             }),
           ).to.equal('2020-01-05');
           expect(artifact.getArtifactValue({})).to.be.null;
@@ -324,9 +341,9 @@ describe('cave/fieldMapping', () => {
           );
         });
 
-        it('setArtifactValue sets DECENDENT_DATE_OF_DEATH', () => {
+        it('setArtifactValue sets decendentDateOfDeath', () => {
           expect(
-            artifact.setArtifactValue({}, '2020-01-05').DECENDENT_DATE_OF_DEATH,
+            artifact.setArtifactValue({}, '2020-01-05').decendentDateOfDeath,
           ).to.equal('2020-01-05');
         });
       });
@@ -370,24 +387,23 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns BRANCH_OF_SERVICE', () => {
+        it('getArtifactValue returns branchOfService', () => {
           expect(
-            artifact.getArtifactValue({ BRANCH_OF_SERVICE: 'army' }),
+            artifact.getArtifactValue({ branchOfService: 'army' }),
           ).to.equal('army');
         });
 
         it('getArtifactValue returns null for empty string', () => {
-          expect(artifact.getArtifactValue({ BRANCH_OF_SERVICE: '' })).to.be
-            .null;
+          expect(artifact.getArtifactValue({ branchOfService: '' })).to.be.null;
         });
 
         it('formatArtifactValue returns human-readable label', () => {
           expect(artifact.formatArtifactValue('navy')).to.equal('Navy');
         });
 
-        it('setArtifactValue sets BRANCH_OF_SERVICE', () => {
+        it('setArtifactValue sets branchOfService', () => {
           expect(
-            artifact.setArtifactValue({}, 'navy').BRANCH_OF_SERVICE,
+            artifact.setArtifactValue({}, 'navy').branchOfService,
           ).to.equal('navy');
         });
       });
@@ -426,19 +442,19 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns DATE_ENTERED_ACTIVE_SERVICE or null', () => {
+        it('getArtifactValue returns dateEnteredActiveService or null', () => {
           expect(
             artifact.getArtifactValue({
-              DATE_ENTERED_ACTIVE_SERVICE: '1970-02-15',
+              dateEnteredActiveService: '1970-02-15',
             }),
           ).to.equal('1970-02-15');
           expect(artifact.getArtifactValue({})).to.be.null;
         });
 
-        it('setArtifactValue sets DATE_ENTERED_ACTIVE_SERVICE', () => {
+        it('setArtifactValue sets dateEnteredActiveService', () => {
           expect(
             artifact.setArtifactValue({}, '1970-02-15')
-              .DATE_ENTERED_ACTIVE_SERVICE,
+              .dateEnteredActiveService,
           ).to.equal('1970-02-15');
         });
       });
@@ -475,19 +491,19 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns DATE_SEPARATED_FROM_SERVICE or null', () => {
+        it('getArtifactValue returns dateSeparatedFromService or null', () => {
           expect(
             artifact.getArtifactValue({
-              DATE_SEPARATED_FROM_SERVICE: '1974-02-14',
+              dateSeparatedFromService: '1974-02-14',
             }),
           ).to.equal('1974-02-14');
           expect(artifact.getArtifactValue({})).to.be.null;
         });
 
-        it('setArtifactValue sets DATE_SEPARATED_FROM_SERVICE', () => {
+        it('setArtifactValue sets dateSeparatedFromService', () => {
           expect(
             artifact.setArtifactValue({}, '1974-02-14')
-              .DATE_SEPARATED_FROM_SERVICE,
+              .dateSeparatedFromService,
           ).to.equal('1974-02-14');
         });
       });

@@ -20,17 +20,9 @@ export const setupMinimalFooter = () => {
   let enabled = false;
 
   if (footerMinimal) {
-    // New approach: read from #footer-minimal element
     enabled = true;
     if (footerMinimal.dataset?.excludePaths) {
       excludePaths = JSON.parse(footerMinimal.dataset.excludePaths);
-    }
-  } else {
-    // Fallback: read from #footerNav data attributes (old content-build)
-    const footer = document.getElementById(footerElemementId);
-    enabled = footer?.dataset?.minimalFooter === 'true';
-    if (footer?.dataset?.minimalExcludePaths) {
-      excludePaths = JSON.parse(footer.dataset.minimalExcludePaths);
     }
   }
 

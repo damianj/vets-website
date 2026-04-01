@@ -20,7 +20,7 @@ export const SERVICE_REGISTRY = {
 export const ITEMS_PER_PAGE = 10;
 
 export const FILTER_VALUES = {
-  IN_PROGRESS: 'in progress',
+  IN_PROGRESS: 'in-progress',
   CLOSED: 'closed',
   ALL: 'all',
 };

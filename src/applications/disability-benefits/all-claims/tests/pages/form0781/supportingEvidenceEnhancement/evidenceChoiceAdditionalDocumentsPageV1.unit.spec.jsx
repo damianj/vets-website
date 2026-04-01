@@ -28,7 +28,7 @@ describe('evidenceChoiceAdditionalDocumentsPageV1', () => {
 
     it('should have correct path', () => {
       expect(page.path).to.equal(
-        'supporting-evidence/additional-evidence-enhancement-v1',
+        'supporting-evidence/additional-evidence-upload',
       );
     });
 

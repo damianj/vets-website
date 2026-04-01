@@ -8,12 +8,9 @@ import * as recordEventModule from '~/platform/monitoring/record-event';
 import { renderWithRouter } from '../utils';
 import StemClaimListItem from '../../components/StemClaimListItem';
 
-const getStore = (cstShowDocumentUploadStatus = false) =>
+const getStore = () =>
   createStore(() => ({
-    featureToggles: {
-      // eslint-disable-next-line camelcase
-      cst_show_document_upload_status: cstShowDocumentUploadStatus,
-    },
+    featureToggles: {},
   }));
 
 const createFailedSubmission = (acknowledgementDate, failedDate) => ({
@@ -98,106 +95,66 @@ describe('<StemClaimListItem>', () => {
     expect(queryByText('Received on March 1, 2021')).to.not.exist;
   });
 
-  context(
-    'when the cst_show_document_upload_status feature toggle is disabled',
-    () => {
-      it('should not render a slim alert', () => {
-        const claim = {
-          ...defaultClaim,
-          attributes: {
-            ...defaultClaim.attributes,
-            evidenceSubmissions: [
-              createFailedSubmission(
-                new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-                new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-              ),
-            ],
-          },
-        };
+  describe('UploadType2ErrorAlertSlim', () => {
+    context(
+      'when there are no failed evidence submissions within the last 30 days',
+      () => {
+        it('should not render a slim alert', () => {
+          const claim = {
+            ...defaultClaim,
+            attributes: {
+              ...defaultClaim.attributes,
+              evidenceSubmissions: [
+                createFailedSubmission(
+                  new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                  new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+                ),
+              ],
+            },
+          };
 
-        const { container } = renderWithRouter(
-          <Provider store={getStore()}>
-            <StemClaimListItem claim={claim} />
-          </Provider>,
-        );
-        const alert = container.querySelector('va-alert[status="error"]');
+          const { container } = renderWithRouter(
+            <Provider store={getStore()}>
+              <StemClaimListItem claim={claim} />
+            </Provider>,
+          );
+          const alert = container.querySelector('va-alert[status="error"]');
 
-        expect(alert).to.not.exist;
-      });
-    },
-  );
+          expect(alert).to.not.exist;
+        });
+      },
+    );
 
-  context(
-    'when the cst_show_document_upload_status feature toggle is enabled',
-    () => {
-      context(
-        'when there are no failed evidence submissions within the last 30 days',
-        () => {
-          it('should not render a slim alert', () => {
-            const claim = {
-              ...defaultClaim,
-              attributes: {
-                ...defaultClaim.attributes,
-                evidenceSubmissions: [
-                  createFailedSubmission(
-                    new Date(
-                      Date.now() - 1 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                    new Date(
-                      Date.now() + 31 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                  ),
-                ],
-              },
-            };
+    context(
+      'when there are failed evidence submissions within the last 30 days',
+      () => {
+        it('should render a slim alert', () => {
+          const claim = {
+            ...defaultClaim,
+            attributes: {
+              ...defaultClaim.attributes,
+              evidenceSubmissions: [
+                createFailedSubmission(
+                  new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
+                  new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                ),
+              ],
+            },
+          };
 
-            const { container } = renderWithRouter(
-              <Provider store={getStore(true)}>
-                <StemClaimListItem claim={claim} />
-              </Provider>,
-            );
-            const alert = container.querySelector('va-alert[status="error"]');
+          const { container } = renderWithRouter(
+            <Provider store={getStore()}>
+              <StemClaimListItem claim={claim} />
+            </Provider>,
+          );
+          const alert = container.querySelector('va-alert[status="error"]');
 
-            expect(alert).to.not.exist;
-          });
-        },
-      );
-
-      context(
-        'when there are failed evidence submissions within the last 30 days',
-        () => {
-          it('should render a slim alert', () => {
-            const claim = {
-              ...defaultClaim,
-              attributes: {
-                ...defaultClaim.attributes,
-                evidenceSubmissions: [
-                  createFailedSubmission(
-                    new Date(
-                      Date.now() + 28 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                    new Date(
-                      Date.now() - 2 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                  ),
-                ],
-              },
-            };
-
-            const { container } = renderWithRouter(
-              <Provider store={getStore(true)}>
-                <StemClaimListItem claim={claim} />
-              </Provider>,
-            );
-            const alert = container.querySelector('va-alert[status="error"]');
-
-            expect(alert).to.exist;
-            expect(alert.querySelector('p')).to.have.text(
-              'We need you to resubmit files for this claim.',
-            );
-          });
-        },
-      );
-    },
-  );
+          expect(alert).to.exist;
+          expect(alert.querySelector('p')).to.have.text(
+            'We need you to resubmit files for this claim.',
+          );
+        });
+      },
+    );
+  });
 });

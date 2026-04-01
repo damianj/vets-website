@@ -20,10 +20,10 @@ import AddToCalendarButton from '../AddToCalendarButton';
 import NewTabAnchor from '../NewTabAnchor';
 import Address from '../Address';
 import FacilityDirectionsLink from '../FacilityDirectionsLink';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
   recordAppointmentDetailsNullStates,
-  captureMissingModalityLogs,
 } from '../../utils/events';
 import ClinicPhysicalLocation from './ClinicPhysicalLocation';
 import ClinicName from './ClinicName';

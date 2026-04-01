@@ -37,17 +37,18 @@ export class ReferralsAndRequestsPageObject extends PageObject {
    * Asserts the type of care is present for referral list
    * @param {Object} options - Options for assertion
    * @param {boolean} options.exist - Whether type of care should exist
-   * @param {string} options.typeOfCare - Type of care to assert
+   * @param {string} options.typeOfCare - Type of care to assert (e.g. 'OPTOMETRY')
    */
   assertTypeOfCare({ exist = true, typeOfCare = 'OPTOMETRY' } = {}) {
+    const pattern = new RegExp(`${typeOfCare} referral`, 'i');
     if (exist) {
-      cy.findAllByTestId('typeOfCare')
-        .contains(new RegExp(`${typeOfCare}`, 'i'))
-        .should('exist');
+      cy.get('va-link[text]')
+        .filter((_, el) => pattern.test(el.getAttribute('text')))
+        .should('have.length.greaterThan', 0);
     } else {
-      cy.findAllByTestId('typeOfCare')
-        .should('have.length.greaterThan', 0)
-        .should('not.contain.text', typeOfCare);
+      cy.get('va-link[text]')
+        .filter((_, el) => pattern.test(el.getAttribute('text')))
+        .should('have.length', 0);
     }
     return this;
   }
@@ -57,7 +58,9 @@ export class ReferralsAndRequestsPageObject extends PageObject {
    */
   assertApiError() {
     // This uses curly apostrophes as required by VA style guidelines
-    cy.findByText(/We’re sorry. We’ve run into a problem/i).should('exist');
+    cy.findByText(/We\u2019re sorry. We\u2019ve run into a problem/i).should(
+      'exist',
+    );
     return this;
   }
 
@@ -81,13 +84,14 @@ export class ReferralsAndRequestsPageObject extends PageObject {
    * Validates that the online scheduling not available message is displayed on a referral card
    */
   assertOnlineSchedulingNotAvailableAlert(index = 0) {
-    cy.findAllByTestId('referral-not-available-list-item')
+    cy.findAllByTestId('appointment-list-item')
       .eq(index)
       .within(() => {
-        cy.findByTestId('referral-not-available-alert').within(() => {
-          cy.findByText(
-            /Online scheduling isn’t available for this referral right now. Call your community care provider or your facility’s community care office to schedule an appointment./i,
-          ).should('exist');
+        cy.findByTestId('cannot-schedule-online-message').within(() => {
+          cy.get('va-additional-info')
+            .should('exist')
+            .and('have.attr', 'trigger')
+            .and('match', /Why you can.t schedule online\?/);
           cy.findByTestId('referral-community-care-office').should('exist');
         });
       });

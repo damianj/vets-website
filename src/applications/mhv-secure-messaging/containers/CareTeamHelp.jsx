@@ -61,7 +61,7 @@ const CareTeamHelp = () => {
       )}
       {isCerner && (
         <li>
-          Their name may appear different.
+          Their name may appear different
           <div className="vads-u-margin-top--0p5">
             <va-link
               href={ExternalLinks.MHV_ON_VAGOV_WHAT_TO_KNOW}

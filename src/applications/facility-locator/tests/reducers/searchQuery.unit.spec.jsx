@@ -479,4 +479,28 @@ describe('validateForm function', () => {
     const result = validateForm(INITIAL_STATE, payload);
     expect(result.serviceTypeChanged).to.eql(true);
   });
+
+  it('should reset locationChanged when searchString does not change', () => {
+    const oldState = {
+      ...INITIAL_STATE,
+      locationChanged: true,
+      searchString: '',
+    };
+    const payload = { facilityType: 'health' };
+
+    const result = validateForm(oldState, payload);
+    expect(result.locationChanged).to.eql(false);
+  });
+
+  it('should reset facilityTypeChanged when facilityType does not change', () => {
+    const oldState = {
+      ...INITIAL_STATE,
+      facilityTypeChanged: true,
+      facilityType: 'health',
+    };
+    const payload = { searchString: 'Austin, TX' };
+
+    const result = validateForm(oldState, payload);
+    expect(result.facilityTypeChanged).to.eql(false);
+  });
 });

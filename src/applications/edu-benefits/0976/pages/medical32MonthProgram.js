@@ -13,7 +13,7 @@ export default {
       title:
         'Your institution provides, and requires students to complete, a program of clinical and classroom instruction that is at least 32 months in length.',
       errorMessages: {
-        required: 'Select one of the options',
+        required: 'You must make a selection',
       },
     }),
   },

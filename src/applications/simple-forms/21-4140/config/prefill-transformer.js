@@ -1,21 +1,22 @@
-// @ts-check
-import { normalizeLegacyEmploymentSelection } from '../utils/employment';
+import { toggleValues } from 'platform/site-wide/feature-toggles/selectors';
+import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 
-const cloneFormData = source => {
-  if (!source || typeof source !== 'object') {
-    return {};
+export default function prefillTransformer(pages, formData, metadata, state) {
+  const prefillEnabled =
+    toggleValues(state || {})?.[FEATURE_FLAG_NAMES.form214140PrefillEnabled] ===
+    true;
+
+  if (!prefillEnabled) {
+    return {
+      pages,
+      formData: {},
+      metadata,
+    };
   }
-  return { ...source };
-};
-
-export default function prefillTransformer(pages, formData, metadata) {
-  const normalizedFormData = normalizeLegacyEmploymentSelection(
-    cloneFormData(formData),
-  );
 
   return {
     pages,
-    formData: normalizedFormData,
+    formData,
     metadata,
   };
 }

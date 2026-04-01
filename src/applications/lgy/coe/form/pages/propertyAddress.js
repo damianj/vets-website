@@ -26,7 +26,7 @@ const remappedUI = addressNoMilitaryUI({
 export default {
   uiSchema: {
     ...arrayBuilderItemFirstPageTitleUI({
-      title: 'Property with VA home loan: Address of the property',
+      title: 'Property with VA home loan: Property address',
       nounSingular: 'property address',
       description:
         'Provide the address of the property that was purchased with a VA home loan.',

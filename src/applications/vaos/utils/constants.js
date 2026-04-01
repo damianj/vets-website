@@ -103,7 +103,7 @@ export const TYPES_OF_CARE = [
   {
     id: TYPE_OF_CARE_IDS.AUDIOLOGY_ID,
     idV2: 'audiology',
-    name: 'Audiology and speech',
+    name: 'Audiology and speech (including hearing aid support)',
     label: 'Audiology and speech (including hearing aid support)',
     group: 'specialty',
     ccId: ['CCAUDHEAR', 'CCAUDRTNE'],

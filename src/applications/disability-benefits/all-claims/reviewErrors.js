@@ -185,15 +185,18 @@ export default {
   'toxicExposure.specifyOtherExposures.endDate':
     'Exposure end date for other toxic exposures',
   separationHealthAssessmentUploads: 'Upload your Separation Health Assessment',
-  _override: error => {
+  _override: (error, context = {}) => {
     if (typeof error !== 'string') {
       return null;
     }
 
-    // Handle newDisabilities and condition validation errors - redirect to claim-type page
+    const isNewConditionsWorkflow = !!context?.formData
+      ?.disabilityCompNewConditionsWorkflow;
+
+    // Handle newDisabilities and condition validation errors - redirect to claim-type or summary page
     const claimTypeRedirect = {
       chapterKey: 'disabilities',
-      pageKey: 'claimType',
+      pageKey: isNewConditionsWorkflow ? 'Summary' : 'claimType',
       navigationType: 'redirect',
     };
 

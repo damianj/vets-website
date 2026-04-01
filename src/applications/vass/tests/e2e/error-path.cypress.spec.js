@@ -46,6 +46,42 @@ describe('VASS Error Paths', () => {
     patchCookiesForCI();
   });
 
+  describe('Maintenance Window', () => {
+    beforeEach(() => {
+      const mockToday = new Date('2025-06-03T12:00:00Z');
+      const startTime = new Date('2025-06-03T08:00:00Z');
+      const endTime = new Date('2025-06-04T17:00:00Z');
+      cy.clock(mockToday, ['Date']);
+      cy.intercept('GET', '/v0/maintenance_windows', {
+        data: [
+          {
+            id: '1',
+            type: 'maintenance_window',
+            attributes: {
+              externalService: 'vass',
+              startTime: startTime.toISOString(),
+              endTime: endTime.toISOString(),
+              description: '',
+            },
+          },
+        ],
+      });
+      cy.visit(`${rootUrl}?uuid=${uuid}`);
+    });
+
+    it('should display the maintenance window downtime banner', () => {
+      VerifyPageObject.assertHeading({
+        name: 'Schedule an appointment with VA Solid Start',
+        level: 1,
+        exist: true,
+      });
+      VerifyPageObject.assertMaintenanceWindow({ exist: true });
+      VerifyPageObject.assertNeedHelpFooter();
+      cy.injectAxeThenAxeCheck();
+      saveScreenshot('vass_error_maintenanceWindow');
+    });
+  });
+
   describe('Verify Identity', () => {
     describe('API Errors', () => {
       describe('when the user submits invalid credentials', () => {
@@ -157,6 +193,28 @@ describe('VASS Error Paths', () => {
           VerifyPageObject.assertWrapperErrorAlert({ exist: true });
           cy.injectAxeThenAxeCheck();
           saveScreenshot('vass_error_verify_serviceUnavailable503');
+        });
+      });
+
+      describe('when the API returns a non-standard error response', () => {
+        beforeEach(() => {
+          mockRequestOtpApi({
+            response: { status: 500, error: 'Internal Server Error' },
+            responseCode: 500,
+          });
+          cy.visit(`${rootUrl}?uuid=${uuid}`);
+        });
+
+        it('should display a wrapper error alert', () => {
+          VerifyPageObject.assertVerifyPage();
+
+          VerifyPageObject.fillAndSubmitForm();
+
+          cy.wait('@vass:post:request-otp');
+
+          VerifyPageObject.assertWrapperErrorAlert({ exist: true });
+          cy.injectAxeThenAxeCheck();
+          saveScreenshot('vass_error_verify_nonStandardServerError');
         });
       });
     });

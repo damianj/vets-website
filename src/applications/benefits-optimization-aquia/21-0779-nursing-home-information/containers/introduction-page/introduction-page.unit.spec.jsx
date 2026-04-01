@@ -1,10 +1,66 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as uiUtils from 'platform/utilities/ui';
+import { formConfig } from '@bio-aquia/21-0779-nursing-home-information/config/form';
 
 import { IntroductionPage } from './introduction-page';
+
+const aquiaBioAuthRequiredKey = 'aquia_bio_auth_required';
+
+const defaultProps = {
+  route: {
+    path: 'introduction',
+    pageList: [],
+    formConfig,
+  },
+  router: { push: sinon.spy() },
+};
+
+const createMockStore = (overrides = {}) => {
+  const defaultState = {
+    user: {
+      login: {
+        currentlyLoggedIn: false,
+      },
+      profile: {
+        savedForms: [],
+        prefillsAvailable: [],
+        loa: { current: 1, highest: 1 },
+        verified: false,
+        dob: '1957-03-25',
+        claims: { appeals: false },
+      },
+    },
+    form: {
+      formId: formConfig.formId,
+      loadedStatus: 'success',
+      savedStatus: '',
+      loadedData: { metadata: {} },
+      data: {},
+    },
+    featureToggles: {
+      loading: false,
+      [aquiaBioAuthRequiredKey]: false,
+    },
+    scheduledDowntime: {
+      globalDowntime: null,
+      isReady: true,
+      isPending: false,
+      serviceMap: { get() {} },
+      dismissedDowntimeWarnings: [],
+    },
+    ...overrides,
+  };
+
+  return {
+    getState: () => defaultState,
+    subscribe: () => {},
+    dispatch: () => {},
+  };
+};
 
 describe('IntroductionPage Container', () => {
   let scrollToTopStub;
@@ -19,36 +75,57 @@ describe('IntroductionPage Container', () => {
     scrollToTopStub.restore();
     focusElementStub.restore();
   });
+
   describe('Component Rendering', () => {
     it('should render without errors', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container).to.exist;
     });
 
     it('should display form title', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('nursing home');
     });
 
     it('should have schemaform-intro class', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const article = container.querySelector('.schemaform-intro');
       expect(article).to.exist;
     });
 
     it('should render OMB info component', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const ombInfo = container.querySelector('va-omb-info');
       expect(ombInfo).to.exist;
     });
 
     it('should scroll to top and focus h1 on mount', () => {
-      const router = { push: () => {} };
-      render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
 
       expect(scrollToTopStub).to.exist;
       expect(focusElementStub).to.exist;
@@ -57,106 +134,138 @@ describe('IntroductionPage Container', () => {
 
   describe('Content', () => {
     it('should explain form purpose', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('nursing home official');
     });
 
     it('should mention extended care facility', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('extended care facility');
     });
 
     it('should mention level of care', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('Level of care');
     });
 
     it('should mention Medicaid status', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('Medicaid status');
     });
   });
 
-  describe('Props', () => {
-    it('should accept router prop', () => {
-      const router = { push: () => {}, replace: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
-      expect(container).to.exist;
-    });
-
-    it('should accept location prop', () => {
-      const router = { push: () => {} };
-      const location = { pathname: '/introduction' };
+  describe('when auth feature flag is off', () => {
+    it('should render the direct start link', () => {
+      const store = createMockStore();
       const { container } = render(
-        <IntroductionPage router={router} location={location} />,
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
       );
-      expect(container).to.exist;
+
+      const startLink = container.querySelector(
+        'va-link-action[data-testid="start-nursing-home-info-link"]',
+      );
+      expect(startLink).to.exist;
     });
   });
 
-  describe('Start Link Action', () => {
-    it('should render start link button', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
-      const startLink = container.querySelector('va-link-action');
-      expect(startLink).to.exist;
+  describe('when auth feature flag is on', () => {
+    it('should show start button when user is logged in (IAL1, no verification required)', () => {
+      const store = createMockStore({
+        user: {
+          login: { currentlyLoggedIn: true },
+          profile: {
+            savedForms: [],
+            prefillsAvailable: [],
+            loa: { current: 1, highest: 1 },
+            verified: false,
+            dob: '1957-03-25',
+            claims: { appeals: false },
+          },
+        },
+        featureToggles: { loading: false, [aquiaBioAuthRequiredKey]: true },
+      });
+
+      const { getByText } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
+
+      const startButton = getByText(
+        'Start the nursing home information to support a claim request',
+      );
+      expect(startButton).to.exist;
     });
 
-    it('should have correct test id on start link', () => {
-      const router = { push: () => {} };
-      const { getByTestId } = render(<IntroductionPage router={router} />);
-      const startLink = getByTestId('start-nursing-home-info-link');
-      expect(startLink).to.exist;
-    });
+    it('should not show direct start link when user is not logged in', () => {
+      const store = createMockStore({
+        featureToggles: { loading: false, [aquiaBioAuthRequiredKey]: true },
+      });
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
 
-    it('should call router.push when start link is clicked', () => {
-      const pushSpy = sinon.spy();
-      const router = { push: pushSpy };
-      const { getByTestId } = render(<IntroductionPage router={router} />);
-      const startLink = getByTestId('start-nursing-home-info-link');
-
-      fireEvent.click(startLink);
-
-      expect(pushSpy.calledOnce).to.be.true;
-      expect(pushSpy.calledWith('/nursing-official-information')).to.be.true;
-    });
-
-    it('should prevent default behavior on link click', () => {
-      const router = { push: () => {} };
-      const { getByTestId } = render(<IntroductionPage router={router} />);
-      const startLink = getByTestId('start-nursing-home-info-link');
-
-      const event = new MouseEvent('click', { bubbles: true });
-      const preventDefaultSpy = sinon.spy(event, 'preventDefault');
-
-      fireEvent(startLink, event);
-
-      expect(preventDefaultSpy.called).to.be.true;
+      const startLink = container.querySelector(
+        'va-link-action[data-testid="start-nursing-home-info-link"]',
+      );
+      expect(startLink).to.not.exist;
     });
   });
 
   describe('OMB Information', () => {
     it('should display OMB number', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const ombInfo = container.querySelector('va-omb-info');
       expect(ombInfo.getAttribute('omb-number')).to.equal('2900-0652');
     });
 
     it('should display response burden time', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const ombInfo = container.querySelector('va-omb-info');
       expect(ombInfo.getAttribute('res-burden')).to.equal('10');
     });
 
     it('should display expiration date', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const ombInfo = container.querySelector('va-omb-info');
       expect(ombInfo.getAttribute('exp-date')).to.equal('09/30/2026');
     });
@@ -164,28 +273,44 @@ describe('IntroductionPage Container', () => {
 
   describe('Required Information List', () => {
     it('should list Social Security number requirement', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('Social Security number');
     });
 
     it('should list date of birth requirement', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('Date of birth');
     });
 
     it('should list monthly cost requirement', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('Monthly out of pocket cost');
     });
   });
 
   describe('Links', () => {
     it('should include link to pension information', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const link = container.querySelector(
         'va-link[href="/pension/aid-attendance-housebound/"]',
       );
@@ -193,8 +318,12 @@ describe('IntroductionPage Container', () => {
     });
 
     it('should have descriptive link text', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       const link = container.querySelector(
         'va-link[href="/pension/aid-attendance-housebound/"]',
       );
@@ -204,28 +333,44 @@ describe('IntroductionPage Container', () => {
 
   describe('Nursing Home Definition', () => {
     it('should explain qualified extended care facility', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include(
         'What is a qualified extended care facility',
       );
     });
 
     it('should mention state licensed facilities', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('licensed by a state');
     });
 
     it('should mention VA nursing home care unit', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('VA nursing home care unit');
     });
 
     it('should mention State Veterans Home', () => {
-      const router = { push: () => {} };
-      const { container } = render(<IntroductionPage router={router} />);
+      const store = createMockStore();
+      const { container } = render(
+        <Provider store={store}>
+          <IntroductionPage {...defaultProps} />
+        </Provider>,
+      );
       expect(container.textContent).to.include('State Veterans Home');
     });
   });

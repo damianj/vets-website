@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { VaButton } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { parseISO } from 'date-fns';
@@ -26,26 +26,27 @@ export default function AddToCalendarButton({ appointment }) {
     endUtc,
   );
 
+  const handleAddToCalendar = useCallback(
+    () => {
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'appointment.ics';
+      link.click();
+      URL.revokeObjectURL(url);
+    },
+    [ics],
+  );
+
   return (
-    <>
-      <a
-        id="hidden-calendar-link"
-        href={`data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`}
-        className="vads-u-display--none"
-        data-testid="add-to-calendar-link"
-      >
-        hidden
-      </a>
-      <VaButton
-        text="Add to calendar"
-        class="vass-hide-for-print"
-        secondary
-        onClick={() => {
-          window.document.querySelector('#hidden-calendar-link').click();
-        }}
-        data-testid="add-to-calendar-button"
-      />
-    </>
+    <VaButton
+      text="Add to calendar"
+      class="vass-hide-for-print"
+      secondary
+      onClick={handleAddToCalendar}
+      data-testid="add-to-calendar-button"
+    />
   );
 }
 

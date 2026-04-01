@@ -136,7 +136,7 @@ const SearchResult = ({
           )}
           {associatedOrgs?.length > 1 && (
             <va-additional-info
-              trigger="See associated organizations"
+              trigger={`Check organizations for ${officer}`}
               disable-border
               uswds
             >

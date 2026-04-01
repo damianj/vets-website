@@ -31,14 +31,14 @@ jobs:
         ECR_PASSWORD: ${{ steps.login-ecr.outputs.docker_password_008577686731_dkr_ecr_us_gov_west_1_amazonaws_com }}
       steps:
         - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v4.0.0
+          uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
           with:
              aws-region: us-gov-west-1
              role-to-assume: arn:aws-us-gov:iam::008577686731:role/gha-frontend-nonprod-role
         
         - name: Login to Amazon ECR
           id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v2    
+          uses: aws-actions/amazon-ecr-login@183a1442edf41672e66566b7fc560e297a290896 # v2.1.1
           with:
             mask-password: false
            
@@ -51,7 +51,7 @@ jobs:
             aws s3 cp $BUCKET_PATH$ARCHIVE_NAME .
               
         - name: Archive production artifacts
-          uses: actions/upload-artifact@v4
+          uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
           with:
             name: dist-without-markdown
             path: vagovprod.tar.bz2
@@ -69,7 +69,7 @@ jobs:
           password: ${{ needs.ecr-login.outputs.ECR_PASSWORD }}
       steps:
         - name: Checkout
-          uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+          uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
           
         - name: Determine slackGroup and specPattern
           id: helper
@@ -78,7 +78,7 @@ jobs:
              ./script/github-actions/cypress-integration-test.sh "${{ inputs.product }}"
 
         - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v4.0.0
+          uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
           with:
              aws-region: us-gov-west-1
              role-to-assume: arn:aws-us-gov:iam::008577686731:role/gha-frontend-nonprod-role
@@ -90,7 +90,7 @@ jobs:
             env_variable_name: VA_VSP_BOT_GITHUB_TOKEN
 
         - name: Download artifact
-          uses: actions/download-artifact@v4
+          uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
           with:
             name: dist-without-markdown
 

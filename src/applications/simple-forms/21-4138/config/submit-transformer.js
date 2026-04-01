@@ -1,6 +1,8 @@
 import sharedTransformForSubmit from '../../shared/config/submit-transformer';
 
 const transformForSubmit = (formConfig, form) => {
+  const idNumber = form.data?.idNumber;
+  const dateOfBirth = form.data?.dateOfBirth;
   const transformedData = JSON.parse(
     sharedTransformForSubmit(formConfig, form),
   );
@@ -15,11 +17,12 @@ const transformForSubmit = (formConfig, form) => {
   } else {
     transformedData.fullName = {};
   }
-  if (!transformedData.dateOfBirth && form.data?.dateOfBirth) {
-    transformedData.dateOfBirth = form.data.dateOfBirth;
+  if (!transformedData.dateOfBirth && dateOfBirth) {
+    transformedData.dateOfBirth = dateOfBirth;
   }
-  if (!transformedData.idNumber && form.data?.idNumber?.ssn) {
-    transformedData.idNumber = form.data.idNumber;
+
+  if (!transformedData.idNumber?.ssn && idNumber?.ssn) {
+    transformedData.idNumber = idNumber;
   }
 
   return JSON.stringify(transformedData);

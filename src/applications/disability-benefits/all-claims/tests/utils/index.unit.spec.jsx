@@ -141,11 +141,11 @@ describe('utils', () => {
       const enhancementUrls = [
         '/supporting-evidence/evidence-request',
         '/supporting-evidence/medical-records',
-        '/supporting-evidence/private-medical-records-upload-enhancement',
-        '/supporting-evidence/private-medical-records-upload-enhancement-v1',
+        '/supporting-evidence/private-medical-records-upload-evidence',
+        '/supporting-evidence/private-medical-records-upload-file',
         '/supporting-evidence/additional-evidence-intro',
-        '/supporting-evidence/additional-evidence-enhancement',
-        '/supporting-evidence/additional-evidence-enhancement-v1',
+        '/supporting-evidence/additional-evidence-upload-file',
+        '/supporting-evidence/additional-evidence-upload',
       ];
 
       enhancementUrls.forEach(url => {
@@ -170,12 +170,11 @@ describe('utils', () => {
         },
         {
           returnUrl:
-            '/supporting-evidence/private-medical-records-upload-enhancement',
+            '/supporting-evidence/private-medical-records-upload-evidence',
           formData: { disability526SupportingEvidenceEnhancement: true },
         },
         {
-          returnUrl:
-            '/supporting-evidence/private-medical-records-upload-enhancement-v1',
+          returnUrl: '/supporting-evidence/private-medical-records-upload-file',
           formData: { disability526SupportingEvidenceEnhancement: true },
         },
         {

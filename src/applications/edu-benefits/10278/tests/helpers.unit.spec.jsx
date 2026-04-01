@@ -9,7 +9,6 @@ import {
   organizationRepresentativesArrayOptions,
   getThirdPartyName,
   buildValidateAtLeastOne,
-  validateOtherText,
   validateTerminationDate,
   InformationToDiscloseReviewField,
   ClaimInformationDescription,
@@ -86,8 +85,8 @@ describe('10278 helpers - buildValidateAtLeastOne', () => {
       addError: rootAddError,
     };
 
-    const validate = buildValidateAtLeastOne(['status', 'other']);
-    validate(errors, { status: false, other: false });
+    const validate = buildValidateAtLeastOne(['status', 'minor']);
+    validate(errors, { status: false, minor: false });
 
     expect(anchorAddError.calledWith('You must provide an answer')).to.equal(
       true,
@@ -99,8 +98,8 @@ describe('10278 helpers - buildValidateAtLeastOne', () => {
     const rootAddError = sinon.spy();
     const errors = { addError: rootAddError };
 
-    const validate = buildValidateAtLeastOne(['status', 'other']);
-    validate(errors, { status: false, other: false });
+    const validate = buildValidateAtLeastOne(['status', 'minor']);
+    validate(errors, { status: false, minor: false });
 
     expect(rootAddError.calledWith('You must provide an answer')).to.equal(
       true,
@@ -115,51 +114,10 @@ describe('10278 helpers - buildValidateAtLeastOne', () => {
       addError: rootAddError,
     };
 
-    const validate = buildValidateAtLeastOne(['status', 'other']);
-    validate(errors, { status: true, other: false });
+    const validate = buildValidateAtLeastOne(['status', 'minor']);
+    validate(errors, { status: true, minor: false });
 
     expect(anchorAddError.called).to.equal(false);
-    expect(rootAddError.called).to.equal(false);
-  });
-});
-
-describe('10278 helpers - validateOtherText', () => {
-  it('adds error when other is checked and otherText is empty', () => {
-    const otherTextAddError = sinon.spy();
-    const rootAddError = sinon.spy();
-    const errors = {
-      otherText: { addError: otherTextAddError },
-      addError: rootAddError,
-    };
-
-    validateOtherText(errors, { other: true, otherText: '   ' });
-
-    expect(otherTextAddError.calledWith('Enter other information')).to.equal(
-      true,
-    );
-    expect(rootAddError.called).to.equal(false);
-  });
-
-  it('falls back to root addError when otherText path is missing', () => {
-    const rootAddError = sinon.spy();
-    const errors = { addError: rootAddError };
-
-    validateOtherText(errors, { other: true, otherText: '' });
-
-    expect(rootAddError.calledWith('Enter other information')).to.equal(true);
-  });
-
-  it('does nothing when other is not checked', () => {
-    const otherTextAddError = sinon.spy();
-    const rootAddError = sinon.spy();
-    const errors = {
-      otherText: { addError: otherTextAddError },
-      addError: rootAddError,
-    };
-
-    validateOtherText(errors, { other: false, otherText: '' });
-
-    expect(otherTextAddError.called).to.equal(false);
     expect(rootAddError.called).to.equal(false);
   });
 });
@@ -167,17 +125,16 @@ describe('10278 helpers - validateOtherText', () => {
 const MockChild = () => null;
 
 describe('10278 helpers - InformationToDiscloseReviewField', () => {
-  it('renders selected values and other text', () => {
-    const disclosureKeys = ['status', 'other'];
+  it('renders selected values', () => {
+    const disclosureKeys = ['status', 'minor'];
     const options = {
       status: 'Status',
-      other: { title: 'Other' },
+      minor: 'Minor',
     };
     const formData = {
       claimInformation: {
         status: true,
-        other: true,
-        otherText: 'Custom details',
+        minor: true,
       },
     };
 
@@ -186,16 +143,13 @@ describe('10278 helpers - InformationToDiscloseReviewField', () => {
         disclosureKeys={disclosureKeys}
         options={options}
         dataKey="claimInformation"
-        otherTextKey="otherText"
       >
         <MockChild formData={formData} />
       </InformationToDiscloseReviewField>,
     );
 
     expect(getByText('Status')).to.exist;
-    expect(getByText('Other')).to.exist;
-    expect(getByText('Selected')).to.exist;
-    expect(getByText('Custom details')).to.exist;
+    expect(getByText('Minor')).to.exist;
   });
 });
 
@@ -212,18 +166,6 @@ describe('10278 helpers - ClaimInformationDescription', () => {
     expect(
       getByText('Change of address or direct deposit (minor claimants only)'),
     ).to.exist;
-  });
-
-  it('renders other key with otherText value', () => {
-    const formData = {
-      claimInformation: { other: true, otherText: 'Custom reason' },
-    };
-
-    const { getByText } = render(
-      <ClaimInformationDescription formData={formData} />,
-    );
-
-    expect(getByText('Other: Custom reason')).to.exist;
   });
 
   it('renders regular keys with DISCLOSURE_OPTIONS labels', () => {

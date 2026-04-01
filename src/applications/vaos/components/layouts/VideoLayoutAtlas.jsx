@@ -21,10 +21,10 @@ import FacilityDirectionsLink from '../FacilityDirectionsLink';
 import NewTabAnchor from '../NewTabAnchor';
 import Address from '../Address';
 import State from '../State';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
   recordAppointmentDetailsNullStates,
-  captureMissingModalityLogs,
 } from '../../utils/events';
 import ClinicName from './ClinicName';
 

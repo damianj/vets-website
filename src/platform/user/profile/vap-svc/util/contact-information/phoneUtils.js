@@ -7,6 +7,11 @@ import {
 
 import { PHONE_TYPE, USA } from '../../constants';
 
+const PHONE_ERROR_MESSAGE =
+  'Enter a 10-digit phone number (with or without dashes)';
+const EXTENSION_ERROR_MESSAGE =
+  'You must enter a valid extension up to 6 digits.';
+
 // Returns null or a cleaned string to match backend expectations
 const normalizedPhoneValue = value => {
   if (!value) return null;
@@ -49,7 +54,7 @@ export const phoneFormSchema = ({ allowInternational = false } = {}) => {
       },
       inputPhoneNumber: {
         type: 'string',
-        pattern: '^[0-9-() ]+$',
+        pattern: '^[0-9()\\- ]+$',
         maxLength: 14,
         minLength: 10,
       },
@@ -73,7 +78,7 @@ export const phoneUiSchema = (
         'ui:title': 'Extension (6 digits maximum)',
         'ui:webComponentField': VaTextInputField,
         'ui:errorMessages': {
-          pattern: 'You must enter a valid extension up to 6 digits.',
+          pattern: EXTENSION_ERROR_MESSAGE,
         },
       },
     };
@@ -89,12 +94,14 @@ export const phoneUiSchema = (
           // checks that the phone number is at least 10 numerical digits
           const strippedPhone = normalizedPhoneValue(field);
           if (strippedPhone?.length !== 10) {
-            errors.addError('Enter a 10 digit phone number');
+            errors.addError(PHONE_ERROR_MESSAGE);
           }
         },
       ],
       'ui:errorMessages': {
-        pattern: 'Enter a 10 digit phone number',
+        pattern: PHONE_ERROR_MESSAGE,
+        minLength: PHONE_ERROR_MESSAGE,
+        required: PHONE_ERROR_MESSAGE,
       },
       'ui:autocomplete': 'tel',
       'ui:options': {
@@ -106,7 +113,7 @@ export const phoneUiSchema = (
       'ui:title': 'Extension (6 digits maximum)',
       'ui:webComponentField': VaTextInputField,
       'ui:errorMessages': {
-        pattern: 'You must enter a valid extension up to 6 digits.',
+        pattern: EXTENSION_ERROR_MESSAGE,
       },
     },
   };

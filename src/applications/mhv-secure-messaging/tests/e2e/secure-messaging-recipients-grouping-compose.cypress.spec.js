@@ -4,7 +4,9 @@ import PatientInboxPage from './pages/PatientInboxPage';
 import GeneralFunctionsPage from './pages/GeneralFunctionsPage';
 import PatientComposePage from './pages/PatientComposePage';
 import PatientInterstitialPage from './pages/PatientInterstitialPage';
-import { AXE_CONTEXT } from './utils/constants';
+import PatientRecentRecipientsPage from './pages/PatientRecentRecipientsPage';
+import searchSentFolderResponse from './fixtures/searchResponses/search-sent-folder-response.json';
+import { AXE_CONTEXT, Data, Paths } from './utils/constants';
 
 describe('SM RECIPIENTS GROUPING ON COMPOSE', () => {
   const updatedFeatureToggles = GeneralFunctionsPage.updateFeatureToggles([
@@ -17,95 +19,192 @@ describe('SM RECIPIENTS GROUPING ON COMPOSE', () => {
       value: true,
     },
   ]);
-  beforeEach(() => {
-    SecureMessagingSite.login(updatedFeatureToggles);
-    PatientInboxPage.loadInboxMessages();
-    // Navigate through curated list flow: create message -> interstitial -> select care team
-    PatientInboxPage.clickCreateNewMessage();
-    PatientInterstitialPage.getStartMessageLink().click({ force: true });
-    PatientComposePage.verifyHeader('Select care team');
+
+  describe('without recent recipients', () => {
+    beforeEach(() => {
+      SecureMessagingSite.login(updatedFeatureToggles);
+      PatientInboxPage.loadInboxMessages();
+      // Navigate through curated list flow: create message -> interstitial -> select care team
+      PatientInboxPage.clickCreateNewMessage();
+      PatientInterstitialPage.getStartMessageLink().click({ force: true });
+      PatientComposePage.verifyHeader('Select care team');
+    });
+
+    it('verify groups quantity', () => {
+      cy.findByTestId('compose-recipient-combobox')
+        .find(`optgroup`)
+        .should(`have.length`, 5);
+
+      cy.findByTestId('compose-recipient-combobox')
+        .find(`optgroup`)
+        .each(el => {
+          cy.wrap(el)
+            .find(`option`)
+            .its(`length`)
+            .should(`be.greaterThan`, 0);
+        });
+
+      cy.injectAxe();
+      cy.axeCheck(AXE_CONTEXT);
+    });
+
+    it('verify particular group', () => {
+      PatientComposePage.verifyRecipientsQuantityInGroup(0, 4);
+      PatientComposePage.verifyRecipientsQuantityInGroup(1, 3);
+      PatientComposePage.verifyRecipientsQuantityInGroup(2, 1);
+      PatientComposePage.verifyRecipientsQuantityInGroup(3, 1);
+
+      PatientComposePage.verifyRecipientsGroupName(
+        0,
+        'VA Kansas City health care',
+      );
+
+      PatientComposePage.verifyRecipientsGroupName(1, 'VA Madison health care');
+
+      PatientComposePage.verifyRecipientsGroupName(
+        2,
+        'VA Northern Arizona health care',
+      );
+      PatientComposePage.verifyRecipientsGroupName(
+        3,
+        'VA Puget Sound health care',
+      );
+
+      cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+    });
+
+    it('verify recipient is in a correct group', () => {
+      PatientComposePage.verifyFacilityNameByRecipientName(
+        `TG-7410`,
+        'VA Kansas City health care',
+      );
+
+      PatientComposePage.verifyFacilityNameByRecipientName(
+        `SLC4 PCMM`,
+        'VA Kansas City health care',
+      );
+
+      PatientComposePage.verifyFacilityNameByRecipientName(
+        `OH TG GROUP 002`,
+        'VA Spokane health care',
+      );
+
+      cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+    });
+
+    it('verify option text does not include system names in parentheses', () => {
+      cy.findByTestId('compose-recipient-combobox')
+        .find('optgroup[label="VA Kansas City health care"]')
+        .find('option')
+        .each($option => {
+          const text = $option.text();
+          // Options should NOT have tab + parenthesized system name
+          cy.wrap(text).should('not.match', /\t\(.+\)/);
+        });
+
+      cy.findByTestId('compose-recipient-combobox')
+        .find('optgroup[label="VA Madison health care"]')
+        .find('option')
+        .each($option => {
+          const text = $option.text();
+          cy.wrap(text).should('not.match', /\t\(.+\)/);
+        });
+
+      cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+    });
   });
 
-  it('verify groups quantity', () => {
-    cy.findByTestId('compose-recipient-combobox')
-      .find(`optgroup`)
-      .should(`have.length`, 5);
+  describe('with recent recipients, selecting a non-recent care team', () => {
+    beforeEach(() => {
+      const togglesWithRecent = GeneralFunctionsPage.updateFeatureToggles([
+        {
+          name: FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientOptGroups,
+          value: true,
+        },
+        {
+          name: FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow,
+          value: true,
+        },
+        {
+          name: FEATURE_FLAG_NAMES.mhvSecureMessagingRecentRecipients,
+          value: true,
+        },
+      ]);
+      SecureMessagingSite.login(togglesWithRecent);
+      PatientInboxPage.loadInboxMessages();
 
-    cy.findByTestId('compose-recipient-combobox')
-      .find(`optgroup`)
-      .each(el => {
-        cy.wrap(el)
-          .find(`option`)
-          .its(`length`)
-          .should(`be.greaterThan`, 0);
-      });
+      cy.intercept(
+        'POST',
+        Paths.INTERCEPT.SENT_SEARCH,
+        searchSentFolderResponse,
+      ).as('recentRecipients');
 
-    cy.injectAxe();
-    cy.axeCheck(AXE_CONTEXT);
-  });
+      PatientInboxPage.clickCreateNewMessage();
+      cy.wait('@recentRecipients');
+      PatientInterstitialPage.clickStartMessageLink(true);
 
-  it('verify particular group', () => {
-    PatientComposePage.verifyRecipientsQuantityInGroup(0, 4);
-    PatientComposePage.verifyRecipientsQuantityInGroup(1, 3);
-    PatientComposePage.verifyRecipientsQuantityInGroup(2, 1);
-    PatientComposePage.verifyRecipientsQuantityInGroup(3, 1);
+      GeneralFunctionsPage.verifyPageHeader(Data.RECENT_RECIPIENTS_HEADER);
 
-    PatientComposePage.verifyRecipientsGroupName(
-      0,
-      'VA Kansas City health care',
-    );
+      // On recent care teams page, select "A different care team" and continue
+      cy.findByLabelText('A different care team').click();
+      PatientRecentRecipientsPage.continueButton().click();
+    });
 
-    PatientComposePage.verifyRecipientsGroupName(1, 'VA Madison health care');
+    it('properly displays dropdown and input', () => {
+      cy.url().should('include', Paths.SELECT_CARE_TEAM);
+      cy.contains('h1', Data.RECENT_RECIPIENTS_HEADER).should('not.exist');
+      PatientComposePage.verifyHeader('Select care team');
+      PatientComposePage.selectComboBoxRecipient('Record Amendment Admin');
 
-    PatientComposePage.verifyRecipientsGroupName(
-      2,
-      'VA Northern Arizona health care',
-    );
-    PatientComposePage.verifyRecipientsGroupName(
-      3,
-      'VA Puget Sound health care',
-    );
+      // the combobox input is populated
+      PatientComposePage.getComboBox().should(
+        'have.value',
+        'Record Amendment Admin',
+      );
+      cy.get('va-combo-box')
+        .shadow()
+        .find('.usa-combo-box__toggle-list')
+        .click({ force: true });
 
-    cy.injectAxeThenAxeCheck(AXE_CONTEXT);
-  });
+      // the combobox dropdown displays the correct groupings and options
+      cy.get('va-combo-box')
+        .shadow()
+        .find('.usa-combo-box__list-option--group')
+        .contains('Recent care teams')
+        .should('exist');
 
-  it('verify recipient is in a correct group', () => {
-    PatientComposePage.verifyFacilityNameByRecipientName(
-      `TG-7410`,
-      'VA Kansas City health care',
-    );
+      cy.get('va-combo-box')
+        .shadow()
+        .find('.usa-combo-box__toggle-list')
+        .click({ force: true });
 
-    PatientComposePage.verifyFacilityNameByRecipientName(
-      `SLC4 PCMM`,
-      'VA Kansas City health care',
-    );
+      cy.findByTestId('continue-button').click();
+      cy.findByText(`Select a different care team`).click();
 
-    PatientComposePage.verifyFacilityNameByRecipientName(
-      `OH TG GROUP 002`,
-      'VA Spokane health care',
-    );
+      // Even with a default value, the combobox input and dropdown behave correctly
 
-    cy.injectAxeThenAxeCheck(AXE_CONTEXT);
-  });
+      PatientComposePage.getComboBox().should(
+        'have.value',
+        'Record Amendment Admin',
+      );
 
-  it('verify option text does not include system names in parentheses', () => {
-    cy.findByTestId('compose-recipient-combobox')
-      .find('optgroup[label="VA Kansas City health care"]')
-      .find('option')
-      .each($option => {
-        const text = $option.text();
-        // Options should NOT have tab + parenthesized system name
-        cy.wrap(text).should('not.match', /\t\(.+\)/);
-      });
+      cy.get('va-combo-box')
+        .shadow()
+        .find('.usa-combo-box__toggle-list')
+        .click({ force: true });
 
-    cy.findByTestId('compose-recipient-combobox')
-      .find('optgroup[label="VA Madison health care"]')
-      .find('option')
-      .each($option => {
-        const text = $option.text();
-        cy.wrap(text).should('not.match', /\t\(.+\)/);
-      });
+      cy.get('va-combo-box')
+        .shadow()
+        .find('.usa-combo-box__list-option--group')
+        .contains('Recent care teams')
+        .should('exist');
 
-    cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+      cy.get('va-combo-box')
+        .shadow()
+        .find('.usa-combo-box__toggle-list')
+        .click({ force: true });
+
+      cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+    });
   });
 });

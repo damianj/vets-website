@@ -64,7 +64,7 @@ describe('ApplicationDiscontinuedAlert', () => {
 
     expect(
       getByText(
-        'Letter not found. Contact your counselor for additional information.',
+        "We can't download your letter right now. Please try again later.",
       ),
     ).to.exist;
 

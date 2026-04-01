@@ -255,6 +255,8 @@ export const ContactInfoBase = ({
           clearTimeout(clearTimer);
         };
       }
+      focusElement(`#${contactInfoPageKey}Header`);
+
       return undefined;
     },
     [contactInfoPageKey, editState, onReviewPage],
@@ -415,8 +417,8 @@ export const ContactInfoBase = ({
       FIELD_NAMES.MAILING_ADDRESS,
     );
     const linkText = isAddressEmpty
-      ? `${content.add} mailing address`
-      : `${content.edit} mailing address`;
+      ? content.addMailingAddress
+      : content.editMailingAddress;
     const cardContent = isAddressEmpty ? (
       <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
         Not provided
@@ -459,8 +461,8 @@ export const ContactInfoBase = ({
       FIELD_NAMES.HOME_PHONE,
     );
     const linkText = isHomePhoneEmpty
-      ? `${content.add} home phone number`
-      : `${content.edit} home phone number`;
+      ? content.addHomePhone
+      : content.editHomePhone;
     const cardContent = isHomePhoneEmpty ? (
       <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
         Not provided
@@ -504,8 +506,8 @@ export const ContactInfoBase = ({
       FIELD_NAMES.MOBILE_PHONE,
     );
     const linkText = isMobilePhoneEmpty
-      ? `${content.add} mobile phone number`
-      : `${content.edit} mobile phone number`;
+      ? content.addMobilePhone
+      : content.editMobilePhone;
     const cardContent = isMobilePhoneEmpty ? (
       <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
         Not provided
@@ -547,9 +549,7 @@ export const ContactInfoBase = ({
       dataWrap[keys.email],
       FIELD_NAMES.EMAIL,
     );
-    const linkText = isEmailEmpty
-      ? `${content.add} email address`
-      : `${content.edit} email address`;
+    const linkText = isEmailEmpty ? content.addEmail : content.editEmail;
     const cardContent = isEmailEmpty ? (
       <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
         Not provided

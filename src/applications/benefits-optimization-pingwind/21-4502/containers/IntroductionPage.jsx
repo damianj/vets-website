@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import { isLOA3, isLoggedIn } from 'platform/user/selectors';
 import { IntroductionPageView } from '../../shared/components/IntroductionPageView';
+import { FORM_21_4502 } from '../definitions/constants';
 
 const ombInfo = {
   resBurden: '15',
@@ -12,60 +13,81 @@ const ombInfo = {
   expDate: '08/31/2027',
 };
 
+const { INTRODUCTION: I } = FORM_21_4502;
+
+const renderBoldTrailingConjunction = text => {
+  const match = text.match(/^(.*?)(,?\s(?:or|and))$/);
+
+  if (!match) {
+    return text;
+  }
+
+  const [, baseText, conjunction] = match;
+
+  return (
+    <>
+      {baseText}
+      <strong>{conjunction}</strong>
+    </>
+  );
+};
+
 export const IntroductionPage = ({ route, userIdVerified, userLoggedIn }) => {
   const content = {
-    formTitle:
-      'APPLICATION FOR AUTOMOBILE OR OTHER CONVEYANCE AND ADAPTIVE EQUIPMENT (VA 21-4502)',
-    formSubTitle: '',
-    authStartFormText: 'Start the application',
-    saveInProgressText:
-      'Please complete the 21-4502 form to apply for automobile or adaptive equipment compensation.',
+    formTitle: I.FORM_TITLE,
+    formSubTitle: I.FORM_SUBTITLE,
+    authStartFormText: I.AUTH_START_FORM_TEXT,
+    saveInProgressText: I.SAVE_IN_PROGRESS_TEXT,
     displayNonVeteranMessaging: true,
     hideSipIntro: userLoggedIn && !userIdVerified,
   };
   const childContent = (
     <>
-      <p>
-        Use this form if you are a Veteran with a disability and want to apply
-        for compensation for a vehicle that meets your needs. This may include a
-        specially equipped vehicle for you to drive or adaptive equipment to
-        help you get in and out of your vehicle.
-      </p>
+      <p className="vads-u-margin-top--3 vads-u-margin-bottom--3">{I.INTRO}</p>
 
-      <div>
-        <h2>Please read this before you start:</h2>
-        <ul>
-          <li>You must answer all questions fully and accurately.</li>
-          <li>You can save your progress and return to this form later.</li>
-          <li>
-            This form is for applying for automobile or adaptive equipment
-            benefits under 38 U.S.C. 3901-3904.
-          </li>
-        </ul>
-      </div>
-
-      <div className="vads-u-margin-bottom--5">
-        <h2>What you need</h2>
-        <ul>
-          <li>
-            <strong>Personal information:</strong> Name, date of birth, Social
-            Security Number, and VA file number or service number if you have
-            one.
-          </li>
-          <li>
-            <strong>Contact information:</strong> Mailing address, phone number,
-            and email address.
-          </li>
-          <li>
-            <strong>Service information:</strong> Branch of service, active duty
-            status, and dates of entry and release if applicable.
-          </li>
-          <li>
-            <strong>Application details:</strong> Type of conveyance
-            (automobile, van, truck, etc.) and whether you have applied before.
-          </li>
-        </ul>
-      </div>
+      <va-process-list>
+        <va-process-list-item header={I.STEP_ELIGIBILITY_TITLE} level={2}>
+          <p>{I.STEP_ELIGIBILITY_INTRO}</p>
+          <p>{I.STEP_ELIGIBILITY_CONDITION_INTRO}</p>
+          <ul>
+            {I.STEP_ELIGIBILITY_BULLETS.map(item => (
+              <li key={item}>{renderBoldTrailingConjunction(item)}</li>
+            ))}
+          </ul>
+          <va-additional-info trigger={I.STEP_ELIGIBILITY_VISION_TRIGGER}>
+            <p>{I.STEP_ELIGIBILITY_VISION_INTRO}</p>
+            <ul>
+              {I.STEP_ELIGIBILITY_VISION_BODY.map(item => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </va-additional-info>
+          <h3 className="vads-u-font-size--h4 vads-u-margin-bottom--1">
+            {I.STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_TITLE}
+          </h3>
+          <p>{I.STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_INTRO}</p>
+          <ul>
+            {I.STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_BULLETS.map(item => (
+              <li key={item}>{renderBoldTrailingConjunction(item)}</li>
+            ))}
+          </ul>
+          <p>{I.STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_FOOTER}</p>
+        </va-process-list-item>
+        <va-process-list-item header={I.STEP_GATHER_TITLE} level={2}>
+          <p>{I.STEP_GATHER_INTRO}</p>
+          <ul>
+            {I.STEP_GATHER_BULLETS.map(item => (
+              <li key={item.label}>
+                <strong>{item.label}:</strong> {item.body}
+              </li>
+            ))}
+          </ul>
+        </va-process-list-item>
+        <va-process-list-item header={I.STEP_START_TITLE} level={2}>
+          <p>{I.STEP_START_BODY}</p>
+          <p>{I.STEP_START_FOLLOWUP}</p>
+        </va-process-list-item>
+      </va-process-list>
     </>
   );
 

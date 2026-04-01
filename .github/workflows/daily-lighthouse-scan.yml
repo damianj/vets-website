@@ -17,7 +17,7 @@ jobs:
       registries: ${{ steps.set-matrix.outputs.registries }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           repository: department-of-veterans-affairs/content-build
           ref: refs/heads/main
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -78,7 +78,7 @@ jobs:
 
       - name: Audit URLs using Lighthouse on ${{ matrix.registry }}
         id: lighthouse-checks
-        uses: treosh/lighthouse-ci-action@v9
+        uses: treosh/lighthouse-ci-action@2e159d989f91bb9e399801b3e1ad90bcd4749f75 # v9
         with:
           urls: |
             https://www.va.gov${{ matrix.registry }}
@@ -94,7 +94,7 @@ jobs:
         run: yarn generate-app-list
 
       - name: Checkout Testing Tools Team Dashboard Data repo
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           repository: department-of-veterans-affairs/qa-standards-dashboard-data
           token: ${{ env.VA_VSP_BOT_GITHUB_TOKEN }}
@@ -107,7 +107,7 @@ jobs:
         working-directory: qa-standards-dashboard-data
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ steps.get-node-version.outputs.NODE_VERSION }}
 
@@ -139,7 +139,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Notify Slack
         uses: ./.github/workflows/slack-notify
         continue-on-error: true

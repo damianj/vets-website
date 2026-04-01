@@ -151,7 +151,10 @@ export function adjustYearString(data) {
   Object.keys(copy).forEach(key => {
     if (/date|dob/.test(key.toLowerCase())) {
       const date = copy[key];
-      copy[key] = `${date.slice(5)}-${date.slice(0, 4)}`;
+      copy[key] =
+        typeof date === 'string' && date.length === 10
+          ? `${date.slice(5)}-${date.slice(0, 4)}`
+          : date;
     }
   });
   return copy;

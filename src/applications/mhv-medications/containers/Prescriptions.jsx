@@ -342,14 +342,18 @@ const Prescriptions = () => {
                   updateLoadingStatus={setLoadingMessage}
                 />
               )}
-              <BeforeYouDownloadDropdown page={pageType.LIST} />
-              <PrintDownload
-                onDownload={handleExportListDownload}
-                isSuccess={isExportSuccess}
-                isLoading={isExportLoading}
-                isFiltered={filterApplied}
-                list
-              />
+              {!isLoading && (
+                <>
+                  <BeforeYouDownloadDropdown page={pageType.LIST} />
+                  <PrintDownload
+                    onDownload={handleExportListDownload}
+                    isSuccess={isExportSuccess}
+                    isLoading={isExportLoading}
+                    isFiltered={filterApplied}
+                    list
+                  />
+                </>
+              )}
             </>
           )}
           {!isLoading && noFilterMatches && <NoFilterMatches />}

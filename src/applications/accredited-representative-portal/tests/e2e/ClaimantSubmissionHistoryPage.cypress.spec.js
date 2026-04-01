@@ -1,6 +1,6 @@
 import user from './fixtures/mocks/user.json';
 import { setFeatureToggles } from './intercepts/feature-toggles';
-import { setSubmissions } from './intercepts/submissions';
+import { setClaimantSubmissions } from './intercepts/submissions';
 
 const vamcUser = {
   data: {
@@ -35,7 +35,7 @@ const setUpInterceptsAndVisit = (featureToggles, url) => {
 
 describe('Claimant details submissions history', () => {
   beforeEach(() => {
-    setSubmissions();
+    setClaimantSubmissions('f87aaa2f-37da-4dc7-ae20-bf36aedbbc85');
     cy.loginArpUser();
     setUpInterceptsAndVisit(null, CLAIMANT_DETAILS_SUBMISSIONS_PAGE);
   });
@@ -118,12 +118,5 @@ describe('Claimant details submissions history', () => {
     cy.get('ul.submissions__list li:nth-of-type(8)')
       .find('va-icon')
       .should('not.exist');
-  });
-
-  it('Allows the user to visit Submissions', () => {
-    cy.injectAxeThenAxeCheck();
-    cy.get("va-link-action[href='/representative/submissions']").click({
-      force: true,
-    });
   });
 });

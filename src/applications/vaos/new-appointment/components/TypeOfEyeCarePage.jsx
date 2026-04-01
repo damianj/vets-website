@@ -42,14 +42,16 @@ const uiSchema = {
       },
       descriptions: {
         [TYPES_OF_EYE_CARE[0].id]:
-          'This includes routine eye exams, preventive vision testing, and ' +
-          'treatment for conditions like glaucoma. Optometrists also can ' +
-          'provide prescriptions for eyeglasses and other assistive devices.',
+          'You can schedule an appointment with an optometrist for eye exams, ' +
+          'preventive vision care, and treatment for conditions like diabetic ' +
+          'retinopathy, glaucoma, and macular degeneration. Optometrists also ' +
+          'provide prescriptions for eyeglasses and low-vision rehab services ' +
+          'for Veterans with vision loss or brain injuries.',
         [TYPES_OF_EYE_CARE[1].id]:
-          'You can schedule an appointment with an ophthalmology specialist ' +
-          'to diagnose and provide medical and surgical care for conditions ' +
-          'that affect your eyes—like cataracts, glaucoma, macular' +
-          'degeneration, and diabetic retinopathy.',
+          'You can schedule an appointment with an ophthalmology specialist to ' +
+          'diagnose and provide medical and surgical care for advanced eye ' +
+          'conditions—like cataracts, diabetic retinopathy, glaucoma, and ' +
+          'macular degeneration.',
       },
     },
   },

@@ -1,3 +1,4 @@
+import moment from 'moment';
 import user from '../fixtures/mocks/user.json';
 import mockSubmit from '../fixtures/mocks/application-submit.json';
 import prefilledForm from '../fixtures/mocks/prefilled-form.json';
@@ -180,7 +181,12 @@ describe('22-0989 keyboard only specs', () => {
     cy.contains('Attestation of Hours Transferred');
     cy.tabToElement('[name="root_attestationName"]');
     cy.typeInFocused('John Doe');
-    cy.fillVaMemorableDate('root_attestationDate', '2020-01-02', false);
+    const today = moment();
+    cy.fillVaMemorableDate(
+      'root_attestationDate',
+      today.format('YYYY-MM-DD'),
+      false,
+    );
     cy.tabToContinueForm();
 
     // Remarks

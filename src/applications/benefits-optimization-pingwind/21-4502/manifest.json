@@ -11,8 +11,8 @@
     "minimalExcludePaths": ["/introduction", "/confirmation"],
     "minimalFooter": true,
     "minimalHeader": {
-      "title": "Apply for automobile or adaptive equipment",
-      "subtitle": "Application for Automobile or Other Conveyance and Adaptive Equipment (VA Form 21-4502)"
+      "title": "Application for Automobile or Other Conveyance and Adaptive Equipment (Under 38 U.S.C. 3901-3904)",
+      "subtitle": "(VA Form 21-4502)"
     }
   }
 }

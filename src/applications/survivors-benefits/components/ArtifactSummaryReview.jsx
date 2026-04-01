@@ -9,7 +9,6 @@ import {
 import { formatIsoDate, sanitize } from '../cave/transformers/helpers';
 import {
   PAY_GRADE_OPTIONS,
-  SEPARATION_TYPE_OPTIONS,
   CHARACTER_OF_SERVICE_OPTIONS,
   SEPARATION_CODES,
 } from '../cave/constants';
@@ -29,36 +28,36 @@ const sectionKey = (artifactType, fileIndex, entryIndex, section) =>
 // (cause-of-death B/C/D are optional — IDP may not extract them)
 // ---------------------------------------------------------------------------
 const DD214_REQUIRED = [
-  'GRADE_RATE_RANK',
-  'PAY_GRADE',
-  'DATE_INDUCTED',
-  'CAUSE_OF_SEPARATION',
-  'SEPARATION_TYPE',
-  'SEPARATION_CODE',
-  'CHARACTER_OF_SERVICE',
+  'gradeRateRank',
+  'payGrade',
+  'dateInducted',
+  'causeOfSeparation',
+  'separationType',
+  'separationCode',
+  'characterOfService',
 ];
 
 const DEATH_CERT_REQUIRED = [
-  'DECENDENT_DATE_OF_DISPOSITION',
-  'CAUSE_OF_DEATH',
-  'MANNER_OF_DEATH',
-  'DECENDENT_MARITAL_STATUS',
+  'decendentDateOfDisposition',
+  'causeOfDeath',
+  'mannerOfDeath',
+  'decendentMaritalStatus',
 ];
 
 // Field-level required error messages — "Enter a …" for text inputs,
 // "Select a …" for selects/combos, "Provide …" for date fields.
 const REQUIRED_MESSAGES = {
-  GRADE_RATE_RANK: 'Enter a grade, rate, or rank',
-  PAY_GRADE: 'Select a pay grade',
-  DATE_INDUCTED: 'Provide the date inducted',
-  CAUSE_OF_SEPARATION: 'Enter a cause of separation',
-  SEPARATION_TYPE: 'Select a separation type',
-  SEPARATION_CODE: 'Select a separation code',
-  CHARACTER_OF_SERVICE: 'Select a character of service',
-  DECENDENT_DATE_OF_DISPOSITION: 'Provide a disposition date',
-  CAUSE_OF_DEATH: 'Enter a cause of death',
-  MANNER_OF_DEATH: 'Enter a manner of death',
-  DECENDENT_MARITAL_STATUS: 'Enter a marital status',
+  gradeRateRank: 'Enter a grade, rate, or rank',
+  payGrade: 'Select a pay grade',
+  dateInducted: 'Provide the date inducted',
+  causeOfSeparation: 'Enter a cause of separation',
+  separationType: 'Enter a separation type',
+  separationCode: 'Select a separation code',
+  characterOfService: 'Select a character of service',
+  decendentDateOfDisposition: 'Provide a disposition date',
+  causeOfDeath: 'Enter a cause of death',
+  mannerOfDeath: 'Enter a manner of death',
+  decendentMaritalStatus: 'Enter a marital status',
 };
 
 const entryHasRequiredMissing = (entry, artifactType) => {
@@ -85,24 +84,24 @@ const pageHasErrors = files =>
 const extractDraft = (entry, section) => {
   if (section === DD214_SERVICE) {
     return {
-      GRADE_RATE_RANK: entry.GRADE_RATE_RANK ?? '',
-      PAY_GRADE: entry.PAY_GRADE ?? '',
-      DATE_INDUCTED: entry.DATE_INDUCTED ?? '',
-      CAUSE_OF_SEPARATION: entry.CAUSE_OF_SEPARATION ?? '',
-      SEPARATION_TYPE: entry.SEPARATION_TYPE ?? '',
-      SEPARATION_CODE: entry.SEPARATION_CODE ?? '',
-      CHARACTER_OF_SERVICE: entry.CHARACTER_OF_SERVICE ?? '',
+      gradeRateRank: entry.gradeRateRank ?? '',
+      payGrade: entry.payGrade ?? '',
+      dateInducted: entry.dateInducted ?? '',
+      causeOfSeparation: entry.causeOfSeparation ?? '',
+      separationType: entry.separationType ?? '',
+      separationCode: entry.separationCode ?? '',
+      characterOfService: entry.characterOfService ?? '',
     };
   }
   if (section === DEATH_DEATH_INFO) {
     return {
-      DECENDENT_DATE_OF_DISPOSITION: entry.DECENDENT_DATE_OF_DISPOSITION ?? '',
-      CAUSE_OF_DEATH: entry.CAUSE_OF_DEATH ?? '',
-      UNDERLYING_CAUSE_OF_DEATH_B: entry.UNDERLYING_CAUSE_OF_DEATH_B ?? '',
-      UNDERLYING_CAUSE_OF_DEATH_C: entry.UNDERLYING_CAUSE_OF_DEATH_C ?? '',
-      UNDERLYING_CAUSE_OF_DEATH_D: entry.UNDERLYING_CAUSE_OF_DEATH_D ?? '',
-      MANNER_OF_DEATH: entry.MANNER_OF_DEATH ?? '',
-      DECENDENT_MARITAL_STATUS: entry.DECENDENT_MARITAL_STATUS ?? '',
+      decendentDateOfDisposition: entry.decendentDateOfDisposition ?? '',
+      causeOfDeath: entry.causeOfDeath ?? '',
+      underlyingCauseOfDeathB: entry.underlyingCauseOfDeathB ?? '',
+      underlyingCauseOfDeathC: entry.underlyingCauseOfDeathC ?? '',
+      underlyingCauseOfDeathD: entry.underlyingCauseOfDeathD ?? '',
+      mannerOfDeath: entry.mannerOfDeath ?? '',
+      decendentMaritalStatus: entry.decendentMaritalStatus ?? '',
     };
   }
   return {};
@@ -118,37 +117,37 @@ const validateDraft = (draft, section) => {
 
   if (section === DD214_SERVICE) {
     [
-      'GRADE_RATE_RANK',
-      'CAUSE_OF_SEPARATION',
-      'PAY_GRADE',
-      'SEPARATION_TYPE',
-      'SEPARATION_CODE',
-      'CHARACTER_OF_SERVICE',
+      'gradeRateRank',
+      'causeOfSeparation',
+      'payGrade',
+      'separationType',
+      'separationCode',
+      'characterOfService',
     ].forEach(field => {
       if (!draft[field]) errs[field] = REQUIRED_MESSAGES[field];
     });
 
-    if (!draft.DATE_INDUCTED) {
-      errs.DATE_INDUCTED = REQUIRED_MESSAGES.DATE_INDUCTED;
+    if (!draft.dateInducted) {
+      errs.dateInducted = REQUIRED_MESSAGES.dateInducted;
     } else {
-      const dateErr = validateIsoDate(draft.DATE_INDUCTED, 'date inducted');
-      if (dateErr) errs.DATE_INDUCTED = dateErr;
+      const dateErr = validateIsoDate(draft.dateInducted, 'date inducted');
+      if (dateErr) errs.dateInducted = dateErr;
     }
   }
 
   if (section === DEATH_DEATH_INFO) {
-    if (!draft.DECENDENT_DATE_OF_DISPOSITION) {
-      errs.DECENDENT_DATE_OF_DISPOSITION =
-        REQUIRED_MESSAGES.DECENDENT_DATE_OF_DISPOSITION;
+    if (!draft.decendentDateOfDisposition) {
+      errs.decendentDateOfDisposition =
+        REQUIRED_MESSAGES.decendentDateOfDisposition;
     } else {
       const dateErr = validateIsoDate(
-        draft.DECENDENT_DATE_OF_DISPOSITION,
+        draft.decendentDateOfDisposition,
         'disposition date',
       );
-      if (dateErr) errs.DECENDENT_DATE_OF_DISPOSITION = dateErr;
+      if (dateErr) errs.decendentDateOfDisposition = dateErr;
     }
 
-    ['CAUSE_OF_DEATH', 'MANNER_OF_DEATH', 'DECENDENT_MARITAL_STATUS'].forEach(
+    ['causeOfDeath', 'mannerOfDeath', 'decendentMaritalStatus'].forEach(
       field => {
         if (!draft[field]) errs[field] = REQUIRED_MESSAGES[field];
       },
@@ -376,70 +375,69 @@ const Dd214Item = ({
         onSave={() => onSave(serviceKey, fileIndex, entryIndex, 'dd214')}
         onCancel={onCancel}
         readRows={[
-          { label: 'Grade, rate, or rank', value: entry.GRADE_RATE_RANK },
-          { label: 'Pay grade', value: entry.PAY_GRADE },
+          { label: 'Grade, rate, or rank', value: entry.gradeRateRank },
+          { label: 'Pay grade', value: entry.payGrade },
           {
             label: 'Date inducted',
-            value: entry.DATE_INDUCTED
-              ? formatIsoDate(entry.DATE_INDUCTED)
+            value: entry.dateInducted
+              ? formatIsoDate(entry.dateInducted)
               : null,
           },
-          { label: 'Cause of separation', value: entry.CAUSE_OF_SEPARATION },
-          { label: 'Separation type', value: entry.SEPARATION_TYPE },
-          { label: 'Separation code', value: entry.SEPARATION_CODE },
-          { label: 'Character of service', value: entry.CHARACTER_OF_SERVICE },
+          { label: 'Cause of separation', value: entry.causeOfSeparation },
+          { label: 'Separation type', value: entry.separationType },
+          { label: 'Separation code', value: entry.separationCode },
+          { label: 'Character of service', value: entry.characterOfService },
         ]}
       >
         <TextField
-          field="GRADE_RATE_RANK"
+          field="gradeRateRank"
           label="Grade, rate, or rank"
-          value={draftValues.GRADE_RATE_RANK}
-          error={errors.GRADE_RATE_RANK}
+          value={draftValues.gradeRateRank}
+          error={errors.gradeRateRank}
           onInput={onField}
         />
         <SelectField
-          field="PAY_GRADE"
+          field="payGrade"
           label="Pay grade"
-          value={draftValues.PAY_GRADE}
-          error={errors.PAY_GRADE}
+          value={draftValues.payGrade}
+          error={errors.payGrade}
           options={PAY_GRADE_OPTIONS}
           onChange={onField}
         />
         <DateField
-          field="DATE_INDUCTED"
+          field="dateInducted"
           label="Date inducted"
-          value={draftValues.DATE_INDUCTED}
-          error={errors.DATE_INDUCTED}
+          value={draftValues.dateInducted}
+          error={errors.dateInducted}
           onDateChange={onDate}
         />
         <TextField
-          field="CAUSE_OF_SEPARATION"
+          field="causeOfSeparation"
           label="Cause of separation"
-          value={draftValues.CAUSE_OF_SEPARATION}
-          error={errors.CAUSE_OF_SEPARATION}
+          value={draftValues.causeOfSeparation}
+          error={errors.causeOfSeparation}
           onInput={onField}
         />
-        <SelectField
-          field="SEPARATION_TYPE"
+        <TextField
+          field="separationType"
           label="Separation type"
-          value={draftValues.SEPARATION_TYPE}
-          error={errors.SEPARATION_TYPE}
-          options={SEPARATION_TYPE_OPTIONS}
-          onChange={onField}
+          value={draftValues.separationType}
+          error={errors.separationType}
+          onInput={onField}
         />
         <ComboField
-          field="SEPARATION_CODE"
+          field="separationCode"
           label="Separation code"
-          value={draftValues.SEPARATION_CODE}
-          error={errors.SEPARATION_CODE}
+          value={draftValues.separationCode}
+          error={errors.separationCode}
           options={SEPARATION_CODES}
           onChange={onField}
         />
         <ComboField
-          field="CHARACTER_OF_SERVICE"
+          field="characterOfService"
           label="Character of service"
-          value={draftValues.CHARACTER_OF_SERVICE}
-          error={errors.CHARACTER_OF_SERVICE}
+          value={draftValues.characterOfService}
+          error={errors.characterOfService}
           options={CHARACTER_OF_SERVICE_OPTIONS}
           onChange={onField}
         />
@@ -499,82 +497,82 @@ const DeathCertItem = ({
         readRows={[
           {
             label: 'Disposition date',
-            value: entry.DECENDENT_DATE_OF_DISPOSITION
-              ? formatIsoDate(entry.DECENDENT_DATE_OF_DISPOSITION)
+            value: entry.decendentDateOfDisposition
+              ? formatIsoDate(entry.decendentDateOfDisposition)
               : null,
             required: true,
           },
-          { label: 'Cause of death A', value: entry.CAUSE_OF_DEATH },
+          { label: 'Cause of death A', value: entry.causeOfDeath },
           {
             label: 'Cause of death B',
-            value: entry.UNDERLYING_CAUSE_OF_DEATH_B,
+            value: entry.underlyingCauseOfDeathB,
             optional: true,
           },
           {
             label: 'Cause of death C',
-            value: entry.UNDERLYING_CAUSE_OF_DEATH_C,
+            value: entry.underlyingCauseOfDeathC,
             optional: true,
           },
           {
             label: 'Cause of death D',
-            value: entry.UNDERLYING_CAUSE_OF_DEATH_D,
+            value: entry.underlyingCauseOfDeathD,
             optional: true,
           },
-          { label: 'Manner of death', value: entry.MANNER_OF_DEATH },
+          { label: 'Manner of death', value: entry.mannerOfDeath },
           {
             label: 'Marital status at time of death',
-            value: entry.DECENDENT_MARITAL_STATUS,
+            value: entry.decendentMaritalStatus,
             required: true,
           },
         ]}
       >
         <DateField
-          field="DECENDENT_DATE_OF_DISPOSITION"
+          field="decendentDateOfDisposition"
           label="Disposition date"
-          value={draftValues.DECENDENT_DATE_OF_DISPOSITION}
-          error={errors.DECENDENT_DATE_OF_DISPOSITION}
+          value={draftValues.decendentDateOfDisposition}
+          error={errors.decendentDateOfDisposition}
           onDateChange={onDate}
         />
         <TextField
-          field="CAUSE_OF_DEATH"
+          field="causeOfDeath"
           label="Cause of death A"
-          value={draftValues.CAUSE_OF_DEATH}
-          error={errors.CAUSE_OF_DEATH}
+          value={draftValues.causeOfDeath}
+          error={errors.causeOfDeath}
           onInput={onField}
         />
         <TextField
-          field="UNDERLYING_CAUSE_OF_DEATH_B"
+          field="underlyingCauseOfDeathB"
           label="Cause of death B (if applicable)"
-          value={draftValues.UNDERLYING_CAUSE_OF_DEATH_B}
-          error={errors.UNDERLYING_CAUSE_OF_DEATH_B}
+          value={draftValues.underlyingCauseOfDeathB}
+          error={errors.underlyingCauseOfDeathB}
           onInput={onField}
         />
         <TextField
-          field="UNDERLYING_CAUSE_OF_DEATH_C"
+          field="underlyingCauseOfDeathC"
           label="Cause of death C (if applicable)"
-          value={draftValues.UNDERLYING_CAUSE_OF_DEATH_C}
-          error={errors.UNDERLYING_CAUSE_OF_DEATH_C}
+          value={draftValues.underlyingCauseOfDeathC}
+          error={errors.underlyingCauseOfDeathC}
           onInput={onField}
         />
         <TextField
-          field="UNDERLYING_CAUSE_OF_DEATH_D"
+          field="underlyingCauseOfDeathD"
           label="Cause of death D (if applicable)"
-          value={draftValues.UNDERLYING_CAUSE_OF_DEATH_D}
-          error={errors.UNDERLYING_CAUSE_OF_DEATH_D}
+          value={draftValues.underlyingCauseOfDeathD}
+          error={errors.underlyingCauseOfDeathD}
           onInput={onField}
         />
         <TextField
-          field="MANNER_OF_DEATH"
+          field="mannerOfDeath"
           label="Manner of death"
-          value={draftValues.MANNER_OF_DEATH}
-          error={errors.MANNER_OF_DEATH}
+          value={draftValues.mannerOfDeath}
+          error={errors.mannerOfDeath}
           onInput={onField}
         />
         <TextField
-          field="DECENDENT_MARITAL_STATUS"
+          field="decendentMaritalStatus"
           label="Marital status at time of death"
-          value={draftValues.DECENDENT_MARITAL_STATUS}
-          error={errors.DECENDENT_MARITAL_STATUS}
+          value={draftValues.decendentMaritalStatus}
+          error={errors.decendentMaritalStatus}
           onInput={onField}
         />
       </Section>

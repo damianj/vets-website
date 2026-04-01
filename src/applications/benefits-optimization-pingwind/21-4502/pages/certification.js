@@ -5,29 +5,15 @@ import {
   checkboxUI,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { FORM_21_4502 } from '../definitions/constants';
+
+const { CERTIFICATION: C } = FORM_21_4502;
 
 /** @type {PageSchema} */
 export default {
   uiSchema: {
-    ...titleUI('Certification and signature'),
-    'ui:description': (
-      <div>
-        <VaAlert status="info" class="vads-u-margin-top--3" uswds visible>
-          <h2 slot="headline">Application statement</h2>
-          <p className="vads-u-margin--0">
-            By signing, you certify that you will obtain proper licensing to
-            operate the vehicle or conveyance, and that VA has not previously
-            paid an automobile grant on your behalf (or that 30 or more years
-            have passed since the last grant).
-          </p>
-        </VaAlert>
-        <div className="vads-u-margin-top--5">
-          <p className="vads-u-font-weight--bold vads-u-margin-top--0">
-            Please read and certify the following.
-          </p>
-        </div>
-      </div>
-    ),
+    'ui:options': { preserveHiddenData: true },
+    ...titleUI(C.TITLE, C.PAGE_DESCRIPTION),
     'ui:order': [
       'certifyLicensing',
       'certifyNoPriorGrant',
@@ -36,42 +22,53 @@ export default {
     'view:penaltyAlert': {
       'ui:field': 'ViewField',
       'ui:description': (
-        <VaAlert status="warning" class="vads-u-margin-top--3" uswds visible>
+        <VaAlert status="warning" uswds visible>
           <h2 slot="headline" className="vads-u-font-weight--bold">
-            Penalty
+            {C.PENALTY_HEADING}
           </h2>
-          <p className="vads-u-margin--0">
-            The law provides severe penalties which include fine or imprisonment
-            or both for the willful submission of any statement or evidence of a
-            material fact, knowing it to be false, or for the fraudulent
-            acceptance of any payment to which you are not entitled.
-          </p>
+          <p className="vads-u-margin--0">{C.PENALTY_TEXT}</p>
         </VaAlert>
       ),
     },
     certifyLicensing: checkboxUI({
-      title:
-        'I certify that I will obtain proper licensing to operate the vehicle or conveyance.',
+      title: C.CERTIFY_LICENSING_TITLE,
+      description: (
+        <>
+          <p className="vads-u-font-weight--bold vads-u-margin-top--0 vads-u-margin-bottom--2">
+            {C.CERTIFY_LICENSING_HEADING}
+          </p>
+          <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+            {C.CERTIFY_LICENSING_DESCRIPTION}
+          </p>
+        </>
+      ),
       required: () => true,
       classNames:
         'vads-u-background-color--gray-lightest vads-u-padding--4 vads-u-margin-bottom--4',
       errorMessages: {
-        enum: 'You must certify to continue.',
-        required: 'You must certify to continue.',
+        enum: C.ERROR_LICENSING,
+        required: C.ERROR_LICENSING,
       },
-      label: 'I certify that I will obtain proper licensing.',
     }),
     certifyNoPriorGrant: checkboxUI({
-      title:
-        'I certify that VA has not previously paid an automobile grant on my behalf, or that 30 or more years have passed since the last grant.',
+      title: C.CERTIFY_NO_PRIOR_TITLE,
+      description: (
+        <>
+          <p className="vads-u-font-weight--bold vads-u-margin-top--0 vads-u-margin-bottom--2">
+            {C.CERTIFY_NO_PRIOR_HEADING}
+          </p>
+          <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+            {C.CERTIFY_NO_PRIOR_DESCRIPTION}
+          </p>
+        </>
+      ),
       required: () => true,
       classNames:
         'vads-u-background-color--gray-lightest vads-u-padding--4 vads-u-margin-bottom--4',
       errorMessages: {
-        enum: 'You must certify to continue.',
-        required: 'You must certify to continue.',
+        enum: C.ERROR_NO_PRIOR,
+        required: C.ERROR_NO_PRIOR,
       },
-      label: 'I certify regarding prior automobile grant.',
     }),
   },
   schema: {

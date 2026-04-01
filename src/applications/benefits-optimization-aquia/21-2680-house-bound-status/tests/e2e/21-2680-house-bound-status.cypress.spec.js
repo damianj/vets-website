@@ -4,6 +4,7 @@ import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-test
 import { formConfig } from '@bio-aquia/21-2680-house-bound-status/config';
 import manifest from '@bio-aquia/21-2680-house-bound-status/manifest.json';
 import { featureToggles, user } from '../fixtures/mocks';
+import addressValidationConfidence70 from '../../../shared/tests/mocks/address-validation-confidence-70.json';
 
 const testConfig = createTestConfig(
   {
@@ -24,6 +25,14 @@ const testConfig = createTestConfig(
           cy.findAllByText(/^start/i, { selector: 'a[href="#start"]' })
             .last()
             .click();
+        });
+      },
+      'veteran-address-validation': ({ afterHook }) => {
+        afterHook(() => {
+          cy.findByText(/we found a similar address to the one you entered/i);
+          cy.get('va-radio').should('exist');
+          cy.selectVaRadioOption('addressGroup', 'user-entered');
+          cy.clickFormContinue();
         });
       },
       'claimant-contact': ({ afterHook }) => {
@@ -57,6 +66,8 @@ const testConfig = createTestConfig(
       },
       'review-and-submit': ({ afterHook }) => {
         afterHook(() => {
+          cy.get('@addressValidation.all').should('have.length.greaterThan', 0);
+
           cy.get('@testData').then(data => {
             const { veteranFullName } = data.veteranInformation;
             // Build full name for signature (middle is optional, no suffix)
@@ -95,6 +106,13 @@ const testConfig = createTestConfig(
 
       // Mock feature toggles
       cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+      // Mock USPS address validation (confidence < 100 uses suggestion page)
+      cy.intercept(
+        'POST',
+        '/v0/profile/address_validation',
+        addressValidationConfidence70,
+      ).as('addressValidation');
 
       // Mock save-in-progress endpoints
       cy.intercept('GET', '/v0/in_progress_forms/21-2680', {

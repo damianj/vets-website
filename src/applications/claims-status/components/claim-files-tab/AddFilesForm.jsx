@@ -13,11 +13,9 @@ import {
   checkIsEncryptedPdf,
 } from 'platform/forms-system/src/js/utilities/file';
 
-import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import { DOC_TYPES } from '../../utils/helpers';
 import { FILE_TYPES, isPdf, validateFiles } from '../../utils/validations';
 import { checkIfRetry } from '../../utils/analytics';
-import mailMessage from '../MailMessage';
 import UploadStatus from '../UploadStatus';
 
 import {
@@ -236,8 +234,6 @@ const AddFilesForm = ({
   progress,
   onCancel,
 }) => {
-  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
-  const toggleValue = useToggleValue(TOGGLE_NAMES.cstShowDocumentUploadStatus);
   const { id: claimId } = useParams();
   const [files, setFiles] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -372,7 +368,7 @@ const AddFilesForm = ({
           ref={fileInputRef}
           hint={HINT_TEXT}
           label={LABEL_TEXT}
-          labelClass={toggleValue ? 'vads-u-visibility--screen-reader' : ''}
+          labelClass="vads-u-visibility--screen-reader"
           onVaMultipleChange={handleFileChange}
           errors={errors}
           encrypted={encrypted}
@@ -396,33 +392,22 @@ const AddFilesForm = ({
           text={SUBMIT_TEXT}
           onClick={handleSubmit}
         />
-        {!toggleValue && (
-          <va-additional-info
-            class="vads-u-margin-y--3"
-            trigger="Need to mail your documents?"
-          >
-            {mailMessage}
-          </va-additional-info>
+        {!hideOtherWaysLink && (
+          <div className="vads-u-margin-top--3 vads-u-margin-bottom--5">
+            <va-link
+              href={otherWaysToSendHref}
+              text={SEND_YOUR_DOCUMENTS_TEXT}
+              onClick={e => {
+                // Only prevent default and scroll if we're on the files tab
+                // Otherwise, let the link navigate to the files page
+                if (fileTab) {
+                  e.preventDefault();
+                  setPageFocus(`#${ANCHOR_LINKS.otherWaysToSendDocuments}`);
+                }
+              }}
+            />
+          </div>
         )}
-        {toggleValue &&
-          !hideOtherWaysLink && (
-            <>
-              <div className="vads-u-margin-top--3 vads-u-margin-bottom--5">
-                <va-link
-                  href={otherWaysToSendHref}
-                  text={SEND_YOUR_DOCUMENTS_TEXT}
-                  onClick={e => {
-                    // Only prevent default and scroll if we're on the files tab
-                    // Otherwise, let the link navigate to the files page
-                    if (fileTab) {
-                      e.preventDefault();
-                      setPageFocus(`#${ANCHOR_LINKS.otherWaysToSendDocuments}`);
-                    }
-                  }}
-                />
-              </div>
-            </>
-          )}
         <VaModal
           id="upload-status"
           onCloseEvent={() => setCanShowUploadModal(false)}

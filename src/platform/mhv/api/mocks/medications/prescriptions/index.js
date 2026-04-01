@@ -161,7 +161,55 @@ function generateMockPrescriptions(n = 20) {
   };
 }
 
+function v2PrescriptionsHandler(req, res) {
+  const data = generateMockPrescriptions();
+  const total = data.data.length;
+  const page = Number(req.query.page || 1);
+  const perPage = Number(req.query.per_page || 10);
+  if (
+    !Number.isFinite(page) ||
+    page < 1 ||
+    !Number.isFinite(perPage) ||
+    perPage < 1
+  ) {
+    throw new Error(
+      `Invalid pagination params: page=${req.query.page}, per_page=${
+        req.query.per_page
+      }`,
+    );
+  }
+  const start = (page - 1) * perPage;
+  const slice = data.data.slice(start, start + perPage);
+  return res.json({
+    data: slice,
+    meta: {
+      ...data.meta,
+      pagination: {
+        currentPage: page,
+        perPage,
+        totalPages: Math.max(1, Math.ceil(total / perPage)),
+        totalEntries: total,
+      },
+      filterCount: {
+        allMedications: total,
+        active: data.data.filter(d => d?.attributes?.dispStatus === 'Active')
+          .length,
+        inProgress: 0,
+        shipped: 0,
+        renewable: 0,
+        inactive: data.data.filter(d =>
+          ['Expired', 'Discontinued'].includes(d?.attributes?.dispStatus),
+        ).length,
+        transferred: 0,
+        statusNotAvailable: 0,
+      },
+    },
+    links: {},
+  });
+}
+
 module.exports = {
   mockPrescription,
   generateMockPrescriptions,
+  v2PrescriptionsHandler,
 };

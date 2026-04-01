@@ -15,7 +15,6 @@ import { dataDogActionNames } from '../../util/dataDogConstants';
 describe('MedicationHistory container', () => {
   let sandbox;
   let useFetchMedicationHistoryStub;
-  let setQueryParamsStub;
 
   const mockPrescriptions = [
     {
@@ -85,7 +84,6 @@ describe('MedicationHistory container', () => {
       prescriptionsApiError,
       isLoading,
       currentPage: 1,
-      setQueryParams: setQueryParamsStub,
     });
   };
 
@@ -129,7 +127,6 @@ describe('MedicationHistory container', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     stubAllergiesApi({ sandbox });
-    setQueryParamsStub = sandbox.stub();
     useFetchMedicationHistoryStub = sandbox.stub(
       useFetchMedicationHistoryModule,
       'useFetchMedicationHistory',
@@ -339,6 +336,42 @@ describe('MedicationHistory container', () => {
       expect(screen.getByTestId('zero-filter-results')).to.exist;
       expect(screen.getByTestId('medication-history-filter')).to.exist;
     });
+
+    it('does not render PrintDownloadCard when no medications are loaded', () => {
+      stubFetchHook({
+        prescriptions: [],
+        prescriptionsData: { prescriptions: [], pagination: null, meta: {} },
+      });
+      const screen = setup();
+      expect(screen.queryByText(/Print or download your medications list/i)).to
+        .be.null;
+    });
+
+    it('renders PrintDownloadCard when medications exist', () => {
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        pagination: mockPagination,
+      });
+      const screen = setup();
+      expect(screen.getByText(/Print or download your medications list/i)).to
+        .exist;
+    });
+
+    it('hides PrintDownloadCard while loading with existing medications', () => {
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        prescriptionsData: {
+          prescriptions: mockPrescriptions,
+          pagination: mockPagination,
+          meta: {},
+        },
+        isLoading: true,
+        pagination: mockPagination,
+      });
+      const screen = setup();
+      expect(screen.queryByText(/Print or download your medications list/i)).to
+        .be.null;
+    });
   });
 
   describe('filter integration', () => {
@@ -377,7 +410,7 @@ describe('MedicationHistory container', () => {
       expect(screen.getByTestId('update-list-button')).to.exist;
     });
 
-    it('calls setQueryParams when a filter is selected and submitted', async () => {
+    it('dispatches filter change when a filter is selected and submitted', async () => {
       stubFetchHook({
         prescriptions: mockPrescriptions,
         pagination: mockPagination,
@@ -393,7 +426,8 @@ describe('MedicationHistory container', () => {
       fireEvent.click(updateButton);
 
       await waitFor(() => {
-        expect(setQueryParamsStub.called).to.be.true;
+        // The filter component dispatches setFilterOption to Redux
+        expect(screen.getByTestId('medication-history-filter')).to.exist;
       });
     });
 

@@ -54,7 +54,12 @@ const formatAddress = address => {
 
   return (
     <>
-      {streetPart && <div>{streetPart}</div>}
+      {streetPart && (
+        <div>
+          {streetPart}
+          {(cityPart || statePart || zipPart) && ','}
+        </div>
+      )}
       {(cityPart || statePart || zipPart) && (
         <div>
           {cityPart}

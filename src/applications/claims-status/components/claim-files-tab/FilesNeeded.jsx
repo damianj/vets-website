@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom-v5-compat';
 import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import PropTypes from 'prop-types';
 
-import { buildDateFormatter } from '../../utils/helpers';
+import { Toggler } from '~/platform/utilities/feature-toggles';
+import { buildDateFormatter, formatDateShortMonth } from '../../utils/helpers';
 import * as TrackedItem from '../../utils/trackedItemContent';
 import { standard5103Item } from '../../constants';
 
@@ -48,41 +49,65 @@ export default function FilesNeeded({ claimId, item, previousPage = null }) {
       : TrackedItem.truncateDescription(item.description); // Truncating the item description to only 200 characters incase it is long
   };
   const formattedDueDate = buildDateFormatter()(item.suspenseDate);
+  const description = getItemDescription();
+  const detailHref = `/track-claims/your-claims/${claimId}/needed-from-you/${
+    item.id
+  }`;
+
+  const handleNavigation = e => {
+    e.preventDefault();
+
+    if (previousPage !== null) {
+      sessionStorage.setItem('previousPage', previousPage);
+    }
+
+    navigate(`/your-claims/${claimId}/needed-from-you/${item.id}`);
+  };
+
   return (
-    <va-alert
-      data-testid={`item-${item.id}`}
-      class="primary-alert vads-u-margin-bottom--2"
-      status="warning"
+    <Toggler
+      toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
     >
-      <h4 slot="headline" className="alert-title">
-        {getItemDisplayName()}
-      </h4>
+      <Toggler.Enabled>
+        <va-card
+          data-testid={`item-${item.id}`}
+          class="vads-u-margin-bottom--2"
+        >
+          <h4 className="vads-u-margin-top--0">{getItemDisplayName()}</h4>
+          {description && <p>{description}</p>}
+          <va-critical-action
+            link={detailHref}
+            text={`Requested by ${formatDateShortMonth(item.suspenseDate)}`}
+            onClick={handleNavigation}
+          />
+        </va-card>
+      </Toggler.Enabled>
+      <Toggler.Disabled>
+        <va-alert
+          data-testid={`item-${item.id}`}
+          class="primary-alert vads-u-margin-bottom--2"
+          status="warning"
+        >
+          <h4 slot="headline" className="alert-title">
+            {getItemDisplayName()}
+          </h4>
 
-      <p>Respond by {formattedDueDate}</p>
+          <p>Respond by {formattedDueDate}</p>
 
-      <span className="alert-description">{getItemDescription()}</span>
-      <div className="link-action-container">
-        <VaLinkAction
-          aria-label={`About this request for ${item.friendlyName ||
-            item.displayName}`}
-          href={`/track-claims/your-claims/${claimId}/needed-from-you/${
-            item.id
-          }`}
-          onClick={e => {
-            // Prevent full page reload, use React Router instead
-            e.preventDefault();
-
-            if (previousPage !== null) {
-              sessionStorage.setItem('previousPage', previousPage);
-            }
-
-            navigate(`/your-claims/${claimId}/needed-from-you/${item.id}`);
-          }}
-          text="About this request"
-          type="secondary"
-        />
-      </div>
-    </va-alert>
+          <span className="alert-description">{description}</span>
+          <div className="link-action-container">
+            <VaLinkAction
+              aria-label={`About this request for ${item.friendlyName ||
+                item.displayName}`}
+              href={detailHref}
+              onClick={handleNavigation}
+              text="About this request"
+              type="secondary"
+            />
+          </div>
+        </va-alert>
+      </Toggler.Disabled>
+    </Toggler>
   );
 }
 

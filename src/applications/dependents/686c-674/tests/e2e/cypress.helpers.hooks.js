@@ -443,6 +443,30 @@ export const pageHooks = {
     });
   },
 
+  'current-marriage-information/reason-for-living-separately': ({
+    afterHook,
+  }) => {
+    afterHook(() => {
+      cy.get('@testData').then(data => {
+        const value = data.doesLiveWithSpouse?.currentSpouseReasonForSeparation.toUpperCase();
+        if (value) {
+          cy.selectVaRadioOption(
+            'root_doesLiveWithSpouse_currentSpouseReasonForSeparation',
+            value,
+          );
+          if (value === 'OTHER') {
+            cy.fillVaTextInput(
+              'root_doesLiveWithSpouse_other',
+              data.doesLiveWithSpouse?.currentSpouseOtherReasonForSeparation,
+            );
+          }
+        }
+        cy.injectAxeThenAxeCheck();
+        cy.clickFormContinue();
+      });
+    });
+  },
+
   'review-and-submit': ({ afterHook }) => {
     afterHook(() => {
       cy.get('@testData').then((/* data */) => {

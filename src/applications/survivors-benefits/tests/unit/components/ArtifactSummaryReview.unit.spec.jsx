@@ -10,30 +10,30 @@ import ArtifactReviewAccordion from '../../../components/ArtifactSummaryReview';
 // Fixtures
 // ---------------------------------------------------------------------------
 const completeDD214 = {
-  GRADE_RATE_RANK: 'Sergeant',
-  PAY_GRADE: 'E-5',
-  DATE_INDUCTED: '1970-02-15',
-  CAUSE_OF_SEPARATION: 'Completion of required service',
-  SEPARATION_TYPE: 'Discharge',
-  SEPARATION_CODE: 'BB',
-  CHARACTER_OF_SERVICE: 'Honorable',
+  gradeRateRank: 'Sergeant',
+  payGrade: 'E-5',
+  dateInducted: '1970-02-15',
+  causeOfSeparation: 'Completion of required service',
+  separationType: 'Discharge',
+  separationCode: 'BB',
+  characterOfService: 'Honorable',
 };
 
 const incompleteDD214 = {
-  GRADE_RATE_RANK: null,
-  PAY_GRADE: null,
-  DATE_INDUCTED: null,
-  CAUSE_OF_SEPARATION: null,
-  SEPARATION_TYPE: null,
-  SEPARATION_CODE: null,
-  CHARACTER_OF_SERVICE: null,
+  gradeRateRank: null,
+  payGrade: null,
+  dateInducted: null,
+  causeOfSeparation: null,
+  separationType: null,
+  separationCode: null,
+  characterOfService: null,
 };
 
 const completeDeathCert = {
-  DECENDENT_DATE_OF_DISPOSITION: '2020-01-05',
-  CAUSE_OF_DEATH: 'Heart failure',
-  MANNER_OF_DEATH: 'Natural',
-  DECENDENT_MARITAL_STATUS: 'Married',
+  decendentDateOfDisposition: '2020-01-05',
+  causeOfDeath: 'Heart failure',
+  mannerOfDeath: 'Natural',
+  decendentMaritalStatus: 'Married',
 };
 
 // ---------------------------------------------------------------------------
@@ -200,8 +200,8 @@ describe('<ArtifactReviewAccordion />', () => {
         goForward: sinon.spy(),
       });
       container.querySelector('va-button[text="Edit"]').click();
-      expect(container.querySelector('va-text-input[name="GRADE_RATE_RANK"]'))
-        .to.exist;
+      expect(container.querySelector('va-text-input[name="gradeRateRank"]')).to
+        .exist;
       expect(container.querySelector('va-button[text="Save"]')).to.exist;
       expect(container.querySelector('va-button[text="Cancel"]')).to.exist;
     });
@@ -232,7 +232,7 @@ describe('<ArtifactReviewAccordion />', () => {
       container.querySelector('va-button[text="Edit"]').click();
       container.querySelector('va-button[text="Save"]').click();
       const gradeInput = container.querySelector(
-        'va-text-input[name="GRADE_RATE_RANK"]',
+        'va-text-input[name="gradeRateRank"]',
       );
       expect(gradeInput).to.exist; // still in edit mode
       expect(gradeInput.getAttribute('error')).to.not.be.null;
@@ -266,10 +266,10 @@ describe('<ArtifactReviewAccordion />', () => {
 
     it('marks accordion-item with data-has-errors for incomplete death cert', () => {
       const incompleteDeath = {
-        DECENDENT_DATE_OF_DISPOSITION: null,
-        CAUSE_OF_DEATH: null,
-        MANNER_OF_DEATH: null,
-        DECENDENT_MARITAL_STATUS: null,
+        decendentDateOfDisposition: null,
+        causeOfDeath: null,
+        mannerOfDeath: null,
+        decendentMaritalStatus: null,
       };
       const { container } = render_([makeFileWithDeathCert(incompleteDeath)]);
       expect(
@@ -298,9 +298,9 @@ describe('<ArtifactReviewAccordion />', () => {
     it('hides optional rows (B/C/D) when values are absent', () => {
       const deathCertNoOptional = {
         ...completeDeathCert,
-        UNDERLYING_CAUSE_OF_DEATH_B: null,
-        UNDERLYING_CAUSE_OF_DEATH_C: null,
-        UNDERLYING_CAUSE_OF_DEATH_D: null,
+        underlyingCauseOfDeathB: null,
+        underlyingCauseOfDeathC: null,
+        underlyingCauseOfDeathD: null,
       };
       const { container } = render_([
         makeFileWithDeathCert(deathCertNoOptional),

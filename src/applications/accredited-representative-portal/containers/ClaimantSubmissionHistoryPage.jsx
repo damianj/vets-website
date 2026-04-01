@@ -125,7 +125,7 @@ ClaimantSubmissionHistoryPage.loader = async ({ request }) => {
   }
 
   // Wait for the Promise-based Response object
-  const response = await api.getSubmissions(
+  const response = await api.getClaimantSubmissions(
     { sort, size, number, identifier },
     {
       signal: request.signal,

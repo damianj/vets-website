@@ -19,7 +19,6 @@ export default {
     veteranAddress: {
       country: 'USA',
       street: '1700 Clairmont Rd',
-      street2: '',
       city: 'Decatur',
       state: 'GA',
       postalCode: '30033',
@@ -28,8 +27,7 @@ export default {
     emailAddress: 'vets.gov.user80@gmail.com',
   },
   vaDependentsNetWorthAndPension: true,
-  vaDependentsDuplicateModals: true,
-  vaDependentsV3: true,
+  isV3RemovalFlow: true,
   veteranInformation: {
     fullName: { first: 'Pauline', last: 'Foster', middle: 'E' },
     ssn: '796330625',
@@ -293,7 +291,6 @@ export default {
         country: 'USA',
         state: 'AK',
         street: '123 Test St',
-        street2: 'Suite 100',
         postalCode: '99501',
       },
       whoDoesTheStepchildLiveWith: {
@@ -364,7 +361,6 @@ export default {
       removalDate: '',
     },
   ],
-  householdIncome: true,
   reportDivorce: {
     ssn: '333322222',
     date: '2025-01-01',
@@ -460,7 +456,6 @@ export default {
         postalCode: '99501',
         state: 'AK',
         street: '123 Test St',
-        street2: 'Suite 100',
       },
       birthDate: createDoB(4),
       dateStepchildLeftHousehold: '2025-06-05',
@@ -483,12 +478,6 @@ export default {
       birthDate: createDoB(11),
     },
   ],
-  'view:addDependentOptions': {
-    addSpouse: false,
-    addChild: false,
-    report674: false,
-    addDisabledChild: false,
-  },
   'view:removeDependentOptions': {
     reportDivorce: true,
     reportDeath: true,
@@ -497,10 +486,6 @@ export default {
     reportChild18OrOlderIsNotAttendingSchool: true,
   },
   'view:selectable686Options': {
-    addSpouse: false,
-    addChild: false,
-    report674: false,
-    addDisabledChild: false,
     reportDivorce: true,
     reportDeath: true,
     reportStepchildNotInHousehold: true,

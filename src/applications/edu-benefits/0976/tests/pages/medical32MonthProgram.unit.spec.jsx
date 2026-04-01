@@ -48,6 +48,6 @@ describe('22-0976 medical 32 month program page', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     const vaRadio = container.querySelector('va-radio');
     expect(vaRadio).to.exist;
-    expect(vaRadio.getAttribute('error')).to.equal('Select one of the options');
+    expect(vaRadio.getAttribute('error')).to.equal('You must make a selection');
   });
 });

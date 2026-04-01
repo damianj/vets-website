@@ -5,6 +5,7 @@ import {
   RENEWAL_FILTER_KEY,
   NON_ACTIVE_FILTER_KEY,
   rxListSortingOptions,
+  rxListSortingOptionsV2,
 } from '../constants';
 
 /**
@@ -71,11 +72,13 @@ export const displayHeaderPrefaceText = (
       throw new Error(`Unknown filter option: ${selectedFilterOption}`);
   }
 
+  const sortOption =
+    rxListSortingOptions[selectedSortOption] ||
+    rxListSortingOptionsV2[selectedSortOption];
+
   const tailParts = [
     {
-      value: `sorted ${rxListSortingOptions[
-        selectedSortOption
-      ].LABEL.toLowerCase()}. ${
+      value: `sorted ${(sortOption?.LABEL || '').toLowerCase()}. ${
         selectedFilterOption === ALL_MEDICATIONS_FILTER_KEY
           ? ''
           : "This list doesn't include all of your medications. "

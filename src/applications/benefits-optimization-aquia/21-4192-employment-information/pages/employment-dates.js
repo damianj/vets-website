@@ -15,6 +15,13 @@ import { isValidDateRange } from 'platform/forms-system/src/js/utilities/validat
 import commonDefinitions from 'vets-json-schema/dist/definitions.json';
 import { getVeteranName, getEmployerName } from './helpers';
 import { MemorableDateUI } from '../components/memorable-date-ui';
+import {
+  MIN_WORKING_AGE_YEARS,
+  getVeteranDobFromFormData,
+  isValidDateObject,
+  parseDateValue,
+  shiftDateByYears,
+} from '../utils/date-validation-helpers';
 
 /**
  * Generate page title
@@ -65,8 +72,58 @@ const getEndingDateTitle = formData => {
  * @param {object} errors - Errors object
  * @param {object} fieldData - Employment dates data
  */
-const validateEmploymentDateRange = (errors, fieldData) => {
+const validateEmploymentDateRange = (errors, fieldData, fullData) => {
   const { beginningDate, endingDate } = fieldData || {};
+  const veteranDob = getVeteranDobFromFormData(fullData);
+  // Employment cannot begin/end before legal working age threshold.
+  const veteranFourteenthBirthday = veteranDob
+    ? shiftDateByYears(veteranDob, MIN_WORKING_AGE_YEARS)
+    : null;
+
+  const beginningDateValue = parseDateValue(beginningDate);
+  const endingDateValue = parseDateValue(endingDate);
+
+  if (
+    beginningDateValue &&
+    isValidDateObject(beginningDateValue) &&
+    veteranDob &&
+    beginningDateValue < veteranDob
+  ) {
+    // Most specific error first: impossible date before birth.
+    errors.beginningDate.addError(
+      "Beginning date can't be before the Veteran's date of birth",
+    );
+  } else if (
+    beginningDateValue &&
+    isValidDateObject(beginningDateValue) &&
+    veteranFourteenthBirthday &&
+    beginningDateValue < veteranFourteenthBirthday
+  ) {
+    errors.beginningDate.addError(
+      `Beginning date can't be before the Veteran's ${MIN_WORKING_AGE_YEARS}th birthday`,
+    );
+  }
+
+  if (
+    endingDateValue &&
+    isValidDateObject(endingDateValue) &&
+    veteranDob &&
+    endingDateValue < veteranDob
+  ) {
+    // Mirror beginning-date checks for ending date.
+    errors.endingDate.addError(
+      "Ending date can't be before the Veteran's date of birth",
+    );
+  } else if (
+    endingDateValue &&
+    isValidDateObject(endingDateValue) &&
+    veteranFourteenthBirthday &&
+    endingDateValue < veteranFourteenthBirthday
+  ) {
+    errors.endingDate.addError(
+      `Ending date can't be before the Veteran's ${MIN_WORKING_AGE_YEARS}th birthday`,
+    );
+  }
 
   // Only validate if both dates are present
   if (!beginningDate || !endingDate) {
@@ -76,7 +133,7 @@ const validateEmploymentDateRange = (errors, fieldData) => {
   const fromDate = convertToDateField(beginningDate);
   const toDate = convertToDateField(endingDate);
 
-  // Check if ending date is before beginning date
+  // Final cross-field guard: ending date must not be before beginning date.
   if (!isValidDateRange(fromDate, toDate, true)) {
     errors.endingDate.addError(
       'Ending date must be on or after the beginning date',

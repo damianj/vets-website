@@ -19,7 +19,10 @@ export default function TimezoneDiscrepancyMessage() {
   }
 
   return (
-    <p className="vads-u-margin-top--0 vads-u-margin-bottom--3 vads-u-color--gray-medium">
+    <p
+      data-testid="timezone-discrepancy-message-text"
+      className="vads-u-margin-top--0 vads-u-margin-bottom--3 vads-u-color--gray-medium"
+    >
       {message}
     </p>
   );

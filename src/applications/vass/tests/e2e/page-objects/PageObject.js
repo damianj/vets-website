@@ -198,6 +198,26 @@ export default class PageObject {
   }
 
   /**
+   * Assert the maintenance window downtime banner is displayed or not displayed.
+   * The Wrapper component uses DowntimeNotification with externalServices.vass.
+   * @param {Object} options - Options
+   * @param {boolean} options.exist - Whether the maintenance banner should exist
+   * @returns {PageObject}
+   */
+  assertMaintenanceWindow({ exist = true } = {}) {
+    if (exist) {
+      cy.findByText(/This application is down for maintenance/i).should(
+        'be.visible',
+      );
+    } else {
+      cy.findByText(/This application is down for maintenance/i).should(
+        'not.exist',
+      );
+    }
+    return this;
+  }
+
+  /**
    * Assert the current URL matches the expected URL
    * @param {string|RegExp} pathSegmentOrRegex - The path segment or regex to assert
    * @returns {PageObject}

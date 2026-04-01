@@ -369,7 +369,6 @@ describe('<DocumentRequestPage>', () => {
           navigate={navigate}
           params={parameters}
           getClaim={getClaim}
-          showDocumentUploadStatus
         />
       </Provider>,
     );
@@ -384,7 +383,6 @@ describe('<DocumentRequestPage>', () => {
           navigate={navigate}
           params={parameters}
           getClaim={getClaim}
-          showDocumentUploadStatus
         />
         ,
       </Provider>,
@@ -392,50 +390,6 @@ describe('<DocumentRequestPage>', () => {
 
     expect(getClaim.calledWith(1)).to.be.true;
     expect(navigate.calledWith('../status')).to.be.true;
-  });
-
-  it('should set details and go to files page if complete when feature flag is disabled', () => {
-    const trackedItem = {
-      status: 'NEEDED_FROM_YOU',
-      displayName: 'Testing',
-    };
-    const parameters = {
-      id: 339,
-    };
-    const getClaim = sinon.spy();
-    const navigate = sinon.spy();
-
-    const { rerender } = renderWithRouter(
-      <Provider store={getStore()}>
-        <DocumentRequestPage
-          {...defaultProps}
-          trackedItem={trackedItem}
-          navigate={navigate}
-          params={parameters}
-          getClaim={getClaim}
-          showDocumentUploadStatus={false}
-        />
-      </Provider>,
-    );
-
-    rerenderWithRouter(
-      rerender,
-      <Provider store={getStore()}>
-        <DocumentRequestPage
-          {...defaultProps}
-          uploadComplete
-          trackedItem={trackedItem}
-          navigate={navigate}
-          params={parameters}
-          getClaim={getClaim}
-          showDocumentUploadStatus={false}
-        />
-        ,
-      </Provider>,
-    );
-
-    expect(getClaim.calledWith(1)).to.be.true;
-    expect(navigate.calledWith('../files')).to.be.true;
   });
 
   context('when friendlyName exists in track Item', () => {

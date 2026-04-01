@@ -24,7 +24,7 @@ import {
  * @param {string | UIOptions & {
  *   title?: UISchemaOptions['ui:title'],
  *   hint?: string,
- *   errorMessages?: UISchemaOptions['ui:errorMessages'],
+ *   errorMessages?: UISchemaOptions['ui:errorMessages'] & { futureDate?: string },
  *   dataDogHidden?: boolean,
  *   monthSelect?: boolean,
  *   monthYearOnly?: boolean,
@@ -70,6 +70,9 @@ const currentOrPastDateUI = options => {
       pattern:
         errorMessages?.pattern || 'Please enter a valid current or past date',
       required: errorMessages?.required || 'Please enter a date',
+      futureDate:
+        errorMessages?.futureDate ||
+        'Please provide a valid current or past date',
     },
     'ui:options': {
       ...uiOptions,
