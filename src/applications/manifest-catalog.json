@@ -1,7 +1,7 @@
 {
   "title": "VA.gov Applications Manifest Catalog",
   "description": "Catalog of all applications in src/applications with their manifest.json metadata for reference",
-  "totalApplications": 152,
+  "totalApplications": 153,
   "applications": [
     {
       "directoryPath": "src/applications/_mock-form",
@@ -122,6 +122,12 @@
       "appName": "21P-530a Interment Allowance",
       "entryName": "21p-530a-interment-allowance",
       "rootUrl": "/forms/21p-530a/submit-state-interment-allowance-request"
+    },
+    {
+      "directoryPath": "src/applications/benefits-optimization-pingwind/21-4502",
+      "appName": "Apply for automobile or adaptive equipment",
+      "entryName": "21-4502",
+      "rootUrl": "/disability/eligibility/automobile-adaptive-equipment/apply-form-21-4502"
     },
     {
       "directoryPath": "src/applications/benefits-optimization-pingwind/21-8940",
@@ -253,13 +259,13 @@
       "directoryPath": "src/applications/edu-benefits/0976",
       "appName": "Program Apporval in a Foreign Country (VA Form 22-0976)",
       "entryName": "0976-edu-benefits",
-      "rootUrl": "/education/0976"
+      "rootUrl": "/school-administrators/apply-for-approval-program-in-foreign-country-form-22-0976"
     },
     {
       "directoryPath": "src/applications/edu-benefits/0989",
       "appName": "22-0989 Request education benefit entitlement restoration online",
       "entryName": "0989-edu-benefits",
-      "rootUrl": "/forms/22-0989/request-education-benefit-entitlement-restoration"
+      "rootUrl": "/forms/22-0989/request-entitlement-restoration"
     },
     {
       "directoryPath": "src/applications/edu-benefits/0994",

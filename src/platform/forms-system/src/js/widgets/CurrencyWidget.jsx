@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export default class CurrencyWidget extends React.Component {
   constructor(props) {
     super(props);
-    let value = props.value;
+    let { value } = props;
     if (typeof value === 'number') {
       value = value.toFixed(2);
     }
@@ -19,10 +19,19 @@ export default class CurrencyWidget extends React.Component {
 
   handleChange = event => {
     const val = event.target.value;
+
     if (val === '' || typeof val === 'undefined') {
       this.props.onChange();
-      // Needs to look like a currency
-    } else if (!/^\${0,1}[0-9,]*(\.\d{1,2})?$/.test(val)) {
+      this.setState({ value: val });
+      return;
+    }
+
+    // Prevent entering more than one decimal point (e.g., 12.345.00)
+    if ((val.match(/\./g) || []).length > 1) {
+      return;
+    }
+
+    if (!/^\${0,1}[0-9,]*(\.\d{1,2})?$/.test(val)) {
       this.props.onChange(val);
     } else {
       // Needs to parse as a number
@@ -38,7 +47,7 @@ export default class CurrencyWidget extends React.Component {
 
   render() {
     const { id, disabled, options } = this.props;
-    const value = this.state.value;
+    const { value } = this.state;
 
     return (
       <input
@@ -62,8 +71,8 @@ CurrencyWidget.propTypes = {
    */
   options: PropTypes.shape({
     /*
-    * input's autocomplete attribute value
-    */
+     * input's autocomplete attribute value
+     */
     autocomplete: PropTypes.string,
   }),
 };

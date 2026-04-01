@@ -28,7 +28,7 @@ describe('SM NAVIGATE AWAY FROM SAVED DRAFT', () => {
 
     FolderLoadPage.backToParentFolder();
 
-    PatientMessageDraftsPage.verifyCantSaveAlert(
+    PatientComposePage.verifyCantSaveAlert(
       Alerts.SAVE_CHANGES,
       Data.BUTTONS.SAVE_CHANGES,
       Data.BUTTONS.DELETE_CHANGES,

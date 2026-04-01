@@ -301,34 +301,81 @@ describe('Appeal cards', () => {
     });
   });
 
-  describe('Upload error alerts', () => {
+  describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
     beforeEach(() => {
-      mockFeatureToggles({ showDocumentUploadStatus: true });
       mockClaimsEndpoint();
       mockStemEndpoint();
 
       cy.login(userWithAppeals);
     });
 
-    it('should display upload error alert for supplemental claim with failed submissions', () => {
-      setupAppealCardsTest([
-        createAppeal({
-          type: 'supplementalClaim',
-          eventType: 'sc_request',
-          evidenceSubmissions: [
-            createEvidenceSubmission({
-              uploadStatus: 'FAILED',
-              acknowledgementDate: '2050-01-01T00:00:00.000Z',
-            }),
-          ],
-        }),
-      ]);
+    context('when enabled', () => {
+      beforeEach(() => {
+        mockFeatureToggles({
+          cstAlertImprovementsEvidenceRequests: true,
+        });
+      });
 
-      cy.get('va-alert').findByText(
-        'We need you to resubmit files for this claim.',
-      );
+      it('should display action tag when failed submissions exist', () => {
+        setupAppealCardsTest([
+          createAppeal({
+            type: 'supplementalClaim',
+            eventType: 'sc_request',
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2050-01-01T00:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
 
-      cy.axeCheck();
+        cy.get('va-tag-status[text="Action may be needed"]');
+        cy.get('va-alert[status="error"]').should('not.exist');
+
+        cy.axeCheck();
+      });
+
+      it('should not display action tag when no failed submissions exist', () => {
+        setupAppealCardsTest([
+          createAppeal({
+            type: 'supplementalClaim',
+            eventType: 'sc_request',
+          }),
+        ]);
+
+        cy.get('va-tag-status').should('not.exist');
+
+        cy.axeCheck();
+      });
+    });
+
+    context('when disabled', () => {
+      beforeEach(() => {
+        mockFeatureToggles();
+      });
+
+      it('should display upload error alert for supplemental claim with failed submissions', () => {
+        setupAppealCardsTest([
+          createAppeal({
+            type: 'supplementalClaim',
+            eventType: 'sc_request',
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2050-01-01T00:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
+
+        cy.get('va-alert').findByText(
+          'We need you to resubmit files for this claim.',
+        );
+        cy.get('va-tag-status').should('not.exist');
+
+        cy.axeCheck();
+      });
     });
   });
 });

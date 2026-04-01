@@ -106,13 +106,7 @@ describe('<FileSubmissionsInProgress>', () => {
     };
 
     it('should render cards for in progress items', () => {
-      const {
-        container,
-        getByText,
-        getAllByText,
-        queryByText,
-        getByTestId,
-      } = render(
+      const { container, getByText, queryByText, getByTestId } = render(
         <Provider store={store}>
           <FileSubmissionsInProgress claim={claim} />
         </Provider>,
@@ -136,7 +130,11 @@ describe('<FileSubmissionsInProgress>', () => {
       expect(getByText('Document type: Birth Certificate')).to.exist;
 
       // Check status badges
-      expect(getAllByText('SUBMISSION IN PROGRESS')).to.have.lengthOf(2);
+      expect(
+        container.querySelectorAll(
+          'va-tag-status[text="Submission in progress"]',
+        ),
+      ).to.have.lengthOf(2);
 
       // Check dates
       expect(getByText('Submission started on January 15, 2024')).to.exist;

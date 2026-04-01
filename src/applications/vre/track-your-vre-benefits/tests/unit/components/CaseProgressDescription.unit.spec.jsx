@@ -1,18 +1,17 @@
 import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import sinon from 'sinon';
-import { MemoryRouter } from 'react-router-dom-v5-compat';
+import { MemoryRouter, useLocation } from 'react-router-dom-v5-compat';
 
 import CaseProgressDescription from '../../../components/CaseProgressDescription';
-import * as AppointmentScheduledAlertMod from '../../../components/AppointmentScheduledAlert';
 import * as HubCardListMod from '../../../components/HubCardList';
 import * as SelectPreferenceViewMod from '../../../components/SelectPreferenceView';
 
 const sandbox = sinon.createSandbox();
 let hubCardProps;
-let appointmentAlertProps;
 
 const makeStore = state => {
   const dispatch = sandbox.spy();
@@ -30,18 +29,18 @@ const renderWithProviders = (ui, state = {}) =>
     </Provider>,
   );
 
+const LocationDisplay = () => {
+  const location = useLocation();
+  return <div data-testid="location-display">{location.pathname}</div>;
+};
+
 describe('CaseProgressDescription', () => {
   beforeEach(() => {
     hubCardProps = null;
-    appointmentAlertProps = null;
 
     sandbox.stub(HubCardListMod, 'default').callsFake(props => {
       hubCardProps = props;
       return <div data-testid="hub-card-list" />;
-    });
-    sandbox.stub(AppointmentScheduledAlertMod, 'default').callsFake(props => {
-      appointmentAlertProps = props;
-      return <div data-testid="appointment-scheduled-alert" />;
     });
     sandbox
       .stub(SelectPreferenceViewMod, 'default')
@@ -57,7 +56,7 @@ describe('CaseProgressDescription', () => {
       <CaseProgressDescription step={1} />,
     );
     getByText(
-      /The section below contains information on steps you can take while waiting to hear back from us/i,
+      /While we review your application, you can prepare for next steps by using the additional resources on this page to learn more about the VR&E program/i,
     );
   });
 
@@ -71,27 +70,24 @@ describe('CaseProgressDescription', () => {
   });
 
   it('renders step 3 description', () => {
-    const { container, getByText } = renderWithProviders(
+    const { getByText, getByTestId } = renderWithProviders(
       <CaseProgressDescription step={3} />,
       { ch31CaseMilestones: undefined },
     );
-    getByText(
-      /Your next step is to complete the orientation video online or during your initial evaluation counselor meeting/i,
-    );
-    expect(container.querySelector('va-card')).to.exist;
+    getByText(/Before we schedule your initial evaluation counselor meeting/i);
+    getByTestId('select-preference-view');
   });
 
   it('renders the step 4 scheduling message when the appointment is still pending', () => {
-    const { getByText, queryByTestId } = renderWithProviders(
+    const { getByText } = renderWithProviders(
       <CaseProgressDescription step={4} status="PENDING" />,
     );
 
-    getByText(/Check your email to schedule your meeting with your counselor/i);
-    expect(queryByTestId('appointment-scheduled-alert')).to.equal(null);
+    getByText(/We processed your application for VR&E benefits/i);
   });
 
   it('renders the step 4 scheduled message when appointment details are available', () => {
-    const { getByText, getByTestId } = renderWithProviders(
+    const { getByText, queryByTestId } = renderWithProviders(
       <CaseProgressDescription
         step={4}
         status="COMPLETED"
@@ -105,30 +101,22 @@ describe('CaseProgressDescription', () => {
     );
 
     const scheduledMessage = getByText(
-      /Your Initial Evaluation Appointment has been scheduled/i,
+      /If you need to reschedule, use the rescheduling link we sent you in the confirmation email and text/i,
     );
-    const appointmentAlert = getByTestId('appointment-scheduled-alert');
 
-    expect(scheduledMessage.nextElementSibling).to.equal(appointmentAlert);
-    expect(appointmentAlertProps).to.deep.equal({
-      appointmentDateTime: '2026-03-03T10:00:00Z',
-      appointmentPlace: 'Regional office',
-    });
+    expect(scheduledMessage).to.exist;
+    expect(queryByTestId('appointment-scheduled-alert')).to.equal(null);
   });
 
-  it('renders hub cards for the later workflow steps when requested', () => {
+  it('renders hub cards for steps 6 and 7 when requested', () => {
     const cases = [
-      {
-        step: 5,
-        text: /Entitlement Determination Review/i,
-      },
       {
         step: 6,
         text: /establish your Chapter 31 Rehabilitation Plan or Career Track/i,
       },
       {
         step: 7,
-        text: /Your Chapter 31 benefits have been initiated/i,
+        text: /We initiated your VR&E/i,
       },
     ];
 
@@ -143,6 +131,28 @@ describe('CaseProgressDescription', () => {
 
       unmount();
     });
+  });
+
+  it('renders the career planning link for step 5 and routes internally when clicked', () => {
+    const { container, getByTestId } = renderWithProviders(
+      <>
+        <CaseProgressDescription step={5} />
+        <LocationDisplay />
+      </>,
+    );
+
+    const link = container.querySelector('va-link[href="/career-planning"]');
+
+    expect(link).to.exist;
+    expect(link.getAttribute('text')).to.equal(
+      'Explore career planning tools and resources',
+    );
+
+    userEvent.click(link);
+
+    expect(getByTestId('location-display').textContent).to.equal(
+      '/career-planning',
+    );
   });
 
   it('returns null for unknown step', () => {

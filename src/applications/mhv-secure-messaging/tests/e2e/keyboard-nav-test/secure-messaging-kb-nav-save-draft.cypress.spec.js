@@ -26,7 +26,9 @@ describe('SM SAVING DRAFT BY KEYBOARD', () => {
     // Wait for the breadcrumb element to be fully loaded and visible
     SharedComponents.clickBackBreadcrumb();
 
-    cy.findByTestId('route-guard-secondary-button')
+    cy.findByTestId('navigation-warning-modal')
+      .shadow()
+      .find('button.usa-button--outline')
       .should('be.visible')
       .click();
 

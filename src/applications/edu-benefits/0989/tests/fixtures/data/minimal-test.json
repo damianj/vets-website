@@ -1,9 +1,12 @@
 {
   "data": {
-    "fullName": {
+    "applicantName": {
       "first": "John",
       "last": "Doe"
     },
-    "dateOfBirth": "1980-01-01"
+    "ssn": "123456789",
+    "vaFileNumber": "987654321",
+    "schoolWasClosed": false,
+    "remarks": "Lorem ipsum"
   }
 }

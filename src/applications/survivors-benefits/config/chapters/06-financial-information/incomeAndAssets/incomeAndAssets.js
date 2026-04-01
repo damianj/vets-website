@@ -4,14 +4,31 @@ import {
   yesNoUI,
   yesNoSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 
-const Description = () => (
-  <div>
-    <p>
-      We need to know if you and your dependents have over $25,000 in assets.
-    </p>
-  </div>
-);
+const Description = () => {
+  const DEFAULT_ASSET_LIMIT = '25';
+  const VERSION_2025_ASSET_LIMIT = '75';
+
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const is2025Enabled = useToggleValue(
+    TOGGLE_NAMES?.survivorsBenefitsForm2025VersionEnabled,
+  );
+
+  const totalNetWorthAmountLabel = !is2025Enabled
+    ? DEFAULT_ASSET_LIMIT
+    : VERSION_2025_ASSET_LIMIT;
+
+  return (
+    <div>
+      <p>
+        We need to know if you and your dependents have over $
+        {totalNetWorthAmountLabel}
+        ,000 in assets.
+      </p>
+    </div>
+  );
+};
 
 const WhatWeConsiderAsset = () => (
   <va-accordion>
@@ -107,6 +124,14 @@ const uiSchema = {
   }),
 };
 
+const uiSchema2025 = {
+  ...titleUI('Income and assets', Description),
+  'ui:description': WhatWeConsiderAsset,
+  totalNetWorth: yesNoUI({
+    title: 'Do you and your dependents have over $75,000 in assets?',
+  }),
+};
+
 const schema = {
   type: 'object',
   required: ['totalNetWorth'],
@@ -117,5 +142,6 @@ const schema = {
 
 export default {
   uiSchema,
+  uiSchema2025,
   schema,
 };

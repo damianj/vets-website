@@ -40,4 +40,10 @@
     grid-auto-columns: minmax(0, 1fr);
     margin-bottom: 16px;
   }
+
+  // Modifier for shared service (feature flag ON)
+  &--shared-service {
+    width: 25.375rem;
+  }
 }
+

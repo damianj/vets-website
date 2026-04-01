@@ -22,22 +22,6 @@ const mockData = {
   },
 };
 
-// const mockData = {
-//     'additional-certifying-official': [
-//         {
-//             additionalOfficialDetails: {
-//                 fullName: {
-//                     first: 'John',
-//                     last: 'Doe',
-//                 },
-//             },
-//             additionalOfficialTraining: {
-//                 trainingExempt: false,
-//             },
-//         },
-//     ],
-// };
-
 describe('Additional certifying official training page', () => {
   const { schema, uiSchema } = additionalOfficialTraining;
 
@@ -65,7 +49,7 @@ describe('Additional certifying official training page', () => {
   });
   it('Renders the page with the correct required inputs when training exempt is false in adding mode', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialTraining: {
             trainingExempt: false,
@@ -80,7 +64,7 @@ describe('Additional certifying official training page', () => {
   });
   it('Renders the page with the correct required inputs when training exempt is true in adding mode', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialTraining: {
             trainingExempt: true,
@@ -108,7 +92,7 @@ describe('Additional certifying official training page', () => {
   });
   it('Date field should be visible when training exempt is false', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialTraining: {
             trainingExempt: false,
@@ -123,7 +107,7 @@ describe('Additional certifying official training page', () => {
   });
   it('User exempt label should be hidden when training exempt is false', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialTraining: {
             trainingExempt: false,

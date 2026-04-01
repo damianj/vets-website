@@ -30,6 +30,7 @@ const createReferralListItem = (
   uuid,
   categoryOfCare = 'OPTOMETRY',
   stationId = '659',
+  onlineSchedule = true,
 ) => {
   const [year, month, day] = expirationDate.split('-');
   const relativeDate = new Date(year, month - 1, day);
@@ -45,6 +46,7 @@ const createReferralListItem = (
       referralNumber: 'VA0000007241',
       referralConsultId: '984_646907',
       stationId,
+      onlineSchedule,
     },
   };
 };
@@ -65,6 +67,7 @@ const errorReferralsList = (errorUUIDs || []).map(uuid => {
  * @param {String} categoryOfCare The category of care for the referral
  * @param {Boolean} hasProvider Whether the referral has a provider
  * @param {String} stationId The station id for the referral
+ * @param {Boolean} onlineSchedule Whether the referral can be scheduled online
  * @returns {Object} Referral object
  */
 const createReferralById = (
@@ -74,6 +77,7 @@ const createReferralById = (
   categoryOfCare = 'OPTOMETRY',
   hasProvider = true,
   stationId = '659BY',
+  onlineSchedule = true,
 ) => {
   const [year, month, day] = startDate.split('-');
   const relativeDate = new Date(year, month - 1, day);
@@ -108,6 +112,7 @@ const createReferralById = (
       categoryOfCare,
       referralConsultId: '984_646907',
       hasAppointments: false,
+      onlineSchedule,
       referringFacility: {
         name: 'Batavia VA Medical Center',
         phone: '(585) 297-1000',

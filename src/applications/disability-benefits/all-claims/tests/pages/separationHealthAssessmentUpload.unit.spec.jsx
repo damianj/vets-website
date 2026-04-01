@@ -10,6 +10,12 @@ describe('separationHealthAssessmentUpload page', () => {
       expect(schema.required).to.include('separationHealthAssessmentUploads');
     });
 
+    it('enforces minItems: 1 to reject empty file arrays', () => {
+      expect(
+        schema.properties.separationHealthAssessmentUploads.minItems,
+      ).to.equal(1);
+    });
+
     it('limits SHA uploads to 20 files', () => {
       expect(
         schema.properties.separationHealthAssessmentUploads.maxItems,
@@ -20,7 +26,7 @@ describe('separationHealthAssessmentUpload page', () => {
   describe('uiSchema', () => {
     it('has the expected page title', () => {
       expect(uiSchema['ui:title']).to.equal(
-        'Upload your Separation Health Assessment Part A',
+        'Upload your Separation Health Assessment',
       );
     });
 

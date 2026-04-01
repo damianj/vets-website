@@ -152,7 +152,8 @@ describe('MessageThreadHeader component', () => {
   });
 
   describe('MigratingFacilitiesAlerts visibility', () => {
-    const MIGRATION_ALERT_H2 = /You can.t use messages to contact providers at some facilities right now/i;
+    const MIGRATION_ALERT_H2 = /You can.t reply to conversations with some care teams/i;
+    const MIGRATION_ALERT_NOTE = /After February 15, 2026, you.ll be able to start a new message to contact your care teams/i;
 
     const migrationSchedulesFixture = [
       {
@@ -198,6 +199,7 @@ describe('MessageThreadHeader component', () => {
       // When in migration phase, the MigratingFacilitiesAlerts component should be rendered
       const h2 = screen.getByText(MIGRATION_ALERT_H2);
       expect(h2.tagName).to.equal('H2');
+      expect(screen.getByText(MIGRATION_ALERT_NOTE)).to.exist;
     });
 
     it('renders MigratingFacilitiesAlerts when in migration phase p4', () => {
@@ -225,6 +227,7 @@ describe('MessageThreadHeader component', () => {
       const screen = setup(state, defaultProps);
       const h2 = screen.getByText(MIGRATION_ALERT_H2);
       expect(h2.tagName).to.equal('H2');
+      expect(screen.getByText(MIGRATION_ALERT_NOTE)).to.exist;
     });
 
     it('renders MigratingFacilitiesAlerts when in migration phase p5', () => {

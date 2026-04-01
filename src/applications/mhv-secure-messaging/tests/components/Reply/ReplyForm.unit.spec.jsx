@@ -5,14 +5,13 @@ import {
   mockApiRequest,
   inputVaTextInput,
 } from '@department-of-veterans-affairs/platform-testing/helpers';
-import { fireEvent, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, waitFor } from '@testing-library/react';
 import sinon from 'sinon';
 import ReplyForm from '../../../components/ComposeForm/ReplyForm';
 import reducer from '../../../reducers';
 import threadDetailsReducer from '../../fixtures/threads/reply-draft-thread-reducer.json';
 import folders from '../../fixtures/folder-inbox-response.json';
 import signatureReducers from '../../fixtures/signature-reducers.json';
-import { ErrorMessages } from '../../../util/constants';
 import saveDraftResponse from '../../e2e/fixtures/draftsResponse/drafts-single-message-response.json';
 import oneBlockedRecipient from '../../fixtures/json-triage-mocks/triage-teams-one-blocked-mock.json';
 import twoBlockedRecipients from '../../fixtures/json-triage-mocks/triage-teams-two-blocked-mock.json';
@@ -75,6 +74,10 @@ describe('Reply form component', () => {
       },
     );
   };
+
+  afterEach(() => {
+    cleanup();
+  });
 
   it('renders without errors', async () => {
     const screen = render();
@@ -222,7 +225,7 @@ describe('Reply form component', () => {
   });
 
   it('renders the attachments component when adding a file', async () => {
-    const { getByTestId, container } = render();
+    const { getByTestId } = render();
     const fileName = 'test.png';
     const file = new File(['(⌐□_□)'], fileName, { type: 'image/png' });
 
@@ -238,13 +241,7 @@ describe('Reply form component', () => {
     expect(uploader.files.length).to.equal(1);
     fireEvent.click(getByTestId('save-draft-button'));
     await waitFor(() => {
-      const modals = container.querySelectorAll('va-modal');
-      const modal = Array.from(modals).find(
-        m =>
-          m.getAttribute('modal-title') ===
-          ErrorMessages.ComposeForm.UNABLE_TO_SAVE_DRAFT_ATTACHMENT.title,
-      );
-      expect(modal).to.exist;
+      expect(getByTestId('save-error-modal')).to.exist;
     });
   });
 

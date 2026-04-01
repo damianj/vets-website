@@ -10,7 +10,7 @@ export default {
     militaryHistory: {
       separatedDueToDisability: yesNoUI({
         title:
-          'Were you discharged, retired, or separated from service because of a disability?',
+          'Have you been discharged, retired, or separated from service because of a disability?',
         errorMessages: {
           required: 'Select yes or no',
         },

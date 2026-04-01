@@ -6,7 +6,6 @@ import { scrollToTop } from 'platform/utilities/scroll';
 
 import NeedHelp from '../components/NeedHelp';
 import ClaimsBreadcrumbs from '../components/ClaimsBreadcrumbs';
-import Notification from '../components/Notification';
 import FirstPartyRequestPage from '../components/claim-document-request-pages/FirstPartyRequestPage';
 import ThirdPartyRequestPage from '../components/claim-document-request-pages/ThirdPartyRequestPage';
 import {
@@ -18,7 +17,7 @@ import {
 } from '../actions';
 import { getClaimType } from '../utils/helpers';
 import * as TrackedItem from '../utils/trackedItemContent';
-import { setUpPage, setPageFocus, focusNotificationAlert } from '../utils/page';
+import { setUpPage, setPageFocus } from '../utils/page';
 import withRouter from '../utils/withRouter';
 import Default5103EvidenceNotice from '../components/claim-document-request-pages/Default5103EvidenceNotice';
 import { cstMultiClaimProvider } from '../selectors';
@@ -61,10 +60,7 @@ class DocumentRequestPage extends React.Component {
       ? this.props.claim?.attributes?.provider
       : null;
     this.props.getClaim(this.props.claim.id, null, provider);
-    const redirectPath = this.props.showDocumentUploadStatus
-      ? statusPath
-      : filesPath;
-    this.props.navigate(redirectPath);
+    this.props.navigate(statusPath);
   }
 
   getRequestPage() {
@@ -72,23 +68,21 @@ class DocumentRequestPage extends React.Component {
       message,
       type1UnknownErrors,
       timezoneMitigationEnabled,
-      showDocumentUploadStatus,
     } = this.props;
 
     const pageProps = {
       item: this.props.trackedItem,
-      message: showDocumentUploadStatus ? message : null,
+      message,
       onCancel: this.props.cancelUpload,
       onSubmit: files =>
         this.props.submitFiles(
           this.props.claim.id,
           this.props.trackedItem,
           files,
-          showDocumentUploadStatus,
           timezoneMitigationEnabled,
         ),
       progress: this.props.progress,
-      type1UnknownErrors: showDocumentUploadStatus ? type1UnknownErrors : null,
+      type1UnknownErrors,
       uploading: this.props.uploading,
     };
 
@@ -149,22 +143,8 @@ class DocumentRequestPage extends React.Component {
         </div>
       );
     } else {
-      const { message, showDocumentUploadStatus } = this.props;
       content = (
         <>
-          {/* Show errors here when the feature flag is OFF. When the feature flag is ON, errors are shown in DefaultPage. */}
-          {!showDocumentUploadStatus &&
-            message && (
-              <div>
-                <Notification
-                  title={message.title}
-                  body={message.body}
-                  type={message.type}
-                  maskTitle={message.type === 'error'}
-                  onSetFocus={focusNotificationAlert}
-                />
-              </div>
-            )}
           {TrackedItem.isAutomated5103Notice(trackedItem.displayName) ? (
             <Default5103EvidenceNotice item={trackedItem} />
           ) : (
@@ -206,8 +186,6 @@ function mapStateToProps(state, ownProps) {
     loading: claimDetail.loading,
     message: claimsState.notifications.additionalEvidenceMessage,
     progress: uploads.progress,
-    showDocumentUploadStatus:
-      state.featureToggles?.cst_show_document_upload_status || false,
     trackedItem,
     type1UnknownErrors: claimsState.notifications.type1UnknownErrors,
     uploadComplete: uploads.uploadComplete,
@@ -246,7 +224,6 @@ DocumentRequestPage.propTypes = {
   params: PropTypes.object,
   progress: PropTypes.number,
   resetUploads: PropTypes.func,
-  showDocumentUploadStatus: PropTypes.bool,
   submitFiles: PropTypes.func,
   timezoneMitigationEnabled: PropTypes.bool,
   trackedItem: PropTypes.object,

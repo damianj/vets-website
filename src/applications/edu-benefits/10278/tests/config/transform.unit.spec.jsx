@@ -250,4 +250,35 @@ describe('22-10278 transform', () => {
 
     expect(formData.thirdPartyOrganizationInformation).to.be.undefined;
   });
+  it('transforms with claim information other text', () => {
+    const form = {
+      data: {
+        userLoggedIn: true,
+        ssn: '111223333',
+        applicantName: { first: 'Jane', last: 'Smith' },
+        dateOfBirth: '1985-05-15',
+        claimantPersonalInformation: { firstName: 'Jane', lastName: 'Smith' },
+        claimantContactInformation: {
+          phoneNumber: { callingCode: '1', contact: '5550001111' },
+          emailAddress: 'test3@test.com',
+        },
+        discloseInformation: { authorize: 'other' },
+        claimInformation: { benefit1: true },
+        claimInformationOther: 'Other text',
+        lengthOfRelease: { duration: 'date', date: '2026-06-30' },
+        securityQuestion: { question: 'custom' },
+        securityAnswerCreate: 'My custom answer',
+        statementOfTruthCertified: true,
+      },
+    };
+
+    const formData = parseResult(transform({}, form));
+
+    expect(formData.claimInformation).to.deep.equal({
+      benefit1: true,
+      other: true,
+      otherText: 'Other text',
+    });
+    expect(formData.claimInformationOther).to.be.undefined;
+  });
 });

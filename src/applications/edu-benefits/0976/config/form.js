@@ -8,6 +8,7 @@ import ConfirmationPage from '../containers/ConfirmationPage';
 import PresubmitInfo from '../components/PresubmitInfo';
 import submitForm from './submitForm';
 import transform from './transform';
+import prefillTransform from './prefillTransform';
 
 import authorizingOfficialName from '../pages/authorizingOfficialName';
 import whatToExpect from '../pages/whatToExpect';
@@ -87,6 +88,7 @@ const formConfig = {
   },
   version: 0,
   prefillEnabled: true,
+  prefillTransformer: prefillTransform,
   savedFormMessages: {
     notFound:
       'Please start over to apply for Approval of a Program in a Foreign Country.',

@@ -149,9 +149,8 @@ describe('Feature Toggle Data Confirmation', () => {
       expect(table.getAttribute('table-title')).to.include(
         'This statement shows charges you received between May 3, 2024 and June 3, 2024',
       );
-      expect(table.getAttribute('table-title-summary')).to.equal(
-        'Showing 1-3 of 3 charges',
-      );
+      // No pagination text since 3 items ≤ 10 per page
+      expect(table.getAttribute('table-title-summary')).to.equal('');
     });
 
     it('renders va-table with table-title-summary when statement dates are missing', () => {
@@ -176,9 +175,8 @@ describe('Feature Toggle Data Confirmation', () => {
       expect(table.getAttribute('table-title')).to.equal(
         'This statement shows your current charges.',
       );
-      expect(table.getAttribute('table-title-summary')).to.equal(
-        'Showing 1-2 of 2 charges',
-      );
+      // No pagination text since 2 items ≤ 10 per page
+      expect(table.getAttribute('table-title-summary')).to.equal('');
     });
 
     it('after pagination click, the va-table component is the focus target', async () => {
@@ -195,6 +193,7 @@ describe('Feature Toggle Data Confirmation', () => {
       );
 
       const table = container.querySelector('va-table');
+      // Shows pagination text since 15 items > 10 per page
       expect(table.getAttribute('table-title-summary')).to.equal(
         'Showing 1-10 of 15 charges',
       );

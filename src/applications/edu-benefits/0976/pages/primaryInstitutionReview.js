@@ -25,7 +25,7 @@ export default {
   uiSchema: {
     ...titleUI(
       'Review your institution details',
-      'Please review the information below carefully. ',
+      'Please review the information carefully.',
     ),
     'view:primaryInstitutionReview': {
       'ui:description': <PrimaryInstitutionSummary />,

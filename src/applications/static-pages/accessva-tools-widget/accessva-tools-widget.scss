@@ -1,0 +1,259 @@
+// AccessVA Tools and Services Widget Styles
+// Uses VA Design System and USWDS as base
+
+.accessva-tools-widget {
+  // Ensure proper spacing and max-width
+  max-width: 100%;
+
+  // Breadcrumbs styling
+  .va-nav-breadcrumbs-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+
+      &:not(:last-child)::after {
+        content: "›";
+        margin: 0 0.5rem;
+        color: var(--vads-color-base);
+      }
+
+      a {
+        color: var(--vads-color-primary);
+        text-decoration: underline;
+
+        &:hover {
+          color: var(--vads-color-primary-darker);
+        }
+
+        &[aria-current="page"] {
+          color: var(--vads-color-gray-medium);
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  // Page title
+  h1 {
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  // Intro text
+  .va-introtext {
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--vads-color-base);
+    margin-bottom: 2rem;
+  }
+
+  // Expand/Collapse button controls
+  .accessva-tools-controls {
+    .va-button-link {
+      background: none;
+      border: none;
+      color: var(--vads-color-primary);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        color: var(--vads-color-primary-darker);
+        background: none;
+        text-decoration: underline;
+      }
+
+      &:focus {
+        outline: 2px solid var(--vads-color-focus);
+        outline-offset: 4px;
+        background: none;
+      }
+
+      &:active {
+        color: var(--vads-color-primary-darkest);
+      }
+    }
+  }
+
+  // Legacy button styling (kept for backwards compatibility)
+  .vads-u-display--flex {
+    gap: 0.5rem;
+
+    button {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: var(--vads-color-gray-lightest);
+      }
+
+      &:focus {
+        outline: 2px solid var(--vads-color-focus);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // Accordion sections
+  va-accordion {
+    margin-top: 1.5rem;
+
+    va-accordion-item {
+      border-bottom: 1px solid var(--vads-color-gray-light);
+
+      &:first-child {
+        border-top: 1px solid var(--vads-color-gray-light);
+      }
+
+      // Accordion header styling is handled by web component
+
+      // Link list within accordion
+      ul.usa-list {
+        list-style: disc;
+        padding-left: 1.5rem;
+        margin: 1rem 0;
+
+        li {
+          margin-bottom: 0.75rem;
+          line-height: 1.5;
+
+          a {
+            color: var(--vads-color-primary);
+            text-decoration: underline;
+            font-weight: 400;
+
+            &:hover {
+              color: var(--vads-color-primary-darker);
+              background-color: transparent;
+            }
+
+            &:focus {
+              outline: 2px solid var(--vads-color-focus);
+              outline-offset: 2px;
+            }
+
+            &:visited {
+              color: var(--vads-color-secondary-dark);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Loading indicator
+  va-loading-indicator {
+    display: block;
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  // Error/Warning alert
+  va-alert {
+    margin-bottom: 1.5rem;
+  }
+
+  // Dev mode indicator
+  [style*="background: #f0f0f0"] {
+    border: 2px dashed var(--vads-color-warning);
+    border-radius: 4px;
+    font-family: "Source Code Pro", monospace;
+
+    strong {
+      color: var(--vads-color-error);
+    }
+  }
+
+  // Print styles
+  @media print {
+    .vads-u-display--flex {
+      display: none !important;
+    }
+
+    va-accordion-item {
+      border: none !important;
+
+      &[open] {
+        display: block;
+      }
+    }
+
+    a {
+      text-decoration: none;
+
+      &::after {
+        content: " (" attr(href) ")";
+        font-size: 0.875rem;
+        color: var(--vads-color-base);
+      }
+    }
+  }
+
+  // Mobile optimizations
+  @media (max-width: 640px) {
+    .va-introtext {
+      font-size: 1rem;
+    }
+
+    .vads-u-display--flex {
+      flex-direction: column;
+      align-items: stretch;
+
+      button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    va-accordion {
+      va-accordion-item {
+        ul.usa-list {
+          padding-left: 1.25rem;
+
+          li {
+            font-size: 0.9375rem;
+          }
+        }
+      }
+    }
+  }
+
+  // High contrast mode support
+  @media (prefers-contrast: high) {
+    a {
+      text-decoration-thickness: 2px;
+    }
+
+    button {
+      border-width: 2px;
+    }
+  }
+
+  // Reduced motion support
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

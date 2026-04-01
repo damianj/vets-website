@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import appendQuery from 'append-query';
 
@@ -30,7 +31,7 @@ import {
 
 const REDIRECT_IGNORE_PATTERN = new RegExp(['/auth/login/callback'].join('|'));
 
-export default function AuthApp({ location }) {
+function AuthApp({ location }) {
   const [
     { auth, errorCode, returnUrl, loginType, state, requestId },
     setAuthState,
@@ -54,6 +55,9 @@ export default function AuthApp({ location }) {
   );
   const isPortalNoticeInterstitialEnabled = useSelector(
     store => store?.featureToggles?.portalNoticeInterstitialEnabled,
+  );
+  const isSignInDisableUserInteractionEnabled = useSelector(
+    store => store?.featureToggles?.signInDisableUserInteraction,
   );
 
   const handleAuthError = (error, codeOverride) => {
@@ -242,6 +246,36 @@ export default function AuthApp({ location }) {
     [isFeatureToggleLoading],
   );
 
+  useEffect(
+    () => {
+      if (hasError || !isSignInDisableUserInteractionEnabled) return undefined;
+
+      // Prevent user interaction while waiting for authentication
+      document.body.style.pointerEvents = 'none';
+      document.body.style.cursor = 'not-allowed';
+
+      const blockKeydown = e => e.preventDefault();
+      document.body.addEventListener('keydown', blockKeydown);
+
+      // Inform AT users that navigation is temporarily unavailable
+      const liveRegion = document.createElement('div');
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.setAttribute('aria-atomic', 'true');
+      liveRegion.setAttribute('class', 'sr-only');
+      liveRegion.textContent =
+        'Loading your account. Some options will be available shortly.';
+      document.body.appendChild(liveRegion);
+
+      return () => {
+        document.body.style.pointerEvents = '';
+        document.body.style.cursor = '';
+        document.body.removeEventListener('keydown', blockKeydown);
+        document.body.removeChild(liveRegion);
+      };
+    },
+    [hasError, isSignInDisableUserInteractionEnabled],
+  );
+
   const openLoginModal = () => {
     dispatch(toggleLoginModal(true));
   };
@@ -266,3 +300,18 @@ export default function AuthApp({ location }) {
     </div>
   );
 }
+
+AuthApp.propTypes = {
+  location: PropTypes.shape({
+    query: PropTypes.shape({
+      auth: PropTypes.string,
+      code: PropTypes.string,
+      // eslint-disable-next-line camelcase
+      request_id: PropTypes.string,
+      state: PropTypes.string,
+      type: PropTypes.string,
+    }),
+  }),
+};
+
+export default AuthApp;

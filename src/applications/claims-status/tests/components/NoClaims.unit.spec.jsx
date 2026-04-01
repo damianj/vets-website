@@ -16,15 +16,21 @@ describe('<NoClaims>', () => {
       <NoClaims recordType="closed records" />,
     );
 
-    getByText("We don't have any closed records for you in our system");
+    getByText("We don't have any closed records for you in our system.");
     expect(queryByText('You do not have any submitted claims')).to.be.null;
   });
 
   it('should render correct message for in progress records filter', () => {
     const { getByText } = renderWithRouter(
-      <NoClaims recordType="in progress records" />,
+      <NoClaims recordType="in-progress records" />,
     );
 
-    getByText("We don't have any in progress records for you in our system");
+    getByText("We don't have any in-progress records for you in our system.");
+  });
+
+  it('should render correct message for all records filter', () => {
+    const { getByText } = renderWithRouter(<NoClaims recordType="records" />);
+
+    getByText("We don't have any records for you in our system.");
   });
 });

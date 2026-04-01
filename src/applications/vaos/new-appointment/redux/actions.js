@@ -1,6 +1,5 @@
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
 import { selectVAPResidentialAddress } from '@department-of-veterans-affairs/platform-user/selectors';
-import * as Sentry from '@sentry/browser';
 import { format } from 'date-fns-tz';
 
 import {
@@ -846,11 +845,13 @@ export function checkCommunityCareEligibility() {
         return response.eligible;
       }
     } catch (e) {
-      captureError(e, false, null, {
-        facilities: state.user?.profile?.facilities,
-      });
-      Sentry.captureMessage(
+      captureError(
+        e,
+        false,
         'Community Care eligibility check failed with errors',
+        {
+          facilities: state.user?.profile?.facilities,
+        },
       );
     }
 

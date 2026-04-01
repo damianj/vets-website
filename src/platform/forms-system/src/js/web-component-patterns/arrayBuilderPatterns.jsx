@@ -207,6 +207,7 @@ export const arrayBuilderItemSubsequentPageTitleUI = (
 /**
  * @typedef {Object} ArrayBuilderYesNoUIOptions
  * @property {UISchemaOptions['ui:title']} [title]
+ * @property {boolean} [tile]
  * @property {{ Y?: string, N?: string }} [labels]
  * @property {{ Y?: string, N?: string }} [descriptions]
  * @property {string | function} [hint]
@@ -305,6 +306,9 @@ export const arrayBuilderYesNoUI = (
                 yesNoOptionsAdditional?.title ??
                 `Do you have another ${nounSingular} to add?`,
               'ui:options': {
+                ...(yesNoOptionsAdditional?.tile !== undefined
+                  ? { tile: yesNoOptionsAdditional.tile }
+                  : {}),
                 ...withLabelHeaderLevel(yesNoOptionsAdditional, {
                   labelHeaderLevel: '4',
                   ifMinimalHeader: {
@@ -341,6 +345,9 @@ export const arrayBuilderYesNoUI = (
           : {
               'ui:title': defaultTitle,
               'ui:options': {
+                ...(yesNoOptionsInitial?.tile !== undefined
+                  ? { tile: yesNoOptionsInitial.tile }
+                  : {}),
                 ...withLabelHeaderLevel(yesNoOptionsInitial, {
                   labelHeaderLevel: '3',
                   ifMinimalHeader: {

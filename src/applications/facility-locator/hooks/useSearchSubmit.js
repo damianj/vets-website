@@ -15,6 +15,8 @@ const useSearchSubmit = ({
   mobileMapUpdateEnabled,
   selectMobileMapPin,
   setSearchInitiated,
+  setSubmitErrors,
+  clearSubmitErrors,
 }) => {
   // Track last submitted query to prevent duplicate submissions
   const lastQueryRef = useRef(null);
@@ -34,39 +36,56 @@ const useSearchSubmit = ({
         return;
       }
 
-      // Validate serviceType for Community Care providers (must precede other checks)
-      if (
-        draftFormState.facilityType === LocationType.CC_PROVIDER &&
-        (!draftFormState.serviceType || !selectedServiceType)
-      ) {
-        setDraftFormState(prev => ({
-          ...prev,
-          serviceTypeChanged: true,
-          isValid: false,
-        }));
-        setTimeout(() => focusElement('#service-type-ahead-input'), 0);
-        return;
-      }
+      // Validate all fields simultaneously so every error is visible at once.
+      // Focus priority matches visual layout top-to-bottom:
+      // location → facilityType → serviceType
+      const errors = {};
+      let firstErrorFocus = null;
 
       if (!draftFormState.searchString) {
-        setDraftFormState(prev => ({
-          ...prev,
-          locationChanged: true,
-          isValid: false,
-        }));
-        setTimeout(() => focusElement('#street-city-state-zip'), 0);
-        return;
+        errors.locationChanged = true;
+        firstErrorFocus = firstErrorFocus || 'location';
       }
 
       if (!draftFormState.facilityType) {
+        errors.facilityTypeChanged = true;
+        firstErrorFocus = firstErrorFocus || 'facilityType';
+      } else if (
+        draftFormState.facilityType === LocationType.CC_PROVIDER &&
+        (!draftFormState.serviceType || !selectedServiceType)
+      ) {
+        errors.serviceTypeChanged = true;
+        firstErrorFocus = firstErrorFocus || 'serviceType';
+      }
+
+      if (Object.keys(errors).length > 0) {
+        setSubmitErrors({ ...errors });
         setDraftFormState(prev => ({
           ...prev,
-          facilityTypeChanged: true,
+          ...errors,
           isValid: false,
         }));
-        setTimeout(() => focusElement('#facility-type-dropdown'), 0);
+        setTimeout(() => {
+          if (firstErrorFocus === 'facilityType') {
+            const vaSelect = document.querySelector('#facility-type-dropdown');
+            if (vaSelect?.shadowRoot) {
+              const internalSelect = vaSelect.shadowRoot.querySelector(
+                'select',
+              );
+              if (internalSelect) {
+                internalSelect.focus();
+              }
+            }
+          } else if (firstErrorFocus === 'serviceType') {
+            focusElement('#service-type-ahead-input');
+          } else {
+            focusElement('#street-city-state-zip');
+          }
+        }, 0);
         return;
       }
+
+      clearSubmitErrors();
 
       lastQueryRef.current = {
         facilityType: draftFormState.facilityType,
@@ -126,6 +145,8 @@ const useSearchSubmit = ({
       mobileMapUpdateEnabled,
       selectMobileMapPin,
       setSearchInitiated,
+      setSubmitErrors,
+      clearSubmitErrors,
     ],
   );
 

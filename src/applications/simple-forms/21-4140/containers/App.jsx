@@ -2,14 +2,15 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { toggleValues } from 'platform/site-wide/feature-toggles/selectors';
-import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
-import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import { setData } from '@department-of-veterans-affairs/platform-forms-system/actions';
+import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
+import { toggleValues } from 'platform/site-wide/feature-toggles/selectors';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles/useFeatureToggle';
+import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import environment from 'platform/utilities/environment';
 import { WIP } from '../../shared/components/WIP';
-import formConfig from '../config/form';
 import { workInProgressContent } from '../definitions/constants';
+import { getFormConfig } from '../config/form';
 
 function App({
   location,
@@ -21,6 +22,18 @@ function App({
   isEmailPresenceRequired,
   isDobValidationEnabled,
 }) {
+  const {
+    TOGGLE_NAMES: { form214140MinimalHeader },
+    useToggleLoadingValue,
+    useToggleValue,
+  } = useFeatureToggle();
+
+  const isToggleLoading = useToggleLoadingValue();
+  const isMinimalHeaderEnabled = useToggleValue(form214140MinimalHeader);
+  const formConfig = getFormConfig({
+    useMinimalHeader: !isToggleLoading && isMinimalHeaderEnabled,
+  });
+
   useEffect(
     () => {
       const hasEmailPresenceChanged =
@@ -39,7 +52,7 @@ function App({
     [formData, isEmailPresenceRequired, isDobValidationEnabled, setFormData],
   );
 
-  if (isLoading) {
+  if (isLoading || isToggleLoading) {
     return (
       <va-loading-indicator
         message="Please wait while we load the application for you."

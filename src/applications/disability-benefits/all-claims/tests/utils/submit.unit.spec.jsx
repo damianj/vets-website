@@ -357,6 +357,7 @@ describe('setActionTypes', () => {
 
   it('marks INCREASE when listed in newDisabilities (preferred path)', () => {
     const data = {
+      disabilityCompNewConditionsWorkflow: true,
       ratedDisabilities: [{ name: 'Tinnitus' }, { name: 'Sciatica' }],
       newDisabilities: [{ ratedDisability: 'Tinnitus' }],
     };
@@ -397,6 +398,7 @@ describe('setActionTypes', () => {
   it('prefers newDisabilities over view:selected when both present', () => {
     const data = {
       ...base(),
+      disabilityCompNewConditionsWorkflow: true,
       newDisabilities: [{ ratedDisability: 'Sciatica' }],
     };
 
@@ -410,6 +412,51 @@ describe('setActionTypes', () => {
     ).to.equal(disabilityActionTypes.INCREASE);
     expect(
       out.ratedDisabilities.find(d => d.name === 'Tinnitus')
+        .disabilityActionType,
+    ).to.equal(disabilityActionTypes.NONE);
+  });
+
+  it('ignores newDisabilities when disabilityCompNewConditionsWorkflow is disabled', () => {
+    const data = {
+      disabilityCompNewConditionsWorkflow: false,
+      ratedDisabilities: [
+        { name: 'Tinnitus' },
+        { name: 'Sciatica', 'view:selected': true },
+      ],
+      newDisabilities: [{ ratedDisability: 'Tinnitus' }],
+    };
+
+    const output = setActionTypes(data);
+
+    expect(
+      output.ratedDisabilities.find(d => d.name === 'Tinnitus')
+        .disabilityActionType,
+    ).to.equal(disabilityActionTypes.NONE);
+
+    expect(
+      output.ratedDisabilities.find(d => d.name === 'Sciatica')
+        .disabilityActionType,
+    ).to.equal(disabilityActionTypes.INCREASE);
+  });
+
+  it('falls back to view:selected when disabilityCompNewConditionsWorkflow is absent', () => {
+    const data = {
+      ratedDisabilities: [
+        { name: 'Tinnitus', 'view:selected': true },
+        { name: 'Sciatica' },
+      ],
+      newDisabilities: [{ ratedDisability: 'Sciatica' }],
+    };
+
+    const out = setActionTypes(data);
+
+    expect(
+      out.ratedDisabilities.find(d => d.name === 'Tinnitus')
+        .disabilityActionType,
+    ).to.equal(disabilityActionTypes.INCREASE);
+
+    expect(
+      out.ratedDisabilities.find(d => d.name === 'Sciatica')
         .disabilityActionType,
     ).to.equal(disabilityActionTypes.NONE);
   });

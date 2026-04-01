@@ -7,12 +7,13 @@ import {
   mockFetch,
   resetFetch,
   setFetchJSONResponse,
+  setFetchJSONFailure,
 } from 'platform/testing/unit/helpers';
 
 import { vassApi } from './vassApi';
 import reducers from '../reducers';
 import * as authUtils from '../../utils/auth';
-import { TOKEN_ERROR_CODES } from '../../utils/constants';
+import { TOKEN_ERROR_CODES, SERVER_ERROR_CODES } from '../../utils/constants';
 import { defaultFormState } from '../../utils/form';
 
 const createTestStore = (vassFormOverrides = {}) =>
@@ -96,6 +97,52 @@ describe('vassApi', () => {
 
       expect(result.error).to.exist;
       expect(result.error.code).to.equal(TOKEN_ERROR_CODES.INVALID_TOKEN);
+    });
+  });
+
+  describe('api error normalization', () => {
+    it('normalizes a non-standard error response into the expected errors shape', async () => {
+      setFetchJSONFailure(global.fetch.onCall(0), {
+        status: 500,
+        error: 'Internal Server Error',
+      });
+
+      const store = createTestStore();
+      const result = await store.dispatch(
+        vassApi.endpoints.postAuthentication.initiate({
+          uuid: 'test-uuid',
+          lastName: 'Smith',
+          dob: '1990-01-15',
+        }),
+      );
+
+      expect(result.error).to.exist;
+      expect(result.error.code).to.equal(SERVER_ERROR_CODES.SERVICE_ERROR);
+      expect(result.error.detail).to.equal('Internal Server Error');
+    });
+
+    it('passes through a standard vets-api error unchanged', async () => {
+      setFetchJSONFailure(global.fetch.onCall(0), {
+        errors: [
+          {
+            code: 'invalid_credentials',
+            detail: 'Could not match credentials',
+          },
+        ],
+      });
+
+      const store = createTestStore();
+      const result = await store.dispatch(
+        vassApi.endpoints.postAuthentication.initiate({
+          uuid: 'test-uuid',
+          lastName: 'Smith',
+          dob: '1990-01-15',
+        }),
+      );
+
+      expect(result.error).to.exist;
+      expect(result.error.code).to.equal('invalid_credentials');
+      expect(result.error.detail).to.equal('Could not match credentials');
     });
   });
 

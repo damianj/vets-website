@@ -42,7 +42,7 @@
     },
     "receivedBenefits": true,
     "marriedToVeteranAtTimeOfDeath": true,
-    "marriageToVeteranStartDate": "2022-03-03",
+    "marriageToVeteranStartDate": "2020-01-01",
     "marriageToVeteranStartLocation": {
       "city": "StartCity",
       "state": "AL"

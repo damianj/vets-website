@@ -143,7 +143,7 @@ const formConfig = {
     serviceHistoryChapter: {
       title: data => {
         return data.formData[`view:${TOGGLE_KEY}`]
-          ? 'Military history'
+          ? 'Military information'
           : 'Your service history';
       },
       pages: {
@@ -176,7 +176,7 @@ const formConfig = {
         },
         pendingPredischargeClaimPage: {
           path: 'pending-pre-discharge-claim',
-          title: 'Pending pre-discharge claim',
+          title: 'Pre-discharge claim',
           depends: formData => {
             return (
               formData[`view:${TOGGLE_KEY}`] &&
@@ -188,7 +188,7 @@ const formConfig = {
         },
         purpleHeartRecipientPage: {
           path: 'purple-heart-recipient',
-          title: 'Purple Heart recipient',
+          title: 'Purple Heart',
           depends: formData => {
             return (
               formData[`view:${TOGGLE_KEY}`] &&
@@ -269,7 +269,7 @@ const formConfig = {
       pages: {
         upload2: {
           path: 'upload-your-documents',
-          title: 'Upload your documents',
+          title: 'Upload documents',
           depends: formData => {
             return formData[`view:${TOGGLE_KEY}`];
           },

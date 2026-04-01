@@ -40,6 +40,14 @@ export const ConfirmationPage = props => {
       />
       <ConfirmationView.WhatsNextProcessList item1Actions={<></>} />
       <ConfirmationView.GoBackLink />
+      <p className="vads-u-margin-y--4">
+        <va-button
+          secondary
+          text="Print this page"
+          data-testid="print-page"
+          onClick={() => window.print()}
+        />
+      </p>
     </ConfirmationView>
   );
 };

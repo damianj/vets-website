@@ -1,41 +1,89 @@
 import { transformForSubmit } from 'platform/forms-system/src/js/helpers';
-import _ from 'lodash';
 import {
   transformPhoneNumberObject,
   transformContactInfoMailingAddress,
   todaysDate,
 } from '../helpers';
 
-export default function transform(formConfig, form) {
-  const data = _.cloneDeep(form.data);
+function collectPersonalInfo(formData) {
+  const data = {
+    applicantName: formData.applicantName,
+    ssn: formData.ssn,
+    vaFileNumber: formData.vaFileNumber,
+    mailingAddress: transformContactInfoMailingAddress(
+      formData.veteran.mailingAddress,
+    ),
+    emailAddress: formData.veteran.email?.emailAddress,
+    homePhone: transformPhoneNumberObject(formData.veteran.homePhone),
+    mobilePhone: transformPhoneNumberObject(formData.veteran.mobilePhone),
+  };
 
-  delete data.statementOfTruthCertified;
-  delete data.AGREED;
-  delete data.vaFileNumberLast4;
-  delete data.ssnLast4;
-
-  // since we're using the prefill/ContactInfo pattern for managing
-  // the users address, phones, and email all the relevant data is
-  // under the `veteran` key within formData buy default. We need
-  // to extract and alter the shape a bit to conform to our schema
-  data.homePhone = transformPhoneNumberObject(data.veteran.homePhone);
-  data.mobilePhone = transformPhoneNumberObject(data.veteran.mobilePhone);
   if (data.homePhone === '') {
     delete data.homePhone;
   }
   if (data.mobilePhone === '') {
     delete data.mobilePhone;
   }
-  data.mailingAddress = transformContactInfoMailingAddress(
-    data.veteran.mailingAddress,
-  );
-  data.emailAddress = data.veteran.email?.emailAddress;
-  delete data.veteran;
 
-  // Set dateSigned
+  return data;
+}
+
+function collectOldSchoolInfo(formData) {
+  return {
+    schoolWasClosed: formData.schoolWasClosed,
+    closedSchoolName: formData.closedSchoolName,
+    closedSchoolAddress: formData.closedSchoolAddress,
+    didCompleteProgramOfStudy: formData.didCompleteProgramOfStudy,
+    didReceiveCredit: formData.didReceiveCredit,
+    wasEnrolledWhenSchoolClosed: formData.wasEnrolledWhenSchoolClosed,
+    wasOnApprovedLeave: formData.wasOnApprovedLeave,
+    withdrewPriorToClosing: formData.withdrewPriorToClosing,
+    dateOfWithdraw: formData.dateOfWithdraw,
+    schoolDidTransferCredits: formData.schoolDidTransferCredits,
+    lastDateOfAttendance: formData.lastDateOfAttendance,
+  };
+}
+
+function collectNewSchoolInfo(formData) {
+  return {
+    enrolledAtNewSchool: formData.enrolledAtNewSchool,
+    newSchoolName: formData.newSchoolName,
+    newProgramName: formData.newProgramName,
+    isUsingTeachoutAgreement: formData.isUsingTeachoutAgreement,
+    newSchoolGrants12OrMoreCredits: formData.newSchoolGrants12OrMoreCredits,
+  };
+}
+
+function collectRemarks(formData) {
+  return {
+    remarks: formData.remarks,
+  };
+}
+
+function collectAttestation(formData) {
+  return {
+    attestationName: formData.attestationName,
+    attestationDate: formData.attestationDate,
+  };
+}
+
+export default function transform(formConfig, form) {
+  const data = [
+    collectPersonalInfo,
+    collectOldSchoolInfo,
+    collectNewSchoolInfo,
+    collectRemarks,
+    collectAttestation,
+  ].reduce((acc, collector) => ({ ...acc, ...collector(form.data) }), {});
+
   data.dateSigned = todaysDate();
+  data.statementOfTruthSignature = form.data.statementOfTruthSignature;
 
-  const submitData = transformForSubmit(formConfig, { ...form, data });
+  const submitData = transformForSubmit(
+    formConfig,
+    { ...form, data },
+    { allowPartialAddress: true },
+  );
 
   return JSON.stringify({
     educationBenefitsClaim: {

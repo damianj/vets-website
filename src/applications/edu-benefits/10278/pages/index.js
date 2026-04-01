@@ -1,6 +1,7 @@
 import * as thirdPartyPersonName from './thirdPartyPersonName';
 import * as thirdPartyPersonAddress from './thirdPartyPersonAddress';
 import * as discloseInformation from './discloseInformation';
+import * as informationToDiscloseOther from './informationToDiscloseOther';
 import * as lengthOfRelease from './lengthOfRelease';
 import * as securitySetup from './securitySetup';
 import * as securitySetupPinPassword from './securitySetupPinPassword';
@@ -15,6 +16,7 @@ export {
   thirdPartyPersonName,
   thirdPartyPersonAddress,
   discloseInformation,
+  informationToDiscloseOther,
   lengthOfRelease,
   securitySetup,
   securitySetupPinPassword,

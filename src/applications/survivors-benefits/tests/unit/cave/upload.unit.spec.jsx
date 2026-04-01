@@ -97,7 +97,15 @@ describe('cave/upload — uploadDocument', () => {
   });
 
   it('throws a wrapped error when apiRequest rejects', async () => {
-    apiRequestStub.rejects({ status: 500, message: 'Server error' });
+    apiRequestStub.rejects({
+      errors: [
+        {
+          status: '404',
+          code: 'idp_not_found',
+          detail: 'Item not found.',
+        },
+      ],
+    });
     let error;
     try {
       await uploadDocument(makePdfFile());
@@ -105,7 +113,10 @@ describe('cave/upload — uploadDocument', () => {
       error = e;
     }
     expect(error.message).to.include('CAVE intake failed');
-    expect(error.message).to.include('500');
+    expect(error.message).to.include('404');
+    expect(error.message).to.include('Item not found.');
+    expect(error.status).to.equal(404);
+    expect(error.code).to.equal('idp_not_found');
   });
 
   it('throws when the response has no id', async () => {

@@ -144,9 +144,11 @@ class FolderManagementPage {
         mockResponse.data.attributes.threadId}/move?folder_id=${folderId}`,
       { statusCode: 204 },
     ).as('threadNoContent');
-    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID).within(() => {
-      cy.get(Locators.BUTTONS.TEXT_CONFIRM).click();
-    });
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID)
+      .shadow()
+      .find('button')
+      .contains('Confirm')
+      .click();
   };
 
   moveMessageToNewFolder = foldersList => {
@@ -166,9 +168,11 @@ class FolderManagementPage {
       { statusCode: 204 },
     ).as(`threadNoContent`);
 
-    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID).within(() => {
-      cy.get(Locators.BUTTONS.TEXT_CONFIRM).click();
-    });
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID)
+      .shadow()
+      .find('button')
+      .contains('Confirm')
+      .click();
     cy.fillVaTextInput(
       Locators.FIELDS.FOLDER_NAME_DATA_TEST_ID,
       createdFolderResponse.data.attributes.name,

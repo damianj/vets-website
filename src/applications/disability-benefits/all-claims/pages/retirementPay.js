@@ -1,3 +1,4 @@
+import React from 'react';
 import set from 'platform/utilities/data/set';
 import { yesNoUI } from 'platform/forms-system/src/js/web-component-patterns';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
@@ -22,6 +23,7 @@ const ConfirmationField = ConfirmationRetirementPay(
 );
 
 export const uiSchema = {
+  'ui:title': <h3 className="vads-u-margin-y--0">Retirement pay</h3>,
   'view:hasMilitaryRetiredPay': yesNoUI({
     title: YES_NO_TITLE,
   }),

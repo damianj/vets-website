@@ -1,3 +1,4 @@
+import React from 'react';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 import phoneUI from 'platform/forms-system/src/js/definitions/phone';
 import emailUI from 'platform/forms-system/src/js/definitions/email';
@@ -85,7 +86,7 @@ export const updateFormData = (oldFormData, formData) => {
 };
 
 export const uiSchema = {
-  'ui:title': 'Contact information',
+  'ui:title': <h3 className="vads-u-margin-y--0">Your contact information</h3>,
   'ui:description': contactInfoDescription,
   phoneAndEmail: {
     'ui:title': 'Phone & email',

@@ -35,7 +35,7 @@ const conflictData = {
       idpArtifacts: {
         dd214: [
           {
-            VETERAN_NAME: {
+            veteranName: {
               first: 'Jane',
               last: 'Doe',
               middle: '',

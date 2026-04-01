@@ -5,7 +5,7 @@ import { within } from '@testing-library/react';
 
 import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
 
-import { renderWithReduxAndRouter } from '../../utils';
+import { renderWithRouter } from '../../utils';
 import { buildDateFormatter } from '../../../utils/helpers';
 
 import FirstPartyRequestPage from '../../../components/claim-document-request-pages/FirstPartyRequestPage';
@@ -18,15 +18,6 @@ const nineMonthsAgoDate = subMonths(today, 9);
 const nineMonthsAgoSuspenseDate = format(nineMonthsAgoDate, 'yyyy-MM-dd');
 const fiveMonthsFromNow = addMonths(today, 5);
 const fiveMonthsFromNowSuspenseDate = format(fiveMonthsFromNow, 'yyyy-MM-dd');
-
-// Needed for the rendering of the AddFilesForm child component
-const initialState = {
-  featureToggles: {
-    // eslint-disable-next-line camelcase
-    cst_show_document_upload_status: false,
-  },
-};
-
 describe('<FirstPartyRequestPage>', () => {
   const defaultProps = {
     onCancel: () => {},
@@ -60,9 +51,8 @@ describe('<FirstPartyRequestPage>', () => {
       suspenseDate: nineMonthsAgoSuspenseDate,
       documents: '[]',
     });
-    const { getByText, container } = renderWithReduxAndRouter(
+    const { getByText, container } = renderWithRouter(
       <FirstPartyRequestPage {...defaultProps} item={item} />,
-      { initialState },
     );
     expect($('#default-page', container)).to.exist;
     expect($('.add-files-form', container)).to.exist;
@@ -78,7 +68,7 @@ describe('<FirstPartyRequestPage>', () => {
     expect($('va-link', container)).to.exist;
     expect($('.optional-upload', container)).to.not.exist;
     getByText(item.description);
-    expect($('va-additional-info', container)).to.exist;
+    expect($('va-link', container)).to.exist;
     expect($('va-file-input-multiple', container)).to.exist;
 
     // Verify "Next steps" section content for API description (no frontend content)
@@ -105,9 +95,8 @@ describe('<FirstPartyRequestPage>', () => {
       overdue: true,
       suspenseDate: nineMonthsAgoSuspenseDate,
     });
-    const { getByText, container } = renderWithReduxAndRouter(
+    const { getByText, container } = renderWithRouter(
       <FirstPartyRequestPage {...defaultProps} item={item} />,
-      { initialState },
     );
     expect($('#default-page', container)).to.exist;
     expect($('.add-files-form', container)).to.exist;
@@ -118,7 +107,7 @@ describe('<FirstPartyRequestPage>', () => {
     getByText('Next steps', { selector: 'h2' });
     expect($('va-link', container)).to.exist;
     expect($('.optional-upload', container)).to.not.exist;
-    expect($('va-additional-info', container)).to.exist;
+    expect($('va-link', container)).to.exist;
     expect($('va-file-input-multiple', container)).to.exist;
   });
 
@@ -135,9 +124,8 @@ describe('<FirstPartyRequestPage>', () => {
       canUploadFile: false,
       date: '2024-03-21',
     });
-    const { getByText } = renderWithReduxAndRouter(
+    const { getByText } = renderWithRouter(
       <FirstPartyRequestPage {...defaultProps} item={item} />,
-      { initialState },
     );
     getByText('Request for evidence');
     getByText(
@@ -155,9 +143,8 @@ describe('<FirstPartyRequestPage>', () => {
       overdue: true,
       suspenseDate: nineMonthsAgoSuspenseDate,
     });
-    const { getByText, container } = renderWithReduxAndRouter(
+    const { getByText, container } = renderWithRouter(
       <FirstPartyRequestPage {...defaultProps} item={item} />,
-      { initialState },
     );
     expect($('#default-page', container)).to.exist;
     expect($('.add-files-form', container)).to.exist;
@@ -178,9 +165,8 @@ describe('<FirstPartyRequestPage>', () => {
       overdue: true,
       suspenseDate: fiveMonthsFromNowSuspenseDate,
     });
-    const { getByText, container } = renderWithReduxAndRouter(
+    const { getByText, container } = renderWithRouter(
       <FirstPartyRequestPage {...defaultProps} item={item} />,
-      { initialState },
     );
     expect($('#default-page', container)).to.exist;
     expect($('.add-files-form', container)).to.exist;
@@ -195,35 +181,31 @@ describe('<FirstPartyRequestPage>', () => {
       displayName: 'Submit buddy statement(s)',
     });
 
-    context('when cst_show_document_upload_status is disabled', () => {
-      it('should not render unknown error alert', () => {
-        const { queryByTestId } = renderWithReduxAndRouter(
+    context('error alerts', () => {
+      it('should not render unknown error alert when no errors exist', () => {
+        const { queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage
             {...defaultProps}
             item={trackedItem}
             type1UnknownErrors={null}
           />,
-          { initialState },
         );
 
         expect(queryByTestId('notification')).to.not.exist;
       });
 
-      it('should not render known error alert (duplicate file, etc.)', () => {
-        const { queryByTestId } = renderWithReduxAndRouter(
+      it('should not render known error alert when message is null', () => {
+        const { queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage
             {...defaultProps}
             item={trackedItem}
             message={null}
           />,
-          { initialState },
         );
 
         expect(queryByTestId('notification')).to.not.exist;
       });
-    });
 
-    context('when cst_show_document_upload_status is enabled', () => {
       const tests = [
         {
           description:
@@ -244,26 +226,19 @@ describe('<FirstPartyRequestPage>', () => {
 
       tests.forEach(({ description, type1UnknownErrors }) => {
         it(description, () => {
-          const { queryByTestId } = renderWithReduxAndRouter(
+          const { queryByTestId } = renderWithRouter(
             <FirstPartyRequestPage
               {...defaultProps}
               item={trackedItem}
               type1UnknownErrors={type1UnknownErrors}
             />,
-            {
-              initialState: {
-                ...initialState,
-                // eslint-disable-next-line camelcase
-                featureToggles: { cst_show_document_upload_status: true },
-              },
-            },
           );
           expect(queryByTestId('notification')).to.not.exist;
         });
       });
 
       it('should render the type 1 unknown error alert when type1UnknownErrors exists', () => {
-        const { getByTestId } = renderWithReduxAndRouter(
+        const { getByTestId } = renderWithRouter(
           <FirstPartyRequestPage
             {...defaultProps}
             item={trackedItem}
@@ -272,13 +247,6 @@ describe('<FirstPartyRequestPage>', () => {
               { fileName: 'b.pdf', docType: 'Medical' },
             ]}
           />,
-          {
-            initialState: {
-              ...initialState,
-              // eslint-disable-next-line camelcase
-              featureToggles: { cst_show_document_upload_status: true },
-            },
-          },
         );
         const notification = getByTestId('notification');
 
@@ -293,19 +261,12 @@ describe('<FirstPartyRequestPage>', () => {
           body: 'Some known error message',
           type: 'error',
         };
-        const { getByTestId } = renderWithReduxAndRouter(
+        const { getByTestId } = renderWithRouter(
           <FirstPartyRequestPage
             {...defaultProps}
             item={trackedItem}
             message={message}
           />,
-          {
-            initialState: {
-              ...initialState,
-              // eslint-disable-next-line camelcase
-              featureToggles: { cst_show_document_upload_status: true },
-            },
-          },
         );
         const notification = getByTestId('notification');
 
@@ -319,20 +280,13 @@ describe('<FirstPartyRequestPage>', () => {
           body: 'Some known error message',
           type: 'error',
         };
-        const { getAllByTestId } = renderWithReduxAndRouter(
+        const { getAllByTestId } = renderWithRouter(
           <FirstPartyRequestPage
             {...defaultProps}
             item={trackedItem}
             message={message}
             type1UnknownErrors={[{ fileName: 'a.pdf', docType: 'Medical' }]}
           />,
-          {
-            initialState: {
-              ...initialState,
-              // eslint-disable-next-line camelcase
-              featureToggles: { cst_show_document_upload_status: true },
-            },
-          },
         );
         // Both alerts should be visible
         const notifications = getAllByTestId('notification');
@@ -537,9 +491,8 @@ describe('<FirstPartyRequestPage>', () => {
           queryByText,
           queryByTestId,
           container,
-        } = renderWithReduxAndRouter(
+        } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={testCase.item} />,
-          { initialState },
         );
 
         // Verify header
@@ -615,9 +568,8 @@ describe('<FirstPartyRequestPage>', () => {
   describe('OtherWaysToSendYourDocuments', () => {
     it('should render when canUploadFile is true', () => {
       const item = createTrackedItem({ canUploadFile: true });
-      const { getByTestId, getByText } = renderWithReduxAndRouter(
+      const { getByTestId, getByText } = renderWithRouter(
         <FirstPartyRequestPage {...defaultProps} item={item} />,
-        { initialState },
       );
       expect(getByTestId('other-ways-to-send-documents')).to.exist;
       getByText('Other ways to send your documents');
@@ -625,9 +577,8 @@ describe('<FirstPartyRequestPage>', () => {
 
     it('should not render when canUploadFile is false', () => {
       const item = createTrackedItem({ canUploadFile: false });
-      const { queryByTestId } = renderWithReduxAndRouter(
+      const { queryByTestId } = renderWithRouter(
         <FirstPartyRequestPage {...defaultProps} item={item} />,
-        { initialState },
       );
       expect(queryByTestId('other-ways-to-send-documents')).to.not.exist;
     });
@@ -673,9 +624,8 @@ describe('<FirstPartyRequestPage>', () => {
           description: 'Old simple description',
         };
 
-        const { getByTestId, queryByTestId } = renderWithReduxAndRouter(
+        const { getByTestId, queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         expect(getByTestId('api-long-description')).to.exist;
@@ -697,13 +647,8 @@ describe('<FirstPartyRequestPage>', () => {
           nextSteps: mockApiNextSteps,
         };
 
-        const {
-          getByTestId,
-          queryByTestId,
-          getByText,
-        } = renderWithReduxAndRouter(
+        const { getByTestId, queryByTestId, getByText } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         expect(getByTestId('api-next-steps')).to.exist;
@@ -727,9 +672,8 @@ describe('<FirstPartyRequestPage>', () => {
           // No nextSteps
         };
 
-        const { getByTestId, getByText } = renderWithReduxAndRouter(
+        const { getByTestId, getByText } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         // Should show "What we need from you" reference
@@ -759,9 +703,8 @@ describe('<FirstPartyRequestPage>', () => {
           nextSteps: mockApiNextSteps,
         };
 
-        const { getByTestId, queryByTestId } = renderWithReduxAndRouter(
+        const { getByTestId, queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         // Should render both API structured contents
@@ -786,9 +729,8 @@ describe('<FirstPartyRequestPage>', () => {
           longDescription: mockApiLongDescription,
         };
 
-        const { getByTestId, queryByTestId } = renderWithReduxAndRouter(
+        const { getByTestId, queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         expect(getByTestId('api-long-description')).to.exist;
@@ -808,9 +750,8 @@ describe('<FirstPartyRequestPage>', () => {
           nextSteps: mockApiNextSteps,
         };
 
-        const { getByTestId, queryByTestId } = renderWithReduxAndRouter(
+        const { getByTestId, queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         expect(getByTestId('empty-state-description')).to.exist;
@@ -831,9 +772,8 @@ describe('<FirstPartyRequestPage>', () => {
           canUploadFile: true,
         };
 
-        const { getByTestId, queryByTestId } = renderWithReduxAndRouter(
+        const { getByTestId, queryByTestId } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         expect(getByTestId('empty-state-description')).to.exist;
@@ -888,9 +828,8 @@ describe('<FirstPartyRequestPage>', () => {
           isSensitive: testCase.isSensitive,
         };
 
-        const { getByText, container } = renderWithReduxAndRouter(
+        const { getByText, container } = renderWithRouter(
           <FirstPartyRequestPage {...defaultProps} item={item} />,
-          { initialState },
         );
 
         getByText(testCase.expectedHeader);
@@ -902,6 +841,43 @@ describe('<FirstPartyRequestPage>', () => {
           expect(subheaderSpan.textContent).to.not.include('for:');
         }
       });
+    });
+  });
+
+  describe('hideClaimLetterSection', () => {
+    it('should hide the "Learn about this request" section when hideClaimLetterSection is true', () => {
+      const item = createTrackedItem({
+        description: 'Some description',
+        friendlyName: 'Test item',
+        hideClaimLetterSection: true,
+      });
+      const { queryByTestId } = renderWithRouter(
+        <FirstPartyRequestPage {...defaultProps} item={item} />,
+      );
+      expect(queryByTestId('learn-about-request-section')).to.not.exist;
+    });
+
+    it('should show the "Learn about this request" section when hideClaimLetterSection is false', () => {
+      const item = createTrackedItem({
+        description: 'Some description',
+        friendlyName: 'Test item',
+        hideClaimLetterSection: false,
+      });
+      const { queryByTestId } = renderWithRouter(
+        <FirstPartyRequestPage {...defaultProps} item={item} />,
+      );
+      expect(queryByTestId('learn-about-request-section')).to.exist;
+    });
+
+    it('should show the "Learn about this request" section when hideClaimLetterSection is absent', () => {
+      const item = createTrackedItem({
+        description: 'Some description',
+        friendlyName: 'Test item',
+      });
+      const { queryByTestId } = renderWithRouter(
+        <FirstPartyRequestPage {...defaultProps} item={item} />,
+      );
+      expect(queryByTestId('learn-about-request-section')).to.exist;
     });
   });
 });

@@ -3,6 +3,7 @@ import testForm from 'platform/testing/e2e/cypress/support/form-tester';
 import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-tester/utilities';
 import mockUser from '../fixtures/mocks/user.json';
 import mockSubmit from './fixtures/mocks/mock-submit.json';
+import mockFeatureToggles from './fixtures/mocks/feature-toggles.json';
 import formConfig from '../../config/form';
 import manifest from '../../manifest.json';
 
@@ -445,6 +446,7 @@ const testConfig = createTestConfig(
     },
     setupPerTest: () => {
       cy.intercept('GET', '/v0/user', mockUser);
+      cy.intercept('/v0/feature_toggles*', mockFeatureToggles);
       cy.intercept('POST', formConfig.submitUrl, mockSubmit);
       cy.login(mockUser);
     },

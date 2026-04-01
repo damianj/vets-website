@@ -27,9 +27,6 @@ export class ScheduleReferralPageObject extends PageObject {
     cy.findByTestId('referral-details')
       .should('exist')
       .and('contain.text', 'Expiration date:')
-      .and('contain.text', 'Type of care:')
-      .and('contain.text', 'Provider:')
-      .and('contain.text', 'Location:')
       .and('contain.text', 'Referral number:');
 
     return this;
@@ -84,12 +81,20 @@ export class ScheduleReferralPageObject extends PageObject {
   }
 
   /**
-   * Expands the additional info section for users who already scheduled
+   * Validates that the common questions accordion is displayed correctly
    */
-  expandAlreadyScheduledInfo() {
-    cy.findByTestId('help-text').within(() => {
-      cy.findByText('If you already scheduled your appointment').click();
-    });
+  assertCommonQuestions() {
+    cy.findByRole('heading', {
+      level: 2,
+      name: 'Common questions about referrals',
+    }).should('exist');
+
+    cy.get('va-accordion').should('exist');
+    cy.get('va-accordion-item').should('have.length', 2);
+
+    cy.get('va-accordion-item#questions-changes').should('exist');
+    cy.get('va-accordion-item#schedule-next-appointment').should('exist');
+
     return this;
   }
 

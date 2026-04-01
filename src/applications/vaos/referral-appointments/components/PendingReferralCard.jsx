@@ -2,60 +2,70 @@ import React from 'react';
 import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import { titleCase } from '../../utils/formatters';
-import AppointmentFlexGrid from '../../components/AppointmentFlexGrid';
 import ListItem from '../../components/ListItem';
 import AppointmentRow from '../../components/AppointmentRow';
 import AppointmentColumn from '../../components/AppointmentColumn';
+import FindCommunityCareOfficeLink from './FindCCFacilityLink';
 
 const PendingReferralCard = ({ referral, index }) => {
   const first = index === 0;
-  const idClickable = `id-${referral.uuid.replace(/[.=\\]/g, '\\$&')}`;
-  const link = `schedule-referral?id=${
-    referral.uuid
-  }&referrer=referrals-requests`;
+  const providerSelectLink = referral.onlineSchedule
+    ? `schedule-referral/provider-selection?id=${
+        referral.uuid
+      }&referrer=referrals-requests`
+    : null;
+  const detailLink = referral.onlineSchedule
+    ? `schedule-referral?id=${referral.uuid}&referrer=referrals-requests`
+    : null;
 
   const parsedDate = parseISO(referral.expirationDate);
   const expiration = format(parsedDate, 'MMMM d, yyyy');
   const categoryOfCare = titleCase(referral.categoryOfCare);
 
   return (
-    <ListItem
-      appointment={referral}
-      borderTop={first}
-      borderBottom
-      status="pending"
-    >
-      <AppointmentFlexGrid idClickable={idClickable} link={link}>
-        <AppointmentRow className="vads-u-margin-x--0p5 mobile:vads-u-flex-direction--row">
-          <AppointmentColumn className="vads-u-padding-y--1" size="1">
-            <div
-              id={`ref-title-${index}`}
-              data-testid="typeOfCare"
-              className="vads-u-font-weight--bold vaos-appts__display--table vads-u-padding--0p5"
+    <ListItem borderTop={first} borderBottom status="pending">
+      <AppointmentRow className="vads-u-padding-y--1 mobile:vads-u-flex-direction--row">
+        <AppointmentColumn className="vads-u-padding-y--1" size="1">
+          <va-link
+            href={detailLink}
+            text={`${categoryOfCare} referral`}
+            data-dd-privacy="mask"
+            class="vads-u-font-weight--bold"
+          />
+          <div className="vaos-appts__display--table vads-u-padding-left--0 vads-u-padding-y--1">
+            <span
+              id={`ref-desc-${index}`}
+              className="vaos-appts__display--table-cell vads-u-display--flex vads-u-align-items--center"
             >
-              <span data-dd-privacy="mask">{`${categoryOfCare} referral`}</span>
-            </div>
-            <div className="vaos-appts__display--table vads-u-padding--0p5">
-              <span
-                id={`ref-desc-${index}`}
-                className="vaos-appts__display--table-cell vads-u-display--flex vads-u-align-items--center"
-              >
-                {`You must schedule all appointments for this referral by ${expiration}.`}
-              </span>
-            </div>
-            <div className="vaos-hide-for-print vads-u-padding--0p5">
+              {`Expiration date: ${expiration}.`}
+            </span>
+          </div>
+          {referral.onlineSchedule ? (
+            <div className="vaos-hide-for-print vads-u-padding-left--0">
               <va-link-action
                 type="secondary"
-                href={link}
+                href={providerSelectLink}
                 aria-labelledby={`ref-title-${index} ref-desc-${index}`}
-                text="Schedule your appointment"
+                text="Schedule an appointment"
                 data-testid="schedule-appointment-link"
-                onClick={e => e.preventDefault()}
               />
             </div>
-          </AppointmentColumn>
-        </AppointmentRow>
-      </AppointmentFlexGrid>
+          ) : (
+            <div
+              className="vads-u-padding-left--0 vads-u-padding-y--1"
+              data-testid="cannot-schedule-online-message"
+            >
+              <va-additional-info trigger="Why you can’t schedule online?">
+                <p>
+                  Online scheduling isn’t available for this referral. Call your
+                  facility’s community care office to schedule an appointment.
+                </p>
+                <FindCommunityCareOfficeLink />
+              </va-additional-info>
+            </div>
+          )}
+        </AppointmentColumn>
+      </AppointmentRow>
     </ListItem>
   );
 };

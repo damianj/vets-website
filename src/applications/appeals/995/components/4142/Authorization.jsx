@@ -12,18 +12,22 @@ import {
 } from 'platform/utilities/ui/focus';
 import recordEvent from 'platform/monitoring/record-event';
 import AuthorizationAlert, { alertTitle } from './AuthorizationAlert';
-import { auth4142Title } from '../../content/evidence/form4142';
 import { AUTHORIZATION_LABEL } from '../../constants';
 import { customPageProps995 } from '../../../shared/props';
 import { PrivacyActStatementContent } from './PrivacyActStatementContent';
 
+export const content = {
+  title:
+    'Authorize the release of private provider or VA Vet Center medical records to VA',
+};
+
 const Authorization = ({
+  contentAfterButtons,
+  contentBeforeButtons,
   data = {},
   goBack,
   goForward,
   setFormData,
-  contentBeforeButtons,
-  contentAfterButtons,
 }) => {
   const [hasError, setHasError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -31,6 +35,7 @@ const Authorization = ({
 
   const toggle4142PrivacyModal = buttonId => {
     const wasVisible = modalVisible;
+
     if (!wasVisible && buttonId) {
       setModalOpenedBy(buttonId);
     }
@@ -53,12 +58,15 @@ const Authorization = ({
         if (modalOpenedBy) {
           // Direct focus on the internal button element, not the web component, immediately
           const vaButton = document.getElementById(modalOpenedBy);
+
           if (vaButton?.shadowRoot) {
             const internalButton = vaButton.shadowRoot.querySelector('button');
+
             if (internalButton) {
               internalButton.focus();
             }
           }
+
           setModalOpenedBy(null);
         }
       };
@@ -112,6 +120,7 @@ const Authorization = ({
     },
     onChange: event => {
       const { checked } = event.target;
+
       setFormData({ ...data, privacyAgreementAccepted: checked });
 
       if (checked && hasError) {
@@ -122,10 +131,12 @@ const Authorization = ({
       // Validation ONLY happens on form submission attempt
       if (data.privacyAgreementAccepted) {
         setHasError(false);
+
         goForward(data);
       } else {
         // Show error and move focus ONLY when Continue is clicked without checkbox
         setHasError(true);
+
         focusOnAlert();
       }
     },
@@ -158,6 +169,21 @@ const Authorization = ({
     'privacy-modal-button-2',
   );
 
+  const nextPageText =
+    'You can limit your authorization to specific sources and information on the next page.';
+
+  const evidenceIntakeAddress = (
+    <p className="va-address-block vads-u-margin-top--3 vads-u-margin-left--2">
+      Department of Veterans Affairs
+      <br />
+      Evidence Intake Center
+      <br />
+      PO Box 4444
+      <br />
+      Janesville, WI 53547-4444
+    </p>
+  );
+
   return (
     <>
       <form onSubmit={handlers.onSubmit}>
@@ -167,13 +193,13 @@ const Authorization = ({
             onAnchorClick={handlers.onAnchorClick}
           />
         )}
-        <h3>{auth4142Title}</h3>
+        <h3>{content.title}</h3>
         <p>
-          Only provide this authorization if you want us to obtain your medical
-          records from private health care providers on your behalf. If you
-          already provided these records or plan to get them yourself, you don’t
-          need to fill out this authorization. Doing so will lengthen your claim
-          processing time.
+          Only provide this authorization if you want The Department of Veterans
+          Affairs (VA) to obtain non-VA medical records on your behalf. If
+          you’ve already provided these records or intend to get them yourself,
+          there’s no need to fill out this authorization. Doing so will lengthen
+          your claim processing time.
         </p>
         <va-accordion>
           <va-accordion-item
@@ -207,15 +233,7 @@ const Authorization = ({
               Regional Office is handling your claim, mail your written
               revocation to the Evidence Intake Center:
             </p>
-            <p className="va-address-block vads-u-margin-top--3 vads-u-margin-left--2">
-              Department of Veterans Affairs
-              <br />
-              Evidence Intake Center
-              <br />
-              PO Box 4444
-              <br />
-              Janesville, WI 53547-4444
-            </p>
+            {evidenceIntakeAddress}
           </va-accordion-item>
           <va-accordion-item
             header="2. Sources of records"
@@ -227,24 +245,19 @@ const Authorization = ({
               <li>
                 <strong>ALL</strong> medical sources (hospitals, clinics, labs,
                 physicians, psychologists, etc.) including mental health,
-                correctional, addiction treatment, and VA health care
-                facilities,
+                correctional, addiction treatment, and VA health care facilities
               </li>
-              <li>Social workers/rehabilitation counselors,</li>
-              <li>Consulting examiners used by VA,</li>
+              <li>Social workers/rehabilitation counselors</li>
+              <li>Consulting examiners used by VA</li>
               <li>
-                Employers, insurance companies, workers' compensation programs,
-                and
+                Employers, insurance companies, workers' compensation programs
               </li>
               <li>
                 Others who may know about my condition (family, neighbors,
                 friends, public officials)
               </li>
             </ul>
-            <p>
-              You’ll have the option on the next page to limit your
-              authorization of types of sources and/or types of information.
-            </p>
+            <p>{nextPageText}</p>
           </va-accordion-item>
           <va-accordion-item header="3. Costs for records" level="4" open>
             <p className="vads-u-margin-top--0">
@@ -295,15 +308,7 @@ const Authorization = ({
               receipt.
             </p>
             <h5>Send by mail</h5>
-            <p className="va-address-block vads-u-margin-top--3">
-              Department of Veterans Affairs
-              <br />
-              Evidence Intake Center
-              <br />
-              PO Box 4444
-              <br />
-              Janesville, WI 53547-4444
-            </p>
+            {evidenceIntakeAddress}
             <p className="vads-u-margin-bottom--0">
               This address serves all United States and foreign locations.
             </p>
@@ -311,7 +316,7 @@ const Authorization = ({
         </va-accordion>
         <div className="hipaa-privacy-agreement vads-u-padding-x--3 vads-u-padding-top--3 vads-u-padding-bottom--2 vads-u-margin-top--3">
           <h3 className="vads-u-margin-top--0" id="acknowledgement">
-            Acknowledgement and HIPAA compliance
+            Acknowledgment and HIPAA compliance
           </h3>
           <p>
             I hereby authorize the sources listed in{' '}
@@ -350,11 +355,11 @@ const Authorization = ({
             information disclosed prior to revocation to decide my claim.
           </p>
           <p>
-            HIPAA NOTE: This general and special authorization to disclose was
-            developed to comply with the provisions regarding disclosure of
-            medical and other information under P.L. 104-191 ("HIPAA"); 45
-            C.F.R. parts 160 and 164; 42 U.S.C. §290dd-2; 42 C.F.R. part 2, and
-            State Law.
+            <strong>HIPAA note</strong>: This general and special authorization
+            to disclose was developed to comply with the provisions regarding
+            disclosure of medical and other information under P.L. 104-191
+            ("HIPAA"); 45 C.F.R. parts 160 and 164; 42 U.S.C. §290dd-2; 42
+            C.F.R. part 2, and State Law.
           </p>
           <h4>Authorization</h4>
           <h5>Records to be released</h5>
@@ -374,14 +379,13 @@ const Authorization = ({
                 <li>
                   Psychological, psychiatric, or other mental impairment(s)
                   excluding "psychotherapy notes" as defined in 45 C.F.R.
-                  §164.501,
+                  §164.501
                 </li>
-                <li>Drug abuse, alcoholism, or other substance abuse,</li>
-                <li>Sickle cell anemia,</li>
+                <li>Drug abuse, alcoholism, or other substance abuse</li>
+                <li>Sickle cell anemia</li>
                 <li>
                   Records which may indicate the presence of a communicable or
-                  non-communicable disease; and tests for or records of
-                  HIV/AIDS,
+                  non-communicable disease; and tests for or records of HIV/AIDS
                 </li>
                 <li>
                   Gene-related impairments (including genetic test results)
@@ -468,10 +472,7 @@ const Authorization = ({
               the types of sources listed.
             </li>
           </ul>
-          <p className="vads-u-margin-bottom--0">
-            You’ll have the option on the next page to limit your authorization
-            to types of sources and/or types of information.
-          </p>
+          <p className="vads-u-margin-bottom--0">{nextPageText}</p>
           <VaCheckbox
             className="vads-u-font-weight--bold vads-u-margin-top--3"
             id="privacy-agreement"
@@ -481,16 +482,8 @@ const Authorization = ({
             onVaChange={handlers.onChange}
             required
             enable-analytics
-          >
-            {/* https://github.com/department-of-veterans-affairs/vets-design-system-documentation/issues/4219
-          This empty slot is required for now due to a DST defect where a
-          "description" slot is required in order for the analytics to work */}
-            <div slot="description" className="vads-u-display--none">
-              <p />
-            </div>
-          </VaCheckbox>
+          />
         </div>
-
         <div className="vads-u-margin-top--5">
           {contentBeforeButtons}
           <FormNavButtons

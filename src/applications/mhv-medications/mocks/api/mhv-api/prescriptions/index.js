@@ -1,6 +1,7 @@
 const { differenceInDays, formatISO, sub } = require('date-fns');
 const { prescriptionDocumentationHtml } = require('./documentation');
 const prescriptionsList = require('../../../../tests/fixtures/prescriptionsList.json');
+const prescriptionsListV2 = require('../../../../tests/fixtures/prescriptionsListV2.json');
 
 const dispStatusObj = {
   UNKNOWN: 'Unknown',
@@ -115,7 +116,10 @@ function mockPrescription(n = 0, attrs = {}, isV2 = false) {
       ],
       tracking: null,
       orderableItem: null,
-      sortedDispensedDate: '2024-02-25T10:30:00-05:00',
+      sortedDispensedDate:
+        attrs.dispensedDate !== undefined
+          ? attrs.dispensedDate
+          : '2024-02-25T10:30:00-05:00',
       prescriptionImage: null,
       ...attrs,
     },
@@ -126,7 +130,8 @@ function mockPrescription(n = 0, attrs = {}, isV2 = false) {
 }
 
 function mockPrescriptionArray(n = 20, isV2 = false) {
-  const realPrescriptions = prescriptionsList.data;
+  const realPrescriptions = (isV2 ? prescriptionsListV2 : prescriptionsList)
+    .data;
 
   return [...Array(n)].map((_, i) => {
     const today = new Date();
@@ -155,7 +160,10 @@ function mockPrescriptionArray(n = 20, isV2 = false) {
         orderedDate: realPrescription.orderedDate || formatISO(monthsAgo),
         quantity: realPrescription.quantity,
         expirationDate: realPrescription.expirationDate,
-        dispensedDate: realPrescription.dispensedDate || recentlyISOString,
+        dispensedDate:
+          'dispensedDate' in realPrescription
+            ? realPrescription.dispensedDate
+            : recentlyISOString,
         stationNumber: realPrescription.stationNumber,
         isRefillable: realPrescription.isRefillable,
         isRenewable: realPrescription.isRenewable,
@@ -460,7 +468,7 @@ function generateMockPrescriptions(
       const bName = (b?.attributes?.prescriptionName ?? '').toString();
       return aName.localeCompare(bName);
     });
-  } else if (sortKey === '-dispensed_date') {
+  } else if (sortKey === '-dispensed_date' || sortKey === 'last-fill-date') {
     // Most recently filled — sort by dispensedDate descending
     filteredPrescriptions = filteredPrescriptions.slice().sort((a, b) => {
       const aDate = a?.attributes?.dispensedDate || '';

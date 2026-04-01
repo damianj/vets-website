@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { add, format } from 'date-fns';
 import sinon from 'sinon';
 import { onFormLoaded, baseDoNew4142Logic } from '../utils/index';
 import { getSharedVariable, clearSharedVariables } from '../utils/sharedState';
@@ -232,6 +233,50 @@ describe('onFormLoaded', () => {
       expect(mockRouter.push.calledWith('/disabilities/rated-disabilities')).to
         .be.true;
       expect(getSharedVariable('alertNeedsShown4142')).to.be.undefined;
+    });
+
+    const daysFromToday = days =>
+      format(add(new Date(), { days }), 'yyyy-MM-dd');
+    const createBddShaFormData = (formData = {}) => ({
+      'view:isBddData': true,
+      'view:hasSeparationHealthAssessment': true,
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      serviceInformation: {
+        servicePeriods: [
+          {
+            dateRange: {
+              to: daysFromToday(90),
+            },
+          },
+        ],
+      },
+      ...formData,
+    });
+
+    [
+      {
+        returnUrl: '/supporting-evidence/separation-health-assessment',
+      },
+      {
+        returnUrl: '/supporting-evidence/separation-health-assessment-upload',
+        formData: { disability526SupportingEvidenceFileInputV3: true },
+      },
+      {
+        returnUrl:
+          '/supporting-evidence/separation-health-assessment-upload-v1',
+        formData: { disability526SupportingEvidenceFileInputV3: false },
+      },
+    ].forEach(({ returnUrl, formData }) => {
+      it(`redirects ${returnUrl} to orientation when BDD SHA feature flag is off`, () => {
+        mockProps.returnUrl = returnUrl;
+        mockProps.formData = createBddShaFormData(formData);
+
+        onFormLoaded(mockProps);
+
+        expect(mockRouter.push.calledOnce).to.be.true;
+        expect(mockRouter.push.calledWith('/supporting-evidence/orientation'))
+          .to.be.true;
+      });
     });
   });
 

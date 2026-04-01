@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { render } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import {
   DefinitionTester,
   getFormDOM,
@@ -17,7 +17,126 @@ import {
 
 const arrayPath = 'careExpenses';
 
+const pageNames = [
+  'careExpensesIntro',
+  'careExpensesSummary',
+  'careTypePage',
+  'careRecipientPage',
+  'careDatesPage',
+  'careCostPage',
+];
+
+describe('Care Expenses Pages — depends', () => {
+  pageNames.forEach(pageName => {
+    describe(pageName, () => {
+      let depends;
+
+      beforeEach(() => {
+        depends = careExpensesPages[pageName].depends;
+      });
+
+      it('returns true when survivorsBenefitsForm2025VersionEnabled is false', () => {
+        expect(depends({ survivorsBenefitsForm2025VersionEnabled: false })).to
+          .be.true;
+      });
+
+      it('returns true when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is not in skip list', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'ONE_TO_FOUR_SOURCES',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is not set', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is NO_INCOME but survivorsPension is not true', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns false when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is NO_INCOME', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.false;
+      });
+    });
+  });
+});
+
 describe('Care Expenses Pages', () => {
+  describe('typeOfCarePage with feature toggle', () => {
+    it('renders default care type options when toggle is disabled', () => {
+      const { careTypePage } = careExpensesPages;
+      const formData = {};
+      const form = render(
+        <DefinitionTester
+          arrayPath={arrayPath}
+          schema={careTypePage.schema}
+          uiSchema={careTypePage.uiSchema}
+          pagePerItemIndex={0}
+          data={{
+            survivorsBenefitsForm2025VersionEnabled: false,
+            [arrayPath]: [formData],
+          }}
+        />,
+      );
+      const formDOM = getFormDOM(form);
+      const vaRadioOptions = $$('va-radio-option', formDOM);
+      expect(vaRadioOptions.length).to.equal(2);
+      expect(vaRadioOptions[0].getAttribute('label')).to.equal(
+        'Residential care facility',
+      );
+      expect(vaRadioOptions[1].getAttribute('label')).to.equal(
+        'In-home care attendant',
+      );
+    });
+
+    it('renders 2025 care type options when toggle is enabled', () => {
+      const { careTypePage } = careExpensesPages;
+      const formData = {};
+      const form = render(
+        <DefinitionTester
+          arrayPath={arrayPath}
+          schema={careTypePage.schema}
+          uiSchema={careTypePage.uiSchema}
+          pagePerItemIndex={0}
+          data={{
+            survivorsBenefitsForm2025VersionEnabled: true,
+            [arrayPath]: [formData],
+          }}
+        />,
+      );
+      const formDOM = getFormDOM(form);
+      const vaRadioOptions = $$('va-radio-option', formDOM);
+      expect(vaRadioOptions.length).to.equal(4);
+      expect(vaRadioOptions[0].getAttribute('label')).to.equal('Nursing home');
+      expect(vaRadioOptions[1].getAttribute('label')).to.equal(
+        'Residential care facility',
+      );
+      expect(vaRadioOptions[2].getAttribute('label')).to.equal('Adult daycare');
+      expect(vaRadioOptions[3].getAttribute('label')).to.equal(
+        'In-home care attendant',
+      );
+    });
+  });
+
   it('renders the care expenses page intro', async () => {
     const { careExpensesIntro } = careExpensesPages;
 
@@ -100,7 +219,7 @@ describe('Care Expenses Pages', () => {
     });
 
     const vaPaymentAmount = $(
-      'va-text-input[label*="How much is each payment?"]',
+      'va-text-input[label*="How much is the payment?"]',
       formDOM,
     );
     expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
@@ -145,7 +264,7 @@ describe('Care Expenses Pages', () => {
     });
 
     const vaPaymentAmount = $(
-      'va-text-input[label*="How much is each payment?"]',
+      'va-text-input[label*="How much is the payment?"]',
       formDOM,
     );
     expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
@@ -198,6 +317,36 @@ describe('Care Expenses Pages', () => {
     // After checking, end date should be hidden
     endDate = $$('va-memorable-date[label*="Care end date"]', formDOM);
     expect(endDate[0]).to.not.exist;
+  });
+
+  it('should check error message when end date is before start date', async () => {
+    const { careDatesPage } = careExpensesPages;
+    const formData = {
+      careDateRange: { from: '2021-01-31', to: '2020-01-01' },
+      noCareEndDate: false,
+    };
+    const testData = { [arrayPath]: [formData] };
+    const { container } = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={careDatesPage.schema}
+        uiSchema={careDatesPage.uiSchema}
+        pagePerItemIndex={0}
+        data={testData}
+      />,
+    );
+
+    fireEvent.submit($('form', container));
+
+    await waitFor(() => {
+      const endDateField = $(
+        'va-memorable-date[label*="Care end date"]',
+        container,
+      );
+      expect(endDateField.getAttribute('error')).to.equal(
+        'End date must be after the start date',
+      );
+    });
   });
 
   it('should check if isItemIncomplete', () => {

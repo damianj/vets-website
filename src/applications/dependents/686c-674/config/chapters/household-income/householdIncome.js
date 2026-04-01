@@ -65,7 +65,8 @@ export const uiSchema = {
   'ui:options': {
     updateSchema: (formData, formSchema) => {
       // Use 'view:householdIncome' as UI value and householdIncome as RBPS value
-      // Map string values to boolean for RBPS: 'Y' -> false, 'N' -> true, '' -> undefined
+      // Map string values to boolean for RBPS:
+      //  'Y' -> true, 'N' -> false, '' -> undefined
 
       const updated = formData;
       const viewValue = formData['view:householdIncome'];
@@ -73,9 +74,9 @@ export const uiSchema = {
       // If view:householdIncome is defined, set householdIncome based on selection
       if (viewValue !== undefined) {
         if (viewValue === HOUSEHOLD_INCOME_YES) {
-          updated.householdIncome = false;
-        } else if (viewValue === HOUSEHOLD_INCOME_NO) {
           updated.householdIncome = true;
+        } else if (viewValue === HOUSEHOLD_INCOME_NO) {
+          updated.householdIncome = false;
         } else if (viewValue === HOUSEHOLD_INCOME_NOT_APPLICABLE) {
           // Empty value - don't set householdIncome (pass nothing)
           delete updated.householdIncome;
@@ -87,8 +88,8 @@ export const uiSchema = {
       // set view:householdIncome based on householdIncome value
       if (viewValue === undefined && formData.householdIncome !== undefined) {
         updated['view:householdIncome'] = formData.householdIncome
-          ? HOUSEHOLD_INCOME_NO
-          : HOUSEHOLD_INCOME_YES;
+          ? HOUSEHOLD_INCOME_YES
+          : HOUSEHOLD_INCOME_NO;
       }
 
       // Update enum based on feature flag

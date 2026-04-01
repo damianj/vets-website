@@ -42,4 +42,26 @@ describe('22-0976 authorizing official name page', () => {
       'Enter a last or family name',
     );
   });
+
+  it('shows errors when no name does not match prefilled value', async () => {
+    const { container, getByRole } = renderPage({
+      authorizingOfficial: { fullName: { first: 'NotJohn', last: 'NotDoe' } },
+      prefilledFirstName: 'John',
+      prefilledLastName: 'Doe',
+    });
+    getByRole('button', { name: /submit/i }).click();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    const firstNameInput = container.querySelector(
+      'va-text-input[label="First or given name"]',
+    );
+    expect(firstNameInput.getAttribute('error')).to.equal(
+      'Enter your name as it appears on your profile',
+    );
+    const lastNameInput = container.querySelector(
+      'va-text-input[label="Last or family name"]',
+    );
+    expect(lastNameInput.getAttribute('error')).to.equal(
+      'Enter your name as it appears on your profile',
+    );
+  });
 });

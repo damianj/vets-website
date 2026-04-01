@@ -20,10 +20,7 @@ describe('UploadInformation component', () => {
     statusesWithStatementOfServiceAccordion.forEach(status => {
       it(`should display Statement of service accordion item for ${status} service status`, () => {
         const { getByTestId } = render(
-          <UploadInformation
-            formData={{ identity: status }}
-            hasOneTimeRestoration={false}
-          />,
+          <UploadInformation formData={{ identity: status }} />,
         );
         const accordion = getByTestId('document-upload-accordion');
         expect(accordion).to.exist;
@@ -32,12 +29,9 @@ describe('UploadInformation component', () => {
     });
 
     statusesWithoutStatementOfServiceAccordion.forEach(status => {
-      it(`should not display accordion for ${status} service status without one-time restoration`, () => {
+      it(`should not display accordion for ${status} service status when user does not have a VA home loan`, () => {
         const { container } = render(
-          <UploadInformation
-            formData={{ identity: status }}
-            hasOneTimeRestoration={false}
-          />,
+          <UploadInformation formData={{ identity: status }} />,
         );
         const accordion = container.querySelector(
           '[data-testid="document-upload-accordion"]',
@@ -46,46 +40,46 @@ describe('UploadInformation component', () => {
       });
     });
 
-    it('should display loan evidence accordion item when one-time restoration is present', () => {
+    it('should display loan evidence accordion item when user has a property with a VA home loan', () => {
       const { getByTestId } = render(
         <UploadInformation
           formData={{ identity: serviceStatuses.VETERAN }}
-          hasOneTimeRestoration
+          hadPriorLoans
         />,
       );
       const accordion = getByTestId('document-upload-accordion');
       expect(accordion).to.exist;
       expect(accordion.textContent).to.include(
-        'Type of evidence of a VA loan paid in full',
+        'Type of evidence to show a VA loan was paid in full',
       );
     });
 
-    it('should display accordion for DNANA with one-time restoration', () => {
+    it('should display accordion for DNANA when user has a property with a VA home loan', () => {
       const { getByTestId } = render(
         <UploadInformation
           formData={{ identity: serviceStatuses.DNANA }}
-          hasOneTimeRestoration
+          hadPriorLoans
         />,
       );
       const accordion = getByTestId('document-upload-accordion');
       expect(accordion).to.exist;
       expect(accordion.textContent).to.include(
-        'Type of evidence of a VA loan paid in full',
+        'Type of evidence to show a VA loan was paid in full',
       );
     });
 
-    it('should display both accordion items for VETERAN with one-time restoration', () => {
+    it('should display both accordion items for VETERAN when user has a property with a VA home loan', () => {
       const { getByTestId } = render(
         <UploadInformation
           formData={{ identity: serviceStatuses.VETERAN }}
-          hasOneTimeRestoration
+          hadPriorLoans
         />,
       );
       const accordion = getByTestId('document-upload-accordion');
       expect(accordion).to.exist;
       expect(accordion.textContent).to.include('Statement of service');
       expect(accordion.textContent).to.include(
-        'Type of evidence of a VA loan paid in full',
+        'Type of evidence to show a VA loan was paid in full',
       );
     });
   });

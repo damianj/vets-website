@@ -14,10 +14,10 @@ import Address from '../Address';
 import { APPOINTMENT_STATUS } from '../../utils/constants';
 import FacilityPhone from '../FacilityPhone';
 import NewTabAnchor from '../NewTabAnchor';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
   recordAppointmentDetailsNullStates,
-  captureMissingModalityLogs,
 } from '../../utils/events';
 
 export default function VARequestLayout({ data: appointment }) {
@@ -41,7 +41,7 @@ export default function VARequestLayout({ data: appointment }) {
   const preferredModality = appointment?.preferredModality;
   const { patientComments } = appointment || {};
 
-  let heading = 'We have received your request';
+  let heading = 'Appointment request';
   if (isPendingAppointment && !showConfirmMsg)
     heading = 'Request for appointment';
   else if (APPOINTMENT_STATUS.cancelled === status)

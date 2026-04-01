@@ -58,15 +58,15 @@ describe('<ContactInfoReview>', () => {
     const els = $$('dt', container);
     expect(els.length).to.eq(9);
     expect(els.map(el => el.textContent)).to.deep.equal([
-      'Home phone number',
-      'Mobile phone number',
-      'Email address',
       'Country',
       'Street address',
       'Street address line 2',
       'City',
       'State',
       'Zip code',
+      'Email address',
+      'Home phone number',
+      'Mobile phone number',
     ]);
   });
   it('should render all contact data, except home phone on review page', () => {
@@ -94,13 +94,13 @@ describe('<ContactInfoReview>', () => {
     const els = $$('dt', container);
     expect(els.length).to.eq(7);
     expect(els.map(el => el.textContent)).to.deep.equal([
-      'Home phone number',
-      'Mobile phone number',
-      'Email address',
       'Country',
       'Street address',
       'City',
       'Postal code',
+      'Email address',
+      'Home phone number',
+      'Mobile phone number',
     ]);
   });
 

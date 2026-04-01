@@ -97,7 +97,7 @@ class DirectDepositPage {
   confirmRedirectToAccountSecurity = () => {
     cy.url().should(
       'eq',
-      `${Cypress.config().baseUrl}${PROFILE_PATHS.ACCOUNT_SECURITY}`,
+      `${Cypress.config().baseUrl}${PROFILE_PATHS.SIGNIN_INFORMATION}`,
     );
   };
 }

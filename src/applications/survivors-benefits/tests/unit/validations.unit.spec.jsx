@@ -11,6 +11,7 @@ describe('Custom form validations', () => {
     separationStartDate: '2000-03-05',
     dateOfMarriage: '1990-02-02',
     veteranDateOfBirth: '1970-04-15',
+    veteranDateOfDeath: '2023-01-01',
   };
   beforeEach(() => {
     errorMessage = [];
@@ -72,5 +73,11 @@ describe('Custom form validations', () => {
     expect(errorMessage).to.be.empty;
     validations.isAfterVeteranBirthDate(errors, '2021-01-01', {});
     expect(errorMessage).to.be.empty;
+  });
+  it('should validate that the date is before the veteran date of death', () => {
+    validations.isBeforeVeteranDeathDate(errors, '2025-01-01', formData);
+    expect(errorMessage).to.include(
+      'Date must be before the Veteran’s date of death.',
+    );
   });
 });

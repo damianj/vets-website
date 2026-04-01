@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { setData } from 'platform/forms-system/src/js/actions';
 
@@ -55,7 +55,7 @@ export const UpdateMilitaryHistory = ({ form = {}, setFormData }) => {
       addServicePeriod(form.data, separationDate, setFormData);
     }
   });
-  return null;
+  return <h3 className="vads-u-margin-y--0">Your information</h3>;
 };
 
 const mapStateToProps = state => state;

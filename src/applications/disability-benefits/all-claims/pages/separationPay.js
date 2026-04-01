@@ -1,3 +1,4 @@
+import React from 'react';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 import {
   selectUI,
@@ -23,6 +24,11 @@ const {
 } = fullSchema.properties;
 
 export const uiSchema = {
+  'ui:title': (
+    <h3 className="vads-u-margin-y--0">
+      Separation or disability severance pay
+    </h3>
+  ),
   hasSeparationPay: yesNoUI({
     title: SEPARATION_PAY_TITLE,
   }),

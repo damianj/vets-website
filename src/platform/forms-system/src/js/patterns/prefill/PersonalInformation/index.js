@@ -12,6 +12,7 @@ import { DefaultErrorMessage } from './DefaultErrorMessage';
 import { DefaultCardHeader } from './DefaultCardHeader';
 import { DefaultHeader } from './DefaultHeader';
 import { PersonalInformationReview } from './PersonalInformationReview';
+import { createPersonalInfoConfirmationField } from './PersonalInfoConfirmationField';
 
 /**
  * @typedef {import('./PersonalInformation').PersonalInformationConfig} PersonalInformationConfig
@@ -104,7 +105,12 @@ const profilePersonalInfoPage = ({
     [key]: {
       title,
       path,
-      uiSchema: {},
+      uiSchema: {
+        'ui:confirmationField': createPersonalInfoConfirmationField({
+          config,
+          dataAdapter,
+        }),
+      },
       schema: {
         type: 'object',
         properties: {},

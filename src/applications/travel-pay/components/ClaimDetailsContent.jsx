@@ -8,7 +8,12 @@ import { TRAVEL_PAY_FILE_NEW_CLAIM_ENTRY } from '@department-of-veterans-affairs
 import { selectAppointment } from '../redux/selectors';
 import useSetPageTitle from '../hooks/useSetPageTitle';
 import { formatDateTime } from '../util/dates';
-import { STATUSES, FORM_100998_LINK, BTSSS_PORTAL_URL } from '../constants';
+import {
+  STATUSES,
+  FORM_100998_LINK,
+  BTSSS_PORTAL_URL,
+  TRAVEL_PAY_INFO_LINK,
+} from '../constants';
 import { toPascalCase, currency } from '../util/string-helpers';
 import {
   hasUnassociatedDocuments,
@@ -19,6 +24,33 @@ import DecisionReason from './DecisionReason';
 import OutOfBoundsAppointmentAlert from './alerts/OutOfBoundsAppointmentAlert';
 
 const title = 'Your travel reimbursement claim';
+
+function AppointmentDataError() {
+  return (
+    <va-alert
+      close-btn-aria-label="Close notification"
+      status="error"
+      visible
+      data-testid="appointment-data-error-alert"
+    >
+      <h2 slot="headline">Something went wrong on our end</h2>
+      <p className="vads-u-margin-y--0">
+        We're sorry. We can't access your travel reimbursement claim status
+        right now. Try again later.
+      </p>
+      <p>
+        You can call the BTSSS call center at{' '}
+        <va-telephone contact="8555747292" /> (
+        <va-telephone tty contact="711" />) Monday through Friday, 8:00 a.m. to
+        8:00 p.m. ET.
+      </p>
+      <va-link
+        href={TRAVEL_PAY_INFO_LINK}
+        text="Find out how to file for travel reimbursement"
+      />
+    </va-alert>
+  );
+}
 
 export default function ClaimDetailsContent({
   createdOn,
@@ -61,12 +93,10 @@ export default function ClaimDetailsContent({
 
   // Claim requires BTSSS if:
   // 1) Started in BTSSS OR
-  // 2) Has unassociated docs OR
-  // 3) Has a problem getting the appointment ID from getAppointmentDataByDateTime
+  // 2) Has unassociated docs
+
   const requiresBTSSS =
-    claimSource !== 'VaGov' ||
-    hasUnassociatedDocuments(documents) ||
-    !appointmentId;
+    claimSource !== 'VaGov' || hasUnassociatedDocuments(documents);
 
   // Condition for showing any claim action link (BTSSS or VA.gov)
   const shouldShowClaimAction =
@@ -74,6 +104,10 @@ export default function ClaimDetailsContent({
 
   // Show BTSSS note & redirect link if the saved/incomplete claim requires BTSSS
   const shouldShowBTSSSContent = shouldShowClaimAction && requiresBTSSS;
+
+  // Show an error alert when there's a problem getting the appointment ID from getAppointmentDataByDateTime
+  const shouldShowAppointmentDataError =
+    complexClaimsToggle && !requiresBTSSS && !appointmentId;
 
   const getDocLinkList = list =>
     list.map(({ filename, text, documentId }) => (
@@ -123,11 +157,24 @@ export default function ClaimDetailsContent({
     ? `Current expenses: ${formattedCost}`
     : `Submitted amount: ${formattedCost}`;
 
+  const heading = (
+    <h1>
+      {title} for {appointmentDate}
+    </h1>
+  );
+
+  if (shouldShowAppointmentDataError) {
+    return (
+      <>
+        {heading}
+        <AppointmentDataError />
+      </>
+    );
+  }
+
   return (
     <>
-      <h1>
-        {title} for {appointmentDate}
-      </h1>
+      {heading}
       {complexClaimsToggle &&
         isOutOfBounds && (
           <div className="vads-u-margin-y--4">

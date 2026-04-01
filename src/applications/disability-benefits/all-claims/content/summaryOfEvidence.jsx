@@ -11,8 +11,8 @@ const SECTION_CONFIGURATIONS = {
     getEvidences: getBddShaUploads,
     getHeaderText: shouldEnhance =>
       shouldEnhance
-        ? 'We’ll submit the Separation Health Assessment Part A (SHA A) you uploaded'
-        : 'We’ll submit the Separation Health Assessment Part A document that you uploaded',
+        ? 'We’ll submit the Separation Health Assessment you uploaded'
+        : 'We’ll submit the Separation Health Assessment document that you uploaded',
   },
 };
 

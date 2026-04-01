@@ -220,63 +220,58 @@ const PrescriptionDetails = () => {
   const showLastFilledParagraph =
     nonVaPrescription || prescription?.sortedDispensedDate || !isCernerPilot;
 
-  const hasPrintError =
-    prescription && !prescriptionApiError && !allergiesError;
+  const canPrint = prescription && !prescriptionApiError && !allergiesError;
 
   const pendingMedAlert = () => {
-    const { orderedDate } = prescription;
-    const { pendingMed } = prescription;
-    const orderedMoreThanSevenDaysAgo = () => {
+    const { orderedDate, pendingMed } = prescription;
+    const isOverdue = (() => {
       const today = new Date();
       const eightDaysLater = new Date(orderedDate);
       eightDaysLater.setDate(eightDaysLater.getDate() + 8);
-
       return today > eightDaysLater;
-    };
+    })();
     return (
-      <>
-        <va-alert
-          visible={pendingMed}
-          id="pending-med"
-          status={`${orderedMoreThanSevenDaysAgo() ? 'warning' : 'info'}`}
-          setFocus
-          uswds
-          class={
-            pendingMed
-              ? 'vads-u-margin-y--1 vads-u-margin-bottom--3'
-              : 'vads-u-margin-bottom--3'
-          }
+      <va-alert
+        visible={pendingMed}
+        id="pending-med"
+        status={`${isOverdue ? 'warning' : 'info'}`}
+        setFocus
+        uswds
+        class={
+          pendingMed
+            ? 'vads-u-margin-y--1 vads-u-margin-bottom--3'
+            : 'vads-u-margin-bottom--3'
+        }
+      >
+        <h2
+          className="vads-u-margin-y--0 vads-u-font-size--h3"
+          data-testid="pending-med-alert"
         >
-          <h2
-            className="vads-u-margin-y--0 vads-u-font-size--h3"
-            data-testid="pending-med-alert"
-          >
-            {orderedMoreThanSevenDaysAgo()
-              ? 'Your VA pharmacy is still reviewing this prescription'
-              : 'Your VA pharmacy is reviewing this prescription'}
-          </h2>
-          <p>
-            {orderedMoreThanSevenDaysAgo()
-              ? 'This pharmacy review is taking longer than expected.'
-              : 'It may take 24-72 hours to review. And the prescription details may change. Check back for updates.'}
-          </p>
-          <p>
-            If you need this prescription now, call your VA pharmacy
-            {pharmacyPhoneNumber(prescription) && (
-              <>
-                {' '}
-                at{' '}
-                <va-telephone
-                  contact={pharmacyPhoneNumber(prescription)}
-                  not-clickable
-                />{' '}
-                (<va-telephone tty contact="711" not-clickable />)
-              </>
-            )}
-            .
-          </p>
-        </va-alert>
-      </>
+          {isOverdue
+            ? 'Your VA pharmacy is still reviewing this prescription'
+            : 'Your VA pharmacy is reviewing this prescription'}
+        </h2>
+        <p>
+          {isOverdue
+            ? 'This pharmacy review is taking longer than expected.'
+            : 'It may take 24-72 hours to review. And the prescription details may change. Check back for updates.'}
+        </p>
+        <p>
+          If you need this prescription now, call your VA pharmacy
+          {pharmacyPhoneNumber(prescription) && (
+            <>
+              {' '}
+              at{' '}
+              <va-telephone
+                contact={pharmacyPhoneNumber(prescription)}
+                not-clickable
+              />{' '}
+              (<va-telephone tty contact="711" not-clickable />)
+            </>
+          )}
+          .
+        </p>
+      </va-alert>
     );
   };
 
@@ -291,7 +286,7 @@ const PrescriptionDetails = () => {
       );
     }
 
-    if (prescriptionApiError.message === recordNotFoundMessage) {
+    if (prescriptionApiError?.message === recordNotFoundMessage) {
       return <MhvPageNotFoundContent />;
     }
 
@@ -339,13 +334,11 @@ const PrescriptionDetails = () => {
                     </p>
                   </ApiErrorNotification>
                 )}
-                <>
-                  {nonVaPrescription ? (
-                    <NonVaPrescription {...prescription} />
-                  ) : (
-                    <VaPrescription {...prescription} />
-                  )}
-                </>
+                {nonVaPrescription ? (
+                  <NonVaPrescription {...prescription} />
+                ) : (
+                  <VaPrescription {...prescription} />
+                )}
 
                 <div className="no-print vads-u-margin-top--3 vads-u-margin-bottom--5">
                   <>
@@ -364,9 +357,9 @@ const PrescriptionDetails = () => {
           </div>
           <PrintOnlyPage
             title="Medication details"
-            hasError={!hasPrintError}
+            hasError={!canPrint}
             preface={
-              hasPrintError
+              canPrint
                 ? 'This is a single medication record from your VA medical records. When you download a medication record, we also include a list of allergies and reactions in your VA medical records.'
                 : undefined
             }

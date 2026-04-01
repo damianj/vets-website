@@ -77,7 +77,11 @@ export function transformVAOSAppointment(appt) {
   const isVideoAtHome = appt.modality === 'vaVideoCareAtHome';
   const isVideoAtVA = appt.modality === 'vaVideoCareAtAVaLocation';
   const isVideo = isAtlas || isVideoAtHome || isVideoAtVA;
-  const isCompAndPen = appt.modality === 'claimExamAppointment';
+  const isCompAndPen =
+    appt.typeOfCare === 'Claim exam' ||
+    (!appt.typeOfCare &&
+      (appt.modality === 'claimExamAppointment' ||
+        appt.serviceCategory === 'COMPENSATION & PENSION'));
   const isPhone = appt.modality === 'vaPhone';
   const isCovid = appt.modality === 'vaInPersonVaccine';
   const isInPersonVisit =

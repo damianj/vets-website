@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default function NoClaims({ recordType }) {
   if (recordType) {
-    return <p>We don't have any {recordType} for you in our system</p>;
+    return <p>We don't have any {recordType} for you in our system.</p>;
   }
 
   return (

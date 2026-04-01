@@ -48,6 +48,7 @@ class MockReferralDetailResponse {
       : format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
     referralDate = format(new Date(), 'yyyy-MM-dd'),
     stationId = '659',
+    onlineSchedule = true,
     provider = {
       name: 'Dr. Moreen S. Rafa',
       npi: '1346206547',
@@ -75,6 +76,7 @@ class MockReferralDetailResponse {
           hasAppointments,
           referralDate,
           stationId,
+          onlineSchedule,
           facilityName: 'VAMC Facility',
           facilityPhone: '555-555-5555',
           preferredTimesForPhoneCall: [],
@@ -155,6 +157,7 @@ class MockReferralDetailResponse {
       provider,
       referralNumber,
       stationId,
+      onlineSchedule,
     } = this.options;
 
     // Return 404 error if notFound is true
@@ -175,6 +178,7 @@ class MockReferralDetailResponse {
       provider,
       referralNumber,
       stationId,
+      onlineSchedule,
     });
   }
 }

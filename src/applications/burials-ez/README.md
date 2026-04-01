@@ -1,9 +1,12 @@
+# Burial Benefits
+
 App Name: `Form 21P-530EZ`
+
 Application for Burial Benefits (Under 38 U.S.C. Chapter 23)
 
 Form ID (if different from app name): `21P-530EZ`
 
-# Background
+## Background
 
 This application is used to submit a claim for any of the following named burial allowances and related burial benefits:
 
@@ -16,6 +19,46 @@ This application is used to submit a claim for any of the following named burial
 ## Note
 
 In production, VA.gov provides a downloadable form only when searching for a 'Burial' or '21P-530' form that can be manually filled out and mailed in for review. In lower environments, the applicant is redirected to 'This form is not working page' or the form based on a feature toggle variable.
+
+## Entry
+
+- Local: http://localhost:3001/burials-memorials/veterans-burial-allowance/apply-for-allowance-form-21p-530ez
+- Staging: https://staging.va.gov/burials-memorials/veterans-burial-allowance/apply-for-allowance-form-21p-530ez
+- Production: https://www.va.gov/burials-memorials/veterans-burial-allowance/apply-for-allowance-form-21p-530ez
+
+## Mock users
+
+The following staging accounts can be used for testing:
+
+- vets.gov.user+14@gmail.com
+- vets.gov.user+1@gmail.com
+- vets.gov.user+226@gmail.com
+
+## High level view of systems
+
+The form lives in `vets-website` and submits to `vets-api`, which processes the claim via the Structured Data Service and routes it asynchronously to Central Mail through ICMHS. Document uploads are stored via the shared claim attachments service. A confirmation email is sent to the applicant via VANotify after successful processing.
+
+## Code Repository
+
+- Frontend: [vets-website/src/applications/burials-ez](https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/applications/burials-ez)
+- Backend: [vets-api/app/controllers/v0/burial_claims_controller.rb](https://github.com/department-of-veterans-affairs/vets-api/blob/master/app/controllers/v0/burial_claims_controller.rb)
+
+## Endpoints
+
+### Owned
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/burials/v0/claims` | POST | Form submission |
+
+### Consumed
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/v0/claim_attachments` | POST | Document uploads |
+| `/v0/in_progress_forms/21P-530EZ` | GET, PUT | Save in progress |
+| `/v0/feature_toggles` | GET | Feature flag checks |
+| `/v0/maintenance_windows` | GET | Downtime notifications |
 
 ## How the form works for the user
 
@@ -53,20 +96,60 @@ Each individual chapter of the form has it's own folder labeled 01 - 05 followed
 
 The original form system is used to build this application and follows a pretty standard implementation with just a few areas worth noting.
 
+### Minimal headers
+
+To follow Design system recommendations, we switched the form to use minimal headers.
+
+
 ### Feature Toggles (front end)
 
 Active toggle names:
 
 - `burial_form_enabled`
 
-The form is built using `/config/form.js` which is imported and used inside `/BurialsApp.jsx` with the `<RoutedSavableApp />` component from the platform.
-In `/BurialsApp.jsx` we dynamically render a loading indicator if the app is in an `isLoading` state from Redux. This allows us to show a loading indicator while we check the `BurialFormEnabled` feature toggle boolean to decide whether we show the form or not.
-If the feature toggle is not enabled we display a deactivation page (`NoFormPage.jsx`) which explains 'the online form is not working right now' with a prompt and instructions to apply by mail or in person instead.
-If the feature toggle is enabled then the form renders a `<SaveInProgressIntro />` component from the platform and an introduction to start the form.
-Note: this was put in place in the event the form needs to be fully deactivated for any reason.
+  The form is built using `/config/form.js` which is imported and used inside `/BurialsApp.jsx` with the `<RoutedSavableApp />` component from the platform.
 
-This iteration of the form was built in 2024 and referred to as first `burials-v2`, then `burials-ez`.
-**_explain redirect and flipper for redirect_**
+  In `/BurialsApp.jsx` we dynamically render a loading indicator if the app is in an `isLoading` state from Redux. This allows us to show a loading indicator while we check the `BurialFormEnabled` feature toggle boolean to decide whether we show the form or not.
+
+  If the feature toggle is not enabled we display a deactivation page (`NoFormPage.jsx`) which explains 'the online form is not working right now' with a prompt and instructions to apply by mail or in person instead.
+
+  If the feature toggle is enabled then the form renders a `<SaveInProgressIntro />` component from the platform and an introduction to start the form.
+
+  Note: this was put in place in the event the form needs to be fully deactivated for any reason.
+
+  This iteration of the form was built in 2024 and referred to as first `burials-v2`, then `burials-ez`. Two legacy URLs redirect to the current form:
+
+  - `/burials-and-memorials/application/530/`
+  - `/burials-and-memorials-v2/application/530/`
+
+  Both redirect to `/burials-memorials/veterans-burial-allowance/apply-for-allowance-form-21p-530ez/`. These redirects were completed in 2024.
+
+- `burial_browser_monitoring_enabled`
+
+  This feature toggle is being used to enable DataDog Real User Monitoring (RUM) and Logging.
+
+- `pbb_forms_require_loa3`
+
+  Updated Burials form to show a get verified alert if not LOA3 behind feature toggle. New code does not block Veterans that are not verified and have an in-progress form
+
+  | Logged in | Toggle | Verified (LOA3) | Has saved form | What you'll see |
+  |:---:|:---:|:---:|:---:|---|
+  | No | Off | No | No | Optional Sign in (unauthenticated link) |
+  | No | On | No | No | Required Sign in |
+  | Yes | Off | No | Yes | Continue application button |
+  | Yes | On | No | Yes | Continue application button |
+  | Yes | On | Yes | Yes | Continue application button |
+  | Yes | Off | No | No | Start form action link |
+  | Yes | On | Yes | No | Start form action link |
+  | Yes | On | No | No | Verify alert |
+
+- `burial_confirmation_page`
+
+  Change the confirmation page to show the "Print this page" button and new content.
+
+- `burial_pdf_form_alignment`
+
+  Enables form updates that align the digital 21P-530EZ with the revised paper PDF (audited September 2025). Accompanies a v3→v4 in-progress form data migration.
 
 ### Custom Styling
 
@@ -74,7 +157,7 @@ All custom styling in `/sass/burials.scss` is needed specifically to address WCA
 
 ### Saving Progress (back end)
 
-The form is saved to the database every time a change is made to the form via an api endpoint `/v0/in_progress_forms/21P-530` that saves the most recent form data and metadata. When the api responds with a `200 status code` a saved alert is displayed in the UI with a timestamp.
+The form is saved to the database every time a change is made to the form via an api endpoint `/v0/in_progress_forms/21P-530EZ` that saves the most recent form data and metadata. When the api responds with a `200 status code` a saved alert is displayed in the UI with a timestamp.
 
 ### Documents Upload (back end)
 
@@ -86,7 +169,7 @@ Note: On dev, the endpoint returns a `422 Unprocessable Content` status code and
 
 Note: The applicant can submit the form whether they are signed in or not.
 
-After the applicant completes the form and submits the payload is sent to the api endpoint `/v0/burial_claims` and a 'Claim Submitted' page with a confirmation number is displayed on success.
+After the applicant completes the form and submits the payload is sent to the api endpoint `/burials/v0/claims` and a 'Claim Submitted' page with a confirmation number is displayed on success.
 
 If the submission fails, an error alert is displayed in the UI and an error is logged to the browser console. If the error is `429 Too Many Requests` status code it creates a corresponding error object with additional information about the rate limit reset time.
 

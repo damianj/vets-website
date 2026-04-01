@@ -1,6 +1,9 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
 import maximalData from './fixtures/data/maximal-test.json';
 import formConfig from '../config/form';
+import user from './fixtures/mocks/user.json';
+import prefilledForm from './fixtures/mocks/prefilled-form.json';
+import sip from './fixtures/mocks/sip-put.json';
 import manifest from '../manifest.json';
 
 describe('22-8794 EDU Form', () => {
@@ -11,6 +14,7 @@ describe('22-8794 EDU Form', () => {
   });
 
   it('should be keyboard-only navigable', () => {
+    // Facility code endpoint
     cy.intercept('GET', '/v0/gi/institutions/*', {
       data: {
         attributes: {
@@ -25,6 +29,21 @@ describe('22-8794 EDU Form', () => {
         },
       },
     });
+    // Authenticated endpoints for login, prefill, andn sip
+    cy.intercept('GET', '/v0/user', user);
+    cy.intercept('GET', '/v0/in_progress_forms/22-8794', prefilledForm);
+    cy.intercept('PUT', '/v0/in_progress_forms/22-8794', sip);
+    cy.login(user);
+    // Default endpoints to intercept
+    cy.intercept('GET', '/v0/feature_toggles*', {
+      data: {
+        type: 'feature_toggles',
+        features: [],
+      },
+    });
+    cy.intercept('GET', '/data/cms/vamc-ehr.json', {});
+    // Submit endpoint
+    cy.intercept('POST', '/v0/education_benefits_claims/8794', {});
 
     // Navigate to the Introduction Page
     cy.visit(manifest.rootUrl);
@@ -33,8 +52,8 @@ describe('22-8794 EDU Form', () => {
       'contain.text',
       'Update your institution’s list of certifying officials',
     );
-    // Tab to and press 'Start your form without signing in'
-    cy.repeatKey('Tab', 3);
+    // Tab to and press 'Start your Designation of certifying official(s)'
+    cy.repeatKey('Tab', 2);
     cy.realPress(['Enter']);
 
     // Designating official page
@@ -53,7 +72,6 @@ describe('22-8794 EDU Form', () => {
     cy.typeInFocused(designatingOfficial.fullName.last);
     cy.realPress('Tab');
     cy.typeInFocused(designatingOfficial.title);
-    cy.realPress('Tab');
     cy.repeatKey('Tab', 2);
     cy.focused().type('(703) 009-9081');
     cy.repeatKey('Tab', 1);
@@ -110,13 +128,13 @@ describe('22-8794 EDU Form', () => {
     cy.typeInFocused(maximalData.data.primaryOfficialDetails.fullName.last);
     cy.realPress('Tab');
     cy.typeInFocused(maximalData.data.primaryOfficialDetails.title);
-    cy.repeatKey('Tab', 3);
+    cy.repeatKey('Tab', 2);
     cy.focused().type('(703) 009-9081');
     cy.repeatKey('Tab', 1);
     cy.typeInFocused(maximalData.data.primaryOfficialDetails.emailAddress);
     cy.tabToContinueForm();
 
-    //   // Primary certifying official page - Step 2
+    // Primary certifying official page - Step 2
     cy.url().should(
       'include',
       formConfig.chapters.primaryOfficialChapter.pages.primaryOfficialTraining
@@ -139,7 +157,7 @@ describe('22-8794 EDU Form', () => {
     cy.setCheckboxFromData('input#checkbox-element', true);
     cy.tabToContinueForm();
 
-    //   // Primary certifying official page - Step 3
+    // Primary certifying official page - Step 3
     cy.url().should(
       'include',
       formConfig.chapters.primaryOfficialChapter.pages
@@ -161,14 +179,14 @@ describe('22-8794 EDU Form', () => {
     cy.setCheckboxFromData('input#checkbox-element', true);
     cy.tabToContinueForm();
 
-    //   // Additional certifying officials page - Step 1
+    // Additional certifying officials page - Step 1
     cy.url().should(
       'include',
       formConfig.chapters.additionalOfficialChapter.pages
         .additionalOfficialSummary.path,
     );
     cy.injectAxeThenAxeCheck();
-    cy.repeatKey('Tab', 2);
+    cy.repeatKey('Tab', 1);
     cy.allyEvaluateRadioButtons(
       [
         'input[id="root_view:additionalOfficialSummaryYesinput"]',
@@ -179,7 +197,7 @@ describe('22-8794 EDU Form', () => {
     cy.chooseRadio('Y');
     cy.tabToContinueForm();
 
-    //   // Additional certifying officials page - Step 2
+    // Additional certifying officials page - Step 2
     cy.url().should(
       'include',
       `${
@@ -194,34 +212,34 @@ describe('22-8794 EDU Form', () => {
     );
     cy.realPress('Tab');
     cy.typeInFocused(
-      maximalData.data['additional-certifying-official'][0]
+      maximalData.data.additionalCertifyingOfficials[0]
         .additionalOfficialDetails.fullName.first,
     );
     cy.realPress('Tab');
     cy.typeInFocused(
-      maximalData.data['additional-certifying-official'][0]
+      maximalData.data.additionalCertifyingOfficials[0]
         .additionalOfficialDetails.fullName.middle,
     );
     cy.realPress('Tab');
     cy.typeInFocused(
-      maximalData.data['additional-certifying-official'][0]
+      maximalData.data.additionalCertifyingOfficials[0]
         .additionalOfficialDetails.fullName.last,
     );
     cy.realPress('Tab');
     cy.typeInFocused(
-      maximalData.data['additional-certifying-official'][0]
+      maximalData.data.additionalCertifyingOfficials[0]
         .additionalOfficialDetails.title,
     );
-    cy.repeatKey('Tab', 3);
+    cy.repeatKey('Tab', 2);
     cy.focused().type('(703) 009-9081');
     cy.repeatKey('Tab', 1);
     cy.typeInFocused(
-      maximalData.data['additional-certifying-official'][0]
+      maximalData.data.additionalCertifyingOfficials[0]
         .additionalOfficialDetails.emailAddress,
     );
     cy.tabToContinueForm();
 
-    //   // Additional certifying officials page - Step 3
+    // Additional certifying officials page - Step 3
     cy.url().should(
       'include',
       `${
@@ -247,13 +265,13 @@ describe('22-8794 EDU Form', () => {
     cy.repeatKey(['Shift', 'Tab'], 4);
     cy.fillVaMemorableDate(
       'root_additionalOfficialTraining_trainingCompletionDate',
-      maximalData.data['additional-certifying-official'][0]
+      maximalData.data.additionalCertifyingOfficials[0]
         .additionalOfficialTraining.trainingCompletionDate,
       true,
     );
     cy.tabToContinueForm();
 
-    //   // Additional certifying officials page - Step 4
+    // Additional certifying officials page - Step 4
     cy.url().should(
       'include',
       `${
@@ -296,14 +314,14 @@ describe('22-8794 EDU Form', () => {
     cy.chooseRadio('N');
     cy.tabToContinueForm();
 
-    //   //   // Read-only certifying officials page - Step 1
+    // Read-only certifying officials page - Step 1
     cy.url().should(
       'include',
       formConfig.chapters.readOnlyCertifyingOfficialChapter.pages
         .readOnlyPrimaryOfficialSummary.path,
     );
     cy.injectAxeThenAxeCheck();
-    cy.repeatKey('Tab', 2);
+    cy.repeatKey('Tab', 1);
     cy.allyEvaluateRadioButtons(
       [
         'input[id="root_hasReadOnlyCertifyingOfficialYesinput"]',
@@ -314,7 +332,7 @@ describe('22-8794 EDU Form', () => {
     cy.chooseRadio('Y');
     cy.tabToContinueForm();
 
-    //   // Read-only certifying officials page - Step 2
+    // Read-only certifying officials page - Step 2
     cy.url().should('include', 'read-only-certifying-officials/0');
     cy.injectAxeThenAxeCheck();
     cy.focused().should(
@@ -335,7 +353,7 @@ describe('22-8794 EDU Form', () => {
     );
     cy.tabToContinueForm();
 
-    //   //   // Read-only certifying officials page - Step 3 (summary)
+    // Read-only certifying officials page - Step 3 (summary)
     cy.url().should(
       'include',
       formConfig.chapters.readOnlyCertifyingOfficialChapter.pages
@@ -357,7 +375,7 @@ describe('22-8794 EDU Form', () => {
     cy.chooseRadio('N');
     cy.tabToContinueForm();
 
-    //     // Remarks page
+    // Remarks page
     cy.url().should(
       'include',
       formConfig.chapters.remarksChapter.pages.remarks.path,
@@ -375,7 +393,7 @@ describe('22-8794 EDU Form', () => {
     cy.focused().should('contain.text', 'How to submit your form');
     cy.tabToContinueForm();
 
-    //   //   // Review page
+    // Review page
     cy.url().should('include', 'review-and-submit');
     cy.injectAxeThenAxeCheck();
     cy.get('#veteran-signature')
@@ -385,7 +403,7 @@ describe('22-8794 EDU Form', () => {
     cy.tabToElementAndPressSpace('va-checkbox');
     cy.tabToSubmitForm();
 
-    //     // Confirmation page
+    // Confirmation page
     cy.url().should('include', '/confirmation');
     cy.focused().should(
       'contain.text',

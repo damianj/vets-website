@@ -373,11 +373,6 @@ const SearchPage = props => {
             request a decision review. Use our search tool to find one of these
             types of accredited representatives to help you.
           </p>
-          <p>
-            <strong>Note:</strong> You’ll need to contact the accredited
-            representative you’d like to appoint to make sure they’re available
-            to help you.
-          </p>
         </div>
 
         {widgetEnabled && (

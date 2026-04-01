@@ -9,7 +9,7 @@ const Breadcrumbs = () => {
       label: 'Va.gov home',
     },
     {
-      href: '/education',
+      href: '/school-administrators',
       label: 'Resources for schools',
     },
     {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   VaModal,
@@ -8,6 +8,7 @@ import {
 import _ from 'platform/utilities/data';
 import FormNavButtons from 'platform/forms-system/src/js/components/FormNavButtons';
 import { scrollToFirstError } from 'platform/utilities/scroll';
+import { focusElement } from 'platform/utilities/ui';
 import { DATA_PATHS } from '../constants';
 import { checkValidations } from '../utils/submit';
 import { getAdditionalDocuments } from '../utils';
@@ -39,11 +40,18 @@ export const AdditionalEvidenceIntroPage = ({
   const [hasError, setHasError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
-
   const hasEvidenceToRemove = () => {
     return getAdditionalDocuments(data).length > 0;
   };
 
+  useEffect(
+    () => {
+      if (hasError) {
+        scrollToFirstError();
+      }
+    },
+    [hasError],
+  );
   const missingSelection = (error, _fieldData, formData) => {
     if (
       formData?.['view:selectableEvidenceTypes']['view:hasOtherEvidence'] !==
@@ -74,7 +82,16 @@ export const AdditionalEvidenceIntroPage = ({
       delete updatedFormData.additionalDocuments;
       setFormData(updatedFormData);
       setModalVisible(false);
-      setAlertVisible(true);
+      /**  
+        thread for reason to use setTimeout here 
+        @see https://dsva.slack.com/archives/C01DBGX4P45/p1774282809644219
+      */
+      setTimeout(() => {
+        // focus on the 'continue' button
+        focusElement('.usa-button-primary');
+        // followed by setting the alert to be visible
+        setAlertVisible(true);
+      }, 100);
     },
     onCancelChange: () => {
       const updatedFormData = {
@@ -103,11 +120,9 @@ export const AdditionalEvidenceIntroPage = ({
     onSubmit: event => {
       event.preventDefault();
       if (checkErrors()) {
-        scrollToFirstError();
-      } else if (
-        additionalEvidenceSelected === false &&
-        hasEvidenceToRemove()
-      ) {
+        return;
+      }
+      if (additionalEvidenceSelected === false && hasEvidenceToRemove()) {
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -117,11 +132,9 @@ export const AdditionalEvidenceIntroPage = ({
     onUpdatePage: event => {
       event.preventDefault();
       if (checkErrors()) {
-        scrollToFirstError();
-      } else if (
-        additionalEvidenceSelected === false &&
-        hasEvidenceToRemove()
-      ) {
+        return;
+      }
+      if (additionalEvidenceSelected === false && hasEvidenceToRemove()) {
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -134,23 +147,24 @@ export const AdditionalEvidenceIntroPage = ({
     <>
       <h3>{evidenceChoiceIntroTitle}</h3>
       {evidenceChoiceIntroDescriptionContent}
-      <div className="vads-u-margin-bottom--1">
-        <VaAlert
-          closeBtnAriaLabel="Close notification"
-          closeable
-          onCloseEvent={() => setAlertVisible(false)}
-          fullWidth="false"
-          slim
-          status="success"
-          visible={alertVisible}
-          uswds
-          tabIndex="-1"
-        >
-          <p className="vads-u-margin-y--0">
-            We’ve deleted the documents you uploaded supporting your claim.
-          </p>
-        </VaAlert>
-      </div>
+      {alertVisible && (
+        <div className="vads-u-margin-bottom--1">
+          <VaAlert
+            closeBtnAriaLabel="Close notification"
+            role="alert"
+            closeable
+            onCloseEvent={() => setAlertVisible(false)}
+            fullWidth="false"
+            slim
+            status="success"
+            uswds
+          >
+            <p className="vads-u-margin-y--0">
+              We’ve deleted the documents you uploaded supporting your claim.
+            </p>
+          </VaAlert>
+        </div>
+      )}
       <VaModal
         clickToClose
         modalTitle="Cancel uploading files?"

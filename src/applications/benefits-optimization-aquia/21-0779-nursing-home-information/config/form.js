@@ -11,6 +11,7 @@ import { IntroductionPage } from '@bio-aquia/21-0779-nursing-home-information/co
 import manifest from '@bio-aquia/21-0779-nursing-home-information/manifest.json';
 import { transform } from '@bio-aquia/21-0779-nursing-home-information/config/transform';
 import { customSubmit } from '@bio-aquia/shared/utils';
+import { createAddressValidationPage } from '@bio-aquia/shared/components/pages/AddressValidationPage';
 import { GetHelp } from '@bio-aquia/21-0779-nursing-home-information/components/get-help';
 import { preSubmitSignatureConfig } from '@bio-aquia/21-0779-nursing-home-information/components/pre-submit-signature';
 import {
@@ -99,6 +100,19 @@ const formConfig = {
           title: 'Nursing home facility details',
           uiSchema: nursingHomeDetailsUiSchema,
           schema: nursingHomeDetailsSchema,
+        },
+        nursingHomeAddressValidation: {
+          title: 'Confirm nursing home address',
+          path: 'nursing-home-address-validation',
+          depends: formData =>
+            formData?.['view:bioAquiaUspsAddressValidation'] === true,
+          CustomPage: createAddressValidationPage({
+            addressPath: 'nursingHomeDetails.nursingHomeAddress',
+            title: 'Confirm nursing home address',
+          }),
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: { type: 'object', properties: {} },
         },
       },
     },

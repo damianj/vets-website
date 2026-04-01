@@ -1,3 +1,4 @@
+import React from 'react';
 import set from 'platform/utilities/data/set';
 import dateRangeUI from 'platform/forms-system/src/js/definitions/dateRange';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
@@ -34,9 +35,13 @@ const itemAriaLabel = data => {
 };
 
 export const uiSchema = {
+  'ui:title': (
+    <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--neg2">
+      Military service history
+    </h3>
+  ),
   serviceInformation: {
     servicePeriods: {
-      'ui:title': 'Military service history',
       'ui:description':
         'Please add or update your military service history details below.',
       'ui:field': ArrayField,

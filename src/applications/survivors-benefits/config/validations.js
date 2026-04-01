@@ -59,4 +59,12 @@ export const validations = {
       errors.addError(beforeStartDateErrorMsg(formData.startDate));
     }
   },
+  isBeforeVeteranDeathDate: (errors, values, formData) => {
+    if (
+      formData?.veteranDateOfDeath &&
+      !checkIfEndDateAfterStartDate(formData.veteranDateOfDeath, values)
+    ) {
+      errors.addError('Date must be before the Veteran’s date of death.');
+    }
+  },
 };

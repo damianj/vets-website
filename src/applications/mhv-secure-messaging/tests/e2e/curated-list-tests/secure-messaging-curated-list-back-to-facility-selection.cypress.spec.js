@@ -166,7 +166,8 @@ describe('SM CURATED LIST BACK TO SELECTION', () => {
     );
 
     cy.get('va-modal[modal-title="We can\'t save this message yet"]')
-      .find('va-button[text="Edit draft"]')
+      .shadow()
+      .find('button.usa-button:not(.usa-button--outline)')
       .click();
 
     cy.findByTestId(`continue-button`).click();
@@ -258,8 +259,10 @@ describe('SM CURATED LIST BACK TO SELECTION', () => {
     cy.get(
       'va-modal[modal-title="Do you want to save your changes to this draft?"]',
     ).should('exist');
-    cy.get(`[status="warning"]`)
-      .find(`va-button[text="Save changes"]`)
+    cy.findByTestId('navigation-warning-modal')
+      .shadow()
+      .find(`button`)
+      .contains('Save changes')
       .click();
 
     cy.findByTestId(Locators.BUTTONS.CL_GO_BACK).click();
@@ -275,8 +278,10 @@ describe('SM CURATED LIST BACK TO SELECTION', () => {
       force: true,
     });
 
-    cy.get(`[status="warning"]`)
-      .find(`va-button[text="Save changes"]`)
+    cy.findByTestId('navigation-warning-modal')
+      .shadow()
+      .find(`button`)
+      .contains('Save changes')
       .click();
 
     cy.get('[back=""]').click();

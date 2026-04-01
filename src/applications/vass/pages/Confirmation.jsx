@@ -41,7 +41,7 @@ const Confirmation = () => {
       loadingMessage="Loading appointment details. This may take up to 30 seconds. Please don’t refresh the page."
       pageTitle={
         detailsCardOnly
-          ? undefined
+          ? 'Your appointment details'
           : 'Your VA Solid Start appointment is scheduled'
       }
       errorAlert={

@@ -24,7 +24,7 @@ describe('VAOS Component: StatusAlert', () => {
         path: `/${mockAppointment.id}?confirmMsg=true`,
       },
     );
-    expect(screen.baseElement).to.contain('.usa-alert-success');
+    expect(screen.baseElement).to.contain('va-alert');
     expect(screen.baseElement).to.contain.text(
       'We’ve scheduled and confirmed your appointment',
     );
@@ -51,7 +51,9 @@ describe('VAOS Component: StatusAlert', () => {
         path: `/${mockAppointment.id}`,
       },
     );
-    expect(screen.baseElement).to.contain('.usa-alert-info');
+    // This no longer uses an alert or imposter alert, just the text
+    expect(screen.baseElement).not.to.contain('va-alert');
+    expect(screen.baseElement).not.to.contain('.usa-alert-error');
     expect(screen.baseElement).to.contain.text(
       'We’ll try to schedule your appointment in the next 2',
     );
@@ -116,7 +118,7 @@ describe('VAOS Component: StatusAlert', () => {
           path: `/${mockAppointment.id}`,
         },
       );
-      expect(screen.baseElement).to.contain('.usa-alert-error');
+      expect(screen.baseElement).to.contain('va-alert');
       expect(screen.baseElement).to.contain.text(
         'You canceled this appointment',
       );
@@ -141,7 +143,7 @@ describe('VAOS Component: StatusAlert', () => {
           path: `/${mockAppointment.id}`,
         },
       );
-      expect(screen.baseElement).to.contain('.usa-alert-error');
+      expect(screen.baseElement).to.contain('va-alert');
       expect(screen.baseElement).to.contain.text(
         'You canceled this appointment',
       );
@@ -171,7 +173,7 @@ describe('VAOS Component: StatusAlert', () => {
           path: `/${mockAppointment.id}`,
         },
       );
-      expect(screen.baseElement).to.contain('.usa-alert-error');
+      expect(screen.baseElement).to.contain('va-alert');
       expect(screen.baseElement).to.contain.text(
         'You canceled this appointment',
       );
@@ -196,7 +198,7 @@ describe('VAOS Component: StatusAlert', () => {
           path: `/${mockAppointment.id}`,
         },
       );
-      expect(screen.baseElement).to.contain('.usa-alert-error');
+      expect(screen.baseElement).to.contain('va-alert');
       expect(screen.baseElement).to.contain.text(
         'You canceled this appointment',
       );
@@ -222,7 +224,7 @@ describe('VAOS Component: StatusAlert', () => {
           path: `/${mockAppointment.id}`,
         },
       );
-      expect(screen.baseElement).to.contain('.usa-alert-error');
+      expect(screen.baseElement).to.contain('va-alert');
       expect(screen.baseElement).to.contain.text('You canceled this request');
       expect(screen.baseElement).to.contain.text(
         'If you still want this appointment, call your VA health facility or submit another request online.',

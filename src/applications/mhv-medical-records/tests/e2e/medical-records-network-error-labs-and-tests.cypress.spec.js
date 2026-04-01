@@ -16,7 +16,7 @@ describe('Medical Records View Labs and Tests', () => {
     });
     cy.intercept('GET', '/my_health/v1/medical_records/radiology*', {
       statusCode: 404,
-    });
+    }).as('radiology');
     // Return 200 for imaging status so fetchImageRequestStatus() doesn't
     // re-throw an unhandled error that triggers the dev error overlay.
     cy.intercept('GET', '/my_health/v1/medical_records/imaging/status', {
@@ -25,15 +25,17 @@ describe('Medical Records View Labs and Tests', () => {
     });
     cy.intercept('GET', '/my_health/v1/medical_records/imaging*', {
       statusCode: 404,
-    });
+    }).as('imaging');
     cy.intercept('GET', '/my_health/v2/medical_records/imaging*', {
       statusCode: 404,
     });
-    cy.visit('my-health/medical-records');
     cy.intercept('POST', '/my_health/v1/medical_records/session').as('session');
+
+    cy.visit('my-health/medical-records');
     cy.wait('@session');
 
     cy.visit('my-health/medical-records/labs-and-tests');
+    cy.wait(['@radiology', '@imaging']);
     cy.get('[data-testid="expired-alert-message"]').should('be.visible');
 
     // Axe check

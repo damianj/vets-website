@@ -5,7 +5,6 @@ const useFeatureToggles = () => {
   const {
     featureTogglesLoading,
     isComboBoxEnabled,
-    isAalEnabled,
     readReceiptsEnabled,
     useCanReplyField,
     customFoldersRedesignEnabled,
@@ -23,10 +22,6 @@ const useFeatureToggles = () => {
         isComboBoxEnabled:
           state.featureToggles[
             FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientCombobox
-          ],
-        isAalEnabled:
-          state.featureToggles[
-            FEATURE_FLAG_NAMES.mhvSecureMessagingMilestone2AAL
           ],
         readReceiptsEnabled:
           state.featureToggles[
@@ -78,7 +73,6 @@ const useFeatureToggles = () => {
     featureTogglesLoading,
     isComboBoxEnabled,
     readReceiptsEnabled,
-    isAalEnabled,
     useCanReplyField,
     customFoldersRedesignEnabled,
     largeAttachmentsEnabled,

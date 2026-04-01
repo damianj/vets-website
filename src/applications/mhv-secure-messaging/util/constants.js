@@ -189,6 +189,19 @@ export const Alerts = {
     DRAFT_CANNOT_REPLY_INFO_HEADER:
       'This conversation is too old for new replies',
     DRAFT_CANNOT_REPLY_INFO_BODY: `The last message in this conversation is more than 45 days old. If you want to continue this conversation, you'll need to start a new message.`,
+    MIGRATION_WARNING_PHASES: ['p1', 'p2'],
+    MIGRATION_ERROR_PHASES: ['p3', 'p4', 'p5'],
+    MIGRATION_ERROR_START_DATE: 'p3',
+    MIGRATION_ERROR_END_DATE: 'p6',
+    MIGRATING_FACILITIES_ERROR_HEADLINE: `You can’t reply to conversations with some care teams`,
+    MIGRATING_FACILITIES_ERROR_MESSAGE: `You can’t reply to conversations with care teams at these facilities:`,
+    MIGRATING_FACILITIES_ERROR_SUBNOTE: time =>
+      `After ${time}, you’ll be able to start a new message to contact your care teams.`,
+    MIGRATING_FACILITIES_ERROR_NOTE:
+      'If you need to contact your care team now, call the facility directly.',
+    MIGRATING_FACILITIES_WARNING_MESSAGE: `you won’t be able to send or receive new messages or reply to conversations with providers at`,
+    MIGRATING_FACILITIES_WARNING_NOTE: facilityText =>
+      `During this time, you can still call ${facilityText} to contact your provider.`,
     MOVE_MESSAGE_SUCCESS: 'Message was successfully moved',
     MOVE_MESSAGE_ERROR:
       'Message could not be moved. Try again later. If this problem persists, contact the help desk.',
@@ -535,6 +548,16 @@ export const RecipientStatus = {
  * - p5: T to T+2
  */
 export const OhMigrationPhasesBlockingReplies = ['p3', 'p4', 'p5'];
+
+/**
+ * OH (Oracle Health) post-migration phases for IPE (In-Production Education) alerts.
+ * IPE alerts are shown only after migration is complete.
+ * - p6: T+2 to T+6
+ * - p7: T+7 to T+29
+ * - p8: T+30 to T+44
+ * - p9: T+45+
+ */
+export const IpePostMigrationPhases = ['p6', 'p7', 'p8', 'p9'];
 
 /**
  * Config map for Contact List migration alert content.

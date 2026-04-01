@@ -11,10 +11,10 @@
     "primaryOfficialDetails": {
       "fullName": { "first": "Bob", "middle": "Test", "last": "Smith" },
       "title": "Certifying Official",
-     "phoneNumber": {
+      "phoneNumber": {
         "callingCode": 1,
         "countryCode": "US",
-        "contact": "1231231222"
+        "contact": "(231) 231-2222"
       },
       "emailAddress": "bob.smith@test.com"
     },
@@ -38,13 +38,13 @@
       "phoneNumber": {
         "callingCode": 1,
         "countryCode": "US",
-        "contact": "1231231222"
+        "contact": "(231) 231-2222"
       },
       "emailAddress": "john.doe@test.com"
     },
     "view:description": {},
     "primaryOfficialTraining": { "trainingExempt": true },
-    "additional-certifying-official": [
+    "additionalCertifyingOfficials": [
       {
         "additionalOfficialBenefitStatus": { "hasVaEducationBenefits": false },
         "additionalOfficialTraining": {
@@ -57,36 +57,36 @@
             "last": "Official"
           },
           "title": "Vice Certifying Official",
-         "phoneNumber": {
-        "callingCode": 1,
-        "countryCode": "US",
-        "contact": "1231231222"
-      },
+          "phoneNumber": {
+            "callingCode": 1,
+            "countryCode": "US",
+            "contact": "(231) 231-2222"
+          },
           "emailAddress": "certifying.official@test.com"
         }
       },
-        {
-          "additionalOfficialBenefitStatus": {
-            "hasVaEducationBenefits": false
+      {
+        "additionalOfficialBenefitStatus": {
+          "hasVaEducationBenefits": false
+        },
+        "additionalOfficialTraining": {
+          "trainingExempt": true
+        },
+        "additionalOfficialDetails": {
+          "fullName": {
+            "first": "Another",
+            "middle": "Test",
+            "last": "Official"
           },
-          "additionalOfficialTraining": {
-            "trainingExempt": true
+          "title": "Principal Certifying Official",
+          "phoneNumber": {
+            "callingCode": 1,
+            "countryCode": "US",
+            "contact": "(231) 231-2222"
           },
-          "additionalOfficialDetails": {
-            "fullName": {
-              "first": "Another",
-              "middle": "Test",
-              "last": "Official"
-            },
-            "title": "Principal Certifying Official",
-            "phoneNumber": {
-        "callingCode": 1,
-        "countryCode": "US",
-        "contact": "1231231222"
-      },
-            "emailAddress": "certifying.official2@test.com"
-          }
+          "emailAddress": "certifying.official2@test.com"
         }
+      }
     ],
     "readOnlyCertifyingOfficials": [
       { "fullName": { "first": "Read", "middle": "Only", "last": "Official" } }

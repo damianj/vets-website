@@ -97,7 +97,9 @@ const responses = {
   'GET /v0/user': userData(),
   'OPTIONS /v0/maintenance_windows': 'OK',
   'GET /v0/maintenance_windows': { data: [] },
-
+  'GET /v0/mock_session': (_req, res) => {
+    return res.json({ hasSession: true });
+  },
   'GET /v0/feature_toggles': {
     data: {
       type: 'feature_toggles',
@@ -121,6 +123,26 @@ const responses = {
   'PUT /v0/in_progress_forms/686C-674-V2': mockSipPut,
   'GET /v0/dependents_applications/show': mockDependents,
   'GET /data/cms/vamc-ehr.json': {},
+  // 403 - User doesn't own submission
+  // 'GET /v0/digital_forms_api/submissions/12345': (req, res) => {
+  //   return res.status(403).json({
+  //     error: 'Forbidden',
+  //   });
+  // },
+
+  // // 404 - Submission doesn't exist
+  // 'GET /v0/digital_forms_api/submissions/12345': (req, res) => {
+  //   return res.status(404).json({
+  //     error: 'Not found',
+  //   });
+  // },
+
+  // 500 - Server error
+  // 'GET /v0/digital_forms_api/submissions/error': (req, res) => {
+  //   return res.status(500).json({
+  //     error: 'Internal server error',
+  //   });
+  // },
   'GET /v0/digital_forms_api/submissions/12345': {
     submission: mockSubmission.data,
     template: mockSubmission.config,

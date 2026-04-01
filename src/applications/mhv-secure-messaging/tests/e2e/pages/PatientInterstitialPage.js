@@ -1,4 +1,4 @@
-import { Locators } from '../utils/constants';
+import { Data, Locators } from '../utils/constants';
 
 class PatientInterstitialPage {
   getCrisisLineLink = () => {
@@ -19,6 +19,18 @@ class PatientInterstitialPage {
 
   getStartMessageLink = () => {
     return cy.findByTestId(Locators.LINKS.START_NEW_MESSAGE);
+  };
+
+  clickStartMessageLink = (hasRecent = false) => {
+    this.getStartMessageLink()
+      .should(
+        'have.attr',
+        'href',
+        `${
+          hasRecent ? Data.LINKS.RECENT_CARE_TEAMS : Data.LINKS.SELECT_CARE_TEAM
+        }`,
+      )
+      .click({ force: true });
   };
 
   // Note: continueToRecentRecipients has been removed

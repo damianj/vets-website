@@ -1,114 +1,101 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import CustomReviewTopContent from '../../components/CustomReviewTopContent';
+import * as utils from '../../utils';
 
-const initialState = {
+const buildState = ({
+  disability526NewBddShaEnforcementWorkflowEnabled = true,
+  separationHealthAssessmentUploads = [],
+} = {}) => ({
   form: {
     data: {
-      startedFormVersion: '2019',
-      'view:claimType': {
-        'view:claimingIncrease': false,
-        'view:claimingNew': true,
-      },
-      newDisabilities: [
-        {
-          cause: 'NEW',
-          primaryDescription: 'Test description',
-          condition: 'asthma',
-          'view:descriptionInfo': {},
-        },
-      ],
+      disability526NewBddShaEnforcementWorkflowEnabled,
+      separationHealthAssessmentUploads,
     },
   },
+});
+
+const renderComponent = state => {
+  const store = createStore(() => state);
+  return render(
+    <Provider store={store}>
+      <CustomReviewTopContent />
+    </Provider>,
+  );
 };
 
+function assertShaAlertExists({ container, getByText }) {
+  getByText('Submit your Separation Health Assessment');
+  getByText(/Make sure you submit a Separation Health Assessment/);
+  const link = container.querySelector('va-link');
+  expect(link).to.exist;
+  expect(link.getAttribute('text')).to.equal(
+    "Check if you've uploaded a Separation Health Assessment",
+  );
+}
+
+function assertShaAlertNotExists({ container, queryByText }) {
+  expect(queryByText('Submit your Separation Health Assessment')).to.not.exist;
+  expect(queryByText(/Make sure you submit a Separation Health Assessment/)).to
+    .not.exist;
+  expect(container.querySelector('va-link')).to.not.exist;
+}
+
 describe('CustomReviewTopContent', () => {
-  it('renders when startedFormVersion: "2019", claim type of new, and new condition present (success path)', () => {
-    const store = createStore(() => initialState);
+  let sandbox;
 
-    const { container, queryByText } = render(
-      <Provider store={store}>
-        <CustomReviewTopContent />
-      </Provider>,
-    );
-
-    expect(container.querySelector('va-alert')).to.exist;
-    queryByText('We updated our online form');
-    queryByText(
-      'Your answers may support your claim for disability compensation',
-    );
-    queryByText('Answer our new questions');
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
   });
 
-  it('does not render when startedFormVersion: "2019" and cfi only', () => {
-    const testState = JSON.parse(JSON.stringify(initialState));
-    testState.form.data['view:claimType'] = {
-      'view:claimingIncrease': true,
-      'view:claimingNew': false,
-    };
-    testState.form.data.ratedDisabilities = [
-      {
-        name: 'Diabetes mellitus0',
-        ratedDisabilityId: '0',
-        ratingDecisionId: '63655',
-        diagnosticCode: 5238,
-        decisionCode: 'SVCCONNCTED',
-        decisionText: 'Service Connected',
-        ratingPercentage: 100,
-        disabilityActionType: 'NONE',
-        'view:selected': true,
-      },
-    ];
-    const store = createStore(() => testState);
-
-    const { container } = render(
-      <Provider store={store}>
-        <CustomReviewTopContent />
-      </Provider>,
-    );
-    expect(container.querySelector('va-alert')).to.not.exist;
+  afterEach(() => {
+    sandbox.restore();
   });
 
-  it('does not render when startedFormVersion: "2022"', () => {
-    const testState = JSON.parse(JSON.stringify(initialState));
-    testState.form.data.startedFormVersion = '2022';
-    const store = createStore(() => testState);
+  it('renders the SHA alert for a BDD claim with feature flag enabled and no SHA upload', () => {
+    sandbox.stub(utils, 'isBDD').returns(true);
+    const state = buildState();
 
-    const { container } = render(
-      <Provider store={store}>
-        <CustomReviewTopContent />
-      </Provider>,
-    );
+    const result = renderComponent(state);
 
-    expect(container.querySelector('va-alert')).to.not.exist;
+    expect(result.container.querySelector('va-alert')).to.exist;
+    assertShaAlertExists(result);
   });
 
-  it('does not render when startedFormVersion not present"', () => {
-    const testState = JSON.parse(JSON.stringify(initialState));
-    testState.form.data.startedFormVersion = undefined;
-    const store = createStore(() => testState);
+  it('does not render the SHA alert when feature flag is disabled', () => {
+    sandbox.stub(utils, 'isBDD').returns(true);
+    const state = buildState({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+    });
 
-    const { container } = render(
-      <Provider store={store}>
-        <CustomReviewTopContent />
-      </Provider>,
-    );
-    expect(container.querySelector('va-alert')).to.not.exist;
+    const result = renderComponent(state);
+
+    assertShaAlertNotExists(result);
   });
 
-  it('does not render when no new conditions"', () => {
-    const testState = JSON.parse(JSON.stringify(initialState));
-    testState.form.data.newDisabilities = [];
-    const store = createStore(() => testState);
+  it('does not render the SHA alert when a SHA document has been uploaded', () => {
+    sandbox.stub(utils, 'isBDD').returns(true);
+    const state = buildState({
+      separationHealthAssessmentUploads: [
+        { name: 'sha-part-a.pdf', confirmationCode: 'abc123' },
+      ],
+    });
 
-    const { container } = render(
-      <Provider store={store}>
-        <CustomReviewTopContent />
-      </Provider>,
-    );
-    expect(container.querySelector('va-alert')).to.not.exist;
+    const result = renderComponent(state);
+
+    assertShaAlertNotExists(result);
+  });
+
+  it('does not render the SHA alert for a non-BDD claim', () => {
+    sandbox.stub(utils, 'isBDD').returns(false);
+    const state = buildState();
+
+    const result = renderComponent(state);
+
+    assertShaAlertNotExists(result);
   });
 });

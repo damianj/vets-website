@@ -28,6 +28,7 @@ describe('8794 helpers ', () => {
         }),
       ).to.equal('John Jacob Doe, Administrator');
     });
+
     it('should render card title without middle name', () => {
       expect(
         getCardTitle({
@@ -92,6 +93,7 @@ describe('8794 helpers ', () => {
       expect(getByTestId('card-training-date').innerHTML).to.include('Exempt');
       expect(getByTestId('card-has-va-benefits').innerHTML).to.include('Yes');
     });
+
     it('should return a full description of details from the given card details with international phone number', () => {
       const card = {
         additionalOfficialDetails: {
@@ -133,6 +135,7 @@ describe('8794 helpers ', () => {
           .innerHTML,
       ).to.include('No');
     });
+
     it('should handle when each card field is empty', () => {
       const card = null;
       const description = getCardDescription(card);
@@ -165,9 +168,10 @@ describe('8794 helpers ', () => {
         'No, continue adding information',
       );
     });
+
     it('summaryTitle pluralises correctly', () => {
-      const zero = { formData: { 'additional-certifying-official': [] } };
-      const two = { formData: { 'additional-certifying-official': [{}, {}] } };
+      const zero = { formData: { additionalCertifyingOfficials: [] } };
+      const two = { formData: { additionalCertifyingOfficials: [{}, {}] } };
 
       expect(additionalOfficialArrayOptions.text.summaryTitle(zero)).to.equal(
         'Review your additional certifying official',
@@ -176,9 +180,10 @@ describe('8794 helpers ', () => {
         'Review your additional certifying officials',
       );
     });
+
     it('summaryDescriptionWithoutItems shows intro only when list is empty', () => {
-      const empty = { formData: { 'additional-certifying-official': [] } };
-      const nonEmpty = { formData: { 'additional-certifying-official': [{}] } };
+      const empty = { formData: { additionalCertifyingOfficials: [] } };
+      const nonEmpty = { formData: { additionalCertifyingOfficials: [{}] } };
 
       expect(
         additionalOfficialArrayOptions.text.summaryDescriptionWithoutItems(
@@ -250,6 +255,7 @@ describe('8794 helpers ', () => {
       );
     });
   });
+
   describe('capitalizeFirstLetter', () => {
     it('returns empty string for falsy/undefined/null', () => {
       expect(capitalizeFirstLetter()).to.equal('');
@@ -285,6 +291,7 @@ describe('8794 helpers ', () => {
       expect(capitalizeFirstLetter('ñandú')).to.equal('Ñandú');
     });
   });
+
   describe('getTransformIntlPhoneNumber', () => {
     it('should format US phone numbers correctly', () => {
       const phoneNumber = {

@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
+import ReactDOM from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -473,19 +474,22 @@ const ReplyDraftItem = props => {
 
   return (
     <>
-      {saveError && (
-        <VaModal
-          modalTitle={saveError.title}
-          onPrimaryButtonClick={() => setSaveError(null)}
-          onCloseEvent={() => setSaveError(null)}
-          primaryButtonText="Continue editing"
-          status="warning"
-          visible
-        >
-          <p>{saveError.p1}</p>
-          {saveError.p2 && <p>{saveError.p2}</p>}
-        </VaModal>
-      )}
+      {saveError &&
+        ReactDOM.createPortal(
+          <VaModal
+            data-testid="save-error-modal"
+            modalTitle={saveError.title}
+            onPrimaryButtonClick={() => setSaveError(null)}
+            onCloseEvent={() => setSaveError(null)}
+            primaryButtonText="Continue editing"
+            status="warning"
+            visible
+          >
+            <p>{saveError.p1}</p>
+            {saveError.p2 && <p>{saveError.p2}</p>}
+          </VaModal>,
+          document.body,
+        )}
       <RouteLeavingGuard saveDraftHandler={saveDraftHandler} type="reply" />
 
       <h3 className="vads-u-margin-bottom--0p5" slot="headline">

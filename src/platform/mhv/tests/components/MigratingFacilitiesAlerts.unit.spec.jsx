@@ -846,6 +846,7 @@ describe('MigratingFacilitiesAlerts', () => {
         alertName: 'MigratingFacilitiesAlerts-warning-MEDICATIONS',
         isVisible: true,
         currentPhase: 'p1',
+        stationNumber: '',
       });
     });
 
@@ -870,6 +871,59 @@ describe('MigratingFacilitiesAlerts', () => {
         alertName: 'MigratingFacilitiesAlerts-error-MEDICATIONS',
         isVisible: true,
         currentPhase: 'p4',
+        stationNumber: '',
+      });
+    });
+
+    it('passes stationNumber to useOhMigrationAlertMetric for error alert', () => {
+      const errorProps = {
+        healthTool: 'MEDICATIONS',
+        stationNumber: '528',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p4',
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...errorProps} />);
+
+      expect(metricSpy.calledOnce).to.be.true;
+      expect(metricSpy.firstCall.args[0]).to.deep.equal({
+        alertName: 'MigratingFacilitiesAlerts-error-MEDICATIONS',
+        isVisible: true,
+        currentPhase: 'p4',
+        stationNumber: '528',
+      });
+    });
+
+    it('passes stationNumber to useOhMigrationAlertMetric for warning alert', () => {
+      const warningProps = {
+        healthTool: 'MEDICATIONS',
+        stationNumber: '528',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p1',
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...warningProps} />);
+
+      expect(metricSpy.calledOnce).to.be.true;
+      expect(metricSpy.firstCall.args[0]).to.deep.equal({
+        alertName: 'MigratingFacilitiesAlerts-warning-MEDICATIONS',
+        isVisible: true,
+        currentPhase: 'p1',
+        stationNumber: '528',
       });
     });
 
@@ -931,11 +985,13 @@ describe('MigratingFacilitiesAlerts', () => {
         alertName: 'MigratingFacilitiesAlerts-warning-MEDICATIONS',
         isVisible: true,
         currentPhase: 'p1',
+        stationNumber: '',
       });
       expect(metricSpy.secondCall.args[0]).to.deep.equal({
         alertName: 'MigratingFacilitiesAlerts-error-MEDICATIONS',
         isVisible: true,
         currentPhase: 'p4',
+        stationNumber: '',
       });
     });
 

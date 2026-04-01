@@ -2,6 +2,7 @@ import React from 'react';
 import { expect } from 'chai';
 import { render, waitFor } from '@testing-library/react';
 import { DefinitionTester } from 'platform/testing/unit/schemaform-utils';
+import moment from 'moment';
 import page from '../../pages/attestation';
 
 const renderPage = (formData = {}) =>
@@ -39,7 +40,7 @@ describe('22-0989 attestation page', () => {
     });
   });
 
-  it('shows an error the attestation name does not match', async () => {
+  it('shows an error if the attestation name does not match', async () => {
     const { container, getByRole } = renderPage({
       applicantName: {
         first: 'John',
@@ -54,6 +55,21 @@ describe('22-0989 attestation page', () => {
       const nameInput = container.querySelector('va-text-input');
       expect(nameInput.getAttribute('error')).to.equal(
         'Enter your name exactly as it appears on your form: John Doe',
+      );
+    });
+  });
+
+  it('shows an error if the date is not today', async () => {
+    const notToday = moment().subtract(2, 'days');
+    const { container, getByRole } = renderPage({
+      attestationDate: notToday.format('YYYY-MM-DD'),
+    });
+
+    getByRole('button', { name: /submit/i }).click();
+    await waitFor(() => {
+      const dateInput = container.querySelector('va-memorable-date');
+      expect(dateInput.getAttribute('error')).to.equal(
+        "You must enter today's date",
       );
     });
   });

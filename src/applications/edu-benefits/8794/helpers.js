@@ -94,7 +94,7 @@ export const getCardTitle = item => {
 };
 
 export const additionalOfficialArrayOptions = {
-  arrayPath: 'additional-certifying-official',
+  arrayPath: 'additionalCertifyingOfficials',
   nounSingular: 'certifying official',
   nounPlural: 'certifying officials',
   required: false,
@@ -105,14 +105,13 @@ export const additionalOfficialArrayOptions = {
     cancelAddNo: 'No, continue adding information',
     summaryTitle: props => {
       return `Review your additional certifying ${
-        props?.formData['additional-certifying-official']?.length > 1
+        props?.formData.additionalCertifyingOfficials?.length > 1
           ? 'officials'
           : 'official'
       }`;
     },
     summaryDescriptionWithoutItems: props => {
-      const count =
-        props.formData['additional-certifying-official']?.length ?? 0;
+      const count = props.formData.additionalCertifyingOfficials?.length ?? 0;
       return count > 0 ? null : additionalOfficialIntro;
     },
   },

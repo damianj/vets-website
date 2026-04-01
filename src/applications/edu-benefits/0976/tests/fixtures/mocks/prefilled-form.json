@@ -4,9 +4,7 @@
       "first": "John",
       "last": "Doe"
     },
-    "dateOfBirth": "1985-01-01",
-    "ssn": "796111863",
-    "vaFileNumber": "123456789"
+    "dateOfBirth": "1985-01-01"
   },
   "metadata": {
     "version": 0,

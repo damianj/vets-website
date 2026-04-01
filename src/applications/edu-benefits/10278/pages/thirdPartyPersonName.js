@@ -12,10 +12,16 @@ const uiSchema = {
       first: {
         ...fullNameNoSuffixUI().first,
         'ui:title': 'First name',
+        'ui:errorMessages': {
+          required: 'Enter a first name',
+        },
       },
       last: {
         ...fullNameNoSuffixUI().last,
         'ui:title': 'Last name',
+        'ui:errorMessages': {
+          required: 'Enter a last name',
+        },
       },
     },
   },

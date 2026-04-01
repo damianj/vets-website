@@ -152,7 +152,9 @@ export const setActionTypes = formData => {
     return _.cloneDeep(formData);
   }
 
-  const selectedNames = collectSelectedNamesFromNewDisabilities(formData);
+  const selectedNames = formData?.disabilityCompNewConditionsWorkflow
+    ? collectSelectedNamesFromNewDisabilities(formData)
+    : new Set();
   const useFallback = selectedNames.size === 0;
 
   const mapped = rated.map(data => {

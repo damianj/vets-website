@@ -37,9 +37,15 @@
         "applicantDob": "2003-01-04",
         "applicantSsn": "345345345",
         "applicantPhone": "5555551234",
-        "applicantGender": "male",
-        "applicantRelationshipToSponsor": "child",
-        "applicantRelationshipOrigin": "blood",
+        "applicantGender": {
+          "gender": "male"
+        },
+        "applicantRelationshipToSponsor": {
+          "relationshipToVeteran": "child"
+        },
+        "applicantRelationshipOrigin": {
+          "relationshipToVeteran": "blood"
+        },
         "applicantDependentStatus": {
           "status": "over18HelplessChild"
         }

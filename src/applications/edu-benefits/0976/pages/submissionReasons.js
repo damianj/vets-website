@@ -24,7 +24,7 @@ const Options = {
   updateInformation: {
     title: 'Update information',
     description:
-      'The purpose of this application is to update information about the institution. If “update information” is checked, please identify at least one purpose below.',
+      'The purpose of this application is to update information about the institution. If “update information” is checked, please identify at least one purpose.',
   },
   other: {
     title: 'Other',

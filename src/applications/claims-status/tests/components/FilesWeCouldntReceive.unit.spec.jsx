@@ -9,11 +9,7 @@ import { renderWithCustomStore } from '../utils';
 
 describe('<FilesWeCouldntReceive>', () => {
   // Helper function to create a mock store with failed uploads data
-  const createMockStore = (
-    failedUploadsData = null,
-    featureFlagEnabled = true,
-    hasError = false,
-  ) => {
+  const createMockStore = (failedUploadsData = null, hasError = false) => {
     return createStore(
       () => ({
         disability: {
@@ -25,10 +21,7 @@ describe('<FilesWeCouldntReceive>', () => {
             },
           },
         },
-        featureToggles: {
-          // eslint-disable-next-line camelcase
-          cst_show_document_upload_status: featureFlagEnabled,
-        },
+        featureToggles: {},
       }),
       applyMiddleware(thunk),
     );
@@ -103,20 +96,6 @@ describe('<FilesWeCouldntReceive>', () => {
 
       expect(getByTestId('other-ways-to-send-documents')).to.exist;
       expect(document.querySelector('va-need-help')).to.exist;
-    });
-  });
-
-  describe('Feature Flag', () => {
-    it('should redirect when feature flag is disabled', () => {
-      const store = createMockStore(null, false); // Feature flag disabled
-      const { container } = renderWithCustomStore(
-        <FilesWeCouldntReceive />,
-        store,
-      );
-
-      // When feature flag is disabled, the main content should not be rendered
-      expect(container.querySelector('h1')).to.not.exist; // Main heading should not be there
-      expect(container.textContent).to.not.include('Files we couldn'); // Main content should not be there
     });
   });
 
@@ -347,8 +326,8 @@ describe('<FilesWeCouldntReceive>', () => {
 
   describe('Error State - API Failure', () => {
     it('should render error alert and hide all normal page content when API fails', () => {
-      // Create store with API error: no data, feature flag enabled, error state
-      const store = createMockStore(null, true, true);
+      // Create store with API error: no data, error state
+      const store = createMockStore(null, true);
       const {
         getByRole,
         getByText,

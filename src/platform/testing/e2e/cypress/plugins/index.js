@@ -4,6 +4,32 @@ const path = require('path');
 const fetch = require('node-fetch');
 const createBundler = require('@bahmutov/cypress-esbuild-preprocessor');
 
+/**
+ * Resolve the main repo root, handling git worktrees where the working
+ * copy lives outside the main repo directory. In a worktree, .git is a
+ * file pointing back to the real repo's .git folder; we follow that
+ * pointer to find vets-website/.
+ */
+function getMainRepoRoot() {
+  const root = process.cwd();
+  const gitPath = path.join(root, '.git');
+  try {
+    if (fs.statSync(gitPath).isFile()) {
+      const content = fs.readFileSync(gitPath, 'utf-8').trim();
+      const match = content.match(/^gitdir:\s+(.+)$/);
+      if (match) {
+        const commondir = fs
+          .readFileSync(path.join(match[1], 'commondir'), 'utf-8')
+          .trim();
+        return path.resolve(match[1], commondir, '..');
+      }
+    }
+  } catch {
+    /* not a worktree -- use default */
+  }
+  return root;
+}
+
 const tableConfig = {
   columns: {
     0: { width: 15 },
@@ -18,9 +44,16 @@ module.exports = async (on, config) => {
   }
 
   let appRegistry;
-  if (fs.existsSync('../content-build/src/applications/registry.json')) {
-    // eslint-disable-next-line import/no-unresolved
-    appRegistry = require('../../../../../../../content-build/src/applications/registry.json');
+  const contentBuildRegistry = path.join(
+    getMainRepoRoot(),
+    '..',
+    'content-build',
+    'src',
+    'applications',
+    'registry.json',
+  );
+  if (fs.existsSync(contentBuildRegistry)) {
+    appRegistry = JSON.parse(fs.readFileSync(contentBuildRegistry, 'utf-8'));
   } else {
     const REMOTE_CONTENT_BUILD_REGISTRY =
       'https://raw.githubusercontent.com/department-of-veterans-affairs/content-build/main/src/applications/registry.json';

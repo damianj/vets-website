@@ -1,11 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom-v5-compat';
 import {
   VaLink,
   VaPagination,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
 import OtherWaysToSendYourDocuments from './claim-files-tab-v2/OtherWaysToSendYourDocuments';
 import DocumentCard from './DocumentCard';
 import ClaimsBreadcrumbs from './ClaimsBreadcrumbs';
@@ -20,11 +18,6 @@ import { ITEMS_PER_PAGE } from '../constants';
 import NeedHelp from './NeedHelp';
 
 const FilesWeCouldntReceive = () => {
-  const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
-  const isFailedUploadsEnabled = useToggleValue(
-    TOGGLE_NAMES.cstShowDocumentUploadStatus,
-  );
-
   const dispatch = useDispatch();
 
   const { data: failedFiles, loading, error } = useSelector(
@@ -61,12 +54,9 @@ const FilesWeCouldntReceive = () => {
 
   useEffect(
     () => {
-      // Only fetch failed uploads if feature flag is enabled
-      if (isFailedUploadsEnabled) {
-        dispatch(fetchFailedUploads());
-      }
+      dispatch(fetchFailedUploads());
     },
-    [dispatch, isFailedUploadsEnabled],
+    [dispatch],
   );
 
   useEffect(
@@ -77,11 +67,6 @@ const FilesWeCouldntReceive = () => {
     },
     [loading],
   );
-
-  // Redirect to claims list if feature flag is disabled
-  if (!isFailedUploadsEnabled) {
-    return <Navigate to="/your-claims/" replace />;
-  }
 
   let content;
 

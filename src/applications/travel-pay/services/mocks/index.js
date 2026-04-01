@@ -83,6 +83,24 @@ const responses = {
   // Get appointments - handles both date range queries and list view
   'GET /vaos/v2/appointments': getAppointmentsHandler(),
 
+  // Simulate getAppointmentDataByDateTime failing on the claim details page
+  // 'GET /vaos/v2/appointments': (req, res) => {
+  //   const { start, end } = req.query;
+  //   if (start && end) {
+  //     return res.status(500).json({
+  //       errors: [
+  //         {
+  //           title: 'Server error',
+  //           status: 500,
+  //           detail: 'Internal Server Error',
+  //         },
+  //       ],
+  //     });
+  //   }
+  //   // Normal appointments list
+  //   return getAppointmentsHandler()(req, res);
+  // },
+
   // Get all claims
   // 'GET /travel_pay/v0/claims'
   'GET /travel_pay/v0/claims': getClaimsHandler(),

@@ -271,7 +271,7 @@ export const buildFields = (
 
     if (ConfirmationField) {
       if (isReactComponent(ConfirmationField)) {
-        return <ConfirmationField formData={formData} />;
+        return <ConfirmationField key={page.path} formData={formData} />;
       }
 
       throw new Error(

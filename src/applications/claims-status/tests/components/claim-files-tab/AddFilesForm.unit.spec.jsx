@@ -56,8 +56,6 @@ describe('<AddFilesForm>', () => {
   it('should render component', () => {
     const initialState = {
       featureToggles: {
-        // eslint-disable-next-line camelcase
-        cst_show_document_upload_status: false,
         loading: false,
       },
     };
@@ -75,81 +73,74 @@ describe('<AddFilesForm>', () => {
     expect(submitButton.getAttribute('text')).to.equal(SUBMIT_TEXT);
   });
 
-  describe('cstShowDocumentUploadStatus is false', () => {
+  it('should render upload modal when uploading', () => {
     const initialState = {
-      featureToggles: {
-        // eslint-disable-next-line camelcase
-        cst_show_document_upload_status: false,
-        loading: false,
-      },
+      featureToggles: { loading: false },
     };
-
-    it('should render upload modal when uploading', () => {
-      const { container } = renderWithRouterAndRedux(
-        <AddFilesForm {...fileFormProps} uploading />,
-        { initialState, initialEntries: defaultInitialEntries },
-      );
-      expect($('va-modal', container)).to.exist;
-    });
-
-    it('should include mail info additional info', () => {
-      const { container } = renderWithRouterAndRedux(
-        <AddFilesForm {...fileFormProps} />,
-        { initialState, initialEntries: defaultInitialEntries },
-      );
-      // Check for the va-additional-info component
-      const additionalInfo = $('va-additional-info', container);
-      expect(additionalInfo).to.exist;
-      expect(additionalInfo.getAttribute('trigger')).to.equal(
-        'Need to mail your documents?',
-      );
-
-      // Check for the mail info content (which is in slot content)
-      const mailContent = $('.vads-u-margin-y--3', container);
-      expect(mailContent).to.exist;
-    });
-
-    it('should handle submit button click', () => {
-      const onSubmit = sinon.spy();
-      const { container } = renderWithRouterAndRedux(
-        <AddFilesForm {...fileFormProps} onSubmit={onSubmit} />,
-        { initialState, initialEntries: defaultInitialEntries },
-      );
-
-      const submitButton = $('va-button', container);
-      submitButton.click();
-      // Since no files are present, onSubmit should not be called
-      expect(onSubmit.called).to.be.false;
-    });
-
-    it('should render updated file input section ui', () => {
-      const { getByText } = renderWithRouterAndRedux(
-        <AddFilesForm {...fileFormProps} />,
-        { initialState, initialEntries: defaultInitialEntries },
-      );
-      getByText('Upload documents');
-      getByText('If you have a document to upload, you can do that here.');
-    });
-
-    it('should not render heading section when it is rendered in file tab', () => {
-      const { queryByText } = renderWithRouterAndRedux(
-        <AddFilesForm {...fileFormProps} fileTab />,
-        { initialState, initialEntries: defaultInitialEntries },
-      );
-      expect(queryByText('Upload documents')).to.be.null;
-      expect(
-        queryByText('If you have a document to upload, you can do that here.'),
-      ).to.be.null;
-    });
+    const { container } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} uploading />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+    expect($('va-modal', container)).to.exist;
   });
 
-  describe('cstShowDocumentUploadStatus is true', () => {
+  it('should handle submit button click', () => {
     const initialState = {
-      featureToggles: {
-        // eslint-disable-next-line camelcase
-        cst_show_document_upload_status: true,
-        loading: false,
-      },
+      featureToggles: { loading: false },
+    };
+    const onSubmit = sinon.spy();
+    const { container } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} onSubmit={onSubmit} />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+
+    const submitButton = $('va-button', container);
+    submitButton.click();
+    // Since no files are present, onSubmit should not be called
+    expect(onSubmit.called).to.be.false;
+  });
+
+  it('should render updated file input section ui', () => {
+    const initialState = {
+      featureToggles: { loading: false },
+    };
+    const { getByText } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+    getByText('Upload documents');
+    getByText('If you have a document to upload, you can do that here.');
+  });
+
+  it('should not render heading section when it is rendered in file tab', () => {
+    const initialState = {
+      featureToggles: { loading: false },
+    };
+    const { queryByText } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} fileTab />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+    expect(queryByText('Upload documents')).to.be.null;
+    expect(
+      queryByText('If you have a document to upload, you can do that here.'),
+    ).to.be.null;
+  });
+
+  it('should not render mail info additional info', () => {
+    const initialState = {
+      featureToggles: { loading: false },
+    };
+    const { container } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+    const additionalInfo = $('va-additional-info', container);
+    expect(additionalInfo).to.be.null;
+  });
+
+  describe('va-link for other ways to send documents', () => {
+    const initialState = {
+      featureToggles: { loading: false },
     };
 
     it('should render va-link with anchor href when on files tab', () => {

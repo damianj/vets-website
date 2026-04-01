@@ -4,10 +4,25 @@ import { expect } from 'chai';
 import { Provider } from 'react-redux';
 import { $ } from 'platform/forms-system/src/js/utilities/ui';
 import * as apiModule from 'platform/utilities/api';
+import backendServices from '@department-of-veterans-affairs/platform-user/profile/backendServices';
+import * as userSelectors from 'platform/user/selectors';
 import App from '../containers/App';
 
 const submission = require('../mocks/testdata');
 
+const user = {
+  login: {
+    currentlyLoggedIn: true,
+  },
+  profile: {
+    firstName: 'HECTOR',
+    lastName: 'ALLEN',
+    verified: true,
+    signIn: { serviceName: 'idme' },
+    loa: { current: 1 },
+    services: [backendServices.USER_PROFILE],
+  },
+};
 const getData = ({ featureToggles = {} } = {}) => ({
   mockStore: {
     getState: () => ({
@@ -22,11 +37,15 @@ describe('App Component', () => {
   let originalLocation;
   let mockLocation;
   let apiRequestStub;
+  let selectUserStub;
   const sinon = require('sinon');
 
   beforeEach(() => {
     apiRequestStub = sinon.stub(apiModule, 'apiRequest');
     originalLocation = window.location;
+    selectUserStub = sinon
+      .stub(userSelectors, 'selectUser')
+      .callsFake(() => user);
 
     mockLocation = {
       href: 'http://localhost/',
@@ -41,12 +60,14 @@ describe('App Component', () => {
   afterEach(() => {
     window.location = originalLocation;
     apiRequestStub.restore();
+    selectUserStub.restore();
   });
 
   it('renders the renderer when the dependents_enable_form_viewer_mfe feature flag is on', async () => {
     const { mockStore } = getData({
       featureToggles: {
         [`dependents_enable_form_viewer_mfe`]: true,
+        loading: false,
       },
     });
     const mockParams = { id: '12345' };
@@ -88,6 +109,7 @@ describe('App Component', () => {
     const { mockStore } = getData({
       featureToggles: {
         [`dependents_enable_form_viewer_mfe`]: false,
+        loading: false,
       },
     });
     const mockParams = { id: 'test-456' };
@@ -141,14 +163,14 @@ describe('App Component', () => {
     );
   });
 
-  it('renders error message if query errors', async () => {
+  it('renders generic error message for 500 Internal server error', async () => {
     const { mockStore } = getData({
       featureToggles: {
         [`dependents_enable_form_viewer_mfe`]: true,
       },
     });
     const mockParams = { id: '12345' };
-    const error = new Error('Network error');
+    const error = { error: 'Not found' };
     apiRequestStub.rejects(error);
 
     const { container } = render(
@@ -162,7 +184,61 @@ describe('App Component', () => {
     });
 
     await waitFor(() => {
-      expect(container.textContent).to.include('Could not load submission.');
+      expect(container.textContent).to.include(
+        'We’re sorry. There’s a problem with our system. Try again later.',
+      );
+    });
+  });
+
+  it('renders generic error message for 404 Not found error', async () => {
+    const { mockStore } = getData({
+      featureToggles: {
+        [`dependents_enable_form_viewer_mfe`]: true,
+      },
+    });
+    const mockParams = { id: '12345' };
+    const error = { error: 'Not found' };
+    apiRequestStub.rejects(error);
+
+    const { container } = render(
+      <Provider store={mockStore}>
+        <App params={mockParams} />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      sinon.assert.calledOnce(apiRequestStub);
+    });
+
+    await waitFor(() => {
+      expect(container.textContent).to.include(
+        'We’re sorry. There’s a problem with our system. Try again later.',
+      );
+    });
+  });
+
+  it('renders Unauthorized error message for 403 Forbidden', async () => {
+    const { mockStore } = getData({
+      featureToggles: {
+        [`dependents_enable_form_viewer_mfe`]: true,
+      },
+    });
+    const mockParams = { id: '12345' };
+    const error = { error: 'Forbidden' };
+    apiRequestStub.rejects(error);
+
+    const { container } = render(
+      <Provider store={mockStore}>
+        <App params={mockParams} />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      sinon.assert.calledOnce(apiRequestStub);
+    });
+
+    await waitFor(() => {
+      expect(container.textContent).to.include('We can’t match your records');
     });
   });
 });

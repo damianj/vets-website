@@ -209,6 +209,7 @@ describe('VAOS Component: Referrals and Requests', () => {
       attributes: {
         ...appointment.attributes,
         serviceType: '160',
+        typeOfCare: 'Audiology and speech (including hearing aid support)',
         status: 'cancelled',
       },
     };

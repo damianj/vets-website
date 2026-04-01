@@ -145,4 +145,40 @@ describe('VAOS Component: EnrolledRoute', () => {
       expect(replaceStub.calledWith('http://localhost/my-health')).to.be.true;
     });
   });
+
+  it('shows loading indicator while profile is loading and does not redirect', async () => {
+    const myInitialState = {
+      ...initialState,
+      user: {
+        ...initialState.user,
+        profile: {
+          ...initialState.user.profile,
+          loading: true,
+          facilities: [],
+          loa: { current: null },
+        },
+      },
+    };
+    const store = createTestStore(myInitialState);
+    const screen = renderWithStoreAndRouter(
+      <>
+        <Switch>
+          <EnrolledRoute component={() => <div>Child content</div>} />
+        </Switch>
+      </>,
+      { store },
+    );
+    const loadingIndicatorSelector = screen.container.querySelector(
+      'va-loading-indicator',
+    );
+    await waitFor(() => {
+      expect(loadingIndicatorSelector).to.exist;
+      expect(loadingIndicatorSelector).to.have.attribute(
+        'message',
+        'Checking your information...',
+      );
+    });
+    // Should not redirect while loading
+    expect(replaceStub.called).to.be.false;
+  });
 });

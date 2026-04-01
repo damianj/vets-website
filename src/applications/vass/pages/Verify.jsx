@@ -11,6 +11,7 @@ import {
   isInvalidCredentialsError,
   isRateLimitExceededError,
   isServerError,
+  isMissingContactInformationError,
 } from '../utils/errors';
 
 const getPageTitle = (cancellationFlow, verificationError) => {
@@ -99,7 +100,11 @@ const Verify = () => {
 
   return (
     <Wrapper
-      errorAlert={!uuid || isServerError(postAuthenticationError)}
+      errorAlert={
+        !uuid ||
+        isServerError(postAuthenticationError) ||
+        isMissingContactInformationError(postAuthenticationError)
+      }
       pageTitle={pageTitle}
       verificationError={verificationError}
       disableBeforeUnload={!dirty}

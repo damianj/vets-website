@@ -62,7 +62,7 @@ const AppointmentScheduledAlert = ({
     <div className="vads-u-margin-y--3">
       <va-alert close-btn-aria-label="Close notification" status="info" visible>
         <h2 id="appointment-scheduled" slot="headline">
-          Appointment scheduled
+          Meeting scheduled
         </h2>
         {appointmentPlace ? (
           <>
@@ -79,8 +79,9 @@ const AppointmentScheduledAlert = ({
               Microsoft Teams.
             </p>
             <p>
-              The Microsoft Teams meeting link will be included in the
-              appointment confirmation email sent to you.
+              This is an online meeting. You can join at the scheduled time
+              using the Microsoft Teams link in the confirmation email we sent
+              you.
             </p>
           </>
         )}

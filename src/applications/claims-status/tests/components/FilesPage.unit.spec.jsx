@@ -12,8 +12,6 @@ import * as AdditionalEvidencePage from '../../components/claim-files-tab/Additi
 import { renderWithRouter, rerenderWithRouter } from '../utils';
 import * as helpers from '../../utils/helpers';
 
-const FEATURE_FLAG_KEY = 'cst_show_document_upload_status';
-
 const getStore = (featureToggles = {}, notifications = {}, claim = null) =>
   createStore(() => ({
     featureToggles,
@@ -222,33 +220,19 @@ describe('<FilesPage>', () => {
 
     // Test different hash anchors to verify scrollToSection focuses the correct element
     const testCases = [
-      ['should focus on add-files section', '#add-files', 'add-files', true],
+      ['should focus on add-files section', '#add-files', 'add-files'],
       [
-        'should focus on file-submissions-in-progress section (feature flag enabled)',
+        'should focus on file-submissions-in-progress section',
         '#file-submissions-in-progress',
         'file-submissions-in-progress',
-        true,
-      ],
-      [
-        'should focus on documents-filed section (feature flag disabled)',
-        '#documents-filed',
-        'documents-filed',
-        false,
       ],
     ];
 
-    testCases.forEach(([description, hash, elementId, featureFlagEnabled]) => {
+    testCases.forEach(([description, hash, elementId]) => {
       it(description, async () => {
         const location = { hash };
-        // Render FilesPage with hash location and feature flag
         renderWithRouter(
-          <Provider
-            store={getStore(
-              { [FEATURE_FLAG_KEY]: featureFlagEnabled },
-              {},
-              claim,
-            )}
-          >
+          <Provider store={getStore({}, {}, claim)}>
             <FilesPage
               {...props}
               claim={claim}
@@ -257,7 +241,6 @@ describe('<FilesPage>', () => {
             />
           </Provider>,
         );
-        // Verify scrollToSection focused the correct element
         await waitFor(() => {
           expect(document.activeElement.id).to.equal(elementId);
         });
@@ -367,7 +350,7 @@ describe('<FilesPage>', () => {
   });
 
   context('when claim is open', () => {
-    it('should render files page, showing additional evidence section without alerts, and docs filed section', () => {
+    it('should render files page with additional evidence and file submissions sections', () => {
       const claim = { ...baseClaim };
 
       const { container, getByTestId } = renderWithRouter(
@@ -385,12 +368,12 @@ describe('<FilesPage>', () => {
       expect(filesPage).to.exist;
       expect(container.querySelector('.claim-file-header-container')).to.exist;
       expect(getByTestId('additional-evidence-page')).to.exist;
-      expect(container.querySelector('.documents-filed-container')).to.exist;
+      expect(getByTestId('file-submissions-in-progress')).to.exist;
       expect(container.querySelector('.claims-requested-files-container')).not
         .to.exist;
     });
 
-    it('should render files page, showing additional evidence section with alerts, and docs filed section when using lighthouse', () => {
+    it('should render files page with additional evidence and file submissions sections when using lighthouse', () => {
       const claim = { ...baseClaim };
       claim.attributes.documentsNeeded = true;
       claim.attributes.trackedItems = [
@@ -418,7 +401,7 @@ describe('<FilesPage>', () => {
       expect(filesPage).to.exist;
       expect(container.querySelector('.claim-file-header-container')).to.exist;
       expect(getByTestId('additional-evidence-page')).to.exist;
-      expect(container.querySelector('.documents-filed-container')).to.exist;
+      expect(getByTestId('file-submissions-in-progress')).to.exist;
       expect(container.querySelector('.claims-requested-files-container')).not
         .to.exist;
     });
@@ -453,7 +436,7 @@ describe('<FilesPage>', () => {
   });
 
   context('when claim is closed', () => {
-    it('should render files page, showing additional evidence section, and docs filed section', () => {
+    it('should render files page with additional evidence and file submissions sections', () => {
       const claim = { ...baseClaim };
       claim.attributes.claimPhaseDates = {
         currentPhaseBack: false,
@@ -481,48 +464,28 @@ describe('<FilesPage>', () => {
       expect(filesPage).to.exist;
       expect(container.querySelector('.claim-file-header-container')).to.exist;
       expect(getByTestId('additional-evidence-page')).to.exist;
-      expect(container.querySelector('.documents-filed-container')).to.exist;
+      expect(getByTestId('file-submissions-in-progress')).to.exist;
       expect(container.querySelector('.claims-requested-files-container')).not
         .to.exist;
     });
   });
 
-  describe('OtherWaysToSendYourDocuments feature toggle', () => {
-    it('should render OtherWaysToSendYourDocuments when feature toggle is enabled', () => {
-      const featureToggles = { [FEATURE_FLAG_KEY]: true };
+  describe('files page content', () => {
+    it('should render OtherWaysToSendYourDocuments and new components', () => {
       const { getByTestId, getByText } = renderWithRouter(
-        <Provider store={getStore(featureToggles)}>
+        <Provider store={getStore()}>
           <FilesPage {...props} claim={baseClaim} />
         </Provider>,
       );
 
-      // Should render OtherWaysToSendYourDocuments component
       expect(getByTestId('other-ways-to-send-documents')).to.exist;
       expect(getByText('Other ways to send your documents')).to.exist;
       expect(getByText('Option 1: By mail')).to.exist;
       expect(getByText('Option 2: In person')).to.exist;
       expect(getByText('How to confirm we\u2019ve received your documents')).to
         .exist;
-
-      // Should render new components that are only present when toggle is enabled
       expect(getByTestId('file-submissions-in-progress')).to.exist;
-
-      // AdditionalEvidencePage should still be present (it's rendered in both toggle states)
       expect(getByTestId('additional-evidence-page')).to.exist;
-    });
-
-    it('should render old content when feature toggle is disabled', () => {
-      const { getByTestId, queryByTestId } = renderWithRouter(
-        <Provider store={getStore()}>
-          <FilesPage {...props} claim={baseClaim} />
-        </Provider>,
-      );
-
-      // Should render old components
-      expect(getByTestId('additional-evidence-page')).to.exist;
-
-      // Should NOT render OtherWaysToSendYourDocuments component
-      expect(queryByTestId('other-ways-to-send-documents')).to.not.exist;
     });
   });
 });

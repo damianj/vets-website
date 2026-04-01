@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import { setData } from 'platform/forms-system/src/js/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import { VaFileInputMultiple } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 
 import environment from 'platform/utilities/environment';
@@ -22,7 +21,7 @@ import {
 import vaFileInputFieldMapping from 'platform/forms-system/src/js/web-component-fields/vaFileInputFieldMapping';
 import { errorManager } from 'platform/forms-system/src/js/utilities/file/passwordErrorState';
 
-import { uploadDocument, processDocumentWithAutoResolve } from '../cave';
+import { uploadDocument } from '../cave';
 
 const createTrackingKey = file => {
   const stamp = Date.now();
@@ -45,7 +44,10 @@ const ensureTrackingKey = file => {
   return file.__sbTrackingKey;
 };
 
+const TERMINAL_STATUSES = new Set(['success', 'error', 'skipped']);
+
 const mergeSecondaryInfo = (fileEntry, info, defaultStatus = 'pending') => {
+  if (TERMINAL_STATUSES.has(fileEntry.idpUploadStatus)) return fileEntry;
   if (!info) {
     if (fileEntry.idpUploadStatus === defaultStatus) {
       return fileEntry;
@@ -114,11 +116,9 @@ const DualFileUploadField = props => {
   const [secondaryUploads, setSecondaryUploads] = useState({});
 
   const dispatch = useDispatch();
-  const store = useStore();
   const primaryUploadsRef = useRef({});
   const secondaryStatusRef = useRef({});
   const componentRef = useRef(null);
-  const isMountedRef = useRef(true);
 
   const caveEnabled = useSelector(
     state =>
@@ -138,14 +138,8 @@ const DualFileUploadField = props => {
     dispatch,
   );
 
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
   const setSecondaryUpload = (trackingKey, payload) => {
-    if (!trackingKey || !isMountedRef.current) {
+    if (!trackingKey) {
       return;
     }
     setSecondaryUploads(prev => {
@@ -456,55 +450,10 @@ const DualFileUploadField = props => {
           contract,
           ...metadata,
         });
-        const currentFormData = store.getState().form.data ?? {};
-        return processDocumentWithAutoResolve(
-          contract,
-          currentFormData,
-          currentFormData.files ?? [],
-        );
-      })
-      .then(sections => {
-        secondaryStatusRef.current[trackingKey] = 'success';
-        // IDP polling can outlive this component (e.g. user navigates back).
-        // setSecondaryUpload is a no-op when unmounted, so we fall back to a
-        // direct Redux dispatch. Ideally this async work would be decoupled
-        // from the component lifecycle so this workaround isn't needed.
-        if (!isMountedRef.current) {
-          const state = store.getState().form.data ?? {};
-          const nextFiles = (state.files ?? []).map(
-            f =>
-              f.idpTrackingKey === trackingKey
-                ? { ...f, idpUploadStatus: 'success', idpArtifacts: sections }
-                : f,
-          );
-          store.dispatch(setData({ ...state, files: nextFiles }));
-          return;
-        }
-        setSecondaryUpload(trackingKey, {
-          status: 'success',
-          sections,
-          ...metadata,
-        });
+        // useCaveProcessingManager detects idpDocumentId in Redux and takes over from here
       })
       .catch(error => {
         secondaryStatusRef.current[trackingKey] = 'error';
-        // Same fallback as above for the error case.
-        if (!isMountedRef.current) {
-          const state = store.getState().form.data ?? {};
-          const nextFiles = (state.files ?? []).map(
-            f =>
-              f.idpTrackingKey === trackingKey
-                ? {
-                    ...f,
-                    idpUploadStatus: 'error',
-                    idpUploadError:
-                      error?.message || 'Automated processing upload failed.',
-                  }
-                : f,
-          );
-          store.dispatch(setData({ ...state, files: nextFiles }));
-          return;
-        }
         setSecondaryUpload(trackingKey, {
           status: 'error',
           error: error?.message || 'Automated processing upload failed.',

@@ -99,7 +99,7 @@ describe('IntroductionPage', () => {
     );
     expect(container.querySelector('va-accordion')).to.exist;
     const item = container.querySelector(
-      'va-accordion-item[header="View Privacy Act Statement"]',
+      'va-accordion-item[header="Privacy Act Statement"]',
     );
     expect(item).to.exist;
   });

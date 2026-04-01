@@ -33,6 +33,7 @@ import {
   studyJobStatus,
   loadStates,
   statsdFrontEndActions,
+  loincCodes,
 } from '../util/constants';
 import { getTimeFrame, getDisplayTimeFrame } from '../util/helpers';
 
@@ -52,6 +53,7 @@ import { useTrackAction } from '../hooks/useTrackAction';
 import TrackedSpinner from '../components/shared/TrackedSpinner';
 import AdditionalReportsInfo from '../components/shared/AdditionalReportsInfo';
 import DuplicateRecordsAlert from '../components/shared/DuplicateRecordsAlert';
+import ScdfImagesReadyAlert from '../components/shared/ScdfImagesReadyAlert';
 
 const LabsAndTests = () => {
   const dispatch = useDispatch();
@@ -111,6 +113,13 @@ const LabsAndTests = () => {
       studyJobs?.find(img => img.studyIdUrn === radRecord.studyId) || null;
     const jobComplete = studyJob?.status === studyJobStatus.COMPLETE;
     return isRadRecord && jobComplete;
+  });
+
+  const scdfRecordsWithImages = labsAndTests?.filter(record => {
+    const isScdfRadiology =
+      record?.type === loincCodes.UHD_RADIOLOGY ||
+      record?.type === loincCodes.RADIOLOGY;
+    return isScdfRadiology && record?.imageCount > 0 && record?.imagingStudyId;
   });
 
   const warnings = useSelector(state => state.mr.labsAndTests.warnings);
@@ -346,6 +355,7 @@ const LabsAndTests = () => {
                         />
                       </VaAlert>
                     )}
+                  <ScdfImagesReadyAlert records={scdfRecordsWithImages} />
 
                   <RecordList
                     type={recordType.LABS_AND_TESTS}

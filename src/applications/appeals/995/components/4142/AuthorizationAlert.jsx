@@ -10,8 +10,8 @@ const AuthorizationAlert = ({ hasError, onAnchorClick }) => (
   <va-alert status="error" visible={hasError} role="alert">
     <h3 slot="headline">{alertTitle}</h3>
     <p className="vads-u-margin-bottom--0">
-      If you want us to request your medical records from a private (non-VA)
-      provider, you need to authorize their release.
+      If you want us to request your medical records from a private provider or
+      VA Vet Center you need to authorize their release.
     </p>
     <va-link
       class="vads-u-display--block"

@@ -17,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -59,7 +59,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -125,7 +125,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
          fetch-depth: 0
 
@@ -213,14 +213,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Get Node version
         id: get-node-version
         run: echo NODE_VERSION=$(cat .nvmrc) >> $GITHUB_OUTPUT
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ steps.get-node-version.outputs.NODE_VERSION }}
 
@@ -271,14 +271,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Get Node version
         id: get-node-version
         run: echo NODE_VERSION=$(cat .nvmrc) >> $GITHUB_OUTPUT
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ steps.get-node-version.outputs.NODE_VERSION }}
 
@@ -334,14 +334,14 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Get Node version
         id: get-node-version
         run: echo NODE_VERSION=$(cat .nvmrc) >> $GITHUB_OUTPUT
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ steps.get-node-version.outputs.NODE_VERSION }}
 
@@ -391,7 +391,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -400,7 +400,7 @@ jobs:
         run: echo NODE_VERSION=$(cat .nvmrc) >> $GITHUB_OUTPUT
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ steps.get-node-version.outputs.NODE_VERSION }}
 

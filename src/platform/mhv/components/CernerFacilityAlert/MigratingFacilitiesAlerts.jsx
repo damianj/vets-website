@@ -7,8 +7,18 @@ import useOhMigrationAlertMetric from '../../hooks/useOhMigrationAlertMetric';
  * Wrapper that calls the metric hook for each rendered alert.
  * Each instance gets its own ref guard so every alert logs independently.
  */
-const MigratingFacilityAlert = ({ alertName, currentPhase, children }) => {
-  useOhMigrationAlertMetric({ alertName, isVisible: true, currentPhase });
+const MigratingFacilityAlert = ({
+  alertName,
+  currentPhase,
+  stationNumber,
+  children,
+}) => {
+  useOhMigrationAlertMetric({
+    alertName,
+    isVisible: true,
+    currentPhase,
+    stationNumber,
+  });
   return children;
 };
 
@@ -16,6 +26,7 @@ MigratingFacilityAlert.propTypes = {
   alertName: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   currentPhase: PropTypes.string,
+  stationNumber: PropTypes.string,
 };
 
 /**
@@ -26,6 +37,7 @@ const MigratingFacilitiesAlerts = ({
   healthTool,
   className,
   migratingFacilities,
+  stationNumber = '',
 }) => {
   const config = CernerAlertContent[healthTool];
   if (!config) return null;
@@ -57,6 +69,7 @@ const MigratingFacilitiesAlerts = ({
           key={index}
           alertName={`MigratingFacilitiesAlerts-error-${healthTool}`}
           currentPhase={currentPhase}
+          stationNumber={stationNumber}
         >
           <va-alert
             class={`vads-u-margin-bottom--2p5 ${className} ${
@@ -107,6 +120,7 @@ const MigratingFacilitiesAlerts = ({
         key={index}
         alertName={`MigratingFacilitiesAlerts-warning-${healthTool}`}
         currentPhase={currentPhase}
+        stationNumber={stationNumber}
       >
         <va-alert-expandable
           class={`vads-u-margin-bottom--2p5 ${className} ${
@@ -168,6 +182,7 @@ MigratingFacilitiesAlerts.propTypes = {
     }),
   ).isRequired,
   className: PropTypes.string,
+  stationNumber: PropTypes.string,
 };
 
 export default MigratingFacilitiesAlerts;

@@ -42,6 +42,21 @@ describe('ProgramApprovalInformation', () => {
     );
 
     const links = $$('va-link', container);
+    const linkTexts = links.map(link => link.getAttribute('text'));
+
     expect(links.length).to.eq(11);
+    expect(linkTexts).to.deep.equal([
+      'GI Bill® Comparison Tool',
+      'Licensing & certification tests and test preparatory courses',
+      'National Exams',
+      'Program approvals',
+      'Foreign program approvals',
+      'VET TEC 2.0 Approvals',
+      'Federal on-the-job training/apprenticeship approvals',
+      'VALOR ACT Approvals',
+      'Yellow Ribbon Program',
+      'Principles of Excellence',
+      'State Approving Agency contact information',
+    ]);
   });
 });

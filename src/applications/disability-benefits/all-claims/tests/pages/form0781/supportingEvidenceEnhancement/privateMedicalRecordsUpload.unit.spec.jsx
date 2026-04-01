@@ -23,7 +23,7 @@ describe('Private Medical Records Upload page', () => {
 
     it('should have correct path', () => {
       expect(page.path).to.equal(
-        'supporting-evidence/private-medical-records-upload-enhancement',
+        'supporting-evidence/private-medical-records-upload-evidence',
       );
     });
 

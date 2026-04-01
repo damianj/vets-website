@@ -17,7 +17,10 @@ describe('VASS Component: Error', () => {
 
     expect(getByTestId('error-page')).to.exist;
     expect(getByTestId('api-error-alert')).to.exist;
-    expect(queryByTestId('header')).to.not.exist;
+    expect(getByTestId('header')).to.exist;
+    expect(getByTestId('header').textContent).to.equal(
+      'Schedule an appointment with VA Solid Start',
+    );
     expect(queryByTestId('back-link')).to.not.exist;
     const alert = getByTestId('api-error-alert');
     expect(alert.textContent).to.exist;

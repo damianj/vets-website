@@ -381,3 +381,27 @@ va-loading-indicator {
   background-color: transparent;
 }
 /* DO NOT REMOVE w/o DS REVIEW: solves !important conflict*/
+
+.sm-ipe-alert {
+  border: 2px solid var(--vads-color-base);
+  background-color: var(--vads-color-base-lighter);
+  border-radius: 12px;
+  position: relative;
+  max-width: 30rem;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: -10px;
+    z-index: 1;
+    background-color: var(--vads-color-base-lighter);
+    border: 2px solid transparent;
+    border-top-color: var(--vads-color-base);
+    border-left-color: var(--vads-color-base);
+    transform: rotate(45deg);
+  }
+}

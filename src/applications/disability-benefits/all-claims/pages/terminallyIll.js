@@ -22,7 +22,7 @@ const TerminallyIllInfo = (
  * UI schema for the terminally ill question page.
  */
 export const uiSchema = {
-  'ui:title': 'High Priority claims',
+  'ui:title': <h3 className="vads-u-margin-y--0">Terminal illness</h3>,
   isTerminallyIll: yesNoUI({
     title: 'Are you terminally ill?',
   }),

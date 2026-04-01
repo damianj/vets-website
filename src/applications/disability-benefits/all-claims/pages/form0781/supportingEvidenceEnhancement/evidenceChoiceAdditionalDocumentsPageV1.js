@@ -5,6 +5,7 @@
  * Shown when the evidence enhancement toggle is ON but the FileInputV3 toggle
  * is OFF. Once FileInputV3 is fully rolled out, this page can be removed.
  */
+import React from 'react';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 import {
   standardTitle,
@@ -15,20 +16,33 @@ import {
   evidenceChoiceAdditionalDocumentsTitle,
   evidenceChoiceAdditionalDocuments,
 } from '../../../content/form0781/supportingEvidenceEnhancement/evidenceChoiceAdditionalDocumentsPage';
-import { uiSchema as legacyUiSchema } from '../../additionalDocuments';
+// import { uiSchema as legacyUiSchema } from '../../additionalDocuments';
+import { v1FileInputUiSchema } from './fileInputComponentV1';
+import {
+  LABEL,
+  HINT_TEXT,
+} from '../../../components/fileInputComponent/FileInputComponentV1';
 
 const { attachments } = fullSchema.properties;
 
 /** @type {import('@rjsf/core').UiSchema} */
 export const uiSchema = {
   'ui:title': standardTitle(evidenceChoiceAdditionalDocumentsTitle),
-  'ui:description': evidenceChoiceAdditionalDocuments,
+  'ui:description': () => (
+    <div className="vads-u-margin-bottom--2">
+      {evidenceChoiceAdditionalDocuments}
+    </div>
+  ),
   'ui:order': [
     'additionalDocuments',
     'view:additionalSupportAccordionV1',
     'view:mentalHealthSupportAlertV1',
   ],
-  additionalDocuments: legacyUiSchema.additionalDocuments,
+  additionalDocuments: v1FileInputUiSchema({
+    label: LABEL,
+    additionLabel: 'Adding additional evidence:',
+    description: HINT_TEXT,
+  }),
   'view:additionalSupportAccordionV1': {
     'ui:description': additionalSupportAccordion,
   },
@@ -42,7 +56,7 @@ export const schema = {
   type: 'object',
   required: ['additionalDocuments'],
   properties: {
-    additionalDocuments: attachments,
+    additionalDocuments: { ...attachments, minItems: 1 },
     'view:additionalSupportAccordionV1': { type: 'object', properties: {} },
     'view:mentalHealthSupportAlertV1': { type: 'object', properties: {} },
   },

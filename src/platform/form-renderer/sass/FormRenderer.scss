@@ -11,12 +11,37 @@
   border: 0;
 }
 
-ul.no-bullets
-{
-    list-style-type: none;
-    padding-left: 0;
+
+.digital-forms-renderer .form-name {
+  font-weight: normal;
 }
 
+.digital-forms-renderer ul.no-bullets {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.digital-forms-renderer ol {
+  margin-top: 0;
+}
+
+.digital-forms-renderer h4 {
+  color: rgb(27, 27, 27);
+}
+
+.digital-forms-renderer h2 {
+  font-size: 1.625rem;
+  line-height: 1.5;
+}
+
+.digital-forms-renderer h3 {
+  font-size: 1.25rem;
+}
+
+.digital-forms-renderer .block-style-italic {
+  font-style: italic;
+  font-weight: 400;
+}
 /* Reduce shift on tablets and smaller */
 @media (max-width: 768px) {
     main {

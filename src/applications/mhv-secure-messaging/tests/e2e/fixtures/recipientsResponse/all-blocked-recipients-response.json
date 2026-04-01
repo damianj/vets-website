@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "id": "7026562",
+      "type": "triage_teams",
+      "attributes": {
+        "triageTeamId": 7026562,
+        "name": "###ABC_XYZ_TRIAGE_TEAM###",
+        "stationNumber": "607",
+        "blockedStatus": true,
+        "relationType": "PATIENT",
+        "preferredTeam": true
+      }
+    },
+    {
+      "id": "6832726",
+      "type": "triage_teams",
+      "attributes": {
+        "triageTeamId": 6832726,
+        "name": "###PQR TRIAGE_TEAM###",
+        "stationNumber": "607",
+        "blockedStatus": true,
+        "relationType": "PATIENT",
+        "preferredTeam": true
+      }
+    },
+    {
+      "id": "6910405",
+      "type": "triage_teams",
+      "attributes": {
+        "triageTeamId": 6910405,
+        "name": "***Cardio-Clinic***",
+        "stationNumber": "607",
+        "blockedStatus": true,
+        "relationType": "PATIENT",
+        "preferredTeam": true
+      }
+    }
+  ],
+  "meta": {
+    "associatedTriageGroups": 3,
+    "associatedBlockedTriageGroups": 3,
+    "sort": {
+      "name": "ASC"
+    }
+  }
+}

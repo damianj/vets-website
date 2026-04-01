@@ -99,35 +99,10 @@ export const getBlueButtonReportData = (
           radiologyResponse = response;
           break;
         case 'notes':
-          dispatch({
-            type: Actions.CareSummariesAndNotes.GET_LIST,
-            response,
-          });
-          break;
         case 'vaccines':
-          dispatch({
-            type: Actions.Vaccines.GET_LIST,
-            response,
-          });
-          break;
         case 'allergies':
-          dispatch({
-            type: Actions.Allergies.GET_LIST,
-            response,
-          });
-          break;
         case 'conditions':
-          dispatch({
-            type: Actions.Conditions.GET_LIST,
-            response,
-          });
-          break;
         case 'vitals':
-          dispatch({
-            type: Actions.Vitals.GET_LIST,
-            response,
-          });
-          break;
         case 'medications':
         case 'appointments':
         case 'demographics':
@@ -151,7 +126,7 @@ export const getBlueButtonReportData = (
   // Dispatch combined labsAndTests and radiology response
   if (labsAndTestsResponse || radiologyResponse) {
     dispatch({
-      type: Actions.LabsAndTests.GET_LIST,
+      type: Actions.BlueButtonReport.GET,
       labsAndTestsResponse,
       radiologyResponse,
     });

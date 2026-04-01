@@ -22,8 +22,8 @@ const uiSchema = {
       'ui:options': {
         hint: 'If exempt, see information below',
         hideIf: (formData, index) => {
-          if (formData['additional-certifying-official']) {
-            return formData['additional-certifying-official'][index]
+          if (formData.additionalCertifyingOfficials) {
+            return formData.additionalCertifyingOfficials[index]
               ?.primaryOfficialTraining?.trainingExempt;
           }
           return formData?.primaryOfficialTraining?.trainingExempt;
@@ -38,8 +38,8 @@ const uiSchema = {
       ),
       'ui:options': {
         hideIf: (formData, index) => {
-          if (formData['additional-certifying-official']) {
-            return !formData['additional-certifying-official'][index]
+          if (formData.additionalCertifyingOfficials) {
+            return !formData.additionalCertifyingOfficials[index]
               ?.primaryOfficialTraining?.trainingExempt;
           }
           return !formData?.primaryOfficialTraining?.trainingExempt;

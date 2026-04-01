@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { expect } from 'chai';
 import { Provider } from 'react-redux';
 import sinon from 'sinon';
+import * as validation from '~/platform/forms-system/src/js/validation';
 
 import * as FileUpload from '../../components/FileUpload';
 import * as ReviewCollapsibleChapter from '../../components/ReviewCollapsibleChapter';
@@ -87,7 +88,8 @@ describe('<ReviewPage /> container', () => {
     );
 
     await waitFor(() => {
-      expect(container.querySelector('h3')).to.have.text('Review and submit');
+      const heading = container.querySelector('h3');
+      expect(heading).to.have.text('Review and submit');
     });
   });
 
@@ -106,6 +108,12 @@ describe('<ReviewPage /> container', () => {
         onError?.(error);
         throw error;
       });
+
+    // Stub isValidForm to return valid result
+    sandbox.stub(validation, 'isValidForm').returns({
+      isValid: true,
+      errors: [],
+    });
 
     const store = createMockStore({
       openChapters: ['chapter-1', 'chapter-2'],
@@ -127,9 +135,9 @@ describe('<ReviewPage /> container', () => {
       ),
     );
 
-    // Wait for the internal HTML button tag inside the shadow DOM
+    // Ensure the Submit va-button exists before clicking
     expect(submitVaButton).to.exist;
-    submitVaButton.click();
+    fireEvent.click(submitVaButton);
 
     // Wait for error alert to appear
     await waitFor(() => {
@@ -140,6 +148,177 @@ describe('<ReviewPage /> container', () => {
       const heading = alert.querySelector('h3');
       expect(heading).to.exist;
       expect(heading).to.have.text('Ask VA isn’t working right now');
+    });
+  });
+
+  describe('form validation', () => {
+    beforeEach(() => {
+      stubReviewCollapsibleChapter();
+      stubReviewSectionContent();
+      stubFileUpload();
+      stubStorageAdapter();
+    });
+
+    context('when form is invalid', () => {
+      beforeEach(() => {
+        // Stub isValidForm to return invalid result
+        sandbox.stub(validation, 'isValidForm').returns({
+          isValid: false,
+          errors: [
+            { name: 'required', property: 'test', message: 'Test error' },
+          ],
+        });
+      });
+
+      it('should display validation alert on submit', async () => {
+        const store = createMockStore({
+          openChapters: ['chapter-1', 'chapter-2'],
+          viewedPages: new Set(['page-3']),
+          askVA: mockData.askVA,
+          formData: mockData.data,
+        });
+
+        const { container, getByTestId } = render(
+          <Provider store={store}>
+            <ReviewPage />
+          </Provider>,
+        );
+
+        // Wait for the Submit button to appear
+        const submitVaButton = await waitFor(() =>
+          Array.from(container.querySelectorAll('va-button')).find(
+            btn => btn.getAttribute('text') === 'Submit question',
+          ),
+        );
+
+        expect(submitVaButton).to.exist;
+        fireEvent.click(submitVaButton);
+
+        // Wait for validation error alert to appear
+        await waitFor(() => {
+          const validationAlert = getByTestId('validation-alert');
+          const heading = validationAlert.querySelector('h3');
+          expect(heading).to.have.text(
+            'Some of your answers are missing information or aren’t valid',
+          );
+        });
+      });
+
+      it('should not submit form', async () => {
+        // Stub handleFormSubmission to track if it's called
+        const handleFormSubmissionStub = sandbox.stub(
+          formUtils,
+          'handleFormSubmission',
+        );
+
+        const store = createMockStore({
+          openChapters: ['chapter-1', 'chapter-2'],
+          viewedPages: new Set(['page-3']),
+          askVA: mockData.askVA,
+          formData: mockData.data,
+        });
+
+        const { container, getByTestId } = render(
+          <Provider store={store}>
+            <ReviewPage />
+          </Provider>,
+        );
+
+        // Wait for the Submit button to appear
+        const submitVaButton = await waitFor(() =>
+          Array.from(container.querySelectorAll('va-button')).find(
+            btn => btn.getAttribute('text') === 'Submit question',
+          ),
+        );
+
+        fireEvent.click(submitVaButton);
+
+        // Wait a bit for any async operations
+        await waitFor(() => {
+          getByTestId('validation-alert');
+        });
+
+        // Verify handleFormSubmission was NOT called
+        expect(handleFormSubmissionStub.called).to.be.false;
+      });
+    });
+
+    context('when form is valid', () => {
+      beforeEach(() => {
+        // Stub isValidForm to return valid result
+        sandbox.stub(validation, 'isValidForm').returns({
+          isValid: true,
+          errors: [],
+        });
+      });
+
+      it('should proceed with submission', async () => {
+        // Stub handleFormSubmission to track if it's called
+        const handleFormSubmissionStub = sandbox
+          .stub(formUtils, 'handleFormSubmission')
+          .resolves();
+
+        const store = createMockStore({
+          openChapters: ['chapter-1', 'chapter-2'],
+          viewedPages: new Set(['page-3']),
+          askVA: mockData.askVA,
+          formData: mockData.data,
+        });
+
+        const { container } = render(
+          <Provider store={store}>
+            <ReviewPage />
+          </Provider>,
+        );
+
+        // Wait for the Submit button to appear
+        const submitVaButton = await waitFor(() =>
+          Array.from(container.querySelectorAll('va-button')).find(
+            btn => btn.getAttribute('text') === 'Submit question',
+          ),
+        );
+
+        fireEvent.click(submitVaButton);
+
+        // Wait for handleFormSubmission to be called
+        await waitFor(() => {
+          expect(handleFormSubmissionStub.called).to.be.true;
+        });
+      });
+
+      it('should not show validation alert', async () => {
+        // Stub handleFormSubmission to prevent actual submission
+        sandbox.stub(formUtils, 'handleFormSubmission').resolves();
+
+        const store = createMockStore({
+          openChapters: ['chapter-1', 'chapter-2'],
+          viewedPages: new Set(['page-3']),
+          askVA: mockData.askVA,
+          formData: mockData.data,
+        });
+
+        const { container, queryByTestId } = render(
+          <Provider store={store}>
+            <ReviewPage />
+          </Provider>,
+        );
+
+        // Wait for the Submit button to appear
+        const submitVaButton = await waitFor(() =>
+          Array.from(container.querySelectorAll('va-button')).find(
+            btn => btn.getAttribute('text') === 'Submit question',
+          ),
+        );
+
+        fireEvent.click(submitVaButton);
+
+        await waitFor(() => {
+          // Verify no validation alert is shown
+          const validationAlert = queryByTestId('validation-alert');
+
+          expect(validationAlert).to.not.exist;
+        });
+      });
     });
   });
 

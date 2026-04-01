@@ -1,20 +1,58 @@
+import get from 'platform/utilities/data/get';
+
+export const formValue = (path, fallback = undefined) => formData =>
+  get(path, formData) ?? fallback;
+
 /**
- * Compose multiple form "depends" predicates into a single predicate that
- * returns `true` only when **all** predicates return `true`.
+ * Negate a predicate, returning `true` when the predicate returns `false`.
  *
- * This is useful for form config `depends` functions to keep conditions readable
- * and consistent:
+ * Commonly used with form config `depends` functions. Args are typically
+ * `(formData, index)` when used with array builder pages.
  *
  * @example
- * const isNotDeceased = formData => !formData?.sponsorIsDeceased;
- * const noSharedAddress = formData => formData?.['view:sharesAddressWith'] === NOT_SHARED;
+ * const sponsorIsDeceased = formData => formData.sponsorIsDeceased === true;
+ * const sponsorIsAlive = not(sponsorIsDeceased);
+ * // sponsorIsAlive(formData) === true when sponsor is not deceased
  *
- * const depends = whenAll(isNotDeceased, noSharedAddress);
- * // depends(formData) === true only if both predicates pass
- *
- * @param {...(formData: any) => boolean} preds
- *   Predicate functions that accept the current `formData` and return a boolean.
- * @returns {(formData: any) => boolean}
- *   A predicate function suitable for a page `depends` property.
+ * @param {Function} pred - Predicate function to negate
+ * @returns {Function} Negated predicate
  */
-export const whenAll = (...preds) => formData => preds.every(p => p(formData));
+export const not = pred => (...args) => !pred(...args);
+
+/**
+ * Compose multiple predicates into a single predicate that returns `true`
+ * only when **all** predicates return `true`.
+ *
+ * Commonly used with form config `depends` functions. Args are typically
+ * `(formData, index)` when used with array builder pages.
+ *
+ * @example
+ * const isChild = (formData, index) => formData.applicants[index].relationship === 'child';
+ * const isCollegeAge = (formData, index) => formData.applicants[index].age >= 18;
+ *
+ * const depends = whenAll(isChild, isCollegeAge);
+ * // depends(formData, index) === true only if both predicates pass
+ *
+ * @param {...Function} preds - Predicate functions to combine
+ * @returns {Function} Combined predicate that requires all conditions
+ */
+export const whenAll = (...preds) => (...args) => preds.every(p => p(...args));
+
+/**
+ * Compose multiple predicates into a single predicate that returns `true`
+ * when **any** predicate returns `true`.
+ *
+ * Commonly used with form config `depends` functions. Args are typically
+ * `(formData, index)` when used with array builder pages.
+ *
+ * @example
+ * const hasCertifierAddress = formData => Boolean(formData.certifierAddress?.street);
+ * const hasSponsorAddress = formData => Boolean(formData.sponsorAddress?.street);
+ *
+ * const canSelectAddress = whenAny(hasCertifierAddress, hasSponsorAddress);
+ * // canSelectAddress(formData) === true if either address exists
+ *
+ * @param {...Function} preds - Predicate functions to combine
+ * @returns {Function} Combined predicate that requires at least one condition
+ */
+export const whenAny = (...preds) => (...args) => preds.some(p => p(...args));

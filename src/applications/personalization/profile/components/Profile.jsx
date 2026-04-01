@@ -48,7 +48,7 @@ import { useBrowserMonitoring } from '../hooks/useBrowserMonitoring';
 
 import { fetchTotalDisabilityRating as fetchTotalDisabilityRatingAction } from '../../common/actions/ratedDisabilities';
 
-import getRoutes from '../routes';
+import getRoutes, { getRedirectedRoutes } from '../routes';
 import { PROFILE_PATHS } from '../constants';
 import ProfileWrapper from './ProfileWrapper';
 import { canAccess } from '../../common/selectors';
@@ -167,12 +167,12 @@ class Profile extends Component {
   // content to show after data has loaded
   mainContent = () => {
     let routes = getRoutes({
-      profile2Enabled: this.props.shouldShowProfile2,
       profileHealthCareSettingsPage: this.props
         .shouldShowHealthCareSettingsPage,
       profileHideHealthCareContacts: this.props
         .shouldHideHealthCareContactsPage,
     });
+    const redirects = getRedirectedRoutes();
 
     // feature toggled route
     if (!this.props.shouldShowAccreditedRepTab) {
@@ -223,6 +223,15 @@ class Profile extends Component {
                   />
                 );
               })}
+
+              {redirects.map(route => (
+                <Redirect
+                  exact
+                  from={route.old}
+                  to={route.new}
+                  key={`${route.old}-redirect`}
+                />
+              ))}
 
               <Redirect
                 exact

@@ -8,7 +8,18 @@ import {
   formatPractitionerName,
 } from '../../reducers/blueButton';
 import { Actions } from '../../util/actionTypes';
-import { NONE_RECORDED, UNKNOWN } from '../../util/constants';
+import {
+  NONE_RECORDED,
+  UNKNOWN,
+  labTypes,
+  noteTypes,
+} from '../../util/constants';
+import allergies from '../fixtures/allergies.json';
+import vaccines from '../fixtures/vaccines.json';
+import vitals from '../fixtures/vitals.json';
+import conditions from '../fixtures/conditions.json';
+import notes from '../fixtures/notes.json';
+import labsAndTests from '../fixtures/labsAndTests.json';
 
 describe('formatPractitionerName', () => {
   it('should format valid practitioner names correctly', () => {
@@ -626,6 +637,12 @@ describe('blueButtonReducer', () => {
     demographics: undefined,
     militaryService: undefined,
     accountSummary: undefined,
+    labsAndTestsList: undefined,
+    notesList: undefined,
+    vaccinesList: undefined,
+    allergiesList: undefined,
+    conditionsList: undefined,
+    vitalsList: undefined,
     failedDomains: [],
   };
 
@@ -706,6 +723,12 @@ describe('blueButtonReducer', () => {
       'demographics',
       'militaryService',
       'accountSummary',
+      'labsAndTestsList',
+      'notesList',
+      'vaccinesList',
+      'allergiesList',
+      'conditionsList',
+      'vitalsList',
       'failedDomains',
     ]);
 
@@ -805,6 +828,376 @@ describe('blueButtonReducer', () => {
     expect(newState.accountSummary).to.deep.equal({
       authenticationSummary: {},
       vaTreatmentFacilities: [],
+    });
+  });
+
+  describe('allergiesResponse handling', () => {
+    it('should convert allergies from FHIR entries and sort by date descending', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        allergiesResponse: allergies,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.allergiesList).to.be.an('array');
+      expect(newState.allergiesList).to.have.lengthOf(allergies.entry.length);
+      newState.allergiesList.forEach(a => {
+        expect(a).to.have.property('id');
+        expect(a).to.have.property('type');
+      });
+    });
+
+    it('should sort allergies so the most recent appears first', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        allergiesResponse: allergies,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      for (let i = 1; i < newState.allergiesList.length; i++) {
+        const prev = new Date(newState.allergiesList[i - 1].date);
+        const curr = new Date(newState.allergiesList[i].date);
+        if (!Number.isNaN(prev.getTime()) && !Number.isNaN(curr.getTime())) {
+          expect(prev.getTime()).to.be.at.least(curr.getTime());
+        }
+      }
+    });
+
+    it('should set allergiesList to [] when allergiesResponse is null', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        allergiesResponse: null,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.allergiesList).to.deep.equal([]);
+    });
+
+    it('should set allergiesList to [] when allergiesResponse has no entry', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        allergiesResponse: {},
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.allergiesList).to.deep.equal([]);
+    });
+
+    it('should not mutate other domain lists', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        allergiesResponse: allergies,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vaccinesList).to.be.undefined;
+      expect(newState.vitalsList).to.be.undefined;
+      expect(newState.conditionsList).to.be.undefined;
+      expect(newState.notesList).to.be.undefined;
+      expect(newState.labsAndTestsList).to.be.undefined;
+    });
+  });
+
+  describe('vaccinesResponse handling', () => {
+    it('should convert vaccines from FHIR entries and sort by date descending', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vaccinesResponse: vaccines,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vaccinesList).to.be.an('array');
+      expect(newState.vaccinesList).to.have.lengthOf(vaccines.entry.length);
+      newState.vaccinesList.forEach(v => {
+        expect(v).to.have.property('id');
+      });
+    });
+
+    it('should set vaccinesList to [] when vaccinesResponse is null', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vaccinesResponse: null,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vaccinesList).to.deep.equal([]);
+    });
+
+    it('should set vaccinesList to [] when vaccinesResponse has no entry', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vaccinesResponse: { resourceType: 'Bundle' },
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vaccinesList).to.deep.equal([]);
+    });
+  });
+
+  describe('vitalsResponse handling', () => {
+    it('should convert vitals and filter by allowedVitalLoincs', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vitalsResponse: vitals,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vitalsList).to.be.an('array');
+      expect(newState.vitalsList.length).to.be.greaterThan(0);
+      newState.vitalsList.forEach(v => {
+        expect(v).to.have.property('type');
+      });
+    });
+
+    it('should filter out vitals with non-allowed LOINC codes', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vitalsResponse: {
+          entry: [
+            {
+              resource: {
+                id: 'vital-unknown',
+                code: {
+                  coding: [{ code: '99999-9', system: 'http://loinc.org' }],
+                },
+                effectiveDateTime: '2023-01-01',
+              },
+            },
+          ],
+        },
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vitalsList).to.deep.equal([]);
+    });
+
+    it('should set vitalsList to [] when vitalsResponse is null', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vitalsResponse: null,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vitalsList).to.deep.equal([]);
+    });
+
+    it('should set vitalsList to [] when vitalsResponse has no entry', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        vitalsResponse: {},
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.vitalsList).to.deep.equal([]);
+    });
+  });
+
+  describe('conditionsResponse handling', () => {
+    it('should convert conditions from FHIR entries and sort by date descending', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        conditionsResponse: conditions,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.conditionsList).to.be.an('array');
+      expect(newState.conditionsList).to.have.lengthOf(conditions.entry.length);
+      newState.conditionsList.forEach(c => {
+        expect(c).to.have.property('id');
+      });
+    });
+
+    it('should sort conditions so the most recent appears first', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        conditionsResponse: conditions,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      for (let i = 1; i < newState.conditionsList.length; i++) {
+        const prev = new Date(newState.conditionsList[i - 1].date);
+        const curr = new Date(newState.conditionsList[i].date);
+        if (!Number.isNaN(prev.getTime()) && !Number.isNaN(curr.getTime())) {
+          expect(prev.getTime()).to.be.at.least(curr.getTime());
+        }
+      }
+    });
+
+    it('should set conditionsList to [] when conditionsResponse is null', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        conditionsResponse: null,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.conditionsList).to.deep.equal([]);
+    });
+
+    it('should set conditionsList to [] when conditionsResponse has no entry', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        conditionsResponse: {},
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.conditionsList).to.deep.equal([]);
+    });
+  });
+
+  describe('notesResponse handling', () => {
+    it('should convert notes and filter out OTHER type', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        notesResponse: notes,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.notesList).to.be.an('array');
+      newState.notesList.forEach(n => {
+        expect(n.type).to.not.equal(noteTypes.OTHER);
+      });
+    });
+
+    it('should sort notes by sortByDate descending, pushing nulls to end', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        notesResponse: notes,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      for (let i = 1; i < newState.notesList.length; i++) {
+        const prev = newState.notesList[i - 1].sortByDate;
+        const curr = newState.notesList[i].sortByDate;
+        if (prev && curr) {
+          expect(prev.getTime()).to.be.at.least(curr.getTime());
+        }
+        if (!prev) {
+          expect(curr).to.be.null;
+        }
+      }
+    });
+
+    it('should set notesList to [] when notesResponse is null', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        notesResponse: null,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.notesList).to.deep.equal([]);
+    });
+
+    it('should set notesList to [] when notesResponse has no entry', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        notesResponse: {},
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.notesList).to.deep.equal([]);
+    });
+  });
+
+  describe('labsAndTestsResponse handling', () => {
+    it('should convert labs from FHIR entries and filter out OTHER type', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        labsAndTestsResponse: labsAndTests,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.labsAndTestsList).to.be.an('array');
+      expect(newState.labsAndTestsList.length).to.be.greaterThan(0);
+      newState.labsAndTestsList.forEach(l => {
+        expect(l.type).to.not.equal(labTypes.OTHER);
+      });
+    });
+
+    it('should merge labsAndTestsResponse and radiologyResponse into one list', () => {
+      const radiologyRecord = {
+        radiologist: 'Dr. Smith',
+        id: 'rad-1',
+        effectiveDateTime: '2023-06-01',
+      };
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        labsAndTestsResponse: labsAndTests,
+        radiologyResponse: [radiologyRecord],
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.labsAndTestsList).to.be.an('array');
+      const hasRadiology = newState.labsAndTestsList.some(
+        r => r.type === labTypes.RADIOLOGY,
+      );
+      expect(hasRadiology).to.be.true;
+    });
+
+    it('should handle radiologyResponse alone without labsAndTestsResponse', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        radiologyResponse: [],
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.labsAndTestsList).to.deep.equal([]);
+    });
+
+    it('should set labsAndTestsList to empty when labsAndTestsResponse is null', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        labsAndTestsResponse: null,
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.labsAndTestsList).to.be.an('array');
+      expect(newState.labsAndTestsList).to.have.lengthOf(0);
+    });
+
+    it('should handle null entries in radiologyResponse gracefully', () => {
+      const action = {
+        type: Actions.BlueButtonReport.GET,
+        labsAndTestsResponse: null,
+        radiologyResponse: [null, undefined],
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.labsAndTestsList).to.be.an('array');
+    });
+  });
+
+  describe('ADD_FAILED action', () => {
+    it('should add a failed domain to failedDomains', () => {
+      const action = {
+        type: Actions.BlueButtonReport.ADD_FAILED,
+        payload: 'allergies',
+      };
+      const newState = blueButtonReducer(initialState, action);
+      expect(newState.failedDomains).to.deep.equal(['allergies']);
+    });
+
+    it('should not duplicate an already-failed domain', () => {
+      const stateWithFailed = {
+        ...initialState,
+        failedDomains: ['allergies'],
+      };
+      const action = {
+        type: Actions.BlueButtonReport.ADD_FAILED,
+        payload: 'allergies',
+      };
+      const newState = blueButtonReducer(stateWithFailed, action);
+      expect(newState.failedDomains).to.deep.equal(['allergies']);
+    });
+
+    it('should accumulate multiple different failed domains', () => {
+      let state = blueButtonReducer(initialState, {
+        type: Actions.BlueButtonReport.ADD_FAILED,
+        payload: 'allergies',
+      });
+      state = blueButtonReducer(state, {
+        type: Actions.BlueButtonReport.ADD_FAILED,
+        payload: 'vitals',
+      });
+      expect(state.failedDomains).to.deep.equal(['allergies', 'vitals']);
+    });
+  });
+
+  describe('CLEAR_FAILED action', () => {
+    it('should reset failedDomains to an empty array', () => {
+      const stateWithFailed = {
+        ...initialState,
+        failedDomains: ['allergies', 'vitals'],
+      };
+      const action = { type: Actions.BlueButtonReport.CLEAR_FAILED };
+      const newState = blueButtonReducer(stateWithFailed, action);
+      expect(newState.failedDomains).to.deep.equal([]);
+    });
+  });
+
+  describe('CLEAR_APPOINTMENTS action', () => {
+    it('should reset appointmentsList to undefined', () => {
+      const stateWithAppts = {
+        ...initialState,
+        appointmentsList: [{ id: 'appt1' }],
+      };
+      const action = { type: Actions.BlueButtonReport.CLEAR_APPOINTMENTS };
+      const newState = blueButtonReducer(stateWithAppts, action);
+      expect(newState.appointmentsList).to.be.undefined;
     });
   });
 });

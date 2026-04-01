@@ -1,0 +1,17 @@
+.who-may-apply ul ul {
+  list-style-type: disc;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.eligibility-result-single-line {
+  min-width: min-content;
+  width: max-content;
+  max-width: 100%;
+}
+
+.applied-disability-compensation-place-field .schemaform-required-span {
+  color: var(--vads-color-secondary-dark) !important;
+}

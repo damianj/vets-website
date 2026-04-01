@@ -4,6 +4,7 @@ import {
   createTestStore,
   renderWithStoreAndRouter,
 } from '../../tests/mocks/setup';
+import { APPOINTMENT_STATUS } from '../../utils/constants';
 import CCRequestLayout from './CCRequestLayout';
 
 describe('VAOS Component: CCRequestLayout', () => {
@@ -67,6 +68,7 @@ describe('VAOS Component: CCRequestLayout', () => {
           isCerner: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'proposed',
@@ -179,6 +181,112 @@ describe('VAOS Component: CCRequestLayout', () => {
     });
   });
 
+  describe('Travel reimbursement claim section', () => {
+    const baseAppointment = {
+      type: 'COMMUNITY_CARE_REQUEST',
+      modality: 'communityCare',
+      patientComments: '',
+      created: new Date().toISOString(),
+      contact: {
+        telecom: [
+          { type: 'email', value: 'user@va.gov' },
+          { type: 'phone', value: '1234567890' },
+        ],
+      },
+      location: {
+        stationId: '983',
+        clinicName: 'Clinic 1',
+        clinicPhysicalLocation: 'CHEYENNE',
+      },
+      preferredProviderName: { providerName: 'Clinic 1' },
+      preferredDates: [],
+      videoData: {},
+      vaos: {
+        isCommunityCare: true,
+        isCompAndPenAppointment: false,
+        isCOVIDVaccine: false,
+        isPendingAppointment: true,
+        isUpcomingAppointment: false,
+        isCerner: false,
+        apiData: { serviceType: 'primaryCare' },
+      },
+      status: 'proposed',
+    };
+
+    it('should display proof of attendance section on pending request detail page', async () => {
+      // Arrange
+      const store = createTestStore({
+        ...initialState,
+        featureToggles: {
+          travelPayEnableCommunityCare: true,
+        },
+      });
+
+      // Act
+      const screen = renderWithStoreAndRouter(
+        <CCRequestLayout data={baseAppointment} />,
+        { store },
+      );
+
+      // Assert
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: /Travel reimbursement claim/i,
+        }),
+      ).to.be.ok;
+      expect(screen.getByText(/proof that you attended the appointment/i)).to.be
+        .ok;
+    });
+
+    it('should display proof of attendance section on confirmation page', async () => {
+      // Arrange
+      const store = createTestStore({
+        ...initialState,
+        featureToggles: {
+          travelPayEnableCommunityCare: true,
+        },
+      });
+
+      // Act
+      const screen = renderWithStoreAndRouter(
+        <CCRequestLayout data={baseAppointment} />,
+        { store, path: '/?confirmMsg=true' },
+      );
+
+      // Assert
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: /Travel reimbursement claim/i,
+        }),
+      ).to.be.ok;
+      expect(screen.getByText(/proof that you attended the appointment/i)).to.be
+        .ok;
+    });
+
+    it('should display proof of attendance section for cancelled request', async () => {
+      // Arrange
+      const store = createTestStore(initialState);
+      const cancelledAppointment = {
+        ...baseAppointment,
+        status: APPOINTMENT_STATUS.cancelled,
+        vaos: { ...baseAppointment.vaos, isPendingAppointment: false },
+      };
+
+      // Act
+      const screen = renderWithStoreAndRouter(
+        <CCRequestLayout data={cancelledAppointment} />,
+        { store },
+      );
+
+      // Assert
+      expect(
+        screen.getByRole('heading', { name: /Travel reimbursement claim/i }),
+      ).to.be.ok;
+    });
+  });
+
   describe('When scheduling an CC appointment request', () => {
     it('should display CC request layout', async () => {
       // Arrange
@@ -213,6 +321,7 @@ describe('VAOS Component: CCRequestLayout', () => {
           isUpcomingAppointment: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'proposed',
@@ -231,7 +340,7 @@ describe('VAOS Component: CCRequestLayout', () => {
       expect(
         screen.getByRole('heading', {
           level: 1,
-          name: /We have received your request/i,
+          name: /Appointment request/i,
         }),
       );
 

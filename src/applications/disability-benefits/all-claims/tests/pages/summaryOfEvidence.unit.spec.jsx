@@ -441,7 +441,7 @@ describe('Summary of Evidence', () => {
 
     expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.render().text()).to.contain(
-      'We’ll submit the Separation Health Assessment Part A document that you uploaded',
+      'We’ll submit the Separation Health Assessment document that you uploaded',
     );
     expect(form.render().text()).to.contain(
       separationHealthAssessmentUploads[0].name,
@@ -481,7 +481,7 @@ describe('Summary of Evidence', () => {
       'You haven’t uploaded any evidence.',
     );
     expect(form.render().text()).to.not.contain(
-      'We’ll submit the Separation Health Assessment Part A document that you uploaded',
+      'We’ll submit the Separation Health Assessment document that you uploaded',
     );
     expect(form.render().text()).to.not.contain(
       separationHealthAssessmentUploads[0].name,
@@ -557,7 +557,7 @@ describe('Summary of Evidence', () => {
       'You provided documents to support your claim.',
     );
     expect(form.render().text()).to.contain(
-      'We’ll submit the Separation Health Assessment Part A (SHA A) you uploaded',
+      'We’ll submit the Separation Health Assessment you uploaded',
     );
     expect(form.render().text()).to.contain(
       separationHealthAssessmentUploads[0].name,
@@ -596,7 +596,7 @@ describe('Summary of Evidence', () => {
       'You provided documents to support your claim.',
     );
     expect(form.render().text()).to.not.contain(
-      'We’ll submit the Separation Health Assessment Part A (SHA A) you uploaded',
+      'We’ll submit the Separation Health Assessment you uploaded',
     );
     expect(form.render().text()).to.not.contain(
       separationHealthAssessmentUploads[0].name,
@@ -632,7 +632,7 @@ describe('Summary of Evidence', () => {
       'You provided documents to support your claim.',
     );
     expect(form.render().text()).to.not.contain(
-      'We’ll submit the Separation Health Assessment Part A (SHA A) you uploaded',
+      'We’ll submit the Separation Health Assessment you uploaded',
     );
     expect(form.render().text()).to.not.contain(
       separationHealthAssessmentUploads[0].name,
@@ -668,7 +668,7 @@ describe('Summary of Evidence', () => {
       'You provided documents to support your claim.',
     );
     expect(form.render().text()).to.not.contain(
-      'We’ll submit the Separation Health Assessment Part A (SHA A) you uploaded',
+      'We’ll submit the Separation Health Assessment you uploaded',
     );
     expect(form.render().text()).to.not.contain(
       separationHealthAssessmentUploads[0].name,
@@ -704,7 +704,7 @@ describe('Summary of Evidence', () => {
       'You provided documents to support your claim.',
     );
     expect(form.render().text()).to.not.contain(
-      'We’ll submit the Separation Health Assessment Part A (SHA A) you uploaded',
+      'We’ll submit the Separation Health Assessment you uploaded',
     );
     expect(form.render().text()).to.not.contain(
       separationHealthAssessmentUploads[0].name,

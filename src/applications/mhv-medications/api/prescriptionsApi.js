@@ -14,10 +14,7 @@ import {
   rxListSortingOptions,
   STATION_NUMBER_PARAM,
 } from '../util/constants';
-import {
-  selectCernerPilotFlag,
-  selectEnableKramesHtmlSanitizationFlag,
-} from '../util/selectors';
+import { selectCernerPilotFlag } from '../util/selectors';
 
 export const documentationApiBasePath = `${environment.API_URL}/my_health/v1`;
 
@@ -208,21 +205,14 @@ export const transformBulkRefillResponse = response => {
   };
 };
 
-export const transformPrescriptionDocumentationResponse = (response, state) => {
+export const transformPrescriptionDocumentationResponse = response => {
   const html = response?.data?.attributes?.html;
 
   if (!html) {
     return null;
   }
 
-  // Check feature flag to determine if we should use the sanitizer
-  // Default to true (sanitize) when flag is not set or loading
-  const shouldEnableSanitization =
-    !state?.featureToggles ||
-    state.featureToggles.loading ||
-    selectEnableKramesHtmlSanitizationFlag(state) !== false;
-
-  return shouldEnableSanitization ? sanitizeKramesHtmlStr(html) : html;
+  return sanitizeKramesHtmlStr(html);
 };
 
 // Create the prescriptions API slice
@@ -283,7 +273,7 @@ export const prescriptionsApi = createApi({
     }),
     getPrescriptionDocumentation: builder.query({
       // This endpoint always hits v1 docs API regardless of Cerner pilot flag
-      async queryFn({ id, stationNumber }, { getState }) {
+      async queryFn({ id, stationNumber }) {
         const queryParams = stationNumber
           ? `?${STATION_NUMBER_PARAM}=${stationNumber}`
           : '';
@@ -292,11 +282,7 @@ export const prescriptionsApi = createApi({
             `${documentationApiBasePath}/prescriptions/${id}/documentation${queryParams}`,
           );
 
-          const state = getState();
-          const html = transformPrescriptionDocumentationResponse(
-            response,
-            state,
-          );
+          const html = transformPrescriptionDocumentationResponse(response);
 
           return { data: html };
         } catch (error) {

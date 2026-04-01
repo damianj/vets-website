@@ -50,7 +50,7 @@ export default function TravelClaimCard(props) {
           Claim number: <span data-dd-privacy="mask">{claimNumber}</span>
         </li>
         <li>
-          Submitted on {createDate} at {createTime}
+          Created on {createDate} at {createTime}
         </li>
         <li>
           Updated on {updateDate} at {updateTime}

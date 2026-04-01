@@ -13,6 +13,7 @@ import {
   ProfileUnconnected as Profile,
   mapStateToProps,
 } from '../../components/Profile';
+import { getRedirectedRoutes } from '../../routes';
 
 describe('Profile', () => {
   let defaultProps;
@@ -303,6 +304,27 @@ describe('Profile', () => {
       const result = instance.handleDowntimeApproaching(downtime, children);
 
       expect(result).to.deep.equal(children);
+      wrapper.unmount();
+    });
+  });
+
+  describe('legacy route redirects', () => {
+    it('renders redirects for all legacy profile routes', () => {
+      const wrapper = shallow(<Profile {...defaultProps} />);
+      const content = shallow(wrapper.instance().mainContent());
+      const redirects = content.find('Redirect');
+
+      getRedirectedRoutes().forEach(route => {
+        const matchingRedirects = redirects.filterWhere(
+          node =>
+            node.prop('exact') === true &&
+            node.prop('from') === route.old &&
+            node.prop('to') === route.new,
+        );
+
+        expect(matchingRedirects.length).to.equal(1);
+      });
+
       wrapper.unmount();
     });
   });

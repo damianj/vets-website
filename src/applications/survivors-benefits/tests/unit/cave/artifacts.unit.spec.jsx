@@ -35,6 +35,24 @@ describe('cave/artifacts', () => {
       const result = await fetchArtifactSummary('doc-123');
       expect(result).to.deep.equal(response);
     });
+
+    it('wraps api errors with a real Error instance', async () => {
+      apiRequestStub.rejects({
+        errors: [{ status: '403', code: 'idp_forbidden', detail: 'Forbidden' }],
+      });
+
+      let error;
+      try {
+        await fetchArtifactSummary('doc-123');
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.include('CAVE artifact summary request failed');
+      expect(error.message).to.include('403');
+      expect(error.message).to.include('Forbidden');
+    });
   });
 
   describe('downloadArtifactData', () => {
@@ -59,6 +77,22 @@ describe('cave/artifacts', () => {
       apiRequestStub.resolves(response);
       const result = await downloadArtifactData('doc-123', 'kvp-456');
       expect(result).to.deep.equal(response);
+    });
+
+    it('wraps download errors with a real Error instance', async () => {
+      apiRequestStub.rejects({ status: 502, error: 'Gateway failure' });
+
+      let error;
+      try {
+        await downloadArtifactData('doc-123', 'kvp-456');
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.instanceOf(Error);
+      expect(error.message).to.include('CAVE artifact download failed');
+      expect(error.message).to.include('502');
+      expect(error.message).to.include('Gateway failure');
     });
   });
 });

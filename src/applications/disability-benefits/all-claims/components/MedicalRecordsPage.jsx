@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   VaModal,
@@ -7,6 +7,7 @@ import {
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import FormNavButtons from 'platform/forms-system/src/js/components/FormNavButtons';
 import { scrollToFirstError } from 'platform/utilities/scroll';
+import { focusElement } from 'platform/utilities/ui';
 import { checkValidations } from '../utils/submit';
 import {
   hasVAEvidence,
@@ -48,22 +49,21 @@ export const MedicalRecordsPage = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertType, setAlertType] = useState([]);
-  const alertRef = useRef(null);
 
+  useEffect(
+    () => {
+      if (hasError) {
+        scrollToFirstError();
+      }
+    },
+    [hasError],
+  );
   const missingSelection = (error, _fieldData, formData) => {
     if (!hasVAEvidence(formData) && !hasPrivateEvidence(formData)) {
       error.addError?.(missingSelectionErrorMessageMedicalRecordPage);
     }
   };
 
-  useEffect(
-    () => {
-      if (alertVisible && alertRef.current) {
-        alertRef.current.focus();
-      }
-    },
-    [alertVisible],
-  );
   const checkErrors = (formData = data) => {
     const error = checkValidations([missingSelection], data, formData);
 
@@ -98,7 +98,16 @@ export const MedicalRecordsPage = ({
       setFormData(updatedFormData);
       setPreviousSelection(null);
       setModalVisible(false);
-      setAlertVisible(true);
+      /**  
+        thread for reason to use setTimeout here 
+        @see https://dsva.slack.com/archives/C01DBGX4P45/p1774282809644219
+      */
+      setTimeout(() => {
+        // focus on the 'continue' button
+        focusElement('.usa-button-primary');
+        // followed by setting the alert to be visible
+        setAlertVisible(true);
+      }, 100);
     },
     onCancelChange: () => {
       if (previousSelection) {
@@ -134,8 +143,9 @@ export const MedicalRecordsPage = ({
     onSubmit: event => {
       event.preventDefault();
       if (checkErrors()) {
-        scrollToFirstError();
-      } else if (shouldShowModal) {
+        return;
+      }
+      if (shouldShowModal) {
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -145,8 +155,9 @@ export const MedicalRecordsPage = ({
     onUpdatePage: event => {
       event.preventDefault();
       if (checkErrors()) {
-        scrollToFirstError();
-      } else if (shouldShowModal) {
+        return;
+      }
+      if (shouldShowModal) {
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -158,22 +169,27 @@ export const MedicalRecordsPage = ({
   return (
     <>
       <h3>Types of medical records</h3>
-      <div className="vads-u-margin-bottom--1">
-        <VaAlert
-          ref={alertRef}
-          closeBtnAriaLabel="Close notification"
-          closeable
-          onCloseEvent={() => setAlertVisible(false)}
-          fullWidth="false"
-          slim
-          status="success"
-          visible={alertVisible}
-          uswds
-          tabIndex="-1"
-        >
-          <p className="vads-u-margin-y--0">{alertMessage(alertType)}</p>
-        </VaAlert>
-      </div>
+      {/* 
+        counter intuitive to have conditional render here when VaAlert has a prop  
+        Reason is the alert will not be read if it's not added and removed from the DOM.
+      */}
+      {alertVisible && (
+        <div className="vads-u-margin-bottom--1">
+          <VaAlert
+            role="alert"
+            closeBtnAriaLabel="Close notification"
+            onCloseEvent={() => setAlertVisible(false)}
+            closeable
+            fullWidth="false"
+            slim
+            status="success"
+            visible={alertVisible}
+            uswds
+          >
+            <p className="vads-u-margin-y--0">{alertMessage(alertType)}</p>
+          </VaAlert>
+        </div>
+      )}
       <VaModal
         clickToClose
         modalTitle="Change type of medical records?"

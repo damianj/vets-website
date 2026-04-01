@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { format, isValid } from 'date-fns';
 import { genderLabels } from 'platform/static-data/labels';
 import { selectProfile } from 'platform/user/selectors';
-import { formatNumberForScreenReader } from 'platform/forms-system/src/js/utilities/ui/mask-string';
+import SSNWidget from 'platform/forms-system/src/js/review/SSNWidget';
+import VAFileNumberWidget from 'platform/forms-system/src/js/review/VAFileNumberWidget';
 import {
   parseDateToDateObj,
   FORMAT_READABLE_DATE_FNS,
@@ -112,9 +113,7 @@ export const PersonalInformationReview = ({
                 data-dd-action-name="Veteran's SSN"
               >
                 {ssn ? (
-                  <span data-dd-action-name="Veteran's SSN">
-                    {formatNumberForScreenReader(ssn)}
-                  </span>
+                  <SSNWidget value={ssn} />
                 ) : (
                   <span data-testid="ssn-not-available">Not available</span>
                 )}
@@ -129,9 +128,7 @@ export const PersonalInformationReview = ({
                 data-dd-action-name="Veteran's VA file number"
               >
                 {vaFileLastFour ? (
-                  <span data-dd-action-name="Veteran's VA file number">
-                    {formatNumberForScreenReader(vaFileLastFour)}
-                  </span>
+                  <VAFileNumberWidget value={vaFileLastFour} />
                 ) : (
                   <span data-testid="va-file-number-not-available">
                     Not available

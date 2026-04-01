@@ -70,7 +70,7 @@ describe('SM CURATED LIST REPLY FLOW WITH INTERSTITIAL', () => {
     // Store current path (should be /reply/message-id/)
     cy.location('pathname').then(replyPath => {
       // Click the continue to reply link
-      PatientInterstitialPage.getStartMessageLink().click();
+      PatientInterstitialPage.clickStartMessageLink();
 
       // Verify we stayed on the same reply path (didn't navigate to recent/select care team)
       cy.location('pathname').should('equal', replyPath);
@@ -95,7 +95,7 @@ describe('SM CURATED LIST REPLY FLOW WITH INTERSTITIAL', () => {
     PatientReplyPage.clickReplyButton(updatedSingleThreadResponse);
 
     // Click continue to reply
-    PatientInterstitialPage.getStartMessageLink().click();
+    PatientInterstitialPage.clickStartMessageLink();
 
     // Fill out and send reply
     PatientReplyPage.getMessageBodyField()

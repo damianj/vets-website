@@ -90,6 +90,18 @@ export const careTypeLabels = {
   IN_HOME_CARE_ATTENDANT: 'In-home care attendant',
 };
 
+export const allCareTypeLabels = {
+  NURSING_HOME: 'Nursing home',
+  CARE_FACILITY: 'Residential care facility',
+  ADULT_DAYCARE: 'Adult daycare',
+  IN_HOME_CARE_ATTENDANT: 'In-home care attendant',
+};
+
+export const getCareTypeLabels = formData =>
+  formData?.survivorsBenefitsForm2025VersionEnabled
+    ? allCareTypeLabels
+    : careTypeLabels;
+
 export const frequencyLabels = {
   MONTHLY: 'Once a month',
   ANNUALLY: 'Once a year',
@@ -112,6 +124,17 @@ export const typeOfIncomeLabels = {
 export const careRecipientLabels = {
   SURVIVING_SPOUSE: 'Surviving spouse',
   OTHER: 'Other',
+};
+
+export const DEFAULT_INCOME_SOURCES =
+  'Do you or your dependents have more than 4 sources of income?';
+export const VERSION_2025_INCOME_SOURCES =
+  'How many income sources does your family have?';
+
+export const incomeSourceLabels = {
+  NO_INCOME: 'No income',
+  ONE_TO_FOUR_SOURCES: '1-4 sources of income',
+  MORE_THAN_FIVE_SOURCES: '5+ sources of income',
 };
 
 // Get military states to filter them out

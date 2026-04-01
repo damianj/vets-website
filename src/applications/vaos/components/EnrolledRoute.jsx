@@ -7,7 +7,12 @@ import environment from '@department-of-veterans-affairs/platform-utilities/envi
 import { RequiredLoginView } from 'platform/user/authorization/components/RequiredLoginView';
 import { selectPatientFacilities } from 'platform/user/cerner-dsot/selectors';
 import backendServices from 'platform/user/profile/constants/backendServices';
-import { selectUser, isLOA3 } from 'platform/user/selectors';
+import {
+  selectUser,
+  isLOA3,
+  isLoggedIn,
+  isProfileLoading,
+} from 'platform/user/selectors';
 import FullWidthLayout from './FullWidthLayout';
 
 import { useDatadogRum } from '../utils/useDatadogRum';
@@ -16,13 +21,15 @@ export default function EnrolledRoute({ component: RouteComponent, ...rest }) {
   const user = useSelector(selectUser);
   const sites = useSelector(selectPatientFacilities);
   const isUserLOA3 = useSelector(isLOA3);
+  const userLoggedIn = useSelector(isLoggedIn);
+  const profileLoading = useSelector(isProfileLoading);
   const hasRegisteredSystems = sites?.length > 0;
   const isToggleLoading = useSelector(state => state.featureToggles.loading);
-  const userProfileLoading = user?.profile?.loading;
   useDatadogRum();
 
   // Wait for feature flag & user profile to load before rendering.
-  if (isToggleLoading || userProfileLoading) {
+  // profileLoading can be undefined initially, so we check for explicit false
+  if (isToggleLoading || profileLoading !== false) {
     return (
       <FullWidthLayout>
         <va-loading-indicator
@@ -34,10 +41,10 @@ export default function EnrolledRoute({ component: RouteComponent, ...rest }) {
   }
 
   // Determine if the user should be redirected to the `/my-health` page.
-  // Redirect if:
-  //   1. The user is not LOA3 authenticated
-  //   2. OR not registered with any facilities.
-  const shouldRedirectToMyHealtheVet = !isUserLOA3 || !hasRegisteredSystems;
+  // 1. Only redirect if the user is logged in AND (not LOA3 or not registered with any facilities).
+  // 2. This prevents redirecting before authentication has completed.
+  const shouldRedirectToMyHealtheVet =
+    userLoggedIn && (!isUserLOA3 || !hasRegisteredSystems);
 
   if (shouldRedirectToMyHealtheVet) {
     window.location.replace(`${window.location.origin}/my-health`);

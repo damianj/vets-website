@@ -1,10 +1,36 @@
 App Name: `Form 21-686c `
-Active engineers: Sean Midgley (front end), Dakota Larson (front end), Evan Smith (back end), Matthew Knight (back end)
-Form ID (if different from app name): `21-686c and 21-674 Version 2` `(FORM_21_686CV2: '686C-674-V2')`
+
+Form ID (if different from app name): `21-674 Version 2` `(FORM_21_686CV2: '686C-674-V2')`
 
 # Background
 
 From time to time Veterans need to make updates to the dependents they receive benefits for. These updates can be when a divorce happens, or a death, or a new child is born, etc. The 686c form is how these changes to dependents are made.
+
+## Entry
+
+- Local: http://localhost:3001/manage-dependents/add-remove-form-21-686c-674
+- Staging: https://staging.va.gov/manage-dependents/add-remove-form-21-686c-674
+- Production: https://www.va.gov/manage-dependents/add-remove-form-21-686c-674
+
+## Mock users
+
+- [Picklist (v3) users](https://github.com/department-of-veterans-affairs/va.gov-team-sensitive/blob/master/Administrative/vagov-users/dependents-picklist-test-users.md)
+- [More staging test accounts](https://github.com/department-of-veterans-affairs/va.gov-team-sensitive/blob/master/Administrative/vagov-users/staging-test-accounts-dependents.md)
+- [Test case users](https://github.com/department-of-veterans-affairs/va.gov-team-sensitive/blob/master/Administrative/vagov-users/staging-test-accounts-686-674-v2.md)
+- [Test app reminders](https://github.com/department-of-veterans-affairs/va.gov-team-sensitive/blob/master/Administrative/vagov-users/staging-test-app-reminders-686c.md) (outdated?)
+
+## Feature toggles
+
+- `va_dependents_v3` - Enable picklist (v3) removal feature
+- `dependents_pension_check` - Enable pension check
+- `va_dependents_no_ssn` - Enable no SSN flow for adding dependents
+- `va_dependents_net_worth_and_pension` - Enable net worth & pension questions
+- `va_dependents_duplicate_modals` - Enable duplicate entry checks for current spouse (adding a child duplicate is enabled via platform)
+- `va_dependents_fully_digital_form_project` - Owned by FDF team
+- `dependents_enable_form_viewer_mfe` - Owned by FDF team
+- `va_dependents_browser_monitoring_enabled` - Enable Datadog Real User Monitoring & Logging
+- `va_dependents_v2` - No longer being used
+- `va_dependents_v2_banner` - no longer being used
 
 ## How the form works for the user
 
@@ -24,7 +50,7 @@ The Veteran can choose as many or as few of these workflows at a time. This mean
 
 Once the user chooses the workflows they want, they move through the form filling out the fields and are then shown a review page of what they are about to submit. They can then submit and see a confirmation screen that they submitted the form.
 
-## The Front End code
+## The frontend code
 
 Since the 686c is a rather large form we decided to split the form chapters up into smaller files instead of putting them all in one huge file. We broke these files up into individual folders for each respective chapter. You can find each individual chapter folder inside `/config`. You will also see a few files inside the `/config` folder that are not inside the chapter folders, these files are -
 
@@ -37,14 +63,11 @@ The form system uses Redux and thus we also use Redux in our form so we have a `
 
 > It is worth noting that we make an API call when the user lands on the introduction page of the form to check that they have a valid VA file number. We check for this VA file number because we submit this form to BGS and we cannot submit the form without that VA file number. The code to check if the user has a valid VA file number is inside the `/actions/index.js` and `/reducers/index.js` files respectively.
 
-
-
-
-## Callouts on how the front end works
+## Callouts on how the frontend works
 
 We used the original form system with USWDS v3 web-components to build this application and we followed a pretty standard implementation with just a few areas worth noting.
 
-### Valid VA file number check (front end)
+### Valid VA file number check (frontend)
 
 The form is built using `/config/form.js` which is imported and used inside `/containers/App.jsx` with the `<RoutedSavableApp />` component from the platform. In `/containers/App.jsx` we dynamically render a loading indicator if the app is in an `isLoading` state from Redux. This allows us to show a loading indicator while we make the call to check if the Veteran has a valid VA file number as noted in the block quote above. The back end of that valid VA file number is detailed below in the back end section. Once the call is made and the form renders we either show the user an alert if they do not have a valid VA file number, or a `<SaveInProgressIntro />` component from the platform to start the form.
 
@@ -53,6 +76,12 @@ The form is built using `/config/form.js` which is imported and used inside `/co
 The first page a Veteran sees when they enter the form from the introduction page are checkboxes where they can choose to Add dependents, Remove dependents, or both. The original design for our form intended for us only to show the chapters that the Veteran needed to see; the idea would be that we would show the Veteran a list of tasks they could accomplish using the form and they could pick whatever ones they wanted to perform, then we would only show the Veteran the chapters they needed to see to accomplish those tasks.
 
 The way we do this in the code is by using the `depends` attribute for the optional chapters inside `/config/form.js` along with a helper method called [isChapterFieldRequired](https://github.com/department-of-veterans-affairs/vets-website/blob/a4babda01dac9cbb30feded94e92ea8f557b69be/src/applications/disability-benefits/686c-674/config/helpers.js#L7) and passing in the `formData` object and the name of that respective chapter. The `isChapterFieldRequired` function then checks if the Veteran selected the task in the wizard associated with that chapter, which we hold in the `formData["view:selectable686Options"]` array in the form data and returns `true` and shows that chapter if it corresponds to a task the Veteran selected.
+
+### Picklist (v3) flow
+
+This flow shows the Veteran their list of active dependents and allows them to select which dependents to remove. This minimizes information that the Veteran has to enter.
+
+To learn more about the picklist flow, see the [picklist readme](./components/picklist/README.md).
 
 ## Array Builder Implementation
 
@@ -78,8 +107,10 @@ This form implementation uses the Array Builder pattern (also known as the List 
 The data structure differs between Add and Edit modes:
 
 **Add Mode** (initial iteration)
+
 - Access to complete `formData` including all fields and arrays
 - Example structure:
+
 ```javascript
 formData: {
   ...everyOtherFieldAndArrayData,
@@ -92,8 +123,10 @@ formData: {
 ```
 
 **Edit Mode** (modifying existing items)
+
 - Access limited to the specific array item being edited
 - Example structure:
+
 ```javascript
 formData: {
   ...childData,
@@ -252,17 +285,17 @@ For questions or issues related to the Array Builder pattern, contact the Vetera
 
 ## The back end code
 
-There are really two separate API endpoints that we use in the 686c form, one of them dealing with the check for a valid VA file number noted in the front end sections, and one that receives the form payload on submission. The endpoint for the VA file number check is located at [vets-api/app/controllers/v0/profile/valid_va_file_numbers_controller.rb](https://github.com/department-of-veterans-affairs/vets-api/blob/d6a57d2046248013e52a38fc490c1cd6e5cb955c/app/controllers/v0/profile/valid_va_file_numbers_controller.rb#L1) and the endpoint for the submission payload is at [vets-api/app/controllers/v0/dependents_applications_controller.rb](https://github.com/department-of-veterans-affairs/vets-api/blob/d6a57d2046248013e52a38fc490c1cd6e5cb955c/app/controllers/v0/dependents_applications_controller.rb#L1).
+There are really two separate API endpoints that we use in the 686c form, one of them dealing with the check for a valid VA file number noted in the frontend sections, and one that receives the form payload on submission. The endpoint for the VA file number check is located at [vets-api/app/controllers/v0/profile/valid_va_file_numbers_controller.rb](https://github.com/department-of-veterans-affairs/vets-api/blob/d6a57d2046248013e52a38fc490c1cd6e5cb955c/app/controllers/v0/profile/valid_va_file_numbers_controller.rb#L1) and the endpoint for the submission payload is at [vets-api/app/controllers/v0/dependents_applications_controller.rb](https://github.com/department-of-veterans-affairs/vets-api/blob/d6a57d2046248013e52a38fc490c1cd6e5cb955c/app/controllers/v0/dependents_applications_controller.rb#L1).
 
 ### Valid VA file number check (back end)
 
-When the Veteran first lands on the Introduction page of the form a call is made to `vets-api/app/controllers/v0/profile/valid_va_file_numbers_controller.rb` where we use BGS as a data source to see if the current user has valid VA file number. We do this with the `valid_va_file_number_data` method call which simply takes the data returned by BGS for the current user and sees if the user has a `file_nbr` which is where BGS holds the file number. If the user has a valid VA file number we return `true`, otherwise we return `false`, to the front end.
+When the Veteran first lands on the Introduction page of the form a call is made to `vets-api/app/controllers/v0/profile/valid_va_file_numbers_controller.rb` where we use BGS as a data source to see if the current user has valid VA file number. We do this with the `valid_va_file_number_data` method call which simply takes the data returned by BGS for the current user and sees if the user has a `file_nbr` which is where BGS holds the file number. If the user has a valid VA file number we return `true`, otherwise we return `false`, to the frontend.
 
 ### Form submission
 
 After the Veteran fills out the form and submits the payload it is sent to `vets-api/app/controllers/v0/dependents_applications_controller.rb` on the back end. The main method we use in that controller is the `create` method, this method starts out by creating a `claim` object. The `claim` object is created with the `new` method of the `DependencyClaim`. We then check if for some reason the `claim` did not get created, meaning that the form payload has not passed our validation (more on this in a moment), we then log the error and raise an exception.
 
-After we create the claim we then process any attached documents, which are needed for some of the workflows in the form, and then using the dependents service we send the data to BGS. In addition to sending the data to BGS we also use `PDFtk` to create a PDF that we then send to VBMS. VBMS then uploads the PDF to the Veteran's eFolder (like a "my documents" folder at the VA for each Veteran). Once the claim has been submitted successfully, at this point we clear out the current saved claim data so that this claim doesn't stay in the Veteran's `save in progress` function on the form. We then render JSON to the front end.
+After we create the claim we then process any attached documents, which are needed for some of the workflows in the form, and then using the dependents service we send the data to BGS. In addition to sending the data to BGS we also use `PDFtk` to create a PDF that we then send to VBMS. VBMS then uploads the PDF to the Veteran's eFolder (like a "my documents" folder at the VA for each Veteran). Once the claim has been submitted successfully, at this point we clear out the current saved claim data so that this claim doesn't stay in the Veteran's `save in progress` function on the form. We then render JSON to the frontend.
 
 ### After submission
 

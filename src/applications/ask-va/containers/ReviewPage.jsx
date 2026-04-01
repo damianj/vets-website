@@ -11,9 +11,13 @@ import {
 import {
   setData,
   setEditMode,
+  setFormErrors,
+  setSubmission,
   setViewedPages,
   uploadFile,
 } from '@department-of-veterans-affairs/platform-forms-system/actions';
+import { isValidForm } from '@department-of-veterans-affairs/platform-forms-system/validation';
+import { reduceErrors } from '~/platform/forms-system/src/js/utilities/data/reduceErrors';
 import {
   getActiveExpandedPages,
   getPageKeys,
@@ -64,6 +68,7 @@ import {
 
 const ReviewPage = props => {
   const [showAlert, setShowAlert] = useState(true);
+  const [showValidationAlert, setShowValidationAlert] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [editSection, setEditSection] = useState([]);
   const [attachments, setAttachments] = useState([]);
@@ -152,8 +157,43 @@ const ReviewPage = props => {
     handleDataUpdate(props.setData, args, props.onSetData);
   };
 
+  const validateForm = (pageList = []) => {
+    // Validate the form before submitting
+    const { isValid, errors } = isValidForm(props.form, pageList);
+
+    // Set form errors to display validation messages (if there are any)
+    const processedErrors = reduceErrors(
+      errors,
+      pageList,
+      formConfig.reviewErrors,
+    );
+    props.setFormErrors({
+      rawErrors: errors,
+      errors: processedErrors,
+    });
+
+    return isValid;
+  };
+
   const handleSubmit = async () => {
+    // RouteSaveableApp looks for the pageList in the last index, so we should do the same
+    if (!validateForm(props.routes?.[props.routes?.length - 1]?.pageList)) {
+      props.setSubmission('hasAttemptedSubmit', true);
+
+      // Scroll to the top to show errors
+      scrollTo('topScrollElement', {
+        duration: 500,
+        delay: 0,
+        smooth: true,
+      });
+
+      setShowValidationAlert(true);
+
+      return;
+    }
+
     setIsDisabled(true);
+    setShowValidationAlert(false);
     setShow503Alert(false);
     try {
       await handleFormSubmission({
@@ -271,6 +311,19 @@ const ReviewPage = props => {
                 through Friday, 8:00 a.m to 9:00 p.m ET.
               </p>
             </div>
+          </VaAlert>
+        ) : null}
+      </div>
+      <div className="vads-u-margin-y--3">
+        {showValidationAlert ? (
+          <VaAlert status="error" data-testid="validation-alert">
+            <h3 slot="headline">
+              Some of your answers are missing information or aren’t valid
+            </h3>
+            <p className="vads-u-margin-y--0">
+              Check each section of the form to make sure you’ve filled out all
+              of the required information.
+            </p>
           </VaAlert>
         ) : null}
       </div>
@@ -1457,13 +1510,17 @@ ReviewPage.propTypes = {
   }).isRequired,
   askVA: PropTypes.object,
   chapters: PropTypes.array, // Of what?
+  form: PropTypes.object,
   formData: PropTypes.object, // Shape?
   goBack: PropTypes.func,
   goForward: PropTypes.func,
   isUserLOA3: PropTypes.bool,
   loggedIn: PropTypes.bool,
+  routes: PropTypes.array,
   setData: PropTypes.func,
   setEditMode: PropTypes.func,
+  setFormErrors: PropTypes.func,
+  setSubmission: PropTypes.func,
   setValid: PropTypes.func,
   setViewedPages: PropTypes.func,
   uploadFile: PropTypes.func,
@@ -1473,6 +1530,8 @@ ReviewPage.propTypes = {
 const mapDispatchToProps = {
   setData,
   setEditMode,
+  setFormErrors,
+  setSubmission,
   setViewedPages,
   uploadFile,
 };

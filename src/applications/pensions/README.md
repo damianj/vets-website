@@ -1,4 +1,5 @@
 # Form 21P-527EZ
+
 Application for Veterans Pension
 
 Form ID (if different from app name): `21P-527EZ`
@@ -59,8 +60,8 @@ Active toggle names:
 - `pension_browser_monitoring_enabled`: Pension Datadog RUM monitoring
 - `pbb_forms_require_loa3`: Require LOA3 to access forms
 - `pension_rating_alert_logging_enabled`: Show disability rating alert - 100% disability pays more than pension
-- `pension_multiple_page_response`: Implement the Multiple Page Response (Array builder) pattern for dependent children
-- `pension_pdf_form_alignment`: Update martial status logic
+- `pension_multiple_page_response`: Enables Multiple Page Response (Array builder) pattern for list-and-loops
+- `pension_pdf_form_alignment`: Enable updates to match upcoming PDF changes
 
 The form is built using `/config/form.js` which is imported and used inside `/PensionsApp.jsx` with the `<RoutedSavableApp />` component from the platform.
 

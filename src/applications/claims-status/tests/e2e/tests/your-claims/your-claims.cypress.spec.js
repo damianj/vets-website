@@ -50,9 +50,6 @@ describe('Your claims', () => {
           name: 'Your claim letters',
         }).should('have.attr', 'href', '#your-claim-letters');
         cy.findByRole('link', {
-          name: "What if I can't find my claim, decision review, or appeal?",
-        }).should('have.attr', 'href', '#what-if-i-dont-see-my-appeal');
-        cy.findByRole('link', {
           name: 'Your travel reimbursement claims',
         }).should('have.attr', 'href', '#your-travel-reimbursement-claims');
         cy.findByRole('link', {
@@ -126,18 +123,6 @@ describe('Your claims', () => {
     cy.axeCheck();
   });
 
-  it("should display the 'What if I can't find' section", () => {
-    cy.findByRole('heading', {
-      name: "What if I can't find my claim, decision review, or appeal?",
-    });
-
-    cy.findByText(
-      'If you recently submitted a claim or requested a Higher Level Review or Board appeal, we might still be processing it. Check back for updates.',
-    );
-
-    cy.axeCheck();
-  });
-
   it('should display the travel claims section', () => {
     cy.findByRole('heading', {
       name: 'Your travel reimbursement claims',
@@ -182,5 +167,82 @@ describe('Your claims', () => {
     verifyNeedHelp();
 
     cy.axeCheck();
+  });
+});
+
+describe('Feature flag: cstClaimsListFilter', () => {
+  beforeEach(() => {
+    mockClaimsEndpoint();
+    mockAppealsEndpoint();
+    mockStemEndpoint();
+  });
+
+  context('when disabled', () => {
+    beforeEach(() => {
+      mockFeatureToggles({ cstClaimsListFilter: false });
+      cy.login();
+      cy.visit('/track-claims');
+      cy.injectAxe();
+    });
+
+    it('should link to "What if" section in On this page with old heading', () => {
+      cy.get('va-on-this-page')
+        .shadow()
+        .within(() => {
+          cy.findByRole('link', {
+            name: "What if I can't find my claim, decision review, or appeal?",
+          }).should('have.attr', 'href', '#what-if-i-dont-see-my-appeal');
+        });
+
+      cy.axeCheck();
+    });
+
+    it('should display "What if" section with single paragraph', () => {
+      cy.findByRole('heading', {
+        name: "What if I can't find my claim, decision review, or appeal?",
+      });
+
+      cy.findByText(
+        'If you recently submitted a claim or requested a Higher Level Review or Board appeal, we might still be processing it. Check back for updates.',
+      );
+
+      cy.axeCheck();
+    });
+  });
+
+  context('when enabled', () => {
+    beforeEach(() => {
+      mockFeatureToggles({ cstClaimsListFilter: true });
+      cy.login();
+      cy.visit('/track-claims');
+      cy.injectAxe();
+    });
+
+    it('should link to "What if" section in On this page with new heading', () => {
+      cy.get('va-on-this-page')
+        .shadow()
+        .within(() => {
+          cy.findByRole('link', {
+            name: "If you can't find your claim, decision review, or appeal",
+          }).should('have.attr', 'href', '#if-you-cant-find-your-appeal');
+        });
+
+      cy.axeCheck();
+    });
+
+    it('should display "What if" section with two subsections', () => {
+      cy.findByRole('heading', {
+        name: "If you can't find your claim, decision review, or appeal",
+      });
+
+      cy.findByRole('heading', {
+        name: 'We might still be processing it',
+      });
+      cy.findByRole('heading', {
+        name: 'We may have combined your claims',
+      });
+
+      cy.axeCheck();
+    });
   });
 });

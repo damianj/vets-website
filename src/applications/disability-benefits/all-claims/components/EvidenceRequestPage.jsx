@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   VaModal,
@@ -8,6 +8,7 @@ import {
 import _ from 'platform/utilities/data';
 import FormNavButtons from 'platform/forms-system/src/js/components/FormNavButtons';
 import { scrollToFirstError } from 'platform/utilities/scroll';
+import { focusElement } from 'platform/utilities/ui';
 import { checkValidations } from '../utils/submit';
 import {
   getVaEvidence,
@@ -45,6 +46,15 @@ export const EvidenceRequestPage = ({
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertType, setAlertType] = useState([]);
 
+  useEffect(
+    () => {
+      if (hasError) {
+        scrollToFirstError();
+      }
+    },
+    [hasError],
+  );
+
   const hasEvidenceToRemove = () => {
     return (
       getVaEvidence(data).length > 0 ||
@@ -68,7 +78,6 @@ export const EvidenceRequestPage = ({
 
     const result = error?.[0] || null;
     setHasError(result);
-
     return result;
   };
 
@@ -97,7 +106,16 @@ export const EvidenceRequestPage = ({
       updatedFormData['view:selectableEvidenceTypes'] = selectableEvidenceTypes;
       setFormData(updatedFormData);
       setModalVisible(false);
-      setAlertVisible(true);
+      /**  
+        thread for reason to use setTimeout here 
+        @see https://dsva.slack.com/archives/C01DBGX4P45/p1774282809644219
+      */
+      setTimeout(() => {
+        // focus on the 'continue' button
+        focusElement('.usa-button-primary');
+        // followed by setting the alert to be visible
+        setAlertVisible(true);
+      }, 100);
     },
     onCancelChange: () => {
       const updatedFormData = {
@@ -119,9 +137,14 @@ export const EvidenceRequestPage = ({
     },
     onSubmit: event => {
       event.preventDefault();
+      /* 
+        checkErrors is handled by the useEffect above to trigger the expected behavior 
+        of reading the error message via screen reader and focus on the va-radio-button
+      */
       if (checkErrors()) {
-        scrollToFirstError();
-      } else if (hasMedicalRecords === false && hasEvidenceToRemove()) {
+        return;
+      }
+      if (hasMedicalRecords === false && hasEvidenceToRemove()) {
         setModalVisible(true);
       } else if (hasMedicalRecords === false) {
         const updatedFormData = { ...data };
@@ -142,8 +165,9 @@ export const EvidenceRequestPage = ({
     onUpdatePage: event => {
       event.preventDefault();
       if (checkErrors()) {
-        scrollToFirstError();
-      } else if (hasMedicalRecords === false && hasEvidenceToRemove()) {
+        return;
+      }
+      if (hasMedicalRecords === false && hasEvidenceToRemove()) {
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -155,20 +179,23 @@ export const EvidenceRequestPage = ({
   return (
     <>
       <h3>Medical records that support your disability claim</h3>
-      <div className="vads-u-margin-bottom--1">
-        <VaAlert
-          closeBtnAriaLabel="Close notification"
-          closeable
-          onCloseEvent={() => setAlertVisible(false)}
-          fullWidth="false"
-          slim
-          status="success"
-          visible={alertVisible}
-          uswds
-        >
-          <p className="vads-u-margin-y--0">{alertMessage(alertType)}</p>
-        </VaAlert>
-      </div>
+      {alertVisible && (
+        <div className="vads-u-margin-bottom--1">
+          <VaAlert
+            role="alert"
+            closeBtnAriaLabel="Close notification"
+            closeable
+            onCloseEvent={() => setAlertVisible(false)}
+            fullWidth="false"
+            slim
+            status="success"
+            visible={alertVisible}
+            uswds
+          >
+            <p className="vads-u-margin-y--0">{alertMessage(alertType)}</p>
+          </VaAlert>
+        </div>
+      )}
       <VaModal
         clickToClose
         modalTitle="Change your medical records?"

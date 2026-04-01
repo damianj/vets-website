@@ -19,6 +19,7 @@ import { customFormReplacer, showV3Picklist } from './formHelpers';
 import {
   transformPicklistToV2,
   enrichDivorceWithSSN,
+  cleanupAddressData,
 } from './picklistTransform';
 import { PICKLIST_REMOVAL_FLAG } from '../constants';
 
@@ -149,6 +150,9 @@ export function buildSubmissionData(payload) {
   if (sourceData.vaDependentsNetWorthAndPension !== undefined) {
     cleanData.vaDependentsNetWorthAndPension =
       sourceData.vaDependentsNetWorthAndPension;
+    // Passing networth limit for FDF PDF generation; only include when feature
+    // flag is enabled
+    cleanData.netWorthLimit = sourceData.netWorthLimit;
   }
 
   // householdIncome is only valid to submit when:
@@ -455,6 +459,73 @@ function enrichDataWithSSN(data) {
 }
 
 /**
+ * Clean up address data (strip out street2 if empty after trimming whitespace)
+ * Fixing address in 5 places:
+ * [x] Veteran address
+ * [x] Current spouse address
+ * [x] Stepchild no longer living with Veteran address
+ * [x] Student address
+ * [x] Add child address ()
+ * @param {Object} data - Form data object
+ * @returns {Object} Data object with cleaned address data
+ */
+function cleanDataWithAddresses(data = {}) {
+  const cleanData = {};
+
+  cleanData.veteranContactInformation = {
+    ...data.veteranContactInformation,
+    veteranAddress: cleanupAddressData(
+      data.veteranContactInformation?.veteranAddress,
+    ),
+  };
+
+  if (data.doesLiveWithSpouse?.address) {
+    cleanData.doesLiveWithSpouse = {
+      ...data.doesLiveWithSpouse,
+      address: cleanupAddressData(data.doesLiveWithSpouse.address),
+    };
+  }
+  if (data.stepChildren?.length) {
+    cleanData.stepChildren = data.stepChildren.map(
+      child =>
+        child.address
+          ? {
+              ...child,
+              address: cleanupAddressData(child.address),
+            }
+          : child,
+    );
+  }
+  if (data.studentInformation?.length) {
+    cleanData.studentInformation = data.studentInformation.map(
+      student =>
+        student.address
+          ? {
+              ...student,
+              address: cleanupAddressData(student.address),
+            }
+          : student,
+    );
+  }
+  if (data.childrenToAdd?.length) {
+    cleanData.childrenToAdd = data.childrenToAdd.map(
+      child =>
+        child.address
+          ? {
+              ...child,
+              address: cleanupAddressData(child.address),
+            }
+          : child,
+    );
+  }
+
+  return {
+    ...data,
+    ...cleanData,
+  };
+}
+
+/**
  * Rebuilds submission data with validated flags and wraps in payload structure.
  *
  * This is where submission flags are set based on actual data presence.
@@ -520,10 +591,14 @@ export function customTransformForSubmit(formConfig, form) {
   // Step 5: Enrich reportDivorce with SSN from awarded dependents
   const enrichedData = enrichDataWithSSN(transformedData);
 
+  // Step 5a: Clean up address data in enriched data (strip out street2 if empty
+  // after trimming whitespace)
+  const cleanedEnrichedData = cleanDataWithAddresses(enrichedData);
+
   // Step 6: Rebuild payload with validated flags (single source of truth)
   const finalPayload = rebuildSubmissionPayload(
     payloadWithoutInactivePages,
-    enrichedData,
+    cleanedEnrichedData,
   );
 
   // Step 7: Extract the data from payload structure for backend submission

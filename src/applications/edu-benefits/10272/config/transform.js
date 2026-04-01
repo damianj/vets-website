@@ -30,11 +30,17 @@ export default function transform(formConfig, form) {
     return clonedData;
   };
 
-  // The ssn is set as the *vaFileNumber* for this schema, so both are not required
+  // The ssn is used as *vaFileNumber* if no vaFileNumber is available from prefill
   const identifierTransform = formData => {
     const clonedData = cloneDeep(formData);
 
+    if (!clonedData.vaFileNumber) {
+      clonedData.vaFileNumber = clonedData.ssn;
+    }
+
     delete clonedData.ssn;
+    delete clonedData.ssnLast4;
+    delete clonedData.vaFileNumberLast4;
 
     return clonedData;
   };

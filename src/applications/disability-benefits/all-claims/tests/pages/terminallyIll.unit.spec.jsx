@@ -25,7 +25,7 @@ describe('Terminally Ill', () => {
       />,
     );
 
-    rendered.getByText('High Priority claims');
+    rendered.getByText('Terminal illness', { selector: 'h3' });
 
     const question = rendered.container.querySelector('va-radio');
     expect(question).to.have.attribute('label', 'Are you terminally ill?');

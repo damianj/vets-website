@@ -162,7 +162,7 @@ describe('CH31 My Case Management Hub', () => {
     {
       step: 7,
       label: 'benefits initiated',
-      copy: /Your Chapter 31 benefits have been initiated/i,
+      copy: /We initiated your VR&E \(Chapter 31\) benefits/i,
     },
   ];
 
@@ -205,9 +205,7 @@ describe('CH31 My Case Management Hub', () => {
     cy.contains('h1', /your vr&e benefit status/i, {
       timeout: Timeouts.slow,
     }).should('be.visible');
-    cy.contains(/your chapter 31 claim has been discontinued/i).should(
-      'be.visible',
-    );
+    cy.contains(/We discontinued your VR&E benefits/i).should('be.visible');
     cy.contains(/no response from veteran/i).should('be.visible');
     cy.get('va-link')
       .should(
@@ -260,9 +258,9 @@ describe('CH31 My Case Management Hub - Step 3 (Orientation)', () => {
     cy.get('va-segmented-progress-bar').should('exist');
     cy.contains(/orientation/i).should('be.visible');
     // Actual component text from CaseProgressDescription case 3
-    cy.contains(
-      /complete the orientation video online or during your initial evaluation counselor meeting/i,
-    ).should('be.visible');
+    cy.contains(/need to know how.*complete the orientation video/i).should(
+      'be.visible',
+    );
   });
 
   it('shows radio options for orientation preference', () => {
@@ -401,9 +399,9 @@ describe('CH31 My Case Management Hub - Step 4 (Initial Evaluation Counselor Mee
     cy.get('va-segmented-progress-bar')
       .should('have.attr', 'current', '4')
       .and('have.attr', 'total', '7');
-    cy.contains(
-      /check your email to schedule your meeting with your counselor/i,
-    ).should('be.visible');
+    cy.contains(/We processed your application for VR&E benefits/i).should(
+      'be.visible',
+    );
     cy.get('va-need-help').should('exist');
   });
 
@@ -429,10 +427,7 @@ describe('CH31 My Case Management Hub - Step 4 (Initial Evaluation Counselor Mee
       .should('have.attr', 'current', '4')
       .and('have.attr', 'total', '7');
     cy.contains(
-      /your initial evaluation appointment has been scheduled/i,
-    ).should('be.visible');
-    cy.contains(
-      /reschedule, use your appointment confirmation rescheduling link/i,
+      /If you need to reschedule, use the rescheduling link we sent you in the confirmation email and text/i,
     ).should('be.visible');
     cy.get('va-need-help').should('exist');
   });
@@ -456,9 +451,7 @@ describe('CH31 My Case Management Hub - Step 4 (Initial Evaluation Counselor Mee
     cy.wait('@featureToggles', { timeout: 20000 });
     cy.wait('@caseDetails', { timeout: 20000 });
 
-    cy.contains(/your chapter 31 claim has been discontinued/i).should(
-      'be.visible',
-    );
+    cy.contains(/We discontinued your VR&E benefits/i).should('be.visible');
     cy.contains(/no response from veteran/i).should('be.visible');
     cy.get('va-segmented-progress-bar').should('not.exist');
   });

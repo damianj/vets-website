@@ -5,24 +5,43 @@ export class ReviewAndConfirmPageObject extends PageObject {
    * Validates that we're on the Review and Confirm page
    */
   validate() {
-    // Check for the header
     cy.findByRole('heading', {
       level: 1,
       name: 'Review your appointment details',
     }).should('exist');
 
-    // Check that main sections exist
-    cy.findByText(/Date and time/).should('exist');
+    cy.findByRole('heading', { level: 2, name: 'Date and time' }).should(
+      'exist',
+    );
     cy.findByTestId('slot-day-time').should('exist');
+    cy.findByRole('heading', { level: 2, name: 'Details' }).should('exist');
 
     return this;
   }
 
   /**
-   * Validates provider information is displayed correctly
+   * Validates the Details section displays Community Care content
    */
   assertProviderInfo() {
-    cy.findByText(/provider/).should('exist');
+    cy.findByRole('heading', { level: 2, name: 'Details' }).should('exist');
+    cy.findByText(/Community care/).should('exist');
+    return this;
+  }
+
+  /**
+   * Validates the Details section heading, modality, and organization name
+   */
+  assertDetailsSection() {
+    cy.findByRole('heading', { level: 2, name: 'Details' }).should('exist');
+    cy.findByText('In-person').should('exist');
+    return this;
+  }
+
+  /**
+   * Validates that the edit link for details is available
+   */
+  assertEditDetailsLink() {
+    cy.findByTestId('edit-details-link').should('exist');
     return this;
   }
 

@@ -6,13 +6,14 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { selectRequestedAppointmentData } from '../../appointment-list/redux/selectors';
 import DetailPageLayout, { CCDetails } from './DetailPageLayout';
+import CCProofOfAttendanceSection from '../CCProofOfAttendanceSection';
 import Section from '../Section';
 import ListBestTimeToCall from '../../appointment-list/components/ListBestTimeToCall';
 import PageLayout from '../../appointment-list/components/PageLayout';
 import { APPOINTMENT_STATUS } from '../../utils/constants';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
-  captureMissingModalityLogs,
   recordAppointmentDetailsNullStates,
 } from '../../utils/events';
 
@@ -41,7 +42,7 @@ export default function CCRequestLayout({ data: appointment }) {
 
   const { patientComments } = appointment;
 
-  let heading = 'We have received your request';
+  let heading = 'Appointment request';
   if (isPendingAppointment && !showConfirmMsg)
     heading = 'Request for community care appointment';
   else if (APPOINTMENT_STATUS.cancelled === status)
@@ -131,6 +132,7 @@ export default function CCRequestLayout({ data: appointment }) {
           <ListBestTimeToCall timesToCall={preferredTimesForPhoneCall} />
           <br />
         </Section>
+        <CCProofOfAttendanceSection />
       </DetailPageLayout>
     </PageLayout>
   );

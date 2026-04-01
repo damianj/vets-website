@@ -130,7 +130,7 @@ const formConfig = {
         ...profileContactInfoPages({
           contactInfoRequiredKeys: ['mailingAddress'],
           // disableMockContactInfo: true,
-          // prefillPatternEnabled: true,
+          prefillPatternEnabled: false,
         }),
       },
     },

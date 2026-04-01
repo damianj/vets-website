@@ -25,7 +25,7 @@ describe('Secure Messaging Draft Save with Attachments', () => {
     PatientComposePage.clickSaveDraftBtn();
     PatientMessageDraftsPage.verifySaveWithAttachmentAlert();
 
-    PatientMessageDraftsPage.verifyCantSaveAlert(
+    PatientComposePage.verifyCantSaveAlert(
       Alerts.SAVE_ATTCH,
       Data.BUTTONS.EDIT_DRAFT,
       Data.BUTTONS.SAVE_DRAFT_WO_ATTCH,

@@ -39,6 +39,7 @@ const isAccountLockedError = error => {
 const isServerError = error => {
   return (
     Object.values(SERVER_ERROR_CODES).includes(error?.code) ||
+    error?.status >= 400 ||
     error?.status >= 500
   );
 };
@@ -67,6 +68,10 @@ const isCancellationFailedError = error => {
   return error?.code === APPOINTMENT_ERROR_CODES.CANCELLATION_FAILED;
 };
 
+const isMissingContactInformationError = error => {
+  return error?.code === AUTH_ERROR_CODES.MISSING_CONTACT_INFORMATION;
+};
+
 export {
   isInvalidCredentialsError,
   isRateLimitExceededError,
@@ -79,4 +84,5 @@ export {
   isAppointmentNotFoundError,
   isAppointmentAlreadyBookedError,
   isCancellationFailedError,
+  isMissingContactInformationError,
 };

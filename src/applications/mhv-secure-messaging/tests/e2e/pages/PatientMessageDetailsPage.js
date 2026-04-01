@@ -111,37 +111,43 @@ class PatientMessageDetailsPage {
 
   verifyMoveToButtonModal = () => {
     cy.findByTestId(Locators.BUTTONS.MOVE_BUTTON_TEST_ID).click();
-    cy.get(Locators.ALERTS.MOVE_MODAL, { timeout: 8000 })
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID, { timeout: 8000 })
       .find('p')
       .contains('Any replies to this message will appear in your inbox')
       .should('be.visible');
-    cy.get(Locators.BUTTONS.DELETE_RADIOBTN).should('be.visible');
-    cy.get(Locators.BUTTONS.TEST2).should('be.visible');
-    cy.get(Locators.BUTTONS.TESTAGAIN).should('be.visible');
-    cy.get(Locators.BUTTONS.NEW_FOLDER_RADIOBTN).should('be.visible');
-    cy.get(Locators.ALERTS.MOVE_MODAL)
-      .find('va-button[text="Confirm"]')
+    cy.findByTestId(Locators.BUTTONS.DELETE_RADIOBTN).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.TEST2).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.TESTAGAIN).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.NEW_FOLDER_RADIOBTN).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID)
+      .shadow()
+      .find('button')
+      .contains('Confirm')
       .should('be.visible');
-    cy.get(Locators.ALERTS.MOVE_MODAL)
-      .find('va-button[text="Cancel"]')
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID)
+      .shadow()
+      .find('button')
+      .contains('Cancel')
       .should('be.visible')
       .click();
   };
 
   openMoveToButtonModal = () => {
     cy.findByTestId(Locators.BUTTONS.MOVE_BUTTON_TEST_ID).click();
-    cy.get(Locators.ALERTS.MOVE_MODAL, { timeout: 8000 })
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID, { timeout: 8000 })
       .find('p')
       .contains('Any replies to this message will appear in your inbox')
       .should('be.visible');
-    cy.get(Locators.BUTTONS.DELETE_RADIOBTN).should('be.visible');
-    cy.get(Locators.BUTTONS.TEST2).should('be.visible');
-    cy.get(Locators.BUTTONS.TESTAGAIN)
+    cy.findByTestId(Locators.BUTTONS.DELETE_RADIOBTN).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.TEST2).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.TESTAGAIN)
       .should('be.visible')
       .click();
-    cy.get(Locators.BUTTONS.NEW_FOLDER_RADIOBTN).should('be.visible');
-    cy.get(Locators.ALERTS.MOVE_MODAL)
-      .find('va-button[text="Confirm"]')
+    cy.findByTestId(Locators.BUTTONS.NEW_FOLDER_RADIOBTN).should('be.visible');
+    cy.findByTestId(Locators.BUTTONS.MOVE_MODAL_TEST_ID)
+      .shadow()
+      .find('button')
+      .contains('Confirm')
       .should('be.visible')
       .click();
   };

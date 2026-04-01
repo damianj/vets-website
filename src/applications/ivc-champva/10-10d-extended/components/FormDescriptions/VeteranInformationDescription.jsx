@@ -8,8 +8,8 @@ const VeteranInformationDescription = (
     </p>
     <p>
       We’ll use the Veteran’s name, Social Security number, and status to
-      confirm their eligibility for CHAMPVA benefits. We won’t need you to
-      upload their DD-214.
+      confirm the applicant’s eligibility for CHAMPVA benefits. We won’t need
+      you to upload the Veteran’s DD-214.
     </p>
   </>
 );

@@ -1,0 +1,24 @@
+{
+  "addresses": [
+    {
+      "address": {
+        "addressLine1": "37 N 1st St",
+        "addressType": "DOMESTIC",
+        "city": "Brooklyn",
+        "countryName": "United States",
+        "countryCodeIso3": "USA",
+        "countyCode": "36047",
+        "countyName": "Kings",
+        "stateCode": "NY",
+        "zipCode": "11249",
+        "zipCodeSuffix": "3939"
+      },
+      "addressMetaData": {
+        "confidenceScore": 70,
+        "addressType": "Domestic",
+        "deliveryPointValidation": "CONFIRMED"
+      }
+    }
+  ],
+  "validationKey": "-646932106"
+}

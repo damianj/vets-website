@@ -47,7 +47,10 @@ const PreviousStatements = ({ selectedId }) => {
         Review your charges and download your mailed statements from the past 6
         months for this facility.
       </p>
-      <ul className="no-bullets vads-u-x--0" data-testid="otpp-statement-list">
+      <ul
+        className="no-bullets vads-u-padding-x--0"
+        data-testid="otpp-statement-list"
+      >
         {previousStatements.map(statement => (
           <HTMLStatementLink
             id={statement.id}

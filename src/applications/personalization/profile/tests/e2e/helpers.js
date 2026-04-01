@@ -11,37 +11,25 @@ import error500 from '@@profile/tests/fixtures/500.json';
 
 import { PROFILE_PATHS, PROFILE_PATH_NAMES } from '../../constants';
 
-export function subNavOnlyContainsAccountSecurity({
-  profile2Enabled = false,
-  mobile = false,
-} = {}) {
+export function subNavOnlyContainsAccountSecurity({ mobile = false } = {}) {
   if (mobile) {
-    if (profile2Enabled) {
-      cy.get('va-sidenav')
-        .filter(':visible')
-        .click();
-    } else {
-      cy.findByRole('button', { name: /profile menu/i }).click();
-    }
+    cy.get('va-sidenav')
+      .filter(':visible')
+      .click();
   }
 
-  if (profile2Enabled) {
-    cy.get(
-      `va-sidenav-submenu[label="${PROFILE_PATH_NAMES.ACCOUNT_SECURITY}"]`,
-    ).should('exist');
-  } else {
-    cy.findByRole('navigation', { name: /profile/i }).within(() => {
-      cy.findAllByRole('link').should('have.length', 1);
-      cy.findByRole('link', {
-        name: PROFILE_PATH_NAMES.ACCOUNT_SECURITY,
-      }).should('exist');
-    });
-  }
+  cy.get(
+    `va-sidenav-submenu[label="${PROFILE_PATH_NAMES.ACCOUNT_SECURITY}"]`,
+  ).should('exist');
+  cy.get(
+    `va-sidenav-item[label="${PROFILE_PATH_NAMES.SIGNIN_INFORMATION}"]`,
+  ).should('exist');
+  cy.get(
+    `va-sidenav-item[label="${PROFILE_PATH_NAMES.PERSONAL_INFORMATION}"]`,
+  ).should('not.exist');
 }
 
-export function onlyAccountSecuritySectionIsAccessible({
-  profile2Enabled = false,
-}) {
+export function onlyAccountSecuritySectionIsAccessible() {
   // get all of the PROFILE_PATHS _except_ for account security
   const accountSecurityLandingPageKeys = [
     'SIGNIN_INFORMATION',
@@ -52,9 +40,7 @@ export function onlyAccountSecuritySectionIsAccessible({
   ).filter(([key]) => {
     return !accountSecurityLandingPageKeys.includes(key);
   });
-  const expectedPath = profile2Enabled
-    ? PROFILE_PATHS.SIGNIN_INFORMATION
-    : PROFILE_PATHS.ACCOUNT_SECURITY;
+  const expectedPath = PROFILE_PATHS.SIGNIN_INFORMATION;
   profilePathsExcludingAccountSecurity.forEach(([_, path]) => {
     cy.visit(path);
     cy.url().should('eq', `${Cypress.config().baseUrl}${expectedPath}`);

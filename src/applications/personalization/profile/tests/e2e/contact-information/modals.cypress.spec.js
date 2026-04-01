@@ -299,7 +299,7 @@ describe('when moving to other profile pages', () => {
     cy.get(`va-button[label="Edit ${sectionName}"]`).click({ force: true });
 
     cy.findByRole('link', {
-      name: /military information/i,
+      name: /service history information/i,
     }).click({
       force: true,
     });
@@ -309,7 +309,7 @@ describe('when moving to other profile pages', () => {
       force: true,
     });
     // uncomment when Paperless Delivery is ready for production
-    //  cy.get('va-sidenav-item[label="Military information"]')
+    //  cy.get('va-sidenav-item[label="Service history information"]')
     //   .filter(':visible')
     //   .click();
     // cy.get('va-sidenav-item[label="Contact information"]')

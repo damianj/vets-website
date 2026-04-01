@@ -122,47 +122,64 @@ describe('mergeRadiologyLists', () => {
     ]);
   });
 
-  it('merges records by hash when dates differ (ticket #132099)', () => {
-    // This test verifies the fix for duplicate radiology records appearing
-    // when PHR and CVIX have the same study but with different timestamps
+  it('prefers name+minute match over minute-only match (multi-stage priority)', () => {
+    // When multiple CVIX records share the same timestamp, the one with the
+    // matching procedure name should be paired first (stage 1), leaving
+    // stage 2 to pair the remaining records by timestamp alone.
     const phrList = [
       {
-        id: 'r12345-abc123ef',
+        id: 'phr1',
+        name: 'CT ABDOMEN',
         sortDate: '2020-01-01T10:00:00Z',
         data: 'phr1',
+      },
+      {
+        id: 'phr2',
+        name: 'CHEST XRAY',
+        sortDate: '2020-01-01T10:00:00Z',
+        data: 'phr2',
       },
     ];
     const cvixList = [
       {
-        id: 'r67890-abc123ef', // Same hash, different raw ID
-        sortDate: '2020-01-01T10:05:00Z', // 5 minutes later - would not match by date
+        id: 'cvix1',
+        name: 'CHEST XRAY',
+        sortDate: '2020-01-01T10:00:00Z',
         studyId: 'c1',
         imageCount: 1,
       },
+      {
+        id: 'cvix2',
+        name: 'CT ABDOMEN',
+        sortDate: '2020-01-01T10:00:00Z',
+        studyId: 'c2',
+        imageCount: 2,
+      },
     ];
     const result = mergeRadiologyLists(phrList, cvixList);
-    expect(result.length).to.equal(1);
-    expect(result[0]).to.deep.equal({
-      id: 'r12345-abc123ef',
-      sortDate: '2020-01-01T10:00:00Z',
-      data: 'phr1',
-      studyId: 'c1',
-      imageCount: 1,
-    });
+    expect(result.length).to.equal(2);
+    // CT ABDOMEN paired with CT ABDOMEN
+    expect(result[0].id).to.equal('phr1');
+    expect(result[0].studyId).to.equal('c2');
+    // CHEST XRAY paired with CHEST XRAY
+    expect(result[1].id).to.equal('phr2');
+    expect(result[1].studyId).to.equal('c1');
   });
 
-  it('does not merge records when hashes and dates both differ', () => {
+  it('does not merge records when dates and names both differ', () => {
     const phrList = [
       {
-        id: 'r12345-abc123ef',
+        id: 'phr1',
+        name: 'CT ABDOMEN',
         sortDate: '2020-01-01T10:00:00Z',
         data: 'phr1',
       },
     ];
     const cvixList = [
       {
-        id: 'r67890-different1',
-        sortDate: '2020-01-01T10:05:00Z', // Different date and different hash
+        id: 'cvix1',
+        name: 'CHEST XRAY',
+        sortDate: '2020-01-01T10:05:00Z', // Different date and different name
         studyId: 'c1',
         imageCount: 1,
       },
@@ -172,13 +189,11 @@ describe('mergeRadiologyLists', () => {
   });
 
   it('merges records by normalized procedure name + same day (ticket #132099)', () => {
-    // This test verifies the fix for duplicate radiology records where:
-    // - PHR has no newline in procedure name, CVIX has newline
-    // - Radiologist differs (included in hash)
-    // - Same calendar day but different times
+    // Verifies stage 3: when timestamps don't match to the minute but the
+    // normalized procedure name and calendar day do, records are still merged.
     const phrList = [
       {
-        id: 'r12345-abc123ef',
+        id: 'phr1',
         name: 'KNEE 4 OR MORE VIEWS (LEFT)', // No newline
         sortDate: '2024-04-04T17:08:00Z',
         data: 'phr1',
@@ -186,7 +201,7 @@ describe('mergeRadiologyLists', () => {
     ];
     const cvixList = [
       {
-        id: 'r67890-different1', // Different hash due to radiologist mismatch
+        id: 'cvix1',
         name: 'KNEE\n 4 OR MORE VIEWS (LEFT)', // Has newline
         sortDate: '2024-04-04T17:03:00Z', // Same day, different time (5 min diff)
         studyId: 'c1',
@@ -196,7 +211,7 @@ describe('mergeRadiologyLists', () => {
     const result = mergeRadiologyLists(phrList, cvixList);
     expect(result.length).to.equal(1);
     expect(result[0]).to.deep.equal({
-      id: 'r12345-abc123ef',
+      id: 'phr1',
       name: 'KNEE 4 OR MORE VIEWS (LEFT)',
       sortDate: '2024-04-04T17:08:00Z',
       data: 'phr1',
@@ -208,7 +223,7 @@ describe('mergeRadiologyLists', () => {
   it('does not merge records with different procedure names even on same day', () => {
     const phrList = [
       {
-        id: 'r12345-abc123ef',
+        id: 'phr1',
         name: 'KNEE 4 OR MORE VIEWS (LEFT)',
         sortDate: '2024-04-04T17:08:00Z',
         data: 'phr1',
@@ -216,7 +231,7 @@ describe('mergeRadiologyLists', () => {
     ];
     const cvixList = [
       {
-        id: 'r67890-different1',
+        id: 'cvix1',
         name: 'CT THORAX W/CONT', // Different procedure
         sortDate: '2024-04-04T17:03:00Z', // Same day
         studyId: 'c1',
@@ -325,7 +340,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
     const studies = [
       {
         id: 'study-1',
-        rawDate: '2025-01-10T09:17:00Z',
+        rawDate: '2025-01-10T09:15:20Z',
         status: 'available',
         imageCount: 3,
       },
@@ -343,7 +358,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'lab-1', sortDate: '2025-01-10T09:15:00Z', name: 'CHEST XRAY' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:17:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:15:20Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imageCount).to.equal(0);
@@ -352,25 +367,25 @@ describe('mergeImagingStudiesIntoLabs', () => {
   it('does not match records outside the tolerance window', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:11:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
   });
 
-  it('matches at exactly 10 minutes apart', () => {
+  it('matches at exactly 30 seconds apart', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:10:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:30Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imagingStudyId).to.equal('study-1');
   });
 
-  it('does not match at 10 minutes and 1 second apart', () => {
+  it('does not match at 31 seconds apart', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:10:01Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
@@ -379,10 +394,10 @@ describe('mergeImagingStudiesIntoLabs', () => {
   it('uses each imaging study at most once (1:1 matching)', () => {
     const labs = [
       { id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' },
-      { id: 'lab-2', sortDate: '2025-01-10T09:02:00Z' },
+      { id: 'lab-2', sortDate: '2025-01-10T09:00:25Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:01:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     const matched = result.filter(r => r.imagingStudyId);
@@ -396,7 +411,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'with-date', sortDate: '2025-01-10T09:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:01:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
@@ -426,8 +441,8 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'lab-3', sortDate: '2025-01-11T10:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:02:00Z', status: 'available' },
-      { id: 'study-2', rawDate: '2025-01-11T10:05:00Z', status: 'complete' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:20Z', status: 'available' },
+      { id: 'study-2', rawDate: '2025-01-11T10:00:15Z', status: 'complete' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imagingStudyId).to.equal('study-1');
@@ -439,7 +454,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
   it('does not mutate the original labs array', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:01:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(labs[0]).to.not.have.property('imagingStudyId');

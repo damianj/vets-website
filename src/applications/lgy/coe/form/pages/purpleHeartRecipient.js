@@ -16,31 +16,31 @@ const emptyObjectSchema = {
 };
 const PurpleHeartWhyAccordion = () => (
   <VaAccordion uswds openSingle className="vads-u-margin-top--2">
-    <VaAccordionItem header="Why are we asking this question?">
-      <p className="vads-u-margin-top--0">
-        The VA funding fee may not be collected from a member of the Armed
-        Forces who is currently serving on active duty and has been awarded the
-        Purple Heart.
+    <VaAccordionItem header="Why we ask this question">
+      <p className="vads-u-margin-y--0">
+        As part of the VA home loan process, borrowers are usually required to
+        pay the VA funding fee. However, you may not have to pay this fee if
+        you’re a Purple Heart recipient who is currently serving on active duty.
       </p>
-      <p>
-        <a href="/housing-assistance/home-loans/funding-fee-and-closing-costs/">
+      <p className="vads-u-margin-top--0">
+        <a
+          href="/housing-assistance/home-loans/funding-fee-and-closing-costs/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Learn more about the VA funding fee
         </a>
       </p>
-      <p>
-        You may be asked to provide evidence of having been awarded the Purple
-        Heart later in this form.
-      </p>
       <p className="vads-u-margin-bottom--0">
-        <strong>Note:</strong> Activations under Title 32 orders are not
-        considered active duty for the purpose of funding fee exemption.
+        <strong>Note:</strong> We don’t consider activations under Title 32
+        orders as active duty for the purpose of funding fee exemption.
       </p>
     </VaAccordionItem>
   </VaAccordion>
 );
 export default {
   uiSchema: {
-    ...titleUI('Purple Heart recipient'),
+    ...titleUI('Purple Heart'),
     militaryHistory: {
       purpleHeartRecipient: yesNoUI({
         title: 'Are you a Purple Heart recipient?',

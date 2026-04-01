@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { VaMemorableDate } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useVaDateCommon } from './useVaDateCommon';
 
@@ -13,7 +14,11 @@ export default function VaMemorableDateField(props) {
     onDateBlur,
   } = useVaDateCommon(props);
 
-  const customYearErrorMessage = props.uiOptions?.customYearErrorMessage;
+  const {
+    customDayErrorMessage,
+    customMonthErrorMessage,
+    customYearErrorMessage,
+  } = props.uiOptions;
   const removeDateHint = props.uiOptions?.removeDateHint;
 
   return (
@@ -24,6 +29,12 @@ export default function VaMemorableDateField(props) {
       onDateChange={onDateChange}
       onDateBlur={onDateBlur}
       value={formattedValue}
+      {...customMonthErrorMessage && {
+        customMonthErrorMessage,
+      }}
+      {...customDayErrorMessage && {
+        customDayErrorMessage,
+      }}
       {...customYearErrorMessage && {
         customYearErrorMessage,
       }}
@@ -33,5 +44,15 @@ export default function VaMemorableDateField(props) {
     />
   );
 }
+
+VaMemorableDateField.propTypes = {
+  uiOptions: PropTypes.shape({
+    customDayErrorMessage: PropTypes.string,
+    customMonthErrorMessage: PropTypes.string,
+    customYearErrorMessage: PropTypes.string,
+    monthSelect: PropTypes.bool,
+    removeDateHint: PropTypes.bool,
+  }),
+};
 
 VaMemorableDateField.identifier = 'VaMemorableDateField';

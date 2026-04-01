@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { fireEvent } from '@testing-library/dom';
 
 import FilesNeeded from '../../../components/claim-files-tab/FilesNeeded';
-import { renderWithRouter } from '../../utils';
+import { renderWithReduxAndRouter } from '../../utils';
 
 const claimId = '123456';
 const item = {
@@ -18,7 +18,7 @@ const statusTab = 'status';
 describe('<FilesNeeded>', () => {
   context('when user navigates to page directly', () => {
     it('should render va-alert with item data and show DueDate', () => {
-      const { getByText, container } = renderWithRouter(
+      const { getByText, container } = renderWithReduxAndRouter(
         <FilesNeeded claimId={claimId} item={item} />,
       );
 
@@ -40,7 +40,7 @@ describe('<FilesNeeded>', () => {
 
       context('when evidenceWaiverSubmitted5103 is false', () => {
         it('should render va-alert with item data and hide DueDate', () => {
-          const { queryByText, container } = renderWithRouter(
+          const { queryByText, container } = renderWithReduxAndRouter(
             <FilesNeeded claimId={claimId} item={item5103} />,
           );
 
@@ -63,7 +63,7 @@ describe('<FilesNeeded>', () => {
 
   context('when user navigates to page from the files tab', () => {
     it('clicking details link should set session storage', () => {
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <FilesNeeded claimId={claimId} item={item} previousPage={filesTab} />,
       );
 
@@ -76,7 +76,7 @@ describe('<FilesNeeded>', () => {
 
   context('when user navigates to page from the status tab', () => {
     it('clicking details link should set session storage', () => {
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <FilesNeeded claimId={claimId} item={item} previousPage={statusTab} />,
       );
 
@@ -105,7 +105,7 @@ describe('<FilesNeeded>', () => {
       documents: '[]',
       date: '2024-03-07',
     };
-    const { getByText } = renderWithRouter(
+    const { getByText } = renderWithReduxAndRouter(
       <FilesNeeded claimId={claimId} item={item214142} />,
     );
     getByText('good description');
@@ -122,7 +122,7 @@ describe('<FilesNeeded>', () => {
       documents: '[]',
       date: '2024-03-07',
     };
-    const { getByText } = renderWithRouter(
+    const { getByText } = renderWithReduxAndRouter(
       <FilesNeeded claimId={claimId} item={noOverrideItem} />,
     );
     getByText('Request for evidence');
@@ -139,7 +139,7 @@ describe('<FilesNeeded>', () => {
           suspenseDate: '2024-12-01',
           isSensitive: false,
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithApiSensitive} />,
         );
         getByText('Request for evidence'); // No friendlyName so fallback headline is used
@@ -152,7 +152,7 @@ describe('<FilesNeeded>', () => {
           description: 'Test description',
           suspenseDate: '2024-12-01',
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithoutSensitive} />,
         );
         getByText('Request for evidence');
@@ -166,7 +166,7 @@ describe('<FilesNeeded>', () => {
           description: 'Test description',
           suspenseDate: '2024-12-01',
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithNoSensitive} />,
         );
         // Should show "Provide" prefix since isSensitive defaults to false
@@ -184,7 +184,7 @@ describe('<FilesNeeded>', () => {
           suspenseDate: '2024-12-01',
           noProvidePrefix: false,
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithApiNoPrefix} />,
         );
         // Since API value is false, should show "Provide" prefix
@@ -199,7 +199,7 @@ describe('<FilesNeeded>', () => {
           description: 'Test description',
           suspenseDate: '2024-12-01',
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithoutNoPrefix} />,
         );
         getByText('Provide clarification of Claimed Issue');
@@ -213,7 +213,7 @@ describe('<FilesNeeded>', () => {
           description: 'Test description',
           suspenseDate: '2024-12-01',
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithNoPrefix} />,
         );
         // Should show "Provide" prefix since noProvidePrefix defaults to false
@@ -232,7 +232,7 @@ describe('<FilesNeeded>', () => {
           isSensitive: true,
           noProvidePrefix: false, // This shouldn't matter since isSensitive takes precedence
         };
-        const { getByText } = renderWithRouter(
+        const { getByText } = renderWithReduxAndRouter(
           <FilesNeeded claimId={claimId} item={itemWithBothApiProps} />,
         );
         // isSensitive takes precedence, should show "Request for evidence"

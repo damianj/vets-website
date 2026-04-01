@@ -1,36 +1,21 @@
-import mockProfileEnhancementsToggles from '@@profile/tests/fixtures/personal-information-feature-toggles.json';
-
 import { PROFILE_PATHS, PROFILE_PATH_NAMES } from '../../constants';
 
 import mockUser from '../fixtures/users/user-36.json';
-import { generateFeatureToggles } from '../../mocks/endpoints/feature-toggles';
 import { mockGETEndpoints } from './helpers';
+import { generateFeatureToggles } from '../../mocks/endpoints/feature-toggles';
 
-function clickSubNavButton(
-  buttonLabel,
-  mobile,
-  profile2Enabled,
-  parentMenu = false,
-) {
+function clickSubNavButton(buttonLabel, mobile, parentMenu = false) {
   if (mobile) {
-    if (profile2Enabled) {
-      cy.get('va-sidenav')
-        .filter(':visible')
-        .click();
-    } else {
-      cy.findByRole('button', { name: /profile menu/i }).click();
-    }
-  }
-  if (profile2Enabled) {
-    const navSelector = parentMenu
-      ? `va-sidenav-submenu[label="${buttonLabel}"]`
-      : `va-sidenav-item[label="${buttonLabel}"]`;
-    cy.get(navSelector)
+    cy.get('va-sidenav')
       .filter(':visible')
       .click();
-  } else {
-    cy.findByRole('link', { name: buttonLabel }).click();
   }
+  const navSelector = parentMenu
+    ? `va-sidenav-submenu[label="${buttonLabel}"]`
+    : `va-sidenav-item[label="${buttonLabel}"]`;
+  cy.get(navSelector)
+    .filter(':visible')
+    .click();
 }
 
 /**
@@ -47,18 +32,12 @@ function clickSubNavButton(
  *   - performs an aXe scan
  *   - checks that focus is managed correctly
  */
-function checkSubNavFocus({ profile2Enabled = false, mobile = false } = {}) {
-  if (profile2Enabled) {
-    cy.intercept(
-      'GET',
-      '/v0/feature_toggles*',
-      generateFeatureToggles({
-        profile2Enabled: true,
-      }),
-    );
-  } else {
-    cy.intercept('v0/feature_toggles*', mockProfileEnhancementsToggles);
-  }
+function checkSubNavFocus({ mobile = false } = {}) {
+  cy.intercept(
+    'GET',
+    'v0/feature_toggles*',
+    generateFeatureToggles({ profile2Enabled: true }),
+  );
   cy.visit(PROFILE_PATHS.PERSONAL_INFORMATION);
   if (mobile) {
     cy.viewport('iphone-4');
@@ -92,39 +71,16 @@ function checkSubNavFocus({ profile2Enabled = false, mobile = false } = {}) {
   cy.injectAxe();
   cy.axeCheck();
 
-  if (profile2Enabled) {
-    // make the a11y and focus management check on the Service history information section
-    clickSubNavButton(
-      PROFILE_PATH_NAMES.SERVICE_HISTORY_INFORMATION,
-      mobile,
-      profile2Enabled,
-    );
-    cy.url().should(
-      'eq',
-      `${Cypress.config().baseUrl}${PROFILE_PATHS.SERVICE_HISTORY_INFORMATION}`,
-    );
-    cy.title().should('eq', 'Military Information | Veterans Affairs');
-    cy.axeCheck();
-  } else {
-    // make the a11y and focus management check on the Military Info section
-    clickSubNavButton(
-      PROFILE_PATH_NAMES.MILITARY_INFORMATION,
-      mobile,
-      profile2Enabled,
-    );
-    cy.url().should(
-      'eq',
-      `${Cypress.config().baseUrl}${PROFILE_PATHS.MILITARY_INFORMATION}`,
-    );
-    cy.title().should('eq', 'Military Information | Veterans Affairs');
-    cy.axeCheck();
-  }
-  // make the a11y and focus management check on the Veteran Status Card section
-  clickSubNavButton(
-    PROFILE_PATH_NAMES.VETERAN_STATUS_CARD,
-    mobile,
-    profile2Enabled,
+  // make the a11y and focus management check on the Service history information section
+  clickSubNavButton(PROFILE_PATH_NAMES.SERVICE_HISTORY_INFORMATION, mobile);
+  cy.url().should(
+    'eq',
+    `${Cypress.config().baseUrl}${PROFILE_PATHS.SERVICE_HISTORY_INFORMATION}`,
   );
+  cy.title().should('eq', 'Service History Information | Veterans Affairs');
+  cy.axeCheck();
+  // make the a11y and focus management check on the Veteran Status Card section
+  clickSubNavButton(PROFILE_PATH_NAMES.VETERAN_STATUS_CARD, mobile);
   cy.url().should(
     'eq',
     `${Cypress.config().baseUrl}${PROFILE_PATHS.VETERAN_STATUS_CARD}`,
@@ -133,7 +89,7 @@ function checkSubNavFocus({ profile2Enabled = false, mobile = false } = {}) {
   cy.axeCheck();
 
   // make the a11y and focus management check on the Direct Deposit section
-  clickSubNavButton('Direct deposit information', mobile, profile2Enabled);
+  clickSubNavButton('Direct deposit information', mobile);
   cy.url().should(
     'eq',
     `${Cypress.config().baseUrl}${PROFILE_PATHS.DIRECT_DEPOSIT}`,
@@ -156,11 +112,7 @@ function checkSubNavFocus({ profile2Enabled = false, mobile = false } = {}) {
   // cy.axeCheck();
 
   // make the a11y and focus management check on the Connected Apps section
-  clickSubNavButton(
-    PROFILE_PATH_NAMES.CONNECTED_APPLICATIONS,
-    mobile,
-    profile2Enabled,
-  );
+  clickSubNavButton(PROFILE_PATH_NAMES.CONNECTED_APPLICATIONS, mobile);
   cy.url().should(
     'eq',
     `${Cypress.config().baseUrl}${PROFILE_PATHS.CONNECTED_APPLICATIONS}`,
@@ -171,22 +123,14 @@ function checkSubNavFocus({ profile2Enabled = false, mobile = false } = {}) {
   cy.axeCheck();
 
   // navigate directly to the Personal Info section via the sub-nav to confirm focus is managed correctly
-  clickSubNavButton(
-    PROFILE_PATH_NAMES.PERSONAL_INFORMATION,
-    mobile,
-    profile2Enabled,
-  );
+  clickSubNavButton(PROFILE_PATH_NAMES.PERSONAL_INFORMATION, mobile);
   cy.url().should(
     'eq',
     `${Cypress.config().baseUrl}${PROFILE_PATHS.PERSONAL_INFORMATION}`,
   );
 
   // navigate directly to the Contact Info section via the sub-nav to confirm focus is managed correctly
-  clickSubNavButton(
-    PROFILE_PATH_NAMES.CONTACT_INFORMATION,
-    mobile,
-    profile2Enabled,
-  );
+  clickSubNavButton(PROFILE_PATH_NAMES.CONTACT_INFORMATION, mobile);
   cy.url().should(
     'eq',
     `${Cypress.config().baseUrl}${PROFILE_PATHS.CONTACT_INFORMATION}`,
@@ -199,6 +143,7 @@ describe('Profile Navigation - Accessibility', () => {
     const otherEndpoints = ['/v0/profile/full_name'];
     mockGETEndpoints(otherEndpoints, 200, {});
   });
+
   it('check focus for navigating between profile pages via menu on desktop', () => {
     checkSubNavFocus({ mobile: false });
     cy.injectAxeThenAxeCheck();
@@ -207,17 +152,5 @@ describe('Profile Navigation - Accessibility', () => {
   it('check focus for navigating between profile pages via menu on mobile', () => {
     checkSubNavFocus({ mobile: true });
     cy.injectAxeThenAxeCheck();
-  });
-
-  describe('when feature profile2Enabled is true', () => {
-    it('check focus for navigating between profile pages via menu on desktop', () => {
-      checkSubNavFocus({ profile2Enabled: true, mobile: false });
-      cy.injectAxeThenAxeCheck();
-    });
-
-    it('check focus for navigating between profile pages via menu on mobile', () => {
-      checkSubNavFocus({ profile2Enabled: true, mobile: true });
-      cy.injectAxeThenAxeCheck();
-    });
   });
 });

@@ -575,7 +575,97 @@ describe('Medication card component', () => {
       expect(queryByTestId('no-refills-left-alert')).to.be.null;
     });
 
-    describe('Scenario 10 — Expired ≤120 days, renewable', () => {
+    describe('Expired prescription (no renewal flow)', () => {
+      const expiredRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Expired',
+        isRefillable: false,
+        refillRemaining: 0,
+        expirationDate: new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+      };
+
+      it('shows expired status and too-old message for non-renewable prescription', () => {
+        const { getByTestId, queryByTestId, container } = setup(
+          expiredRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('expired-status')).to.have.text('Expired');
+        expect(
+          getByTestId('expired-no-renewal-content').textContent,
+        ).to.include(
+          'This prescription is too old to refill. If you need more, request a renewal.',
+        );
+        expect(queryByTestId('rx-refill-remaining')).to.be.null;
+        expect(queryByTestId('no-refills-left-alert')).to.be.null;
+        expect(container.querySelector('.shipping-info')).to.be.null;
+      });
+
+      it('shows expired card for renewable prescription when renewal flag is OFF (falls through to S13)', () => {
+        const renewableExpiredRx = {
+          ...expiredRx,
+          isRenewable: true,
+        };
+        const { getByTestId, queryByTestId } = setup(
+          renewableExpiredRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('expired-status')).to.have.text('Expired');
+        expect(getByTestId('expired-no-renewal-content')).to.exist;
+        expect(queryByTestId('no-refills-left-alert')).to.be.null;
+        expect(queryByTestId('rx-refill-remaining')).to.be.null;
+      });
+
+      it('shows last filled date for expired non-renewable prescription', () => {
+        const rxWithDate = {
+          ...expiredRx,
+          sortedDispensedDate: '2026-01-05T05:00:00.000Z',
+        };
+        const { getByTestId } = setup(rxWithDate, managementImprovementsState);
+        expect(getByTestId('rx-last-filled-date')).to.exist;
+        expect(getByTestId('expired-status')).to.exist;
+      });
+
+      it('does not show expired card when expiration date is in the future', () => {
+        const rxFutureExpiry = {
+          ...expiredRx,
+          expirationDate: new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+        };
+        const { queryByTestId } = setup(
+          rxFutureExpiry,
+          managementImprovementsState,
+        );
+        expect(queryByTestId('expired-no-renewal-content')).to.be.null;
+      });
+
+      it('does not show expired card when expiration date is missing', () => {
+        const rxNoExpiry = {
+          ...expiredRx,
+          expirationDate: null,
+        };
+        const { queryByTestId } = setup(
+          rxNoExpiry,
+          managementImprovementsState,
+        );
+        expect(queryByTestId('expired-no-renewal-content')).to.be.null;
+      });
+
+      it('shows expired card even when renewal flag is ON (non-renewable expired)', () => {
+        const { getByTestId } = setup(expiredRx, {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+            [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+          },
+        });
+        expect(getByTestId('expired-status')).to.have.text('Expired');
+        expect(getByTestId('expired-no-renewal-content')).to.exist;
+      });
+    });
+
+    describe('Expired ≤120 days, renewable', () => {
       const expiredRenewableRx = {
         ...prescriptionsListItem,
         dispStatus: 'Expired',
@@ -585,10 +675,12 @@ describe('Medication card component', () => {
       };
 
       it('shows no-refills-left alert, "Refills left: 0", and hides ExtraDetails for Expired renewable prescription', () => {
-        const { getByTestId, container } = setup(
-          expiredRenewableRx,
-          managementImprovementsState,
-        );
+        const { getByTestId, container } = setup(expiredRenewableRx, {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+            [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+          },
+        });
         expect(getByTestId('no-refills-left-alert')).to.exist;
         expect(getByTestId('no-refills-left-alert').textContent).to.include(
           'You have no refills left. If you need more, request a renewal.',

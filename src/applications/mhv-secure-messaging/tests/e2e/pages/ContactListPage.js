@@ -1,4 +1,5 @@
 import { Locators, Paths, Alerts, Data } from '../utils/constants';
+import { clickModalPrimaryButtonByTestId } from '../utils/modal-helpers';
 import mockRecipients from '../fixtures/recipientsResponse/recipients-response.json';
 import SharedComponents from './SharedComponents';
 
@@ -98,21 +99,13 @@ class ContactListPage {
   verifySaveAlert = () => {
     cy.contains(Alerts.CONTACT_LIST.SAVE).should(`be.visible`);
 
-    cy.get(Locators.ALERTS.CL_SAVE)
-      .shadow()
-      .find(`button`)
-      .should(`be.visible`)
-      .and(`have.text`, `Save`);
-
-    cy.get(Locators.ALERTS.CL_DELETE_AND_EXIT)
-      .shadow()
-      .find(`button`)
-      .should(`be.visible`)
-      .and(`have.text`, `Delete changes and exit`);
+    cy.findByTestId(Locators.ALERTS.SM_ROUTE_NAV_GUARD_MODAL)
+      .should(`have.attr`, `primary-button-text`, `Save`)
+      .and(`have.attr`, `secondary-button-text`, `Delete changes and exit`);
   };
 
   clickModalSaveButton = () => {
-    cy.get(`[data-testid="sm-route-navigation-guard-confirm-button"]`).click();
+    clickModalPrimaryButtonByTestId(Locators.ALERTS.SM_ROUTE_NAV_GUARD_MODAL);
   };
 
   closeSaveModal = (

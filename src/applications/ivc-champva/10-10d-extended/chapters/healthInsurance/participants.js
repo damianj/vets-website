@@ -40,6 +40,7 @@ export default {
     healthcareParticipants: checkboxGroupUI({
       title: INPUT_LABEL,
       hint: HINT_TEXT,
+      classNames: 'dd-privacy-hidden',
       required: true,
       labels: {},
       updateSchema,

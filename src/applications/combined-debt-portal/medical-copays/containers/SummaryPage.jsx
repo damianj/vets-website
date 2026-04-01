@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { uniqBy } from 'lodash';
-import {
-  VaBreadcrumbs,
-  VaPagination,
-} from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import { VaBreadcrumbs } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useFeatureToggle } from '~/platform/utilities/feature-toggles/useFeatureToggle';
 import {
   setPageFocus,
@@ -15,6 +12,8 @@ import {
 } from '../../combined/utils/helpers';
 import Balances from '../components/Balances';
 import OtherVADebts from '../../combined/components/OtherVADebts';
+import Pagination from '../../combined/components/Pagination';
+import usePagination from '../../combined/hooks/usePagination';
 import alertMessage from '../../combined/utils/alert-messages';
 import NeedHelpCopay from '../components/NeedHelpCopay';
 import CopayAlertContainer from '../components/CopayAlertContainer';
@@ -108,54 +107,14 @@ const OverviewPage = () => {
     setPageFocus('h1');
   }, []);
 
-  const MAX_ROWS = 10;
   const ITEM_TYPE = 'copays';
+  const single = 'What you owe to your facility';
+  const multiple =
+    'Your most recent statement balances for the last six months';
 
-  function paginate(array, pageSize, pageNumber) {
-    return array?.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-  }
-
-  function getPaginationText(
-    currentPage,
-    pageSize,
-    totalItems,
-    label = ITEM_TYPE,
-  ) {
-    // Only display pagination text when there are more than MAX_ROWS total items
-    if (totalItems <= MAX_ROWS) {
-      return '';
-    }
-
-    const startItemIndex = (currentPage - 1) * pageSize + 1;
-    const endItemIndex = Math.min(currentPage * pageSize, totalItems);
-
-    return `Showing ${startItemIndex}-${endItemIndex} of ${totalItems} ${label}`;
-  }
-
-  const [currentData, setCurrentData] = useState(
-    paginate(statementsByUniqueFacility, MAX_ROWS, 1),
-  );
-  const [currentPage, setCurrentPage] = useState(1);
-
-  function onPageChange(page) {
-    setCurrentData(paginate(statementsByUniqueFacility, MAX_ROWS, page));
-    setCurrentPage(page);
-  }
-
-  const numPages = Math.ceil(statementsByUniqueFacility.length / MAX_ROWS);
-
-  const renderVaPagination = () => {
-    if (statementsByUniqueFacility.length > MAX_ROWS) {
-      return (
-        <VaPagination
-          onPageSelect={e => onPageChange(e.detail.page)}
-          page={currentPage}
-          pages={numPages}
-        />
-      );
-    }
-    return null;
-  };
+  // Customize this hook with itemsPerPage as second param if needed
+  const pagination = usePagination(statementsByUniqueFacility);
+  const paginationText = pagination.getPaginationText(ITEM_TYPE);
 
   if (debtLoading || mcpLoading || togglesLoading) {
     return (
@@ -185,17 +144,27 @@ const OverviewPage = () => {
 
     return (
       <article className="vads-u-padding-x--0 vads-u-padding-bottom--0">
+        <h2 id="balance-list" className="vads-u-margin-top--2">
+          {statementsByUniqueFacility.length > 1 ? multiple : single}
+        </h2>
+        {!shouldShowVHAPaymentHistory && (
+          <p>
+            Any payments you have made will not be reflected here until our
+            systems are updated with your next monthly statement.
+          </p>
+        )}
+        {paginationText && <p>{paginationText}</p>}
         <Balances
-          statements={currentData}
+          statements={pagination.currentItems}
           showVHAPaymentHistory={shouldShowVHAPaymentHistory}
-          paginationText={getPaginationText(
-            currentPage,
-            MAX_ROWS,
-            statementsByUniqueFacility.length,
-            ITEM_TYPE,
-          )}
         />
-        {renderVaPagination()}
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalItems={pagination.totalItems}
+          itemsPerPage={pagination.itemsPerPage}
+          onPageChange={pagination.onPageChange}
+          ariaLabel="Copay statements pagination navigation"
+        />
         {renderOtherVA(debts?.length, debtError)}
         <NeedHelpCopay />
       </article>

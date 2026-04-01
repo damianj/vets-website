@@ -27,16 +27,17 @@ const InterstitialPage = props => {
     allRecipients,
     recentRecipients,
     noAssociations,
+    allTriageGroupsBlocked,
     error: recipientsError,
   } = useSelector(state => state.sm.recipients);
 
   useEffect(
     () => {
-      if (recipientsError || noAssociations) {
+      if (recipientsError || noAssociations || allTriageGroupsBlocked) {
         history.push(Paths.INBOX);
       }
     },
-    [recipientsError, noAssociations, history],
+    [recipientsError, noAssociations, allTriageGroupsBlocked, history],
   );
 
   useEffect(
@@ -133,6 +134,28 @@ const InterstitialPage = props => {
     },
     [type],
   );
+
+  // Check if recipients data is still loading
+  // noAssociations and allTriageGroupsBlocked are undefined until API call completes
+  // Exit loading state immediately if error occurs
+  const recipientsLoading =
+    noAssociations === undefined &&
+    allTriageGroupsBlocked === undefined &&
+    !recipientsError;
+
+  // Show loading spinner while waiting for recipients data
+  if (recipientsLoading) {
+    return <va-loading-indicator message="Loading..." />;
+  }
+
+  // After loading, check if we should redirect
+  // The useEffect will handle the actual redirect
+  const shouldRedirect =
+    recipientsError || noAssociations || allTriageGroupsBlocked;
+
+  if (shouldRedirect) {
+    return <va-loading-indicator message="Loading..." />;
+  }
 
   return (
     <div className="interstitial-page">

@@ -2,6 +2,10 @@ import SecureMessagingSite from './sm_site/SecureMessagingSite';
 import PatientInboxPage from './pages/PatientInboxPage';
 import PatientComposePage from './pages/PatientComposePage';
 import { AXE_CONTEXT, Data, Locators, Assertions } from './utils/constants';
+import {
+  clickModalPrimaryButtonByTestId,
+  clickModalSecondaryButtonByTestId,
+} from './utils/modal-helpers';
 
 describe('Secure Messaging Delete Unsaved Compose Draft', () => {
   beforeEach(() => {
@@ -20,7 +24,7 @@ describe('Secure Messaging Delete Unsaved Compose Draft', () => {
     });
 
     cy.get(Locators.BUTTONS.DELETE_DRAFT).click({ force: true });
-    cy.get(Locators.BUTTONS.DELETE_CANCEL).click({ force: true });
+    clickModalSecondaryButtonByTestId('delete-draft-modal', { force: true });
     cy.get('h1').should('have.text', Data.START_NEW_MSG);
     cy.get(Locators.BUTTONS.DELETE_DRAFT).should('be.visible');
 
@@ -37,7 +41,7 @@ describe('Secure Messaging Delete Unsaved Compose Draft', () => {
     });
 
     cy.get(Locators.BUTTONS.DELETE_DRAFT).click({ force: true });
-    cy.get(Locators.BUTTONS.DELETE_CONFIRM).click({ force: true });
+    clickModalPrimaryButtonByTestId('delete-draft-modal', { force: true });
     cy.get('h1').should('have.text', `Messages: ${Assertions.INBOX}`);
     cy.get(Locators.ALERTS.GEN_ALERT).should(
       'contain.text',

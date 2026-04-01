@@ -22,7 +22,14 @@
         "type": "COMMUNITY_CARE_APPOINTMENT",
         "pending": false,
         "past": true,
-        "future": false
+        "future": false,
+        "travelPayClaim": {
+          "metadata": {
+            "status": 200,
+            "message": "No claims found.",
+            "success": true
+          }
+        }
       }
     },
     {
@@ -2508,10 +2515,10 @@
         ],
         "patientIcn": "1013120826V646496",
         "locationId": "983GC",
-        "localStartTime": "2024-10-20T09:30:00.000+08:00",
+        "localStartTime": "2025-10-20T09:30:00.000+08:00",
         "clinic": "945",
-        "start": "2024-10-20T09:30:00Z",
-        "end": "2024-10-20T10:00:00Z",
+        "start": "2025-10-20T09:30:00Z",
+        "end": "2025-10-20T10:00:00Z",
         "created": "2024-03-17T00:00:00Z",
         "cancellable": false,
         "extension": {
@@ -2600,10 +2607,10 @@
         ],
         "patientIcn": "1013120826V646496",
         "locationId": "983GC",
-        "localStartTime": "2024-10-20T10:30:00.000+08:00",
+        "localStartTime": "2025-10-20T10:30:00.000+08:00",
         "clinic": "945",
-        "start": "2024-10-20T10:30:00Z",
-        "end": "2024-10-20T11:00:00Z",
+        "start": "2025-10-20T10:30:00Z",
+        "end": "2025-10-20T11:00:00Z",
         "created": "2024-03-17T00:00:00Z",
         "cancellable": false,
         "extension": {
@@ -4030,7 +4037,8 @@
             ]
           }
         },
-        "past": false,
+        "avsPath": null,
+        "past": true,
         "pending": false,
         "modality": "claimExamAppointment"
       }
@@ -6994,6 +7002,225 @@
         "past": true,
         "future": false,
         "showScheduleLink": false
+      }
+    },
+    {
+      "id": "cancelled-future-cc-appt-mock",
+      "type": "appointments",
+      "attributes": {
+        "id": "cancelled-future-cc-appt-mock",
+        "identifier": [
+          {
+            "system": "http://med.va.gov/fhir/urn/vaos/hsrm/id",
+            "value": "524670||158||1"
+          },
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1346206547"
+          }
+        ],
+        "kind": "cc",
+        "type": "COMMUNITY_CARE_APPOINTMENT",
+        "modality": "communityCare",
+        "status": "cancelled",
+        "serviceTypes": [
+          {
+            "text": "Cardiology Cath - PCI_REV_PRCT SEOC 1.1.14"
+          }
+        ],
+        "description": "Cardiology Cath - PCI_REV_PRCT SEOC 1.1.14",
+        "patientIcn": "1012845331V153043",
+        "locationId": "552",
+        "practitioners": [
+          {
+            "name": {
+              "family": "HEALTH CARE PROFS",
+              "given": [
+                "A & D"
+              ]
+            }
+          }
+        ],
+        "start": "2027-04-15T13:00:00Z",
+        "created": "2027-03-01T10:00:00Z",
+        "cancellable": false,
+        "extension": {
+          "ccLocation": {
+            "address": {
+              "line": [
+                "1601 NEEDMORE RD ; STE 1 &amp; 2"
+              ],
+              "city": "DAYTON",
+              "state": "OH",
+              "postalCode": "45414",
+              "text": "1601 NEEDMORE RD ; STE 1 &amp; 2\nDAYTON OH 45414"
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "937-236-6750"
+              }
+            ]
+          },
+          "hsrmTaskId": "",
+          "hsrmConsultId": "984_646372",
+          "ccTreatingSpecialty": "Home Health"
+        },
+        "localStartTime": "2027-04-15T09:00:00.000-04:00",
+        "avsPath": null,
+        "location": {
+          "id": "552",
+          "type": "appointments",
+          "attributes": {
+            "id": "552",
+            "facilitiesApiId": "vha_552",
+            "vistaSite": "552",
+            "vastParent": "552",
+            "type": "va_health_facility",
+            "name": "Dayton VA Medical Center",
+            "classification": "VA Medical Center (VAMC)",
+            "timezone": {
+              "timeZoneId": "America/New_York"
+            },
+            "lat": 39.74935,
+            "long": -84.2532,
+            "website": "https://www.va.gov/dayton-health-care/locations/dayton-va-medical-center/",
+            "phone": {
+              "main": "937-268-6511",
+              "fax": "937-262-2179",
+              "pharmacy": "800-368-8262 x1",
+              "afterHours": "888-838-6446",
+              "patientAdvocate": "800-368-8262 x2164",
+              "mentalHealthClinic": "937-262-2186",
+              "enrollmentCoordinator": "800-368-8262 x5336"
+            },
+            "hoursOfOperation": [
+              {
+                "daysOfWeek": "sun",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              },
+              {
+                "daysOfWeek": "mon",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              },
+              {
+                "daysOfWeek": "tue",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              },
+              {
+                "daysOfWeek": "wed",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              },
+              {
+                "daysOfWeek": "thu",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              },
+              {
+                "daysOfWeek": "fri",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              },
+              {
+                "daysOfWeek": "sat",
+                "openingTime": "24/7",
+                "closingTime": "24/7"
+              }
+            ],
+            "physicalAddress": {
+              "type": "physical",
+              "line": [
+                "4100 West Third Street",
+                null,
+                null
+              ],
+              "city": "Dayton",
+              "state": "OH",
+              "postalCode": "45428-9000"
+            },
+            "mobile": false,
+            "healthService": [
+              "Addiction",
+              "Anesthesia",
+              "Audiology",
+              "Cardiology",
+              "CaregiverSupport",
+              "Chiropractic",
+              "CriticalCare",
+              "Dental",
+              "Dermatology",
+              "EmergencyCare",
+              "EmploymentPrograms",
+              "Endocrinology",
+              "Gastroenterology",
+              "Gynecology",
+              "Hematology",
+              "Homeless",
+              "Hospice",
+              "InfectiousDisease",
+              "Laboratory",
+              "Lgbtq",
+              "MentalHealth",
+              "MilitarySexualTrauma",
+              "MinorityCare",
+              "MyHealtheVetCoordinator",
+              "Nephrology",
+              "Neurology",
+              "Nutrition",
+              "Ophthalmology",
+              "Optometry",
+              "Orthopedics",
+              "Otolaryngology",
+              "PainManagement",
+              "PatientAdvocates",
+              "Pharmacy",
+              "PhysicalMedicine",
+              "PhysicalTherapy",
+              "Podiatry",
+              "Polytrauma",
+              "PrimaryCare",
+              "Prosthetics",
+              "Psychiatry",
+              "Psychology",
+              "Ptsd",
+              "PulmonaryMedicine",
+              "RadiationOncology",
+              "Radiology",
+              "RecreationTherapy",
+              "RegistryExams",
+              "Rehabilitation",
+              "Rheumatology",
+              "SleepMedicine",
+              "Smoking",
+              "SocialWork",
+              "SpinalInjury",
+              "SuicidePrevention",
+              "Surgery",
+              "Telehealth",
+              "ThoracicSurgery",
+              "TransitionCounseling",
+              "TransplantSurgery",
+              "TravelReimbursement",
+              "UrgentCare",
+              "Urology",
+              "VascularSurgery",
+              "Vision",
+              "WeightManagement",
+              "WomensHealth",
+              "Wound"
+            ],
+            "operatingStatus": {
+              "code": "NORMAL"
+            },
+            "visn": "10"
+          }
+        },
+        "past": false,
+        "pending": false
       }
     }
   ]

@@ -44,7 +44,7 @@ export function base64ToPdfObjectUrl(base64, contentType = 'application/pdf') {
     const blob = new Blob([bytes], { type: contentType });
     return URL.createObjectURL(blob);
   } catch (e) {
-    captureError(e, 'Failed to convert base64 string to PDF blob URL');
+    captureError(e, false, 'Failed to convert base64 string to PDF blob URL');
     return null;
   }
 }

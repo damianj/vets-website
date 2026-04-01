@@ -3,10 +3,15 @@ import sinon from 'sinon';
 import { mockFetch } from '@department-of-veterans-affairs/platform-testing/helpers';
 import {
   fetchFacilitySettings,
+  fetchFutureAppointments,
   FETCH_FACILITY_SETTINGS,
   FETCH_FACILITY_SETTINGS_SUCCEEDED,
   FETCH_FACILITY_SETTINGS_FAILED,
+  FETCH_FUTURE_APPOINTMENTS_SUCCEEDED,
 } from './actions';
+import * as appointmentService from '../../services/appointment';
+import * as parentActions from '../../redux/actions';
+import * as errorUtils from '../../utils/error';
 import { mockSchedulingConfigurationsApi } from '../../tests/mocks/mockApis';
 import MockSchedulingConfigurationResponse, {
   MockServiceConfiguration,
@@ -176,6 +181,65 @@ describe('VAOS appointment-list redux actions', () => {
       expect(dispatch.secondCall.args[0]).to.deep.equal({
         type: FETCH_FACILITY_SETTINGS_FAILED,
       });
+    });
+  });
+
+  describe('fetchFutureAppointments', () => {
+    let sandbox;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    const futureAppointmentsState = () => ({
+      user: {
+        profile: {
+          facilities: [{ facilityId: '983', isCerner: false }],
+        },
+      },
+      featureToggles: {
+        vaOnlineSchedulingCCDirectScheduling: false,
+      },
+    });
+
+    it('calls captureError when a clinic-based video appointment is missing stationId', async () => {
+      const captureStub = sandbox.stub(errorUtils, 'captureError');
+      sandbox.stub(appointmentService, 'fetchAppointments').resolves([
+        {
+          videoData: { kind: 'CLINIC_BASED' },
+          location: {},
+        },
+      ]);
+      sandbox.stub(parentActions, 'getAdditionalFacilityInfoV2').returns(null);
+
+      const dispatch = sinon.spy();
+      const getState = () => futureAppointmentsState();
+
+      await fetchFutureAppointments({ includeRequests: false })(
+        dispatch,
+        getState,
+      );
+
+      const sta6aidMessage = 'VAOS clinic based appointment missing sta6aid';
+      const sta6aidCalls = captureStub
+        .getCalls()
+        .filter(
+          call =>
+            call.args[0] instanceof Error &&
+            call.args[0].message === sta6aidMessage &&
+            call.args[1] === true &&
+            call.args[2] === sta6aidMessage,
+        );
+      expect(sta6aidCalls.length).to.equal(1);
+      expect(captureStub.callCount).to.equal(1);
+
+      expect(
+        dispatch.calledWithMatch({ type: FETCH_FUTURE_APPOINTMENTS_SUCCEEDED }),
+      ).to.be.true;
     });
   });
 });

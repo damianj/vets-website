@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { Toggler } from '~/platform/utilities/feature-toggles';
 import AddFilesForm from './AddFilesForm';
 import Notification from '../Notification';
 import FilesOptional from './FilesOptional';
@@ -51,7 +52,6 @@ class AdditionalEvidencePage extends React.Component {
       claimId,
       null,
       files,
-      this.props.showDocumentUploadStatus,
       this.props.timezoneMitigationEnabled,
     );
   }
@@ -101,20 +101,28 @@ class AdditionalEvidencePage extends React.Component {
           </h3>
           {isOpen ? (
             <>
-              {filesNeeded.map(item => (
-                <FilesNeeded
-                  key={item.id}
-                  claimId={claim.id}
-                  item={item}
-                  evidenceWaiverSubmitted5103={
-                    claim.attributes.evidenceWaiverSubmitted5103
-                  }
-                  previousPage="files"
-                />
-              ))}
-              {this.props.filesOptional.map(item => (
-                <FilesOptional key={item.id} id={claim.id} item={item} />
-              ))}
+              <Toggler
+                toggleName={
+                  Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests
+                }
+              >
+                <Toggler.Disabled>
+                  {filesNeeded.map(item => (
+                    <FilesNeeded
+                      key={item.id}
+                      claimId={claim.id}
+                      item={item}
+                      evidenceWaiverSubmitted5103={
+                        claim.attributes.evidenceWaiverSubmitted5103
+                      }
+                      previousPage="files"
+                    />
+                  ))}
+                  {this.props.filesOptional.map(item => (
+                    <FilesOptional key={item.id} id={claim.id} item={item} />
+                  ))}
+                </Toggler.Disabled>
+              </Toggler>
               <AddFilesForm
                 fileTab
                 progress={this.props.progress}
@@ -157,8 +165,6 @@ function mapStateToProps(state) {
     message: claimsState.notifications.additionalEvidenceMessage,
     filesNeeded: TrackedItem.getFilesNeeded(trackedItems),
     filesOptional: TrackedItem.getFilesOptional(trackedItems),
-    showDocumentUploadStatus:
-      state.featureToggles?.cst_show_document_upload_status || false,
     timezoneMitigationEnabled:
       state.featureToggles?.cst_timezone_discrepancy_mitigation || false,
     cstMultiClaimProviderEnabled: cstMultiClaimProvider(state),
@@ -189,7 +195,6 @@ AdditionalEvidencePage.propTypes = {
   params: PropTypes.object,
   progress: PropTypes.number,
   resetUploads: PropTypes.func,
-  showDocumentUploadStatus: PropTypes.bool,
   submitFiles: PropTypes.func,
   timezoneMitigationEnabled: PropTypes.bool,
   uploadComplete: PropTypes.bool,

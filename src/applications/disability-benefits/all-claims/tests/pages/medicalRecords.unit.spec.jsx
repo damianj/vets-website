@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { updateFormData, uiSchema } from '../../pages/medicalRecords';
+import { validateMedicalRecordsAtLeastOne } from '../../validations';
 
 const getValidator = () =>
   uiSchema['view:selectableEvidenceTypes']['ui:validations'][0].validator;
@@ -14,6 +15,42 @@ const runValidation = (formData, fieldData = {}) => {
   getValidator()(errors, fieldData, formData, schema, messages, {}, 0);
   return errors;
 };
+
+describe('medicalRecords uiSchema', () => {
+  it('uses VaCheckboxGroupField as web component field', () => {
+    const field = uiSchema['view:selectableEvidenceTypes'];
+    expect(field['ui:webComponentField'].name).to.equal('VaCheckboxGroupField');
+  });
+
+  it('is always required', () => {
+    const field = uiSchema['view:selectableEvidenceTypes'];
+    expect(field['ui:required']({})).to.be.true;
+  });
+
+  it('uses validateMedicalRecordsAtLeastOne as validator', () => {
+    const field = uiSchema['view:selectableEvidenceTypes'];
+    expect(field['ui:validations'][0].validator).to.equal(
+      validateMedicalRecordsAtLeastOne,
+    );
+  });
+
+  it('provides the correct error message for atLeastOne', () => {
+    const field = uiSchema['view:selectableEvidenceTypes'];
+    expect(field['ui:errorMessages'].atLeastOne).to.equal(
+      'Select at least one type of medical record',
+    );
+  });
+
+  it('has expected checkbox fields configured', () => {
+    const field = uiSchema['view:selectableEvidenceTypes'];
+    expect(field['view:hasVaMedicalRecords']['ui:title']).to.equal(
+      'VA medical records',
+    );
+    expect(field['view:hasPrivateMedicalRecords']['ui:title']).to.equal(
+      'Private medical records',
+    );
+  });
+});
 
 describe('medicalRecords updateFormData', () => {
   it('should preserve hasOtherEvidence from oldFormData', () => {

@@ -54,6 +54,18 @@ export default function CurrencyField(fieldProps) {
     const { value } = event.target;
     setDisplayVal(value);
     props.onBlur(props.name);
+
+    if (value === '' || typeof value === 'undefined') {
+      props.onChange(schemaType === 'number' ? null : '');
+      return;
+    }
+
+    const decimalCount = (value.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      props.onChange(value);
+      return;
+    }
+
     // Needs to parse as a number
     const parsedValue = parseNumber(value);
     if (!isNaN(parsedValue)) {
@@ -62,7 +74,7 @@ export default function CurrencyField(fieldProps) {
       setDisplayVal(roundedString);
       props.onChange(schemaType === 'number' ? roundedValue : roundedString);
     } else {
-      props.onChange(schemaType === 'number' && value === '' ? null : value);
+      props.onChange(value);
     }
   };
 

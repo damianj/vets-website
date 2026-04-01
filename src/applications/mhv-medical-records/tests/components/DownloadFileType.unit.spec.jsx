@@ -37,33 +37,24 @@ describe('DownloadFileType', () => {
         generatingCCD: false,
         recordFilter: ['allergies', 'labTests', 'vaccines'],
       },
-      allergies: {
+      blueButton: {
         allergiesList: allergies.entry.map(item =>
           convertAllergy(item.resource),
         ),
-      },
-      labsAndTests: {
         labsAndTestsList: labsAndTests.entry.map(item =>
-          convertLabsAndTestsRecord(item),
+          convertLabsAndTestsRecord(item.resource),
         ),
-      },
-      careSummariesAndNotes: {
-        careSummariesAndNotesList: notes.entry.map(note =>
+        notesList: notes.entry.map(note =>
           convertCareSummariesAndNotesRecord(note.resource),
         ),
-      },
-      vaccines: {
         vaccinesList: vaccines.entry.map(vaccine =>
           convertVaccine(vaccine.resource),
         ),
-      },
-      vitals: {
         vitalsList: vitals.entry.map(item => convertVital(item.resource)),
-      },
-      conditions: {
         conditionsList: conditions.entry.map(condition =>
-          convertCondition(condition),
+          convertCondition(condition.resource),
         ),
+        failedDomains: [],
       },
     },
   };
@@ -109,23 +100,14 @@ describe('DownloadFileType with no records', () => {
         generatingCCD: false,
         recordFilter: ['allergies', 'labTests', 'vaccines'],
       },
-      allergies: {
+      blueButton: {
         allergiesList: [],
-      },
-      labsAndTests: {
         labsAndTestsList: [],
-      },
-      careSummariesAndNotes: {
-        careSummariesAndNotesList: [],
-      },
-      vaccines: {
+        notesList: [],
         vaccinesList: [],
-      },
-      vitals: {
         vitalsList: [],
-      },
-      conditions: {
         conditionsList: [],
+        failedDomains: [],
       },
     },
   };
@@ -190,16 +172,13 @@ describe('DownloadFileType — AAL logging', () => {
           recordFilter: ['allergies', 'labTests', 'vaccines'],
           fileTypeFilter: format, // drive PDF vs TXT here
         },
-        allergies: {
+        blueButton: {
           allergiesList: allergies.entry.map(e => convertAllergy(e.resource)),
-        },
-        labsAndTests: {
           labsAndTestsList: labsAndTests.entry.map(e =>
-            convertLabsAndTestsRecord(e),
+            convertLabsAndTestsRecord(e.resource),
           ),
-        },
-        vaccines: {
           vaccinesList: vaccines.entry.map(v => convertVaccine(v.resource)),
+          failedDomains: [],
         },
       },
     };

@@ -2,28 +2,26 @@ import React from 'react';
 
 export const Notice5103Details = () => (
   <va-additional-info
-    class="vads-u-margin-top--2"
+    class="vads-u-margin-top--3"
     trigger="What if I have a presumptive condition?"
   >
-    <div>
-      If you’re filing a claim for a condition that we now consider presumptive
-      under a new law or regulation (like the PACT Act), it also counts as new
-      and relevant evidence.
-    </div>
+    If you’re filing a claim for a condition that we now consider presumptive
+    under a new law or regulation (like the PACT Act), it also counts as new and
+    relevant evidence.
   </va-additional-info>
 );
 
 export const content = {
-  header: 'Review and acknowledge the notice of evidence needed.',
+  header: 'Review and acknowledge the notice of evidence needed',
   error:
     'You need to certify that you have reviewed the notice of evidence needed.',
   label:
     'I certify that I have reviewed the notice of evidence needed or I received my decision less than 1 year ago.',
   update: 'Update page',
   updateLabel: 'Update notice of evidence needed page',
-  descriptionInCheckbox: (
+  description: (
     <>
-      <p>
+      <p className="vads-u-margin-top--3">
         If you’re filing a Supplemental Claim more than 1 year after you got
         your decision notice, you’ll need to review and acknowledge our notice
         of evidence needed for your disability claim.

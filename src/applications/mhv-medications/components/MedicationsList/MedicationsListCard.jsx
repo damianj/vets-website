@@ -14,6 +14,7 @@ import {
   getRxStatus,
   rxSourceIsNonVA,
   getTrackingUrl,
+  isExpirationDatePassed,
   isOracleHealthPrescription,
 } from '../../util/helpers';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
@@ -48,7 +49,7 @@ const MedicationsListCard = ({ rx }) => {
   const isMedsImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
-  const isRenewalRequestFlag = useSelector(
+  const showSecureMessagingRenewalRequest = useSelector(
     selectSecureMessagingMedicationsRenewalRequestFlag,
   );
   const isFillInProgress =
@@ -105,34 +106,35 @@ const MedicationsListCard = ({ rx }) => {
     rx.refillRemaining === 0 &&
     !isNonVaPrescription;
   const expirationDate = rx.expirationDate ? new Date(rx.expirationDate) : null;
-  const isExpired = expirationDate && expirationDate <= new Date();
   const isExpiredOver120Days =
     expirationDate &&
     expirationDate <= new Date(Date.now() - 120 * 24 * 60 * 60 * 1000);
   const isNonRenewableExpired =
-    isRenewalRequestFlag &&
+    showSecureMessagingRenewalRequest &&
     (rx.dispStatus === dispStatusObj.expired ||
       rx.dispStatus === dispStatusObj.discontinued) &&
     !rx.isRefillable &&
     !rx.isRenewable &&
     isExpiredOver120Days;
-  const isExpiredNoRenewalFlag =
-    !isRenewalRequestFlag &&
-    rx.dispStatus === dispStatusObj.expired &&
-    isExpired &&
-    !rx.isRenewable &&
-    !isNonVaPrescription;
   const isExpiredRenewable =
     rx.dispStatus === DISPENSE_STATUS.EXPIRED &&
     rx.isRenewable &&
     rx.refillRemaining === 0 &&
+    !isNonVaPrescription &&
+    showSecureMessagingRenewalRequest;
+  const isExpiredNoRenewalFlow =
+    rx.dispStatus === DISPENSE_STATUS.EXPIRED &&
+    !isExpiredRenewable &&
+    isExpirationDatePassed(rx.expirationDate) &&
     !isNonVaPrescription;
   const showMedImprovementCard =
     isMedsImprovements &&
     (isFillInProgress ||
       isRecentlyShipped ||
       isActiveNoRefills ||
-      isExpiredRenewable);
+      isExpiredRenewable ||
+      isExpiredNoRenewalFlow ||
+      isNonRenewableExpired);
 
   const renderNonVaCard = () => (
     <>
@@ -175,13 +177,32 @@ const MedicationsListCard = ({ rx }) => {
 
   const renderTransferredCard = () => (
     <p
-      className="vads-u-margin-top--1 vads-u-margin-bottom--0"
+      className="vads-u-margin-top--1p5 vads-u-margin-bottom--0"
       data-testid="transferred-content"
     >
       This is a previous record of your medication. If you need a refill, find
       the current medication in your medications list. If you don’t have a
       current one, contact your provider.
     </p>
+  );
+
+  const renderExpiredCard = () => (
+    <>
+      <LastFilledInfo {...rx} />
+      <p
+        className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
+        data-testid="expired-status"
+      >
+        {rxStatus}
+      </p>
+      <p
+        className="vads-u-margin-y--0"
+        data-testid="expired-no-renewal-content"
+      >
+        This prescription is too old to refill. If you need more, request a
+        renewal.
+      </p>
+    </>
   );
 
   const cardBodyContent = () => {
@@ -219,27 +240,8 @@ const MedicationsListCard = ({ rx }) => {
           </p>
         </>
       );
-    if (isMedsImprovements && isExpiredNoRenewalFlag)
-      return (
-        <>
-          <LastFilledInfo {...rx} />
-          <p
-            className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
-            data-testid="rxStatus"
-            data-dd-privacy="mask"
-          >
-            Expired
-          </p>
-          <p
-            className="vads-u-margin-top--0p5 vads-u-margin-bottom--0"
-            data-testid="expired-no-renewal-flag"
-            data-dd-privacy="mask"
-          >
-            This prescription is too old to refill. If you need more, request a
-            renewal.
-          </p>
-        </>
-      );
+    if (isMedsImprovements && isExpiredNoRenewalFlow)
+      return renderExpiredCard();
     if (pendingRenewal || pendingMed) return renderPendingCard();
 
     return (
@@ -380,7 +382,7 @@ const MedicationsListCard = ({ rx }) => {
     (isDiscontinued ||
       isTransferred ||
       isNonRenewableExpired ||
-      isExpiredNoRenewalFlag);
+      isExpiredNoRenewalFlow);
 
   return (
     <va-card

@@ -84,6 +84,7 @@ import * as retirementPayWaiver from './retirementPayWaiver';
 import * as secondaryFinalIncident from './secondaryFinalIncident';
 import * as separationHealthAssessment from './separationHealthAssessment';
 import * as separationHealthAssessmentUpload from './separationHealthAssessmentUpload';
+import * as separationHealthAssessmentUploadV1 from './separationHealthAssessmentUploadV1';
 import * as secondaryIncidentAuthorities from './secondaryIncidentAuthorities';
 import * as secondaryIncidentDate from './secondaryIncidentDate';
 import * as secondaryIncidentDescription from './secondaryIncidentDescription';
@@ -212,6 +213,7 @@ export {
   secondaryFinalIncident,
   separationHealthAssessment,
   separationHealthAssessmentUpload,
+  separationHealthAssessmentUploadV1,
   secondaryIncidentAuthorities,
   secondaryIncidentDate,
   secondaryIncidentDescription,

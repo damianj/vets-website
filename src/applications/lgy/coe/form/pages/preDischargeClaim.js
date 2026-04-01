@@ -6,7 +6,6 @@ import {
   descriptionUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import {
-  VaAdditionalInfo,
   VaAccordion,
   VaAccordionItem,
 } from '@department-of-veterans-affairs/web-components/react-bindings';
@@ -15,51 +14,48 @@ const emptyObjectSchema = {
   type: 'object',
   properties: {},
 };
-const PreDischargeClaimAdditionalInfo = () => (
-  <VaAdditionalInfo
-    trigger="What is a pre-discharge claim"
-    className="vads-u-margin-top--2 vads-u-margin-bottom--4"
-  >
-    <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
-      Text to be added.
-    </p>
-  </VaAdditionalInfo>
-);
 const PreDischargeClaimWhyAccordion = () => (
   <VaAccordion uswds openSingle className="vads-u-margin-top--2">
-    <VaAccordionItem header="Why are we asking this question?">
+    <VaAccordionItem header="What a pre-discharge claim is and why we ask about it">
       <p className="vads-u-margin-top--0">
-        The VA funding fee may not be collected from a veteran who rated
-        eligible to receive compensation as the result of a pre-discharge
-        disability examination and rating or based on a pre-discharge review of
-        existing medical evidence (including service medical and treatment
-        records) that results in the issuance of a memorandum rating.
+        A pre-discharge claim is a type of claim submitted by service members
+        180 to 90 days before their discharge. The pre-discharge claim’s
+        objective is to reduce or eliminate the gap in VA disability
+        compensation benefits shortly after separation.
       </p>
       <p>
-        <a href="/housing-assistance/home-loans/funding-fee-and-closing-costs/">
+        As part of the VA home loan process, borrowers are usually required to
+        pay the VA funding fee. You may not have to pay this fee if you are a
+        Veteran with a pre-discharge claim.
+      </p>
+      <p>
+        <a
+          href="/housing-assistance/home-loans/funding-fee-and-closing-costs/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Learn more about the VA funding fee
         </a>
       </p>
       <p className="vads-u-margin-bottom--0">
-        <strong>Note:</strong> If the proposed or memorandum rating is not
-        obtained and a closing takes place, the funding fee exemption does not
-        apply, and the service-member will not be entitled to a refund.
+        <strong>Note:</strong> If you don’t obtain a proposed or memorandum
+        rating before the loan closing and you are still in service, the funding
+        fee exemption does not apply. And you won’t be entitled to a refund from
+        VA.
       </p>
     </VaAccordionItem>
   </VaAccordion>
 );
 export default {
   uiSchema: {
-    ...titleUI('Pending pre-discharge claim'),
+    ...titleUI('Pre-discharge claim'),
     militaryHistory: {
       preDischargeClaim: yesNoUI({
-        title: 'Do you have a pre-discharge claim pending with VA?',
+        title:
+          'Have you submitted a pre-discharge claim for service-connected disability with the VA?',
         errorMessages: { required: 'Select yes or no' },
       }),
     },
-    'view:preDischargeClaimAdditionalInfo': descriptionUI(
-      <PreDischargeClaimAdditionalInfo />,
-    ),
     'view:preDischargeClaimWhyAccordion': descriptionUI(
       <PreDischargeClaimWhyAccordion />,
     ),
@@ -74,7 +70,6 @@ export default {
         },
         required: ['preDischargeClaim'],
       },
-      'view:preDischargeClaimAdditionalInfo': emptyObjectSchema,
       'view:preDischargeClaimWhyAccordion': emptyObjectSchema,
     },
   },

@@ -446,13 +446,17 @@ describe('EvidenceRequestPage', () => {
     const primaryButton = container.querySelector('va-modal');
     fireEvent(primaryButton, new CustomEvent('primaryButtonClick'));
 
-    await waitFor(() => {
-      const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
-      expect(alert.textContent).to.include(
-        'We’ve removed information about your medical centers from this claim.',
-      );
-    });
+    // Alert appears and gets focused after useEffect setTimeout
+    await waitFor(
+      () => {
+        const alert = container.querySelector('va-alert');
+        expect(alert).to.have.attribute('visible', 'true');
+        expect(alert.textContent).to.include(
+          'We’ve removed information about your medical centers from this claim.',
+        );
+      },
+      { timeout: 200 },
+    );
   });
 
   it('should cancel modal and reset selection to Yes after user click cancel change', async () => {
@@ -704,16 +708,19 @@ describe('EvidenceRequestPage', () => {
     const modal = container.querySelector('va-modal');
     fireEvent(modal, new CustomEvent('primaryButtonClick'));
 
-    await waitFor(() => {
-      const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
-    });
+    await waitFor(
+      () => {
+        const alert = container.querySelector('va-alert');
+        expect(alert).to.have.attribute('visible', 'true');
+      },
+      { timeout: 200 },
+    );
 
     const alert = container.querySelector('va-alert');
     fireEvent(alert, new CustomEvent('closeEvent'));
 
     await waitFor(() => {
-      expect(alert).to.have.attribute('visible', 'false');
+      expect(container.querySelector('va-alert')).to.not.exist;
     });
   });
 
@@ -735,10 +742,13 @@ describe('EvidenceRequestPage', () => {
     const modal = container.querySelector('va-modal');
     fireEvent(modal, new CustomEvent('primaryButtonClick'));
 
-    await waitFor(() => {
-      const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
-    });
+    await waitFor(
+      () => {
+        const alert = container.querySelector('va-alert');
+        expect(alert).to.have.attribute('visible', 'true');
+      },
+      { timeout: 200 },
+    );
 
     const alert = container.querySelector('va-alert');
 
@@ -749,7 +759,7 @@ describe('EvidenceRequestPage', () => {
     fireEvent(alert, new CustomEvent('closeEvent'));
 
     await waitFor(() => {
-      expect(alert).to.have.attribute('visible', 'false');
+      expect(container.querySelector('va-alert')).to.not.exist;
     });
   });
 
@@ -771,10 +781,13 @@ describe('EvidenceRequestPage', () => {
     const modal = container.querySelector('va-modal');
     fireEvent(modal, new CustomEvent('primaryButtonClick'));
 
-    await waitFor(() => {
-      const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
-    });
+    await waitFor(
+      () => {
+        const alert = container.querySelector('va-alert');
+        expect(alert).to.have.attribute('visible', 'true');
+      },
+      { timeout: 200 },
+    );
 
     const alert = container.querySelector('va-alert');
 
@@ -785,7 +798,7 @@ describe('EvidenceRequestPage', () => {
     fireEvent(alert, new CustomEvent('closeEvent'));
 
     await waitFor(() => {
-      expect(alert).to.have.attribute('visible', 'false');
+      expect(container.querySelector('va-alert')).to.not.exist;
     });
   });
 });

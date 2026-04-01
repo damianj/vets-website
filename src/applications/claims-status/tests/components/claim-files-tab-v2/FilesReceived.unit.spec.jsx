@@ -68,7 +68,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('Pending review')).to.exist;
+        expect($('va-tag-status[text="Pending review"]', container)).to.exist;
         expect(getByText('File name unknown')).to.exist;
         expect(getByText('Submitted in response to request: Request 1')).to
           .exist;
@@ -110,7 +110,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('Pending review')).to.exist;
+        expect($('va-tag-status[text="Pending review"]', container)).to.exist;
         expect(getByText('file.pdf')).to.exist;
         expectMaskedFilenames(container);
         expect(getByText('Document type: Correspondence')).to.exist;
@@ -154,7 +154,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('Pending review')).to.exist;
+        expect($('va-tag-status[text="Pending review"]', container)).to.exist;
         expect(getByText('file.pdf')).to.exist;
         expectMaskedFilenames(container);
         expect(getByText('Document type: Correspondence')).to.exist;
@@ -199,7 +199,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('Reviewed by VA')).to.exist;
+        expect($('va-tag-status[text="Reviewed by VA"]', container)).to.exist;
         expect(getByText('file.pdf')).to.exist;
         expectMaskedFilenames(container);
         expect(getByText('Document type: Correspondence')).to.exist;
@@ -244,7 +244,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('Reviewed by VA')).to.exist;
+        expect($('va-tag-status[text="Reviewed by VA"]', container)).to.exist;
         expect(getByText('file.pdf')).to.exist;
         expectMaskedFilenames(container);
         expect(getByText('Document type: Correspondence')).to.exist;
@@ -289,7 +289,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('On File')).to.exist;
+        expect($('va-tag-status[text="On file"]', container)).to.exist;
         expect(getByText('file.pdf')).to.exist;
         expectMaskedFilenames(container);
         expect(getByText('Document type: Correspondence')).to.exist;
@@ -336,7 +336,7 @@ describe('<FilesReceived>', () => {
         );
 
         expect($('.files-received-container', container)).to.exist;
-        expect(getByText('Pending review')).to.exist;
+        expect($('va-tag-status[text="Pending review"]', container)).to.exist;
         expect(getByText('file.pdf')).to.exist;
         expectMaskedFilenames(container);
         expect(getByText('Document type: Correspondence')).to.exist;
@@ -392,7 +392,9 @@ describe('<FilesReceived>', () => {
         expect(getByText('file1.pdf')).to.exist;
         expect(getByText('file2.pdf')).to.exist;
         expectMaskedFilenames(container, 2);
-        expect(getAllByText('Pending review')).to.have.lengthOf(2);
+        expect(
+          container.querySelectorAll('va-tag-status[text="Pending review"]'),
+        ).to.have.lengthOf(2);
         expect(
           getAllByText('Submitted in response to request: Request 1'),
         ).to.have.lengthOf(2);
@@ -465,7 +467,7 @@ describe('<FilesReceived>', () => {
     };
 
     it('should render multiple cards sorted by date', () => {
-      const { container, getByTestId, getByText, getAllByText } = render(
+      const { container, getByTestId, getByText } = render(
         <FilesReceived claim={claim} />,
       );
 
@@ -475,9 +477,11 @@ describe('<FilesReceived>', () => {
       expect(getByTestId('file-received-card-2')).to.exist;
       expect(getByTestId('file-received-card-3')).to.exist;
 
-      expect(getAllByText('Pending review')).to.have.lengthOf(2);
-      expect(getByText('Reviewed by VA')).to.exist;
-      expect(getByText('On File')).to.exist;
+      expect(
+        container.querySelectorAll('va-tag-status[text="Pending review"]'),
+      ).to.have.lengthOf(2);
+      expect($('va-tag-status[text="Reviewed by VA"]', container)).to.exist;
+      expect($('va-tag-status[text="On file"]', container)).to.exist;
 
       expect(getByText('file1.pdf')).to.exist;
       expect(getByText('file2.pdf')).to.exist;
@@ -562,7 +566,7 @@ context('when claim has supporting documents (additional evidence)', () => {
     const { container, getByText } = render(<FilesReceived claim={claim} />);
 
     expect($('.files-received-container', container)).to.exist;
-    expect(getByText('On File')).to.exist;
+    expect($('va-tag-status[text="On file"]', container)).to.exist;
     expect(getByText('additional-evidence.pdf')).to.exist;
     expect(getByText('Document type: Additional Evidence')).to.exist;
     expect(getByText('You submitted this file as additional evidence.')).to

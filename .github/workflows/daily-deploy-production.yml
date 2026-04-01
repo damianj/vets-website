@@ -43,7 +43,7 @@ jobs:
     if: ${{ github.event.inputs.bypass_freeze != 'true' && needs.holiday-checker.outputs.is_holiday == 'true' }}
     steps:
       - name: Cancel workflow due to holiday freeze
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@a955d435292c0d409d104b57d8e78435a93a6ef1 # 0.5
 
   main-deployment:
     needs: holiday-checker
@@ -57,7 +57,7 @@ jobs:
       reenabled: ${{ steps.enable-workflows.outputs.reenabled }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials for secret injection (bypass)
         if: ${{ github.event.inputs.bypass_freeze == 'true' }}
@@ -89,7 +89,7 @@ jobs:
         run: echo "Freeze enforcement handled by freeze-enforcer.yml."
 
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials for secret injection
         if: ${{ github.event.inputs.bypass_freeze != 'true' && needs.holiday-checker.outputs.is_holiday == 'false' }}
@@ -169,7 +169,7 @@ jobs:
       }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Notify Slack (COP) - Code Freeze Ended
         uses: ./.github/workflows/slack-notify
         continue-on-error: false
@@ -198,7 +198,7 @@ jobs:
     if: ${{ github.event.inputs.bypass_freeze == 'true' }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Notify Slack (COP) - Deploy Freeze Bypassed
         uses: ./.github/workflows/slack-notify
         continue-on-error: false
@@ -233,7 +233,7 @@ jobs:
       }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack (COP) - Code Freeze Failure
         uses: ./.github/workflows/slack-notify
@@ -299,10 +299,10 @@ jobs:
     steps:
       - name: Cancel workflow due to DSVA schedule
         if: ${{ env.DSVA_SCHEDULE_ENABLED != 'true' }}
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@a955d435292c0d409d104b57d8e78435a93a6ef1 # 0.5
 
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -337,7 +337,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack
         uses: ./.github/workflows/slack-notify
@@ -375,7 +375,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -396,7 +396,7 @@ jobs:
           echo 'Waiting to release: https://github.com/${{ github.repository }}/compare/${{ needs.set-env.outputs.LATEST_TAG_VERSION }}...${{ needs.set-env.outputs.COMMIT_SHA }}'
 
       - name: Sleep for ${{ needs.set-env.outputs.RELEASE_WAIT }} minutes
-        uses: whatnick/wait-action@master
+        uses: whatnick/wait-action@71008d68ab3939de1475f4938583e4480b5d09a6 # master
         with:
           time: ${{ needs.set-env.outputs.RELEASE_WAIT }}m
 
@@ -433,7 +433,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -458,7 +458,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack
         uses: ./.github/workflows/slack-notify
@@ -479,7 +479,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack
         if: ${{ env.DSVA_SCHEDULE_ENABLED == 'true' }}

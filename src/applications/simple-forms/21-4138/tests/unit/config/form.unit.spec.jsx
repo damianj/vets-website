@@ -381,6 +381,33 @@ describe('formConfig', () => {
               expect(identificationInformationPage.depends(formData)).to.be
                 .true;
             });
+
+            context('when claimant is a veteran with a prefilled SSN', () => {
+              beforeEach(() => {
+                formData.claimantType = 'self';
+                formData.idNumber = { ssn: '123456789' };
+              });
+
+              it('should not display the page', () => {
+                expect(identificationInformationPage.depends(formData)).to.be
+                  .false;
+              });
+            });
+
+            context(
+              'when claimant is a veteran without a prefilled SSN',
+              () => {
+                beforeEach(() => {
+                  formData.claimantType = 'self';
+                  formData.idNumber = {};
+                });
+
+                it('should display the page', () => {
+                  expect(identificationInformationPage.depends(formData)).to.be
+                    .true;
+                });
+              },
+            );
           });
         });
       });

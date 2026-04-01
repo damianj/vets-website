@@ -34,9 +34,15 @@
           "postalCode": "56790"
         },
         "applicantPhone": "5555551234",
-        "applicantGender": "male",
-        "applicantRelationshipToSponsor": "child",
-        "applicantRelationshipOrigin": "step",
+        "applicantGender": {
+          "gender": "male"
+        },
+        "applicantRelationshipToSponsor": {
+          "relationshipToVeteran": "child"
+        },
+        "applicantRelationshipOrigin": {
+          "relationshipToVeteran": "step"
+        },
         "applicantBirthCertOrSocialSecCard": [
           {
             "attachmentId": "Birth certificate",

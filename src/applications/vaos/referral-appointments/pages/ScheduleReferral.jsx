@@ -44,6 +44,7 @@ export default function ScheduleReferral(props) {
   };
 
   const canScheduleAppointment =
+    currentReferral.onlineSchedule &&
     currentReferral.provider?.npi &&
     !currentReferral.hasAppointments &&
     stationIdValid;
@@ -70,22 +71,6 @@ export default function ScheduleReferral(props) {
           We’ve approved your referral for community care. You can schedule your
           first appointment now.
         </p>
-        <va-additional-info
-          data-testid="help-text"
-          uswds
-          trigger="If you already scheduled your appointment"
-          class="vads-u-margin-bottom--2"
-        >
-          <p>
-            Upcoming appointments with community care providers may not appear
-            in this tool. If you want us to add your community care appointment
-            to your appointments list, call your VA facility.
-          </p>
-          <va-link
-            href="/find-locations/?facilityType=health"
-            text="Find your VA health facility"
-          />
-        </va-additional-info>
         {canScheduleAppointment && (
           <va-link-action
             className="vads-u-margin-top--1"
@@ -103,34 +88,42 @@ export default function ScheduleReferral(props) {
           {`All appointments for this referral must be scheduled by
           ${format(new Date(currentReferral.expirationDate), 'MMMM d, yyyy')}`}
           <br />
-          <strong>Type of care: </strong>
-          <span data-dd-privacy="mask">{categoryOfCare}</span>
-          <br />
-          <strong>Provider: </strong>
-          <span data-dd-privacy="mask">
-            {currentReferral.provider?.name || 'Not available'}
-          </span>
-          <br />
-          <strong>Location: </strong>
-          <span data-dd-privacy="mask">
-            {currentReferral.provider?.facilityName || 'Not available'}
-          </span>
-          <br />
           <strong>Referral number: </strong>
           <span data-dd-privacy="mask">{currentReferral.referralNumber}</span>
         </p>
-        <p data-testid="referral-informational-text">
-          You can schedule your first appointment online. Contact your community
-          care provider directly to schedule the remaining appointments for this
-          referral.
-        </p>
-        <h2>If you have questions about your referral</h2>
-        <p className="vads-u-margin-top--0 vads-u-margin-bottom--1">
-          If you have questions about scheduling an appointment, or about how
-          many appointments you have left, contact your facility’s community
-          care office.
-        </p>
-        <FindCommunityCareOfficeLink />
+        <h2>Common questions about referrals</h2>
+        <va-accordion open-single>
+          <va-accordion-item
+            header="What if I have questions or need to make changes to my referral?"
+            id="questions-changes"
+          >
+            <p>
+              Contact your facility's community care office for any of these
+              reasons:
+            </p>
+            <ul>
+              <li>If you have questions about scheduling an appointment</li>
+              <li>
+                If you already scheduled your first appointment and want us to
+                add it to your appointments list
+              </li>
+              <li>If you want to know how many appointments you have left</li>
+              <li>If you need to make changes to your referral</li>
+              <li>If a referral you need has expired</li>
+            </ul>
+            <FindCommunityCareOfficeLink />
+          </va-accordion-item>
+          <va-accordion-item
+            header="How do I schedule my next appointment for this referral?"
+            id="schedule-next-appointment"
+          >
+            <p>
+              You can only schedule the first appointment for your referral
+              online. To schedule your next appointments, contact your community
+              care provider.
+            </p>
+          </va-accordion-item>
+        </va-accordion>
       </div>
     </ReferralLayout>
   );

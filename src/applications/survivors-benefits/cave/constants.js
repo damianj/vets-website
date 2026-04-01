@@ -20,23 +20,6 @@ export const CHARACTER_OF_SERVICE_ABBREV_MAP = {
   ELS: 'Entry Level Separation',
 };
 
-// Full-form SEPARATION_TYPE options
-export const SEPARATION_TYPE_OPTIONS = [
-  'Discharge',
-  'Release from Active Duty',
-  'Retirement',
-  'Resignation',
-  'Death',
-  'Release from Initial Duty for Training',
-  'Dismissal',
-];
-
-// Separation type abbreviations → canonical full-form label
-export const SEPARATION_TYPE_ABBREV_MAP = {
-  REFRAD: 'Release from Active Duty',
-  IADT: 'Release from Initial Duty for Training',
-};
-
 // Hyphenated canonical PAY_GRADE values
 export const PAY_GRADE_OPTIONS = [
   'O-1',
@@ -64,34 +47,6 @@ export const PAY_GRADE_OPTIONS = [
   'W-4',
   'W-5',
 ];
-
-// Pay grade abbreviations → hyphenated canonical form
-export const PAY_GRADE_ABBREV_MAP = {
-  O1: 'O-1',
-  O2: 'O-2',
-  O3: 'O-3',
-  O4: 'O-4',
-  O5: 'O-5',
-  O6: 'O-6',
-  O7: 'O-7',
-  O8: 'O-8',
-  O9: 'O-9',
-  O10: 'O-10',
-  E1: 'E-1',
-  E2: 'E-2',
-  E3: 'E-3',
-  E4: 'E-4',
-  E5: 'E-5',
-  E6: 'E-6',
-  E7: 'E-7',
-  E8: 'E-8',
-  E9: 'E-9',
-  W1: 'W-1',
-  W2: 'W-2',
-  W3: 'W-3',
-  W4: 'W-4',
-  W5: 'W-5',
-};
 
 // All valid separation codes
 export const SEPARATION_CODES = [

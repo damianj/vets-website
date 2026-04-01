@@ -22,7 +22,7 @@ export default {
       ...checkboxGroupUI({
         title: facilityTypeTitle,
         enableAnalytics: true,
-        classNames: 'vads-u-margin-bottom--6',
+        classNames: 'vads-u-margin-bottom--4',
         required: true,
         labelHeaderLevel: '3',
         labels: facilityTypeChoices,

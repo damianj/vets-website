@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Prompt } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { datadogRum } from '@datadog/browser-rum';
 import { VaModal } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { resetUserSession } from '../../util/helpers';
 
@@ -23,6 +24,7 @@ const SmRouteNavigationGuard = ({
 
   const handleConfirm = useCallback(
     e => {
+      datadogRum.addAction('SM Route Navigation Guard Confirm Button');
       setIsBlocking(true); // Keep blocking navigation if the user chooses to stay on page
       onConfirmButtonClick(e);
       updateModalVisible(false);
@@ -31,8 +33,9 @@ const SmRouteNavigationGuard = ({
   );
 
   const handleCancel = useCallback(
-    async e => {
-      await setIsBlocking(false); // stop blocking navigation if the user chooses to cancel changes and leave page
+    e => {
+      datadogRum.addAction('SM Route Navigation Guard Cancel Button');
+      setIsBlocking(false); // stop blocking navigation if the user chooses to cancel changes and leave page
       onCancelButtonClick(e);
     },
     [onCancelButtonClick],
@@ -112,27 +115,16 @@ const SmRouteNavigationGuard = ({
         modalTitle={modalTitle}
         modalText={modalText}
         onCloseEvent={closeModal}
+        onPrimaryButtonClick={handleConfirm}
+        onSecondaryButtonClick={handleCancel}
+        primaryButtonText={confirmButtonText}
+        secondaryButtonText={cancelButtonText}
         status="warning"
         visible={modalVisible}
         data-dd-action-name="SM Route Navigation Guard Close Modal Button"
         data-testid="sm-route-navigation-guard-modal"
       >
         <p>{modalText}</p>
-        <va-button
-          class="vads-u-margin-top--1"
-          text={confirmButtonText}
-          onClick={handleConfirm}
-          data-dd-action-name="SM Route Navigation Guard Confirm Button"
-          data-testid="sm-route-navigation-guard-confirm-button"
-        />
-        <va-button
-          class="vads-u-margin-top--1"
-          secondary
-          text={cancelButtonText}
-          onClick={handleCancel}
-          data-dd-action-name="SM Route Navigation Guard Cancel Button"
-          data-testid="sm-route-navigation-guard-cancel-button"
-        />
       </VaModal>
     </>
   );

@@ -63,6 +63,15 @@ const Wrapper = props => {
 
   useEffect(
     () => {
+      if (pageTitle) {
+        document.title = `${pageTitle} | Veterans Affairs`;
+      }
+    },
+    [pageTitle],
+  );
+
+  useEffect(
+    () => {
       if (!loading) {
         focusElement('h1');
       }

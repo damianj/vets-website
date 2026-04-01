@@ -1,10 +1,9 @@
+import { roleIsOther } from '../../utils/helpers';
 import contactInformation from './contactInformation';
 import mailingAddress from './mailingAddress';
 import name from './name';
 import relationship from './relationship';
 import role from './role';
-
-const roleIsOther = formData => formData.certifierRole === 'other';
 
 export const signerPages = {
   certifierRole: {

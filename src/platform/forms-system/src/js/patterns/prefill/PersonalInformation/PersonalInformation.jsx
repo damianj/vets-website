@@ -157,22 +157,19 @@ export const PersonalInformation = ({
           <dl className="vads-u-padding-y--0 vads-u-margin-y--0">
             {finalConfig.name?.show && (
               <div className="vads-u-margin-bottom--2">
-                <dt className="vads-u-visibility--screen-reader">Full name:</dt>
+                <dt className="vads-u-display--inline-block vads-u-margin-right--0p5">
+                  Name:
+                </dt>
                 <dd
-                  className="dd-privacy-hidden"
+                  className="dd-privacy-hidden vads-u-display--inline-block vads-u-font-family--sans vads-u-font-weight--bold"
                   data-dd-action-name="Veteran's name"
                 >
-                  {'Name: '}
-                  <strong>
-                    {first || last ? (
-                      `${first || ''} ${middle || ''} ${last || ''}`
-                    ) : (
-                      <span data-testid="name-not-available">
-                        Not available
-                      </span>
-                    )}
-                    {suffix ? `, ${suffix}` : null}
-                  </strong>
+                  {first || last ? (
+                    `${first || ''} ${middle || ''} ${last || ''}`
+                  ) : (
+                    <span data-testid="name-not-available">Not available</span>
+                  )}
+                  {suffix ? `, ${suffix}` : null}
                 </dd>
               </div>
             )}

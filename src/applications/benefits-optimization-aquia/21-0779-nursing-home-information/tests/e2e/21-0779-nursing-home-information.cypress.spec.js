@@ -4,6 +4,7 @@ import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-test
 import { formConfig } from '@bio-aquia/21-0779-nursing-home-information/config';
 import manifest from '@bio-aquia/21-0779-nursing-home-information/manifest.json';
 import { featureToggles, user, mockSubmit } from '../fixtures/mocks';
+import addressValidationConfidence70 from '../../../shared/tests/mocks/address-validation-confidence-70.json';
 
 const testConfig = createTestConfig(
   {
@@ -14,12 +15,22 @@ const testConfig = createTestConfig(
       introduction: ({ afterHook }) => {
         cy.injectAxeThenAxeCheck();
         afterHook(() => {
-          // Click the start link to begin the form
-          cy.get('[data-testid="start-nursing-home-info-link"]').click();
+          // Click the start link rendered by SaveInProgressIntro
+          cy.get('a.vads-c-action-link--green').click();
+        });
+      },
+      'nursing-home-address-validation': ({ afterHook }) => {
+        afterHook(() => {
+          cy.findByText(/we found a similar address to the one you entered/i);
+          cy.get('va-radio').should('exist');
+          cy.selectVaRadioOption('addressGroup', 'user-entered');
+          cy.clickFormContinue();
         });
       },
       'review-and-submit': ({ afterHook }) => {
         afterHook(() => {
+          cy.get('@addressValidation.all').should('have.length.greaterThan', 0);
+
           cy.get('@testData').then(data => {
             const { nursingOfficialInformation } = data;
             const officialName = [
@@ -55,6 +66,13 @@ const testConfig = createTestConfig(
 
       // Mock feature toggles
       cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+      // Mock USPS address validation (confidence < 100 uses suggestion page)
+      cy.intercept(
+        'POST',
+        '/v0/profile/address_validation',
+        addressValidationConfidence70,
+      ).as('addressValidation');
 
       // Mock save-in-progress endpoints
       cy.intercept('GET', '/v0/in_progress_forms/21-0779', {
@@ -95,4 +113,15 @@ const testConfig = createTestConfig(
 
 describe('21-0779 Nursing Home Information E2E Tests', () => {
   testForm(testConfig);
+});
+
+describe('21-0779 unauthenticated access', () => {
+  it('does not show start link when user is not logged in', () => {
+    cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+    cy.visit(manifest.rootUrl);
+
+    // Unauthenticated users should not see the start action link
+    cy.get('a.vads-c-action-link--green').should('not.exist');
+  });
 });

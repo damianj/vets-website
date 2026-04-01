@@ -21,7 +21,6 @@ const ManageFolderButtons = props => {
   const history = useHistory();
   const { folder } = props;
   const folderList = useSelector(state => state.sm.folders.folderList);
-  const folders = folderList || [];
   const alertStatus = useSelector(state => state.sm.alerts?.alertFocusOut);
   const threads = useSelector(state => state.sm.threads);
   const [isEmptyWarning, setIsEmptyWarning] = useState(false);
@@ -33,7 +32,6 @@ const ManageFolderButtons = props => {
   const [showRenameSuccess, setShowRenameSuccess] = useState(false);
   const folderNameInput = useRef();
   const editFolderButtonRef = useRef(null);
-  const removeButton = useRef(null);
   const emptyFolderConfirmBtn = useRef(null);
   const removeFolderRef = useRef(null);
   const prevFolderIdRef = useRef(folder?.folderId);
@@ -122,10 +120,16 @@ const ManageFolderButtons = props => {
   };
 
   const confirmDelFolder = () => {
+    datadogRum.addAction('Confirm Remove Folder Button');
     closeDelModal();
-    dispatch(delFolder(folder.folderId)).then(
-      dispatch(getFolders()).then(navigateToFoldersPage(history)),
-    );
+    dispatch(delFolder(folder.folderId))
+      .then(() => dispatch(getFolders()))
+      .then(() => navigateToFoldersPage(history));
+  };
+
+  const cancelDelFolder = () => {
+    datadogRum.addAction('Cancel Remove Folder Button');
+    closeDelModal();
   };
 
   const openEditForm = () => {
@@ -154,7 +158,7 @@ const ManageFolderButtons = props => {
     async () => {
       const currentName =
         folderNameInput.current?.value ?? folderNameRef.current;
-      const folderMatch = folders.filter(
+      const folderMatch = (folderList || []).filter(
         testFolder => testFolder.name === currentName,
       );
       let warning = '';
@@ -181,7 +185,7 @@ const ManageFolderButtons = props => {
       setNameWarning(warning);
       focusElement(folderNameInput.current?.shadowRoot?.querySelector('input'));
     },
-    [folders, folder.folderId, dispatch, ErrorMessages],
+    [folderList, folder.folderId, dispatch, ErrorMessages],
   );
 
   return (
@@ -328,26 +332,14 @@ const ManageFolderButtons = props => {
           large
           modalTitle={Alerts.Folder.DELETE_FOLDER_CONFIRM_HEADER}
           onCloseEvent={closeDelModal}
+          onPrimaryButtonClick={confirmDelFolder}
+          onSecondaryButtonClick={cancelDelFolder}
+          primaryButtonText="Yes, remove this folder"
+          secondaryButtonText="No, keep this folder"
           status="warning"
           data-dd-action-name="Remove Folder Modal"
         >
           <p>{Alerts.Folder.DELETE_FOLDER_CONFIRM_BODY}</p>
-          <va-button
-            class="vads-u-margin-top--1"
-            ref={removeButton}
-            text="Yes, remove this folder"
-            onClick={confirmDelFolder}
-            data-dd-action-name="Confirm Remove Folder Button"
-            data-testid="confirm-remove-folder"
-          />
-          <va-button
-            class="vads-u-margin-top--1"
-            secondary
-            text="No, keep this folder"
-            onClick={closeDelModal}
-            data-dd-action-name="Cancel Remove Folder Button"
-            data-testid="cancel-remove-folder"
-          />
         </VaModal>
       )}
     </>

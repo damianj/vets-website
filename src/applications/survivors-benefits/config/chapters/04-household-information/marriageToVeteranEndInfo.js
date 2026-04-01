@@ -20,10 +20,7 @@ import { validations } from '../../validations';
 /** @type {PageSchema} */
 export default {
   uiSchema: {
-    ...titleUI(
-      'When and where did your marriage end?',
-      'If you were married at the time of their death, this will be their date and place of death.',
-    ),
+    ...titleUI('When and where did your marriage end?'),
     marriageToVeteranEndDate: {
       ...currentOrPastDateUI({
         title: 'Date marriage ended',

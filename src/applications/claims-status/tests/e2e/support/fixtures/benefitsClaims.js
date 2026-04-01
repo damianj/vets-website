@@ -232,6 +232,7 @@ export const createBenefitsClaim = ({
   claimTypeCode = '010LCOMP',
   currentPhaseBack = false,
   decisionLetterSent = false,
+  documentsNeeded = true,
   latestPhaseType = 'GATHERING_OF_EVIDENCE',
   closeDate = null,
   contentions = [
@@ -265,7 +266,7 @@ export const createBenefitsClaim = ({
       contentions,
       decisionLetterSent,
       developmentLetterSent: true,
-      documentsNeeded: true,
+      documentsNeeded,
       endProductCode: '016',
       evidenceWaiverSubmitted5103: false,
       errors: [],

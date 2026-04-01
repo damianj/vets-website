@@ -8,10 +8,7 @@ describe('COE preDischargeClaim page', () => {
       'preDischargeClaim',
     );
   });
-  it('renders the additional info and accordion view fields', () => {
-    expect(preDischargeClaim.uiSchema).to.have.property(
-      'view:preDischargeClaimAdditionalInfo',
-    );
+  it('renders the accordion view field', () => {
     expect(preDischargeClaim.uiSchema).to.have.property(
       'view:preDischargeClaimWhyAccordion',
     );

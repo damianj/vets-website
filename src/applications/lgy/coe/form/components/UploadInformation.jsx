@@ -1,56 +1,75 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { VaLink } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { serviceStatuses } from '../constants';
 
 const UploadInformation = props => {
-  const { hasOneTimeRestoration, formData } = props;
+  const { hadPriorLoans, formData } = props;
 
   const showStatementOfService = [
     serviceStatuses.VETERAN,
     serviceStatuses.ADSM,
     serviceStatuses.NADNA,
   ].includes(formData?.identity);
-  if (!showStatementOfService && !props.hasOneTimeRestoration) {
+  if (!showStatementOfService && !props.hadPriorLoans) {
     return null;
   }
 
   return (
-    <va-accordion data-testid="document-upload-accordion">
-      {showStatementOfService && (
-        <va-accordion-item open>
-          <h3 slot="headline">Statement of service</h3>
-          <p>
-            The statement of service can be signed by, or by direction of, the
-            adjutant, personnel officer, or commander of your unit or higher
-            headquarters. The statement may be in any format; usually a standard
-            or bulleted memo is sufficient. It should identify you by name and
-            social security number and provide: (1) your date of entry on your
-            current active-duty period and (2) the duration of any time lost (or
-            a statement noting there has been no time lost). Generally, this
-            should be on military letterhead.
-          </p>
-        </va-accordion-item>
-      )}
-      {hasOneTimeRestoration && (
-        <va-accordion-item open>
-          <h3 slot="headline">Type of evidence of a VA loan paid in full</h3>
-          <p>
-            Evidence can be in the form of a paid-in-full statement from the
-            former lender, a satisfaction of mortgage from the clerk of court in
-            the county where the home is located, or a copy of the HUD-1 or
-            Closing Disclosure settlement statement completed in connection with
-            a sale of the home or refinance of the prior loan. Many counties
-            post public documents like the satisfaction of mortgage online.
-          </p>
-        </va-accordion-item>
-      )}
-    </va-accordion>
+    <div className="vads-u-margin-top--4">
+      <va-accordion data-testid="document-upload-accordion" open-single>
+        {showStatementOfService && (
+          <va-accordion-item>
+            <h3 slot="headline">Statement of service</h3>
+            <p>
+              The information included in your Statement of Service will be
+              different based on your service type.
+              <div>
+                <VaLink
+                  external
+                  href="https://www.va.gov/housing-assistance/home-loans/how-to-request-coe/"
+                  text="Review requirements for your service type"
+                />
+              </div>
+            </p>
+          </va-accordion-item>
+        )}
+        {hadPriorLoans && (
+          <va-accordion-item>
+            <h3 slot="headline">
+              Type of evidence to show a VA loan was paid in full
+            </h3>
+            <p>
+              Evidence you paid a VA home loan in full can include any of these
+              types of documents:
+            </p>
+            <ul>
+              <li>A paid-in-full statement from the former lender</li>
+              <li>
+                A "Satisfaction of mortgage" statement from the lender and/or
+                county recorders office in the county where the home is located
+              </li>
+              <li>
+                A copy of the HUD-1 or Closing Disclosure settlement statement
+                completed in connection with a sale of the home or refinance of
+                the prior loan
+              </li>
+            </ul>
+            <p>
+              <span className="vads-u-font-weight--bold">Note:</span> Many
+              counties post public documents like the "Satisfaction of mortgage"
+              statement online.
+            </p>
+          </va-accordion-item>
+        )}
+      </va-accordion>
+    </div>
   );
 };
 
 UploadInformation.propTypes = {
   formData: PropTypes.object,
-  hasOneTimeRestoration: PropTypes.bool,
+  hadPriorLoans: PropTypes.bool,
 };
 
 export default UploadInformation;

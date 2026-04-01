@@ -239,21 +239,27 @@
 }
 
 .claimant-overview {
-  .poa-request-details__list--info li {
+  .poa-request-details__list {
+    margin-top: 0;
+  }
+
+  .poa-request-details__list--info li.claimant-detail-row {
     border-bottom: 1px solid $vads-color-base-light;
   }
 
-  .poa-request-details__list--info li:first-child {
+  .poa-request-details__list--info li.claimant-detail-row:first-child {
     border-top: 1px solid $vads-color-base-light;
   }
 
-  .poa-request-details__list--info li p:first-child {
-    flex: 0 0 34%;
+  .claimant-detail-row__label {
+    flex: 0 0 48.5%;
+    margin: 0;
   }
 
-  .poa-request-details__list--info li p:last-child {
-    flex: 0 0 66%;
+  .claimant-detail-row__value {
+    flex: 0 0 51.5%;
     padding-left: 16px;
+    margin: 0;
   }
 }
 

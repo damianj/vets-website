@@ -52,6 +52,9 @@ export const getCurrentChapterDisplay = (formConfig, currentChapterIndex) => {
 // Pages become inactive if they are conditionally shown based
 // on answers to previous questions.
 export function isActivePage(page, data) {
+  // Ensure that page actually exists before trying to access its properties.
+  if (!page) return false;
+
   if (typeof page.depends === 'function') {
     return page.depends(data, page.index);
   }

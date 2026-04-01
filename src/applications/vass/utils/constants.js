@@ -50,6 +50,7 @@ const AUTH_ERROR_CODES = Object.freeze({
   RATE_LIMIT_EXCEEDED: 'rate_limit_exceeded',
   INVALID_CREDENTIALS: 'invalid_credentials',
   MISSING_PARAMETER: 'missing_parameter',
+  MISSING_CONTACT_INFORMATION: 'missing_contact_information',
 });
 
 // OTP Verification errors (POST /vass/v0/authenticate-otp)

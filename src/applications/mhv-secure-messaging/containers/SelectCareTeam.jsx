@@ -21,7 +21,6 @@ import { datadogRum } from '@datadog/browser-rum';
 import { scrollToFirstError } from 'platform/utilities/scroll';
 import CernerFacilityAlert from 'platform/mhv/components/CernerFacilityAlert/CernerFacilityAlert';
 import { submitLaunchMyVaHealthAal } from '../api/SmApi';
-import useFeatureToggles from '../hooks/useFeatureToggles';
 
 import { populatedDraft } from '../selectors';
 import {
@@ -53,7 +52,6 @@ const SelectCareTeam = () => {
     vistaFacilities,
     error: recipientsError,
   } = useSelector(state => state.sm.recipients);
-  const { isAalEnabled } = useFeatureToggles();
   const ehrDataByVhaId = useSelector(selectEhrDataByVhaId);
   const { draftInProgress, acceptInterstitial } = useSelector(
     state => state.sm.threadDetails,
@@ -75,14 +73,16 @@ const SelectCareTeam = () => {
 
   const h1Ref = useRef(null);
 
-  const handleMyVaHealthLinkClick = useCallback(
-    () => {
-      if (isAalEnabled) {
-        submitLaunchMyVaHealthAal();
-      }
-    },
-    [isAalEnabled],
-  );
+  const handleMyVaHealthLinkClick = useCallback(async () => {
+    try {
+      await submitLaunchMyVaHealthAal();
+    } catch (error) {
+      datadogRum.addError(error, {
+        feature: 'mhv-secure-messaging',
+        action: 'launch-myvahealth-aal',
+      });
+    }
+  }, []);
 
   useEffect(
     () => {

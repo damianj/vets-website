@@ -63,7 +63,7 @@ describe('Additional certifying official benefit status', () => {
   });
   it('Benefits disclaimer should be hidden when hasVaEducationBenefits is false', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialBenefitStatus: {
             hasVaEducationBenefits: false,
@@ -78,7 +78,7 @@ describe('Additional certifying official benefit status', () => {
   });
   it('Renders the page with the correct required inputs when hasVaEducationBenefits is true in adding mode', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialBenefitStatus: {
             hasVaEducationBenefits: true,
@@ -96,7 +96,7 @@ describe('Additional certifying official benefit status', () => {
   });
   it('Renders the page with the correct required inputs when hasVaEducationBenefits is false in adding mode', () => {
     const formData = {
-      'additional-certifying-official': [
+      additionalCertifyingOfficials: [
         {
           additionalOfficialBenefitStatus: {
             hasVaEducationBenefits: false,

@@ -1,4 +1,6 @@
 import { arrayBuilderPages } from 'platform/forms-system/src/js/patterns/array-builder';
+import content from '../../locales/en/content.json';
+import { isMedigap } from '../../utils/helpers';
 import addtlComments from './addtlComments';
 import cardUpload from './cardUpload';
 import employer from './employer';
@@ -9,10 +11,6 @@ import prescriptions from './prescriptions';
 import provider from './provider';
 import sectionOverview from './sectionOverview';
 import summary, { ohiArrayOptions } from './summary';
-import content from '../../locales/en/content.json';
-
-const isMedigap = (formData, index) =>
-  formData.healthInsurance?.[index]?.insuranceType === 'medigap';
 
 export const healthInsurancePages = {
   ohiOverview: {

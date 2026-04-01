@@ -6,7 +6,7 @@ import FormTitle from 'platform/forms-system/src/js/components/FormTitle';
 import SaveInProgressIntro from 'platform/forms/save-in-progress/SaveInProgressIntro';
 import { toggleLoginModal as toggleLoginModalAction } from '~/platform/site-wide/user-nav/actions';
 import { isLoggedIn, selectProfile } from 'platform/user/selectors';
-import { SUBTITLE } from '../constants';
+import { TITLE, SUBTITLE } from '../constants';
 
 import ProcessList from '../components/IntroProcessList';
 import PrivacyAccordion from '../components/PrivacyAccordion';
@@ -36,10 +36,7 @@ export const IntroductionPage = props => {
 
   return (
     <article className="schemaform-intro">
-      <FormTitle
-        title="Education benefit entitlement restoration for school closure (VA Form 22-0989)"
-        subTitle={SUBTITLE}
-      />
+      <FormTitle title={TITLE} subTitle={SUBTITLE} />
       <p className="vads-u-font-size--lg vads-u-font-family--serif vads-u-color--base vads-u-font-weight--normal">
         Use this form to ask VA to restore your education benefits if your
         school closed permanently, lost VA approval, or suspended your program.

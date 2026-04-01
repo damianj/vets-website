@@ -6,7 +6,7 @@ export const facilityTypeTitle =
   'Select all the types of facilities or providers that treated you';
 
 export const facilityTypeTextLabel =
-  'Enter any other types of facility or providers that treated you';
+  'Enter any other types of facilities or providers that treated you';
 
 export const facilityTypeChoices = {
   vamc: 'VA medical center (also called a VAMC)',
@@ -19,7 +19,7 @@ export const facilityTypeChoices = {
   },
   nonVa: {
     title: 'Private healthcare provider',
-    description: `This includes providers who aren't community care providers and who don't work at a military treatment facility or VA. For example, a doctor you saw through the Veterans Choice Program.`,
+    description: `This includes providers who aren't community care providers and who don't work at a military treatment facility or VA.`,
   },
 };
 

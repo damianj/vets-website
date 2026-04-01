@@ -52,29 +52,40 @@ export const PROFILE_PATHS = Object.freeze({
   PERSONAL_INFORMATION: '/profile/personal-information',
   CONTACT_INFORMATION: '/profile/contact-information',
   MILITARY_INFORMATION: '/profile/military-information',
-  SERVICE_HISTORY_INFORMATION: '/profile/military-information',
+  SERVICE_HISTORY_INFORMATION: '/profile/service-history-information',
   FINANCIAL_INFORMATION: '/profile/financial-information',
-  DIRECT_DEPOSIT: '/profile/direct-deposit',
+  DIRECT_DEPOSIT: '/profile/financial-information/direct-deposit',
   HEALTH_CARE_SETTINGS: '/profile/health-care-settings',
   SCHEDULING_PREFERENCES:
     '/profile/health-care-settings/scheduling-preferences',
   SCHEDULING_PREF_CONTACT_METHOD: `${SCHEDULING_PREF_BASE_PATH}/contact-method`,
   SCHEDULING_PREF_CONTACT_TIMES: `${SCHEDULING_PREF_BASE_PATH}/contact-times`,
   SCHEDULING_PREF_APPOINTMENT_TIMES: `${SCHEDULING_PREF_BASE_PATH}/appointment-times`,
-  HEALTH_CARE_CONTACTS: '/profile/contacts',
-  MESSAGES_SIGNATURE: '/profile/message-signature',
+  HEALTH_CARE_CONTACTS: '/profile/health-care-settings/contacts',
+  MESSAGES_SIGNATURE: '/profile/health-care-settings/messages-signature',
   DEPENDENTS_AND_CONTACTS: '/profile/dependents-and-contacts',
   CONTACTS: '/profile/contacts',
-  ACCREDITED_REPRESENTATIVE: '/profile/accredited-representative',
+  ACCREDITED_REPRESENTATIVE:
+    '/profile/dependents-and-contacts/accredited-representative-or-vso',
   LETTERS_AND_DOCUMENTS: '/profile/letters-and-documents',
-  VETERAN_STATUS_CARD: '/profile/veteran-status-card',
+  VETERAN_STATUS_CARD: '/profile/letters-and-documents/veteran-status-card',
   NOTIFICATION_SETTINGS: '/profile/notifications',
   EMAIL_AND_TEXT_NOTIFICATIONS: '/profile/notifications',
   ACCOUNT_SECURITY: '/profile/account-security',
-  CONNECTED_APPLICATIONS: '/profile/connected-applications',
+  CONNECTED_APPLICATIONS: '/profile/account-security/connected-applications',
   SIGNIN_INFORMATION: '/profile/account-security/sign-in-information',
   EDIT: '/profile/edit',
   PAPERLESS_DELIVERY: '/profile/paperless-delivery',
+});
+
+export const PROFILE_OLD_PATHS = Object.freeze({
+  SERVICE_HISTORY_INFORMATION: '/profile/military-information',
+  DIRECT_DEPOSIT: '/profile/direct-deposit',
+  HEALTH_CARE_CONTACTS: '/profile/contacts',
+  MESSAGES_SIGNATURE: '/profile/message-signature',
+  ACCREDITED_REPRESENTATIVE: '/profile/accredited-representative',
+  VETERAN_STATUS_CARD: '/profile/veteran-status-card',
+  CONNECTED_APPLICATIONS: '/profile/connected-applications',
 });
 
 export const PROFILE_PATH_NAMES = Object.freeze({

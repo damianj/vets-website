@@ -159,9 +159,65 @@ export const createMigratingUser = (
 };
 
 /**
- * Custom recipients mock with a transitioning (979) and non-transitioning (442) facility.
- * Useful for testing Cerner/OH migration alerts on the care-team selection page.
+ * Creates a mock user that is a Cerner patient right now (facility already on
+ * Oracle Health).  For IPE eligibility testing the only thing that matters is
+ * that `selectIsCernerPatient` returns true, which depends on the user having
+ * at least one facility whose ID appears in the vamc-ehr Cerner list.
+ *
+ * The caller must also pass a vamc-ehr fixture that lists `facilityId` as a
+ * Cerner facility (fieldVamcEhrSystem: 'cerner') to the login helper.
+ *
+ * @param {Object} mockUser - The base mock user fixture to extend.
+ * @param {Object} [options] - Optional overrides.
+ * @param {string} [options.facilityId='979'] - The Cerner facility ID.
+ * @param {Array}  [options.additionalFacilities] - Extra (non-Cerner) facilities.
+ * @returns {Object} A mock user object with the target facility included.
  */
+export const createCernerUser = (
+  mockUser,
+  {
+    facilityId = '979',
+    additionalFacilities = [{ facilityId: '442', isCerner: false }],
+  } = {},
+) => {
+  const existingFacilities =
+    mockUser.data.attributes.vaProfile?.facilities || [];
+
+  let updatedFacilities = [...existingFacilities];
+  const targetIndex = updatedFacilities.findIndex(
+    f => f.facilityId === facilityId,
+  );
+
+  if (targetIndex === -1) {
+    updatedFacilities.push({ facilityId, isCerner: true });
+  } else {
+    updatedFacilities[targetIndex] = {
+      ...updatedFacilities[targetIndex],
+      facilityId,
+      isCerner: true,
+    };
+  }
+
+  if (additionalFacilities) {
+    updatedFacilities = [...updatedFacilities, ...additionalFacilities];
+  }
+
+  return {
+    ...mockUser,
+    data: {
+      ...mockUser.data,
+      attributes: {
+        ...mockUser.data.attributes,
+        vaProfile: {
+          ...mockUser.data.attributes.vaProfile,
+          facilities: updatedFacilities,
+          isCernerPatient: true,
+        },
+      },
+    },
+  };
+};
+
 export const customRecipients = {
   data: [
     {

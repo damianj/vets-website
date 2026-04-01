@@ -38,6 +38,17 @@ describe('VASS Component: Wrapper', () => {
     expect(screen.getByTestId('header')).to.have.attribute('tabIndex', '-1');
   });
 
+  it('should update document.title when pageTitle is provided', () => {
+    renderWithStoreAndRouter(
+      <Wrapper pageTitle="Test Page Title">
+        <div>Content</div>
+      </Wrapper>,
+      defaultRenderOptions,
+    );
+
+    expect(document.title).to.equal('Test Page Title | Veterans Affairs');
+  });
+
   it('should not render h1 when pageTitle is not provided', () => {
     const screen = renderWithStoreAndRouter(
       <Wrapper>

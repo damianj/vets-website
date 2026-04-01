@@ -13,6 +13,7 @@ import {
   chapter4Transform,
   checkForHowMarriageEnded,
   transformClaim,
+  autoPopulateMarriageEndDate,
 } from '../utils/transformers';
 
 export const transform = (formConfig, form) => {
@@ -33,6 +34,7 @@ export const transform = (formConfig, form) => {
     ? buildUnitAddress(transformedData)
     : combineUnitNameAddress(transformedData);
 
+  transformedData = autoPopulateMarriageEndDate(transformedData);
   transformedData = chapter4Transform(transformedData);
   transformedData = checkForHowMarriageEnded(transformedData);
   transformedData = transformClaim(transformedData);

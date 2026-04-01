@@ -15,6 +15,6 @@ function registerAFMFonts(ctx) {
 // This is skipped during tests because we're not using the virtual fs.
 if (process.env.NODE_ENV !== 'test') {
   registerAFMFonts(
-    require.context('pdfkit/js/data', false, /Helvetica.*\.afm$/),
+    require.context('pdfkit/js/data', false, /(Helvetica|Courier).*\.afm$/),
   );
 }

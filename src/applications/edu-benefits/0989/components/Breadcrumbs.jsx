@@ -15,7 +15,7 @@ const Breadcrumbs = () => {
     {
       href: '/forms/22-0989',
       label:
-        'Education benefit entitlement restoration for school closure (VA Form 22-0989)',
+        'Education benefit entitlement restoration request (VA Form 22-0989)',
     },
     {
       href: manifest.rootUrl,

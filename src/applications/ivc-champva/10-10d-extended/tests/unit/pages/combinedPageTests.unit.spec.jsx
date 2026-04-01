@@ -1,11 +1,4 @@
-import React from 'react';
-import {
-  testComponentRender,
-  testNumberOfWebComponentFields,
-} from '../../../../shared/tests/pages/pageTests.spec';
-import { ApplicantRelOriginPage } from '../../../chapters/ApplicantRelOriginPage';
-import { ApplicantGenderPage } from '../../../chapters/ApplicantGenderPage';
-import mockData from '../../e2e/fixtures/data/veteran.json';
+import { testNumberOfWebComponentFields } from '../../../../shared/tests/pages/pageTests.spec';
 import formConfig from '../../../config/form';
 import { sponsorPages } from '../../../chapters/sponsor';
 import { signerPages } from '../../../chapters/signer';
@@ -90,20 +83,4 @@ testNumberOfWebComponentFields(
   2,
   'Sponsor Information - Contact info (role: sponsor)',
   { certifierRole: 'sponsor' },
-);
-
-testComponentRender(
-  'ApplicantRelOriginPage',
-  <ApplicantRelOriginPage data={{ ...mockData.data }} />,
-);
-testComponentRender(
-  'ApplicantRelOriginPage',
-  <ApplicantRelOriginPage
-    data={{ ...mockData.data, sponsorIsDeceased: false }}
-  />,
-);
-
-testComponentRender(
-  'ApplicantRelOriginPage',
-  <ApplicantGenderPage data={{ ...mockData.data }} />,
 );

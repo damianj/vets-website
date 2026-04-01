@@ -11,16 +11,13 @@ import { PropertyAddress } from '../components/PropertyAddress';
 export default {
   uiSchema: {
     ...arrayBuilderItemSubsequentPageTitleUI(
-      () => 'Property with VA home loan: Existing VA home loan details',
-      ({ formData }) => (
-        <div>
-          <p>Provide VA home loan information for this property.</p>
-          <PropertyAddress formData={formData} />
-        </div>
-      ),
+      () => 'Property with VA home loan: Loan details',
+      ({ formData }) => <PropertyAddress formData={formData} />,
     ),
     loanDate: currentOrPastMonthYearDateUI({
       title: 'Loan date',
+      hint:
+        "Enter the closing date of your loan. If you don't know the exact date, enter your best guess",
     }),
     vaLoanNumber: {
       ...numberUI({
@@ -52,6 +49,5 @@ export default {
       loanDate: currentOrPastMonthYearDateSchema,
       vaLoanNumber: numberSchema,
     },
-    required: ['loanDate'],
   },
 };

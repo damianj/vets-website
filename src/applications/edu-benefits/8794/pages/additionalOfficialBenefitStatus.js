@@ -19,8 +19,8 @@ const uiSchema = {
       'ui:field': AdditionalOfficialBenefitsDisclaimer,
       'ui:options': {
         hideIf: (formData, index) => {
-          if (formData['additional-certifying-official']) {
-            return !formData['additional-certifying-official'][index]
+          if (formData.additionalCertifyingOfficials) {
+            return !formData.additionalCertifyingOfficials[index]
               ?.additionalOfficialBenefitStatus?.hasVaEducationBenefits;
           }
           return !formData?.additionalOfficialBenefitStatus
@@ -30,11 +30,11 @@ const uiSchema = {
     },
     'ui:options': {
       updateSchema: (formData, formSchema, ui, index) => {
-        const isAdding = !!formData['additional-certifying-official'];
+        const isAdding = !!formData.additionalCertifyingOfficials;
 
         if (isAdding) {
           const addingBenefitStatus =
-            formData['additional-certifying-official'][index]
+            formData.additionalCertifyingOfficials[index]
               ?.additionalOfficialBenefitStatus;
           if (addingBenefitStatus?.hasVaEducationBenefits) {
             return {

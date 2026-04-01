@@ -6,6 +6,7 @@ import user from '../fixtures/mocks/user.json';
 import mockSubmit from '../fixtures/mocks/application-submit.json';
 import formConfig from '../../config/form';
 import manifest from '../../manifest.json';
+import addressValidationConfidence70 from '../../../shared/tests/mocks/address-validation-confidence-70.json';
 
 const testConfig = createTestConfig(
   {
@@ -16,18 +17,25 @@ const testConfig = createTestConfig(
       introduction: ({ afterHook }) => {
         cy.injectAxeThenAxeCheck();
         afterHook(() => {
-          // Click the start link to begin the form
-          cy.get('va-link-action[data-testid="start-employment-info-link"]')
-            .shadow()
-            .find('a')
-            .click();
+          // Click the start link rendered by SaveInProgressIntro
+          cy.get('a.vads-c-action-link--green').click();
+        });
+      },
+      'employer-address-validation': ({ afterHook }) => {
+        afterHook(() => {
+          cy.findByText(/we found a similar address to the one you entered/i);
+          cy.get('va-radio').should('exist');
+          cy.selectVaRadioOption('addressGroup', 'user-entered');
+          cy.clickFormContinue();
         });
       },
       'review-and-submit': ({ afterHook }) => {
         afterHook(() => {
+          cy.get('@addressValidation.all').should('have.length.greaterThan', 0);
+
           cy.get('@testData').then(data => {
             // Use signature from test data - these are DIFFERENT from veteran names
-            // to prove validation is disabled:
+            // to prove signature validation is disabled:
             // - maximal.json: "Test Signature Name" (veteran: "Boba J Fett")
             // - minimal.json: "Different Test Name" (veteran: "Ahsoka T Tano")
             const signature =
@@ -59,6 +67,13 @@ const testConfig = createTestConfig(
 
       // Mock feature toggles
       cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+      // Mock USPS address validation (confidence < 100 uses suggestion page).
+      cy.intercept(
+        'POST',
+        '/v0/profile/address_validation',
+        addressValidationConfidence70,
+      ).as('addressValidation');
 
       // Mock save-in-progress endpoints
       cy.intercept('GET', '/v0/in_progress_forms/21-4192', {
@@ -99,3 +114,14 @@ const testConfig = createTestConfig(
 );
 
 testForm(testConfig);
+
+describe('21-4192 unauthenticated access', () => {
+  it('does not show start link when user is not logged in', () => {
+    cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+    cy.visit(manifest.rootUrl);
+
+    // Unauthenticated users should not see the start action link
+    cy.get('a.vads-c-action-link--green').should('not.exist');
+  });
+});

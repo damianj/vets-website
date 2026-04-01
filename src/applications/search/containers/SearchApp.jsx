@@ -374,6 +374,7 @@ const SearchApp = ({
               }
             >
               <p
+                aria-hidden="true"
                 className={
                   searchResultsUiUpdateEnabled
                     ? 'vads-u-margin-top--1 vads-u-margin-bottom--1'
@@ -389,10 +390,11 @@ const SearchApp = ({
                   disableAnalytics
                   id="search-results-page-dropdown-input-field"
                   data-e2e-id="search-results-page-dropdown-input-field"
-                  label="Search VA.gov"
+                  label="Enter a keyword, phrase, or question"
                   onInput={handleInputChange}
                   onSubmit={event => onInputSubmit(event)}
                   value={userInput}
+                  buttonText="Search"
                   uswds
                 />
               ) : (

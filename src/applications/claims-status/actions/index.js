@@ -93,15 +93,8 @@ export function setType1UnknownErrors(errorFiles) {
 }
 
 // Helper function to handle Type 1 error classification and dispatching
-function handleType1Errors(
-  dispatch,
-  errorFiles,
-  hasError,
-  claimId,
-  showDocumentUploadStatus,
-) {
-  if (!showDocumentUploadStatus || errorFiles.length === 0) {
-    // Old behavior for single file or feature flag off
+function handleType1Errors(dispatch, errorFiles, hasError, claimId) {
+  if (errorFiles.length === 0) {
     const errorMessage = getUploadErrorMessage(hasError, claimId);
     dispatch(setAdditionalEvidenceNotification(errorMessage));
     return;
@@ -134,11 +127,7 @@ function handleType1Errors(
 
   // If there are known errors, show the first one in additionalEvidenceMessage
   if (knownErrors.length > 0) {
-    const errorMessage = getUploadErrorMessage(
-      knownErrors[0],
-      claimId,
-      showDocumentUploadStatus,
-    );
+    const errorMessage = getUploadErrorMessage(knownErrors[0], claimId);
     dispatch(setAdditionalEvidenceNotification(errorMessage));
   }
 }
@@ -369,7 +358,6 @@ export function clearAdditionalEvidenceNotification() {
 // Helper to build upload success notification message
 function buildUploadNotification(
   uploadDate,
-  showDocumentUploadStatus,
   timezoneMitigationEnabled,
   now,
   timezoneOffset,
@@ -390,41 +378,26 @@ function buildUploadNotification(
       </div>
     ) : null;
 
-  if (showDocumentUploadStatus) {
-    return {
-      title: `Document submission started on ${uploadDate}`,
-      body: (
-        <>
-          <span>
-            Your submission is in progress. It can take up to 2 days for us to
-            receive your files.
-          </span>
-          {timezoneNote}
-          <va-link
-            class="vads-u-display--block vads-u-margin-top--2"
-            href={statusLinkHref}
-            text="Check the status of your submission"
-            onClick={e => {
-              if (isOnFilesPage) {
-                e.preventDefault();
-                setPageFocus(e.target.href);
-              }
-            }}
-          />
-        </>
-      ),
-    };
-  }
-
   return {
-    title: `We received your file upload on ${uploadDate}`,
+    title: `Document submission started on ${uploadDate}`,
     body: (
       <>
         <span>
-          Your file should be listed in the Documents filed section. If it's not
-          there, try refreshing the page.
+          Your submission is in progress. It can take up to 2 days for us to
+          receive your files.
         </span>
         {timezoneNote}
+        <va-link
+          class="vads-u-display--block vads-u-margin-top--2"
+          href={statusLinkHref}
+          text="Check the status of your submission"
+          onClick={e => {
+            if (isOnFilesPage) {
+              e.preventDefault();
+              setPageFocus(e.target.href);
+            }
+          }}
+        />
       </>
     ),
   };
@@ -435,7 +408,6 @@ export function submitFiles(
   claimId,
   trackedItem,
   files,
-  showDocumentUploadStatus = false,
   timezoneMitigationEnabled = false,
 ) {
   let filesComplete = 0;
@@ -505,7 +477,6 @@ export function submitFiles(
 
                 const notificationMessage = buildUploadNotification(
                   uploadDate,
-                  showDocumentUploadStatus,
                   timezoneMitigationEnabled,
                   now,
                   timezoneOffset,
@@ -526,13 +497,7 @@ export function submitFiles(
                 });
 
                 // Handle Type 1 errors (known vs unknown classification)
-                handleType1Errors(
-                  dispatch,
-                  errorFiles,
-                  hasError,
-                  claimId,
-                  showDocumentUploadStatus,
-                );
+                handleType1Errors(dispatch, errorFiles, hasError, claimId);
               }
             },
             onTotalProgress: bytes => {
@@ -569,21 +534,19 @@ export function submitFiles(
                 const error = JSON.parse(response || '{}');
                 error.fileName = fileName;
 
-                // Get docType from the matching file (only if feature flag enabled)
-                if (showDocumentUploadStatus) {
-                  const fileIndex = id;
-                  const matchingFile = files[fileIndex];
-                  if (matchingFile && matchingFile.docType) {
-                    try {
-                      error.docType = getDocTypeDescription(
-                        matchingFile.docType.value,
-                      );
-                    } catch (e) {
-                      error.docType = matchingFile.docType.value || 'Unknown';
-                    }
-                  } else {
-                    error.docType = 'Unknown';
+                // Get docType from the matching file
+                const fileIndex = id;
+                const matchingFile = files[fileIndex];
+                if (matchingFile && matchingFile.docType) {
+                  try {
+                    error.docType = getDocTypeDescription(
+                      matchingFile.docType.value,
+                    );
+                  } catch (e) {
+                    error.docType = matchingFile.docType.value || 'Unknown';
                   }
+                } else {
+                  error.docType = 'Unknown';
                 }
 
                 errorFiles.push(error);

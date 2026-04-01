@@ -1,3 +1,4 @@
+import React from 'react';
 import _ from 'platform/utilities/data';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 import merge from 'lodash/merge';
@@ -27,6 +28,7 @@ import { getHomelessOrAtRisk } from '../utils';
 import ConfirmationHousingSituation from '../components/confirmationFields/ConfirmationHousingSituation';
 
 export const uiSchema = {
+  'ui:title': <h3 className="vads-u-margin-y--0">Your housing situation</h3>,
   homelessOrAtRisk: {
     'ui:title': 'Are you homeless or at risk of becoming homeless?',
     'ui:webComponentField': VaRadioField,

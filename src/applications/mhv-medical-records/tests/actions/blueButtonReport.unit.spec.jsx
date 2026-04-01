@@ -22,7 +22,7 @@ describe('Blue Button Actions', () => {
       await action(dispatch);
       expect(dispatch.calledOnce).to.be.true;
       expect(dispatch.firstCall.args[0].type).to.equal(
-        Actions.Allergies.GET_LIST,
+        Actions.BlueButtonReport.GET,
       );
     });
 
@@ -36,7 +36,7 @@ describe('Blue Button Actions', () => {
         await action(dispatch);
         expect(dispatch.calledOnce).to.be.true;
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.Allergies.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -49,7 +49,7 @@ describe('Blue Button Actions', () => {
         await action(dispatch);
         expect(dispatch.calledOnce).to.be.true;
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.LabsAndTests.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -63,7 +63,7 @@ describe('Blue Button Actions', () => {
         expect(dispatch.calledOnce).to.be.true;
         // Radiology and labsAndTests are combined into one action
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.LabsAndTests.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -76,7 +76,7 @@ describe('Blue Button Actions', () => {
         await action(dispatch);
         expect(dispatch.calledOnce).to.be.true;
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.CareSummariesAndNotes.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -89,7 +89,7 @@ describe('Blue Button Actions', () => {
         await action(dispatch);
         expect(dispatch.calledOnce).to.be.true;
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.Vaccines.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -102,7 +102,7 @@ describe('Blue Button Actions', () => {
         await action(dispatch);
         expect(dispatch.calledOnce).to.be.true;
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.Conditions.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -115,7 +115,7 @@ describe('Blue Button Actions', () => {
         await action(dispatch);
         expect(dispatch.calledOnce).to.be.true;
         expect(dispatch.firstCall.args[0].type).to.equal(
-          Actions.Vitals.GET_LIST,
+          Actions.BlueButtonReport.GET,
         );
       });
 
@@ -296,7 +296,7 @@ describe('Blue Button Actions', () => {
       expect(dispatch.calledOnce).to.be.true;
 
       const dispatchedAction = dispatch.firstCall.args[0];
-      expect(dispatchedAction.type).to.equal(Actions.LabsAndTests.GET_LIST);
+      expect(dispatchedAction.type).to.equal(Actions.BlueButtonReport.GET);
       expect(dispatchedAction.labsAndTestsResponse).to.deep.equal(mockData);
       expect(dispatchedAction.radiologyResponse).to.deep.equal(mockData);
     });

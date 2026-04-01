@@ -216,7 +216,7 @@ const MilitaryRecordErrorInfo = () => (
 
 const MilitaryInformation = ({ militaryInformation, veteranStatus }) => {
   useEffect(() => {
-    document.title = `Military Information | Veterans Affairs`;
+    document.title = `Service History Information | Veterans Affairs`;
   }, []);
 
   const { useToggleValue } = useFeatureToggle();

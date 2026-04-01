@@ -30,6 +30,7 @@ describe('VASS Component: Confirmation', () => {
       },
     );
 
+    expect(getByTestId('header')).to.exist;
     expect(getByTestId('confirmation-page')).to.exist;
     expect(getByTestId('confirmation-message')).to.exist;
     expect(getByTestId('appointment-card')).to.exist;

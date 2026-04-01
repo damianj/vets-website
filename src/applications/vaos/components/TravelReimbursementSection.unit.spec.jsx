@@ -17,7 +17,10 @@ describe('VAOS Component: TravelReimbursement', () => {
 
   const renderWithFeatureToggles = (
     ui,
-    { travelPayEnableComplexClaims = false } = {},
+    {
+      travelPayEnableComplexClaims = false,
+      travelPayEnableCommunityCare = false,
+    } = {},
   ) => {
     return renderWithStoreAndRouter(ui, {
       initialState: {
@@ -25,6 +28,7 @@ describe('VAOS Component: TravelReimbursement', () => {
           loading: false,
           // eslint-disable-next-line camelcase
           travel_pay_enable_complex_claims: travelPayEnableComplexClaims,
+          travelPayEnableCommunityCare,
         },
       },
       reducers,
@@ -602,6 +606,29 @@ describe('VAOS Component: TravelReimbursement', () => {
       <TravelReimbursementSection appointment={appointment} />,
     );
     expect(screen.queryByText(/Travel reimbursement/i)).to.not.exist;
+  });
+  it('should display travel reimbursement section if appointment is cc and flag is on', async () => {
+    const appointment = {
+      start: new Date('2021-09-01T10:00:00Z'),
+      vaos: {
+        apiData: {
+          travelPayClaim: {
+            metadata: {
+              status: 200,
+              message: 'Data retrieved successfully.',
+              success: true,
+            },
+          },
+        },
+        isPastAppointment: true,
+        isCommunityCare: true,
+      },
+    };
+    const screen = renderWithFeatureToggles(
+      <TravelReimbursementSection appointment={appointment} />,
+      { travelPayEnableCommunityCare: true },
+    );
+    expect(screen.queryByText(/Travel reimbursement/i)).to.exist;
   });
   it('should not display travel reimbursement section if appointment is phone', async () => {
     const appointment = {

@@ -1,5 +1,7 @@
 import { expect } from 'chai';
 
+import set from 'platform/utilities/data/set';
+
 import {
   buildSubmissionData,
   customTransformForSubmit,
@@ -7,6 +9,15 @@ import {
 
 import { PICKLIST_DATA, PICKLIST_REMOVAL_FLAG } from '../../config/constants';
 import { formConfig } from '../../config/form';
+
+import maximalFixture from '../e2e/fixtures/maximal.json';
+import transformedMaximalFixture from '../e2e/fixtures/transformed-maximal.json';
+
+import removeV3Fixture from '../e2e/fixtures/removal-only-v3.json';
+import transformedRemoveV3Fixture from '../e2e/fixtures/transformed-remove-only-v3';
+
+import spouseChildAllFieldsFixture from '../e2e/fixtures/spouse-child-all-fields.json';
+import transformedSpouseChildAllFieldsFixture from '../e2e/fixtures/transformed-spouse-child-all-fields.json';
 
 const dataOptions = 'view:removeDependentOptions';
 
@@ -1227,5 +1238,42 @@ describe('customTransformForSubmit integration', () => {
     expect(submittedData.currentMarriageInformation).to.not.be.undefined;
     expect(submittedData.doesLiveWithSpouse).to.not.be.undefined;
     expect(submittedData.spouseInformation).to.not.be.undefined;
+  });
+
+  it('should transform maximal data', () => {
+    const { data } = customTransformForSubmit(formConfig, {
+      data: maximalFixture,
+    });
+    expect(data.data).to.deep.equal(transformedMaximalFixture);
+  });
+
+  it('should transform maximal data', () => {
+    const { data } = customTransformForSubmit(formConfig, {
+      data: spouseChildAllFieldsFixture,
+    });
+    expect(data.data).to.deep.equal(transformedSpouseChildAllFieldsFixture);
+  });
+
+  it('should transform removal-only data', () => {
+    let fixture = { ...removeV3Fixture };
+
+    // Removal data is dependent on age (children), so we need to modify the
+    // maximal fixture
+    fixture = set('dependents', transformedRemoveV3Fixture.dependents, fixture);
+    const picklist = fixture[PICKLIST_DATA].map((item, index) => ({
+      ...item,
+      ...fixture.dependents.awarded[index],
+    }));
+
+    const expectedResult = JSON.parse(
+      JSON.stringify(transformedRemoveV3Fixture),
+    );
+    delete expectedResult.dependents; // Submission doesn't include dependents
+    delete expectedResult[PICKLIST_DATA];
+
+    const { data } = customTransformForSubmit(formConfig, {
+      data: set(PICKLIST_DATA, picklist, fixture),
+    });
+    expect(data.data).to.deep.equal(expectedResult);
   });
 });

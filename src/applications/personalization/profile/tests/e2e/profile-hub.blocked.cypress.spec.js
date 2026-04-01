@@ -9,14 +9,17 @@ const checkForAccountSecurityAsRedirect = () => {
 
   cy.findByText('We can’t show your information').should('exist');
 
-  cy.url().should('include', 'profile/account-security');
+  cy.url().should(
+    'eq',
+    `${Cypress.config().baseUrl}${PROFILE_PATHS.SIGNIN_INFORMATION}`,
+  );
 };
 
 describe('Profile - Hub page', () => {
   beforeEach(() => {
     cy.login(mockUser);
 
-    mockProfileLOA3(generateFeatureToggles());
+    mockProfileLOA3(generateFeatureToggles({ profile2Enabled: true }));
   });
 
   it('should render blocked profile content when user is deceased', () => {

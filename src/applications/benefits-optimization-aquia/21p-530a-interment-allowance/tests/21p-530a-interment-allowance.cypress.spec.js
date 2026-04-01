@@ -4,6 +4,7 @@ import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-test
 import formConfig from '@bio-aquia/21p-530a-interment-allowance/config/form';
 import manifest from '@bio-aquia/21p-530a-interment-allowance/manifest.json';
 import { featureToggles, user } from './fixtures/mocks';
+import addressValidationConfidence70 from '../../shared/tests/mocks/address-validation-confidence-70.json';
 
 // Helper for date component fillings
 export const fillDateWebComponentPattern = (fieldName, value) => {
@@ -64,6 +65,13 @@ const testConfig = createTestConfig(
       // Mock feature toggles
       cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
 
+      // Mock USPS address validation (confidence < 100 uses suggestion page)
+      cy.intercept(
+        'POST',
+        '/v0/profile/address_validation',
+        addressValidationConfidence70,
+      ).as('addressValidation');
+
       // Mock form submission
       cy.intercept('POST', formConfig.submitUrl, { status: 200 });
 
@@ -106,9 +114,16 @@ const testConfig = createTestConfig(
     pageHooks: {
       introduction: ({ afterHook }) => {
         afterHook(() => {
-          cy.get('[data-testid="start-burial-allowance-link"]').click({
-            force: true,
-          });
+          // Click the start link rendered by SaveInProgressIntro
+          cy.get('a.vads-c-action-link--green').click();
+        });
+      },
+      'organization-mailing-address-validation': ({ afterHook }) => {
+        afterHook(() => {
+          cy.findByText(/we found a similar address to the one you entered/i);
+          cy.get('va-radio').should('exist');
+          cy.selectVaRadioOption('addressGroup', 'user-entered');
+          cy.clickFormContinue();
         });
       },
       // Not sure why the date page wasn't playing nice.
@@ -133,6 +148,8 @@ const testConfig = createTestConfig(
       },
       'review-and-submit': ({ afterHook }) => {
         afterHook(() => {
+          cy.get('@addressValidation.all').should('have.length.greaterThan', 0);
+
           cy.get('@testData').then(data => {
             // Use organization names from form data for signature validation
             const recipientOrgName =

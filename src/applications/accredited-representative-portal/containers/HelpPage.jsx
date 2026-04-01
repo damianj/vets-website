@@ -462,6 +462,102 @@ const HelpPage = title => {
               </p>
             </va-accordion-item>
           </va-accordion>
+          <h2 id="searching-for-claimants-you-represent">
+            Searching for claimants you represent
+          </h2>
+          <p>
+            You can find claimants who have recently requested representation or
+            who have existing representation with you or one of your VSOs.
+          </p>
+          <va-accordion>
+            <va-accordion-item
+              header="How to search using the tool"
+              id="section-fifteen"
+              level="3"
+            >
+              To search for a claimant, you’ll need to enter their first name,
+              last name, date of birth, and Social Security number. Even if you
+              enter the information correctly, you’ll receive a "No result
+              found" message if the individual doesn’t have a recent
+              representation request or existing representation with you or one
+              of your VSOs.
+            </va-accordion-item>
+            <va-accordion-item
+              header="Does the search function check for limited representation?"
+              id="section-sixteen"
+              level="3"
+            >
+              <p>
+                The portal doesn’t currently check for limited representation.
+                By limited representation, we mean that the representation is
+                for a specific claim or claims. Check with the claimant or in
+                VBMS for any existing limited representation.
+              </p>
+              <p>
+                We are exploring search for limited representation as a future
+                enhancement.
+              </p>
+            </va-accordion-item>
+          </va-accordion>
+          <h2 id="submitting-va-forms">Submitting VA forms</h2>
+          <p>
+            There are two methods the portal uses for submissions. Some forms
+            require you to upload a completed PDF to submit. Other forms can be
+            submitted by filling out the required steps in the portal.
+          </p>
+          <p>
+            Prior to submission, the system will verify that you or your
+            Veterans Service Organization (VSO) currently represent the
+            claimant.
+          </p>
+          <va-accordion>
+            <va-accordion-item
+              header="VA Form 21-0966 (Intent to File a Claim for Compensation and/or Pension, or Survivors Pension and/or DIC)"
+              id="section-seventeen"
+              level="3"
+            >
+              <p>
+                Fill out the required steps in the portal for VA Form 21-0966,
+                and then submit.
+              </p>
+              <p>
+                The intent to file will be recorded immediately after
+                submission.
+              </p>
+            </va-accordion-item>
+            <va-accordion-item
+              header="VA Form 21-526EZ (Application for Disability Compensation and Related Compensation Benefits)"
+              id="section-eighteen"
+              level="3"
+            >
+              <p>Upload the completed VA Form 21-526EZ PDF, and then submit.</p>
+              <p>
+                The form will be processed by VA Centralized Mail after
+                submission. We’ll notify you of the status of receipt in VBMS.
+                The portal will track the submission for 60 days.
+              </p>
+            </va-accordion-item>
+            <va-accordion-item
+              header="VA Form 21-686c (Application Request to Add and/or Remove Dependents)"
+              id="section-nineteen"
+              level="3"
+            >
+              <p>
+                Upload the completed VA Form 21-686c PDF and any supporting
+                evidence, and then submit.
+              </p>
+              <p>
+                The form will be processed by VA Centralized Mail after
+                submission. We’ll notify you of the status of receipt in VBMS.
+                The portal will track the submission for 60 days.
+              </p>
+              <p>
+                <strong>Note:</strong> The portal isn’t able to establish
+                dependents within 24 hours at this time. We’re exploring ways to
+                speed up this process as a future enhancement.
+              </p>
+            </va-accordion-item>
+          </va-accordion>
           <div className="va-h-ruled--stars mobile-view-divider" />
         </div>
         <div className="vads-l-col--12 medium-screen:vads-l-col--4 contact-us">

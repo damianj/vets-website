@@ -68,6 +68,7 @@ const MoveMessageToFolderBtn = props => {
 
   // for closing move modal
   const closeModal = () => {
+    datadogRum.addAction('Cancel Move Conversation Button');
     setIsMoveModalVisible(false);
     setSelectedFolder(null);
     setFolderInputError(null);
@@ -81,6 +82,7 @@ const MoveMessageToFolderBtn = props => {
   };
 
   const handleConfirmMoveFolderTo = () => {
+    datadogRum.addAction('Confirm Move Conversation Button');
     if (selectedFolder === null) {
       setFolderInputError(
         Constants.ErrorMessages.MoveConversation.FOLDER_REQUIRED,
@@ -145,6 +147,10 @@ const MoveMessageToFolderBtn = props => {
             closeModal();
             datadogRum.addAction('Move Conversation Modal Closed');
           }}
+          onPrimaryButtonClick={handleConfirmMoveFolderTo}
+          onSecondaryButtonClick={closeModal}
+          primaryButtonText="Confirm"
+          secondaryButtonText="Cancel"
           visible={isMoveModalVisible}
           data-dd-action-name="Move Conversation Modal"
         >
@@ -195,28 +201,6 @@ const MoveMessageToFolderBtn = props => {
             </>
           </VaRadio>
           <p /> {/* to create extra margin between radio and action buttons */}
-          {/* For creating a new folder and moving the thread */}
-          <div
-            className="
-              move-folder-modal-buttons
-              vads-u-display--flex
-              vads-u-flex-direction--column
-              mobile-lg:vads-u-flex-direction--row
-              "
-          >
-            <va-button
-              text="Confirm"
-              onClick={handleConfirmMoveFolderTo}
-              data-dd-action-name="Confirm Move Conversation Button"
-            />
-            <va-button
-              class="vads-u-margin-top--1 mobile-lg:vads-u-margin-top--0"
-              secondary
-              text="Cancel"
-              onClick={closeModal}
-              data-dd-action-name="Cancel Move Conversation Button"
-            />
-          </div>
         </VaModal>
       </div>
     );

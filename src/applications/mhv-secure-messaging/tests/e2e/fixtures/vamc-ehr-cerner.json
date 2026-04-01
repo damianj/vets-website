@@ -1,0 +1,29 @@
+{
+  "data": {
+    "nodeQuery": {
+      "count": 2,
+      "entities": [
+        {
+          "title": "Test VA Cerner Medical Center",
+          "fieldFacilityLocatorApiId": "vha_979",
+          "fieldRegionPage": {
+            "entity": {
+              "title": "VA Test Cerner health care",
+              "fieldVamcEhrSystem": "cerner"
+            }
+          }
+        },
+        {
+          "title": "Test VA Vista Medical Center",
+          "fieldFacilityLocatorApiId": "vha_442",
+          "fieldRegionPage": {
+            "entity": {
+              "title": "VA Test Vista health care",
+              "fieldVamcEhrSystem": "vista"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

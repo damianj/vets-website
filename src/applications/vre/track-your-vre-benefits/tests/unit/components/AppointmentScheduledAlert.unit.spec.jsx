@@ -18,7 +18,7 @@ describe('AppointmentScheduledAlert', () => {
     const headline = container.querySelector('h2[slot="headline"]');
     expect(alert).to.exist;
     expect(headline).to.exist;
-    expect(headline.textContent).to.equal('Appointment scheduled');
+    expect(headline.textContent).to.equal('Meeting scheduled');
     expect(alert.getAttribute('status')).to.equal('info');
     expect(alert.hasAttribute('visible')).to.be.true;
 
@@ -47,7 +47,7 @@ describe('AppointmentScheduledAlert', () => {
     const headline = container.querySelector('h2[slot="headline"]');
     expect(alert).to.exist;
     expect(headline).to.exist;
-    expect(headline.textContent).to.equal('Appointment scheduled');
+    expect(headline.textContent).to.equal('Meeting scheduled');
     expect(alert.getAttribute('status')).to.equal('info');
     expect(alert.hasAttribute('visible')).to.be.true;
 
@@ -62,7 +62,7 @@ describe('AppointmentScheduledAlert', () => {
     ).to.exist;
     expect(
       getByText(
-        /The Microsoft Teams meeting link will be included in the appointment confirmation email sent to you\./,
+        /This is an online meeting. You can join at the scheduled time using the Microsoft Teams link in the confirmation email we sent you\./,
       ),
     ).to.exist;
 
@@ -70,7 +70,7 @@ describe('AppointmentScheduledAlert', () => {
     expect(container.querySelector('.va-address-block')).to.be.null;
   });
 
-  it('formats date as mm/dd/yyyy at hh:mm am|pm ET', () => {
+  it('formats date as mm/dd/yyyy at hh:mm am|pm CT', () => {
     // 2026-06-15T18:00:00.000Z is 1:00 PM CT (CDT)
     const formatted = formatApptDateTime('2026-06-15T18:00:00.000Z');
     expect(formatted).to.match(/06\/15\/2026 at 1:00 PM CT/);

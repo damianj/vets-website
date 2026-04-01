@@ -1284,7 +1284,7 @@ describe('labsAndTestsReducer - SCDF imaging studies', () => {
         { id: 'lab-2', sortDate: '2025-01-11T10:00:00Z', name: 'BLOOD TEST' },
       ],
       scdfImagingStudies: [
-        { id: 'study-1', rawDate: '2025-01-10T09:17:00Z', status: 'available' },
+        { id: 'study-1', rawDate: '2025-01-10T09:15:20Z', status: 'available' },
       ],
       scdfImagingStudiesMerged: false,
     };

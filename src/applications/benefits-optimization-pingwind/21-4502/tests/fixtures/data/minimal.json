@@ -1,0 +1,27 @@
+{
+  "veteran": {
+    "fullName": { "first": "Jane", "last": "Doe" },
+    "ssn": "123456789",
+    "dateOfBirth": "1985-03-15",
+    "address": {
+      "street": "123 Main St",
+      "city": "Springfield",
+      "state": "VA",
+      "postalCode": "22150",
+      "country": "US"
+    },
+    "homePhone": { "contact": "5551234567" },
+    "email": "test@example.com"
+  },
+  "applicationInfo": {
+    "branchOfService": "army",
+    "activeDutyStatus": false,
+    "currentlyOnActiveDuty": false,
+    "conveyanceType": "automobile",
+    "driverOrPassenger": "driver",
+    "previouslyAppliedConveyance": false,
+    "appliedDisabilityCompensation": false
+  },
+  "certifyLicensing": true,
+  "certifyNoPriorGrant": true
+}

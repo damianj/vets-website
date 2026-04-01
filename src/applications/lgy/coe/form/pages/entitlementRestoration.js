@@ -21,48 +21,74 @@ const emptyObjectSchema = {
 const EntitlementRestorationOptions = () => (
   <div className="vads-u-margin-top--5">
     <VaAccordion openSingle>
-      <VaAccordionItem header="Understanding your VA loan entitlement restoration options">
+      <VaAccordionItem header="Understanding your VA home loan entitlement restoration options">
         <p className="vads-u-margin-top--0">
-          Here’s what you should know about entitlement restorations.
+          Your VA home loan entitlement amount determines how much you can
+          borrow without a down payment.
+          <div>
+            <VaLink
+              external
+              href="https://www.va.gov/housing-assistance/home-loans/loan-limits/"
+              text="View VA loan entitlement and loan limits"
+            />
+          </div>
         </p>
 
-        <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
-          One-time restoration
-        </p>
         <p className="vads-u-margin-top--0">
-          You can request a one-time entitlement restoration if you want to
-          purchase another primary residence. You must have paid off the
-          original VA home loan, still own the home, or sold it before we
-          restore entitlement.
+          Here’s what you should know about entitlement restoration options:
         </p>
 
         <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
           Cash-out refinance programs
         </p>
         <p className="vads-u-margin-top--0">
-          You can request an entitlement restoration so that can refinance your
-          home and cash out part of your equity. You can do this even if your
-          current mortgage isn’t through the VA home loan program.{' '}
-          <VaLink
-            external
-            href="https://www.va.gov/housing-assistance/home-loans/loan-types/cash-out-loan/"
-            text="Learn more about a Cash-out refinance loan"
-          />
+          You can request an entitlement restoration to refinance your home and
+          cash out part of your equity. Entitlement restoration will only apply
+          to the home that you bought with your VA home loan entitlement.{' '}
+          <div>
+            <VaLink
+              external
+              href="https://www.va.gov/housing-assistance/home-loans/loan-types/cash-out-loan/"
+              text="Learn more about a Cash-out refinance loan"
+            />
+          </div>
         </p>
 
         <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
           Refinance to change my interest rate
         </p>
         <p className="vads-u-margin-top--0">
-          You can request an entitle restoration to refinance your current VA
-          home loan to get a lower interest rate with the Interest Rate
-          Reduction Refinance Loan (IRRRL) program. You can also use this
-          program to switch from an adjustable rate to a fixed rate.{' '}
-          <VaLink
-            external
-            href="https://www.va.gov/housing-assistance/home-loans/loan-types/interest-rate-reduction-loan/"
-            text="Learn more about IRRRL"
-          />
+          You can refinance your current VA home loan to get a lower interest
+          rate with the Interest Rate Reduction Refinancing Loan (IRRRL)
+          program. You can also use this program to switch from an adjustable
+          rate to a fixed rate. Your entitlement will be re-used with this
+          program.
+          <div>
+            <VaLink
+              external
+              href="https://www.va.gov/housing-assistance/home-loans/loan-types/interest-rate-reduction-loan/"
+              text="Learn more about an IRRRL"
+            />
+          </div>
+        </p>
+
+        <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
+          Regular restoration of entitlement
+        </p>
+        <p className="vads-u-margin-top--0">
+          Regular restorations of entitlement require a prior VA loan to be paid
+          in full and the property to be no longer owned by the Veteran. There
+          is no limit to the number of regular restorations a Veteran can
+          receive.
+        </p>
+
+        <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
+          One-time restoration
+        </p>
+        <p className="vads-u-margin-top--0">
+          You can receive a one-time restoration if you’ve repaid the VA loan in
+          full, but plan to keep the home. You can only do a one-time
+          restoration once in your lifetime.
         </p>
       </VaAccordionItem>
     </VaAccordion>
@@ -76,9 +102,8 @@ export default {
       ({ formData }) => (
         <div>
           <p>
-            Restoring your VA home loan entitlement can let you use your
-            entitlement again for future VA‑backed loans if the VA home loan on
-            this property is paid off.
+            If certain conditions are met, you may be able to restore your VA
+            home loan entitlement to use it again on another VA backed loan.
           </p>
           <PropertyAddress formData={formData} />
         </div>
@@ -90,12 +115,14 @@ export default {
       labels: {
         [entitlementRestorationOptions.ENTITLEMENT_INQUIRY_ONLY]:
           'No, I’m just checking my entitlement',
-        [entitlementRestorationOptions.ONE_TIME_RESTORATION]:
-          'Yes, I want a one-time restoration',
         [entitlementRestorationOptions.CASH_OUT_REFINANCE]:
           'Yes, I want to refinance and take cash out',
         [entitlementRestorationOptions.INTEREST_RATE_REDUCTION_REFINANCE]:
           'Yes, I want to refinance to change my interest rate',
+        [entitlementRestorationOptions.REGULAR_RESTORATION]:
+          'Yes, I want a regular restoration of entitlement',
+        [entitlementRestorationOptions.ONE_TIME_RESTORATION]:
+          'Yes, I want a one-time restoration',
       },
     }),
     'view:entitlementRestorationOptions': descriptionUI(
@@ -107,9 +134,10 @@ export default {
     properties: {
       entitlementRestoration: radioSchema([
         entitlementRestorationOptions.ENTITLEMENT_INQUIRY_ONLY,
-        entitlementRestorationOptions.ONE_TIME_RESTORATION,
         entitlementRestorationOptions.CASH_OUT_REFINANCE,
         entitlementRestorationOptions.INTEREST_RATE_REDUCTION_REFINANCE,
+        entitlementRestorationOptions.REGULAR_RESTORATION,
+        entitlementRestorationOptions.ONE_TIME_RESTORATION,
       ]),
       'view:entitlementRestorationOptions': emptyObjectSchema,
     },

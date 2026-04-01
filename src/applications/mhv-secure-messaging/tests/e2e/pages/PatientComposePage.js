@@ -3,6 +3,10 @@ import mockMessageResponse from '../fixtures/message-response.json';
 import mockThreadResponse from '../fixtures/thread-response.json';
 import mockSignature from '../fixtures/signature-response.json';
 import { Locators, Paths, Data, Alerts } from '../utils/constants';
+import {
+  clickModalPrimaryButtonByTestId,
+  clickModalSecondaryButtonByTestId,
+} from '../utils/modal-helpers';
 import { RxRenewalText } from '../../../util/constants';
 import mockDraftResponse from '../fixtures/message-compose-draft-response.json';
 import mockRecipients from '../fixtures/recipientsResponse/recipients-response.json';
@@ -322,9 +326,9 @@ class PatientComposePage {
   };
 
   closeESAlertModal = () => {
-    cy.get(Locators.ALERTS.ALERT_MODAL)
+    cy.findByTestId(Locators.ALERTS.ALERT_MODAL)
       .shadow()
-      .find(`button`)
+      .find(`button.va-modal-close`)
       .click({ force: true });
   };
 
@@ -413,7 +417,7 @@ class PatientComposePage {
   };
 
   clickDeleteDraftModalButton = () => {
-    cy.get(`va-button[secondary][text="Delete draft"]`).click();
+    clickModalSecondaryButtonByTestId('navigation-warning-modal');
   };
 
   clickOnContinueEditingButton = () => {
@@ -564,8 +568,16 @@ class PatientComposePage {
       .click({ force: true });
   };
 
-  getAlertEditDraftBtn = () => {
-    return cy.get(Locators.ALERTS.ALERT_MODAL).find('va-button');
+  getAlertModalPrimaryBtnText = () => {
+    return cy
+      .findByTestId('navigation-warning-modal')
+      .invoke('attr', 'primary-button-text');
+  };
+
+  getAlertModalSecondaryBtnText = () => {
+    return cy
+      .findByTestId('navigation-warning-modal')
+      .invoke('attr', 'secondary-button-text');
   };
 
   verifyHeader = text => {
@@ -598,21 +610,26 @@ class PatientComposePage {
 
   verifyCantSaveAlert = (
     alertText,
-    firstBtnText = `Edit draft`,
-    secondBtnText = `Delete draft`,
+    primaryBtnText = `Edit draft`,
+    secondaryBtnText = `Delete draft`,
   ) => {
-    cy.get(`va-modal[status="warning"]`)
+    cy.findByTestId('navigation-warning-modal')
+      .shadow()
       .find(`h2`)
       .should('be.visible')
       .and(`contain.text`, alertText);
 
-    cy.get(`va-modal[status="warning"]`)
-      .find(`va-button[text='${firstBtnText}']`)
-      .should('be.visible');
+    cy.findByTestId('navigation-warning-modal').should(
+      'have.attr',
+      'primary-button-text',
+      primaryBtnText,
+    );
 
-    cy.get(`va-modal[status="warning"]`)
-      .find(`va-button[text='${secondBtnText}']`)
-      .should('be.visible');
+    cy.findByTestId('navigation-warning-modal').should(
+      'have.attr',
+      'secondary-button-text',
+      secondaryBtnText,
+    );
   };
 
   verifyAttchedFilesList = listLength => {
@@ -672,7 +689,7 @@ class PatientComposePage {
     // with a warning dialog when the browser is closed.
     cy.findByRole('button', { name: 'Delete draft' }).click();
     // Click the confirm button in the confirmation modal.
-    cy.findByTestId('confirm-delete-draft').click();
+    clickModalPrimaryButtonByTestId('delete-draft-modal');
   };
 
   interceptSentFolder = () => {

@@ -81,6 +81,11 @@ const PrivateRecordsAuthorization = ({
         updatePage();
       } else {
         setHasError(true);
+        const checkbox = $('va-checkbox');
+        if (checkbox) {
+          scrollTo(checkbox);
+          waitForRenderThenFocus('input', checkbox.shadowRoot);
+        }
       }
     },
     onGoForward: () => {
@@ -91,6 +96,11 @@ const PrivateRecordsAuthorization = ({
       } else {
         // Show error and move focus ONLY when Continue is clicked without checkbox
         setHasError(true);
+        const checkbox = $('va-checkbox');
+        if (checkbox) {
+          scrollTo(checkbox);
+          waitForRenderThenFocus('input', checkbox.shadowRoot);
+        }
       }
     },
   };

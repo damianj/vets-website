@@ -12,6 +12,7 @@ import {
   validateFutureDate,
   validateChars,
   validateDateRange,
+  validateSpousalRelationship,
 } from '../../../utils/validations';
 
 describe('1010d `validateSponsorSsn` form validation', () => {
@@ -434,6 +435,106 @@ describe('1010d `validateOHIDates` form validation', () => {
     });
     validateOHIDates(errors, fieldData);
     sinon.assert.calledOnce(expirationDateSpy);
+  });
+});
+
+describe('1010d `validateSpousalRelationship` form validation', () => {
+  let errors;
+  let originalLocation;
+
+  const makeApplicant = (relationship = 'child') => ({
+    applicantRelationshipToSponsor: { relationshipToVeteran: relationship },
+  });
+
+  const setLocationPath = pathname => {
+    Object.defineProperty(window, 'location', {
+      value: { pathname, search: '?add=true' },
+      writable: true,
+    });
+  };
+
+  beforeEach(() => {
+    errors = { addError: sinon.spy() };
+    originalLocation = window.location;
+    setLocationPath('/applicant-relationship');
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+    });
+  });
+
+  it('should not add error when fieldData is not "spouse"', () => {
+    const formData = { applicants: [makeApplicant('spouse')] };
+    validateSpousalRelationship(errors, 'child', formData);
+    sinon.assert.notCalled(errors.addError);
+  });
+
+  it('should not add error when adding first spouse', () => {
+    const formData = { applicants: [] };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.notCalled(errors.addError);
+  });
+
+  it('should not add error when only existing applicant is a child', () => {
+    const formData = { applicants: [makeApplicant('child')] };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.notCalled(errors.addError);
+  });
+
+  it('should not add error on review page when only one spouse exists', () => {
+    setLocationPath('/review-and-submit');
+    const formData = {
+      applicants: [makeApplicant('spouse'), makeApplicant('child')],
+    };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.notCalled(errors.addError);
+  });
+
+  it('should add error when trying to add second spouse', () => {
+    const formData = { applicants: [makeApplicant('spouse')] };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.calledOnce(errors.addError);
+  });
+
+  it('should not add error when editing existing spouse (currentIndex matches)', () => {
+    setLocationPath('/applicant-relationship/0');
+    const formData = {
+      applicants: [makeApplicant('spouse'), makeApplicant('child')],
+    };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.notCalled(errors.addError);
+  });
+
+  it('should add error when changing non-spouse to spouse when one exists', () => {
+    setLocationPath('/applicant-relationship/1');
+    const formData = {
+      applicants: [makeApplicant('spouse'), makeApplicant('child')],
+    };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.calledOnce(errors.addError);
+  });
+
+  it('should add error when multiple spouses exist and currentIndex is null', () => {
+    setLocationPath('/review-and-submit');
+    const formData = {
+      applicants: [makeApplicant('spouse'), makeApplicant('spouse')],
+    };
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.calledOnce(errors.addError);
+  });
+
+  it('should handle missing applicants array', () => {
+    const formData = {};
+    validateSpousalRelationship(errors, 'spouse', formData);
+    sinon.assert.notCalled(errors.addError);
+  });
+
+  it('should handle undefined formData', () => {
+    validateSpousalRelationship(errors, 'spouse', undefined);
+    sinon.assert.notCalled(errors.addError);
   });
 });
 

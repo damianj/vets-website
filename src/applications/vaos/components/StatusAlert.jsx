@@ -64,77 +64,78 @@ export default function StatusAlert({ appointment, facility }) {
         </InfoAlert>
       );
     }
+    const proposedMsg = (
+      <p>
+        We’ll try to schedule your appointment in the next 2 business days.
+        Check back here or call your facility for updates.
+      </p>
+    );
 
-    return (
-      <InfoAlert backgroundOnly status={showConfirmMsg ? 'success' : 'info'}>
-        <p>
-          We’ll try to schedule your appointment in the next 2 business days.
-          Check back here or call your facility for updates.
-        </p>
-
-        {showConfirmMsg ? (
-          <>
-            <div className="vads-u-margin-y--1">
-              <va-link
-                text="Review your appointments"
-                data-testid="review-appointments-link"
-                href={root.url}
-                onClick={() =>
-                  recordEvent({
-                    event: `${GA_PREFIX}-view-your-appointments-button-clicked`,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <va-link
-                text="Schedule a new appointment"
-                data-testid="schedule-appointment-link"
-                onClick={handleClick(dispatch)}
-                href={`${root.url}${typeOfCare.url}`}
-              />
-            </div>
-          </>
-        ) : (
+    if (!showConfirmMsg) {
+      return (
+        <>
+          {proposedMsg}
           <p>
             You requested this appointment on{' '}
             <span data-dd-privacy="mask">{createdDate}</span>.
           </p>
-        )}
+        </>
+      );
+    }
+
+    return (
+      <InfoAlert status="success" headline="We’ve received your request">
+        {proposedMsg}
+        <div className="vads-u-margin-y--1">
+          <va-link
+            text="Review your appointments"
+            data-testid="review-appointments-link"
+            href={root.url}
+            onClick={() =>
+              recordEvent({
+                event: `${GA_PREFIX}-view-your-appointments-button-clicked`,
+              })
+            }
+          />
+        </div>
+        <div>
+          <va-link
+            text="Schedule a new appointment"
+            data-testid="schedule-appointment-link"
+            onClick={handleClick(dispatch)}
+            href={`${root.url}${typeOfCare.url}`}
+          />
+        </div>
       </InfoAlert>
     );
   }
 
   if (canceled) {
     const who = canceler.get(appointment?.cancelationReason) || 'Facility';
-    let message;
+    let message = `${who} canceled this `; // all
     let linkText;
     if (appointment.type === 'COMMUNITY_CARE_APPOINTMENT') {
-      message = `${who} canceled this appointment. If you still want this appointment, call your community care provider to schedule.`;
+      message += `appointment. If you still want this appointment, call your community care provider to schedule.`;
     } else if (appointment.vaos.isCompAndPenAppointment) {
-      message = `${who} canceled this appointment. If you still want this appointment, call your VA health facility’s compensation and pension office to schedule.`;
+      message += `appointment. If you still want this appointment, call your VA health facility’s compensation and pension office to schedule.`;
     } else if (appointment.vaos.isPendingAppointment) {
-      message = `${who} canceled this request. If you still want this appointment, call your VA health facility or submit another request online.`;
+      message += `request. If you still want this appointment, call your VA health facility or submit another request online.`;
       linkText = 'Request a new appointment';
     } else {
-      message = `${who} canceled this appointment. If you still want this appointment, call your VA health facility to schedule.`;
+      message += `appointment. If you still want this appointment, call your VA health facility to schedule.`;
       linkText = 'Schedule a new appointment';
     }
     return (
       <>
-        <InfoAlert status="error" backgroundOnly>
-          {message}
+        <InfoAlert status="info">
+          <p className="vads-u-margin-top--0">{message}</p>
           {appointment.showScheduleLink && (
-            <>
-              <br />
-              <br />
-              <va-link
-                text={linkText}
-                data-testid="schedule-appointment-link"
-                onClick={handleClick(dispatch)}
-                href={`${root.url}${typeOfCare.url}`}
-              />
-            </>
+            <va-link
+              text={linkText}
+              data-testid="schedule-appointment-link"
+              onClick={handleClick(dispatch)}
+              href={`${root.url}${typeOfCare.url}`}
+            />
           )}
         </InfoAlert>
       </>
@@ -142,10 +143,9 @@ export default function StatusAlert({ appointment, facility }) {
   }
   if (showConfirmMsg) {
     return (
-      <InfoAlert backgroundOnly status="success">
-        <strong>We’ve scheduled and confirmed your appointment.</strong>
-        <br />
-        <div className="vads-u-margin-y--1">
+      <InfoAlert status="success" headline="We’ve confirmed your appointment">
+        <p>We’ve scheduled and confirmed your appointment.</p>
+        <div>
           <va-link
             text="Review your appointments"
             data-testid="review-appointments-link"

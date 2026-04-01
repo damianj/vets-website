@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { VaLink } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { useSelector } from 'react-redux';
 
 const programOverviewCard = {
   title: 'Learn about the VR&E program',
@@ -37,17 +36,13 @@ const getCareerPlanningCard = step => {
   };
 };
 
-const getCardsForStep = (step, stateList = [], ch31CaseMilestonesState) => {
+const getCardsForStep = (step, stateList = []) => {
   const careerPlanningCard = getCareerPlanningCard(step);
 
   const currentStatus = stateList?.[step - 1]?.status;
 
   const isComplete =
     currentStatus === 'COMPLETE' || currentStatus === 'COMPLETED';
-
-  const isActive = currentStatus === 'ACTIVE';
-
-  const isPending = currentStatus === 'PENDING';
 
   const allCards = [programOverviewCard, orientationCard, careerPlanningCard];
 
@@ -56,18 +51,13 @@ const getCardsForStep = (step, stateList = [], ch31CaseMilestonesState) => {
       return allCards;
     case 2:
       return allCards;
-    case 3: {
-      if (ch31CaseMilestonesState?.data && !ch31CaseMilestonesState?.error) {
-        return allCards;
-      }
-
-      return isActive || isPending ? [careerPlanningCard] : allCards;
-    }
+    case 3:
+      return allCards;
     case 4:
-      return [careerPlanningCard];
+      return [];
 
     case 5:
-      return [careerPlanningCard];
+      return [];
 
     case 6:
       return isComplete ? [] : [careerPlanningCard];
@@ -82,10 +72,7 @@ const getCardsForStep = (step, stateList = [], ch31CaseMilestonesState) => {
 
 const HubCardList = ({ step, stateList = [] }) => {
   const history = useHistory();
-  const ch31CaseMilestonesState = useSelector(
-    state => state?.ch31CaseMilestones,
-  );
-  const cards = getCardsForStep(step, stateList, ch31CaseMilestonesState);
+  const cards = getCardsForStep(step, stateList);
 
   if (!cards.length) return null;
 
@@ -96,54 +83,44 @@ const HubCardList = ({ step, stateList = [] }) => {
 
   return (
     <div className="vads-u-margin-top--2 vads-u-margin-bottom--2">
-      <va-card background icon-name="">
-        <h3 className="va-nav-linkslist-heading">
-          Preparing for the next steps
-        </h3>
+      <h3 className="va-nav-linkslist-heading">Preparing for the next steps</h3>
 
-        <div>
-          {cards.map(card => (
-            <div
-              key={card.title}
-              className="vads-u-margin-top--2 vads-u-padding-bottom--2"
-            >
-              {card.useRouter ? (
-                <VaLink
-                  active
-                  href={card.href}
-                  text={card.title}
-                  onClick={event => handleRouteChange(event, card.href)}
-                />
-              ) : (
-                <VaLink
-                  active
-                  href={card.href}
-                  text={card.title}
-                  className=" vads-u-font-weight--bold"
-                />
-              )}
-              {Array.isArray(card.body) ? (
-                card.body.map((text, i) => (
-                  <p
-                    key={i}
-                    className={
-                      i === 0
-                        ? 'vads-u-margin-top--1 vads-u-margin-bottom--1'
-                        : 'vads-u-margin-top--1 vads-u-margin-bottom--0'
-                    }
-                  >
-                    {text}
-                  </p>
-                ))
-              ) : (
-                <p className="vads-u-margin-top--1 vads-u-margin-bottom--0">
-                  {card.body}
+      <div>
+        {cards.map(card => (
+          <div
+            key={card.title}
+            className="vads-u-margin-top--2 vads-u-padding-bottom--2"
+          >
+            {card.useRouter ? (
+              <VaLink
+                href={card.href}
+                text={card.title}
+                onClick={event => handleRouteChange(event, card.href)}
+              />
+            ) : (
+              <VaLink href={card.href} text={card.title} />
+            )}
+            {Array.isArray(card.body) ? (
+              card.body.map((text, i) => (
+                <p
+                  key={i}
+                  className={
+                    i === 0
+                      ? 'vads-u-margin-top--1 vads-u-margin-bottom--1'
+                      : 'vads-u-margin-top--1 vads-u-margin-bottom--0'
+                  }
+                >
+                  {text}
                 </p>
-              )}
-            </div>
-          ))}
-        </div>
-      </va-card>
+              ))
+            ) : (
+              <p className="vads-u-margin-top--1 vads-u-margin-bottom--0">
+                {card.body}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

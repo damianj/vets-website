@@ -126,7 +126,7 @@ export const ConfirmationPage = ({ router, route }) => {
           environment.API_URL
         }/v0/education_benefits_claims/download_pdf/${submission.response?.id}`}
       />
-      <ConfirmationView.ChapterSectionCollection />
+      <ConfirmationView.ChapterSectionCollection showPageTitles />
       <ConfirmationView.PrintThisPage />
       <h2>What to expect next</h2>
       <ProcessList />

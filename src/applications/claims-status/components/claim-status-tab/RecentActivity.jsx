@@ -2,7 +2,10 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom-v5-compat';
 import { VaPagination } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
+import {
+  Toggler,
+  useFeatureToggle,
+} from '~/platform/utilities/feature-toggles';
 
 import { uniqueId } from 'lodash';
 import { ITEMS_PER_PAGE } from '../../constants';
@@ -183,7 +186,7 @@ export default function RecentActivity({ claim }) {
   };
   const requestType = itemStatus => {
     if (itemStatus === 'NEEDED_FROM_YOU') return 'Request for you';
-    return undefined;
+    return null;
   };
 
   let currentPageItems = items;
@@ -200,6 +203,25 @@ export default function RecentActivity({ claim }) {
     },
     [setCurrentPage],
   );
+
+  const thirdPartyRequestText = item => {
+    return (
+      <div data-testid={`item-from-others-${item.id}`}>
+        <p className="vads-u-margin-top--0 vads-u-margin-bottom--0p5">
+          {item.activityDescription
+            ? item.activityDescription
+            : TrackedItem.renderDefaultThirdPartyMessage(item.oldDisplayName)}
+        </p>
+        <Link
+          aria-label={`Learn more about this notice for ${item.friendlyName ||
+            item.displayName}`}
+          to={`../needed-from-others/${item.id}`}
+        >
+          Learn more about this notice
+        </Link>
+      </div>
+    );
+  };
 
   const thirdPartyRequesAlertText = item => {
     return (
@@ -245,11 +267,32 @@ export default function RecentActivity({ claim }) {
               </h4>
               {hasRequestType(item.status) ? (
                 <>
-                  {requestType(item.status) && (
-                    <p className="vads-u-margin-top--0p5 vads-u-margin-bottom--0">
-                      {requestType(item.status)}
-                    </p>
-                  )}
+                  <Toggler
+                    toggleName={
+                      Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests
+                    }
+                  >
+                    <Toggler.Enabled>
+                      {item.status === 'NEEDED_FROM_OTHERS' ? (
+                        <div className="vads-u-margin-y--0p5">
+                          <span className="usa-label">Requested for you</span>
+                        </div>
+                      ) : (
+                        requestType(item.status) && (
+                          <p className="vads-u-margin-top--0p5 vads-u-margin-bottom--0">
+                            {requestType(item.status)}
+                          </p>
+                        )
+                      )}
+                    </Toggler.Enabled>
+                    <Toggler.Disabled>
+                      {requestType(item.status) && (
+                        <p className="vads-u-margin-top--0p5 vads-u-margin-bottom--0">
+                          {requestType(item.status)}
+                        </p>
+                      )}
+                    </Toggler.Disabled>
+                  </Toggler>
                   <p
                     className="item-description vads-u-margin-top--0 vads-u-margin-bottom--1"
                     data-dd-privacy="mask"
@@ -269,8 +312,20 @@ export default function RecentActivity({ claim }) {
                   </p>
                 </>
               )}
-              {item.status === 'NEEDED_FROM_OTHERS' &&
-                thirdPartyRequesAlertText(item)}
+              {item.status === 'NEEDED_FROM_OTHERS' && (
+                <Toggler
+                  toggleName={
+                    Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests
+                  }
+                >
+                  <Toggler.Enabled>
+                    {thirdPartyRequestText(item)}
+                  </Toggler.Enabled>
+                  <Toggler.Disabled>
+                    {thirdPartyRequesAlertText(item)}
+                  </Toggler.Disabled>
+                </Toggler>
+              )}
             </li>
           ))}
         </ol>

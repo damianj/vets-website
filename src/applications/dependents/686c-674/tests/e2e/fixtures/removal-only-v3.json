@@ -7,10 +7,9 @@
   "useV2": true,
   "veteranContactInformation": {
     "veteranAddress": {
-      "view:militaryBaseDescription": {},
       "country": "USA",
       "street": "1700 Clairmont Rd",
-      "street2": "",
+      "street2": "  ",
       "city": "Decatur",
       "state": "GA",
       "postalCode": "30033"
@@ -51,7 +50,7 @@
   },
   "view:additionalEvidenceDescription": {},
   "view:selectable686Options": {},
-  "vaDependentsNetWorthAndPension": false,
+  "vaDependentsNetWorthAndPension": true,
   "vaDependentsDuplicateModals": true,
   "vaDependentsV3": true,
   "veteranInformation": {
@@ -313,7 +312,7 @@
       "removalReason": "marriageEnded",
       "endType": "annulmentOrVoid",
       "endAnnulmentOrVoidDescription": "Test description",
-      "endDate": "2020-01-01",
+      "endDate": "2025-01-01",
       "endOutsideUs": true,
       "endCity": "Test",
       "endProvince": "Prov",
@@ -454,7 +453,7 @@
         "country": "USA",
         "state": "AK",
         "street": "123 Test St",
-        "street2": "Suite 100",
+        "street2": "  ",
         "postalCode": "99501"
       },
       "whoDoesTheStepchildLiveWith": {
@@ -498,7 +497,7 @@
       "key": "peter-0104",
       "selected": true,
       "removalReason": "parentDied",
-      "endDate": "2020-01-01",
+      "endDate": "2025-01-01",
       "endOutsideUs": false,
       "endCity": "Test",
       "endProvince": "Prov",
@@ -517,7 +516,7 @@
       "key": "mary-0155",
       "selected": true,
       "removalReason": "parentOther",
-      "endDate": "2020-01-01",
+      "endDate": "2025-01-01",
       "endOutsideUs": false,
       "endCity": "Test",
       "endProvince": "Prov",
@@ -525,5 +524,5 @@
       "endState": "AK"
     }
   ],
-  "householdIncome": true
+  "householdIncome": false
 }

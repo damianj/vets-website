@@ -137,9 +137,9 @@ describe('VAOS Component: ClaimExamLayout', () => {
         type: 'VA',
         modality: 'claimExamAppointment',
         isCerner: false,
-        'fields-load-success': 'type-of-care',
+        'fields-load-success': '',
         'fields-load-fail':
-          'clinic-phone,facility-id,facility-details,facility-phone',
+          'type-of-care,clinic-phone,facility-id,facility-details,facility-phone',
       };
 
       // Act
@@ -419,8 +419,11 @@ describe('VAOS Component: ClaimExamLayout', () => {
         }),
       );
       expect(
-        screen.getByRole('heading', { level: 2, name: /After-visit summary/i }),
-      );
+        screen.queryByRole('heading', {
+          level: 2,
+          name: /After-visit summary/i,
+        }),
+      ).not.to.exist;
 
       expect(screen.getByRole('heading', { level: 2, name: /When/i }));
       expect(

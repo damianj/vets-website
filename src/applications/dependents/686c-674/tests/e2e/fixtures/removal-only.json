@@ -99,6 +99,7 @@
       "view:militaryBaseDescription": {},
       "country": "USA",
       "street": "123 Fake st",
+      "street2": "  ",
       "city": "Fakesville",
       "state": "NV",
       "postalCode": "89131"
@@ -117,6 +118,7 @@
         "view:militaryBaseDescription": {},
         "country": "USA",
         "street": "123 Fake St.",
+        "street2": "  ",
         "city": "Las Vegas",
         "state": "NV",
         "postalCode": "12345"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { VaCheckbox } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import { setData } from 'platform/forms-system/src/js/actions';
 
 const AdditionalOfficialExemptInfo = props => {
@@ -37,20 +38,20 @@ const AdditionalOfficialExemptInfo = props => {
           dispatch(
             setData({
               ...formState,
-              'additional-certifying-official': formState[
-                'additional-certifying-official'
-              ].map((official, index) => {
-                if (index !== Number(props.formContext.pagePerItemIndex)) {
-                  return official;
-                }
-                return {
-                  ...official,
-                  additionalOfficialTraining: {
-                    ...official.additionalOfficialTraining,
-                    trainingExempt: event.target.checked,
-                  },
-                };
-              }),
+              additionalCertifyingOfficials: formState.additionalCertifyingOfficials.map(
+                (official, index) => {
+                  if (index !== Number(props.formContext.pagePerItemIndex)) {
+                    return official;
+                  }
+                  return {
+                    ...official,
+                    additionalOfficialTraining: {
+                      ...official.additionalOfficialTraining,
+                      trainingExempt: event.target.checked,
+                    },
+                  };
+                },
+              ),
             }),
           );
         }}
@@ -59,6 +60,13 @@ const AdditionalOfficialExemptInfo = props => {
       />
     </div>
   );
+};
+
+AdditionalOfficialExemptInfo.propTypes = {
+  formContext: PropTypes.shape({
+    pagePerItemIndex: PropTypes.string,
+  }),
+  formData: PropTypes.bool,
 };
 
 export default AdditionalOfficialExemptInfo;

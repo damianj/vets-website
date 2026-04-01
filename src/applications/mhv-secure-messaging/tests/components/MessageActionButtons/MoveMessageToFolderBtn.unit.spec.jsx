@@ -49,7 +49,7 @@ describe('Move button', () => {
         threadId={threadId}
         messageId={id}
         allFolders={folderResponse}
-        setIsCreateNewModalVisible
+        setIsCreateNewModalVisible={() => {}}
         isCreateNewModalVisible
       />,
       {
@@ -118,9 +118,8 @@ describe('Move button', () => {
       'true',
     );
 
-    const cancelButton = document.querySelector('va-button[text="Cancel"]');
-    expect(cancelButton).to.exist;
-    fireEvent.click(cancelButton);
+    const modal = document.querySelector('va-modal');
+    modal.__events.secondaryButtonClick();
     expect(document.querySelector('va-modal[modaltitle="Move to"]')).to.not
       .exist;
   });
@@ -138,7 +137,7 @@ describe('Move button', () => {
       ).to.have.attribute('checked', 'true');
     });
     mockApiRequest({ status: 204, method: 'PATCH' });
-    fireEvent.click(document.querySelector('va-button[text="Confirm"]'));
+    document.querySelector('va-modal').__events.primaryButtonClick();
     expect(document.querySelector('va-modal[modaltitle="Move to"]')).to.not
       .exist;
   });
@@ -147,7 +146,7 @@ describe('Move button', () => {
     const screen = setup();
     fireEvent.click(screen.getByText('Move'));
     screen.getByTestId('radiobutton-Inbox');
-    fireEvent.click(document.querySelector('va-button[text="Confirm"]'));
+    document.querySelector('va-modal').__events.primaryButtonClick();
     expect(document.querySelector('va-radio')).to.have.attribute(
       'error',
       Constants.ErrorMessages.MoveConversation.FOLDER_REQUIRED,
@@ -166,7 +165,7 @@ describe('Move button', () => {
         document.querySelector(`va-radio-option[value="newFolder"]`),
       ).to.have.attribute('checked', 'true');
     });
-    fireEvent.click(document.querySelector('va-button[text="Confirm"]'));
+    document.querySelector('va-modal').__events.primaryButtonClick();
     expect(
       document.querySelector('va-modal[modal-title="Create a new folder"]'),
     ).to.have.attribute(
@@ -194,7 +193,7 @@ describe('Move button', () => {
     await waitFor(() => {
       selectVaRadio(container, 'newFolder');
     });
-    fireEvent.click(container.querySelector('va-button[text="Confirm"]'));
+    container.querySelector('va-modal').__events.primaryButtonClick();
 
     const createButton = container.querySelector('va-button[text="Create"]');
     fireEvent.click(createButton);

@@ -199,8 +199,11 @@ describe('VAOS Component: CCLayout', () => {
         }),
       );
       expect(
-        screen.getByRole('heading', { level: 2, name: /After-visit summary/i }),
-      );
+        screen.queryByRole('heading', {
+          level: 2,
+          name: /After-visit summary/i,
+        }),
+      ).not.to.exist;
 
       expect(screen.getByRole('heading', { level: 2, name: /When/i }));
       expect(
@@ -247,6 +250,113 @@ describe('VAOS Component: CCLayout', () => {
       expect(
         screen.container.querySelector('va-button[text="Cancel appointment"]'),
       ).not.to.exist;
+    });
+  });
+
+  describe('Travel reimbursement claim section', () => {
+    it('should display proof of attendance section for upcoming appointment', async () => {
+      // Arrange
+      const store = createTestStore(initialState);
+      const response = MockAppointmentResponse.createCCResponse({
+        localStartTime: new Date(),
+      })
+        .setCCLocation(new MockAddress())
+        .setPractitioner();
+      const appointment = MockAppointmentResponse.getTransformedResponse(
+        response,
+      );
+
+      // Act
+      const screen = renderWithStoreAndRouter(<CCLayout data={appointment} />, {
+        store,
+      });
+
+      // Assert
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: /Travel reimbursement claim/i,
+        }),
+      ).to.be.ok;
+      expect(screen.getByText(/proof that you attended the appointment/i)).to.be
+        .ok;
+    });
+
+    it('should not display proof of attendance section for past appointment', async () => {
+      // Arrange
+      const store = createTestStore(initialState);
+      const response = MockAppointmentResponse.createCCResponse({
+        localStartTime: subDays(new Date(), 1),
+        past: true,
+      })
+        .setCCLocation(new MockAddress())
+        .setPractitioner();
+      const appointment = MockAppointmentResponse.getTransformedResponse(
+        response,
+      );
+
+      // Act
+      const screen = renderWithStoreAndRouter(<CCLayout data={appointment} />, {
+        store,
+      });
+
+      // Assert
+      expect(
+        screen.queryByRole('heading', { name: /Travel reimbursement claim/i }),
+      ).not.to.exist;
+      expect(screen.queryByText(/proof that you attended the appointment/i)).not
+        .to.exist;
+    });
+
+    it('should display proof of attendance section for future cancelled appointment', async () => {
+      // Arrange
+      const store = createTestStore(initialState);
+      const response = MockAppointmentResponse.createCCResponse({
+        localStartTime: new Date(),
+        status: APPOINTMENT_STATUS.cancelled,
+      })
+        .setCCLocation(new MockAddress())
+        .setPractitioner();
+      const appointment = MockAppointmentResponse.getTransformedResponse(
+        response,
+      );
+
+      // Act
+      const screen = renderWithStoreAndRouter(<CCLayout data={appointment} />, {
+        store,
+      });
+
+      // Assert
+      expect(
+        screen.getByRole('heading', { name: /Travel reimbursement claim/i }),
+      ).to.exist;
+    });
+
+    it('should not display proof of attendance section for past cancelled appointment', async () => {
+      // Arrange
+      const store = createTestStore(initialState);
+      const response = MockAppointmentResponse.createCCResponse({
+        localStartTime: subDays(new Date(), 1),
+        past: true,
+        status: APPOINTMENT_STATUS.cancelled,
+      })
+        .setCCLocation(new MockAddress())
+        .setPractitioner();
+      const appointment = MockAppointmentResponse.getTransformedResponse(
+        response,
+      );
+
+      // Act
+      const screen = renderWithStoreAndRouter(<CCLayout data={appointment} />, {
+        store,
+      });
+
+      // Assert
+      expect(
+        screen.queryByRole('heading', { name: /Travel reimbursement claim/i }),
+      ).not.to.exist;
+      expect(screen.queryByText(/proof that you attended the appointment/i)).not
+        .to.exist;
     });
   });
 

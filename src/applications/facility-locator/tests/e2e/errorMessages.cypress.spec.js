@@ -67,6 +67,64 @@ for (const featureSet of featureSets) {
         .select('VA health');
     });
 
+    it('focuses internal select when facility type error is triggered on submit', () => {
+      h.typeInCityStateInput('Austin, TX', true);
+      h.submitSearchForm();
+
+      cy.get(h.FACILITY_TYPE_DROPDOWN)
+        .shadow()
+        .find('.usa-error-message')
+        .should('exist');
+
+      cy.get(h.FACILITY_TYPE_DROPDOWN)
+        .shadow()
+        .find('select')
+        .should('be.focused');
+    });
+
+    it('focuses internal select on repeat submit without facility type', () => {
+      h.typeInCityStateInput('Austin, TX', true);
+      h.submitSearchForm();
+
+      // First submit: error shows
+      cy.get(h.FACILITY_TYPE_DROPDOWN)
+        .shadow()
+        .find('.usa-error-message')
+        .should('exist');
+
+      // Blur the field
+      cy.get('body').click();
+
+      // Second submit: focus should return
+      h.submitSearchForm();
+
+      cy.get(h.FACILITY_TYPE_DROPDOWN)
+        .shadow()
+        .find('select')
+        .should('be.focused');
+    });
+
+    it('shows location and service type errors simultaneously for CC provider without location', () => {
+      h.selectFacilityTypeInDropdown(h.FACILITY_TYPES.CC_PRO);
+      cy.wait('@mockServices');
+      h.verifyElementIsNotDisabled(h.CCP_SERVICE_TYPE_INPUT);
+
+      h.submitSearchForm();
+
+      h.errorMessageContains(addrErrorMessage);
+      h.errorMessageContains(serviceErrorMessage);
+      h.elementIsFocused(h.CITY_STATE_ZIP_INPUT);
+    });
+
+    it('preserves location error after selecting a facility type', () => {
+      h.submitSearchForm();
+      h.errorMessageContains(addrErrorMessage);
+
+      h.selectFacilityTypeInDropdown(h.FACILITY_TYPES.HEALTH);
+
+      h.errorMessageContains(addrErrorMessage);
+    });
+
     it('shows error message when leaving service type field empty on submit', () => {
       h.typeInCityStateInput('Austin, TX');
       h.selectFacilityTypeInDropdown(h.FACILITY_TYPES.CC_PRO);

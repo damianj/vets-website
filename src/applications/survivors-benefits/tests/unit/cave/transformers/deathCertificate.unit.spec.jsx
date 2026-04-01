@@ -31,13 +31,13 @@ describe('cave/transformers/deathCertificate — transformDeathCertificateEntry'
 
   describe("Veteran's information section", () => {
     const entry = {
-      DECENDENT_FULL_NAME: {
+      decendentFullName: {
         first: 'Pat',
         middle: 'A',
         last: 'Veteran',
         suffix: '',
       },
-      DECENDENT_SSN: '987654321',
+      decendentSsn: '987654321',
     };
 
     it('includes first, middle, last, suffix rows', () => {
@@ -76,14 +76,14 @@ describe('cave/transformers/deathCertificate — transformDeathCertificateEntry'
 
   describe("Veteran's death information section", () => {
     const entry = {
-      DECENDENT_DATE_OF_DISPOSITION: '2020-03-10',
-      DECENDENT_DATE_OF_DEATH: '2020-03-01',
-      CAUSE_OF_DEATH: 'Natural causes',
-      UNDERLYING_CAUSE_OF_DEATH_B: 'Hypertension',
-      UNDERLYING_CAUSE_OF_DEATH_C: '',
-      UNDERLYING_CAUSE_OF_DEATH_D: null,
-      MANNER_OF_DEATH: 'Natural',
-      DECENDENT_MARITAL_STATUS: 'Married',
+      decendentDateOfDisposition: '2020-03-10',
+      decendentDateOfDeath: '2020-03-01',
+      causeOfDeath: 'Natural causes',
+      underlyingCauseOfDeathB: 'Hypertension',
+      underlyingCauseOfDeathC: '',
+      underlyingCauseOfDeathD: null,
+      mannerOfDeath: 'Natural',
+      decendentMaritalStatus: 'Married',
     };
 
     it('formats disposition date from ISO', () => {

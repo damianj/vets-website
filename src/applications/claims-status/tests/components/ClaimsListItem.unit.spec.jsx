@@ -8,15 +8,12 @@ import { renderWithRouter } from '../utils';
 
 const getStore = (
   cstClaimPhasesEnabled = true,
-  cstShowDocumentUploadStatus = false,
   cstMultiClaimProvider = false,
 ) =>
   createStore(() => ({
     featureToggles: {
       // eslint-disable-next-line camelcase
       cst_claim_phases: cstClaimPhasesEnabled,
-      // eslint-disable-next-line camelcase
-      cst_show_document_upload_status: cstShowDocumentUploadStatus,
       // eslint-disable-next-line camelcase
       cst_multi_claim_provider: cstMultiClaimProvider,
     },
@@ -810,123 +807,78 @@ describe('<ClaimsListItem>', () => {
     },
   );
 
-  context(
-    'when the cst_show_document_upload_status feature toggle is disabled',
-    () => {
-      it('should not render a slim alert', () => {
-        const claim = {
-          id: 1,
-          attributes: {
-            claimDate: '2024-06-08',
-            claimPhaseDates: {
-              phaseChangeDate: '2024-06-08',
-              phaseType: 'GATHERING_OF_EVIDENCE',
+  describe('UploadType2ErrorAlertSlim', () => {
+    context(
+      'when there are no failed evidence submissions within the last 30 days',
+      () => {
+        it('should not render a slim alert', () => {
+          const claim = {
+            id: 1,
+            attributes: {
+              claimDate: '2024-06-08',
+              claimPhaseDates: {
+                phaseChangeDate: '2024-06-08',
+                phaseType: 'GATHERING_OF_EVIDENCE',
+              },
+              claimTypeCode: compensationClaimTypeCode,
+              status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
+              evidenceSubmissions: [
+                createFailedSubmission(
+                  new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                  new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+                ),
+              ],
             },
-            claimTypeCode: compensationClaimTypeCode,
-            status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
-            evidenceSubmissions: [
-              createFailedSubmission(
-                new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-                new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-              ),
-            ],
-          },
-        };
-        const { container } = renderWithRouter(
-          <Provider store={getStore(true, false)}>
-            <ClaimsListItem claim={claim} />
-          </Provider>,
-        );
-        const alert = container.querySelector('va-alert[status="error"]');
+          };
+          const { container } = renderWithRouter(
+            <Provider store={getStore()}>
+              <ClaimsListItem claim={claim} />
+            </Provider>,
+          );
+          const alert = container.querySelector('va-alert[status="error"]');
 
-        expect(alert).to.not.exist;
-      });
-    },
-  );
+          expect(alert).to.not.exist;
+        });
+      },
+    );
 
-  context(
-    'when the cst_show_document_upload_status feature toggle is enabled',
-    () => {
-      context(
-        'when there are no failed evidence submissions within the last 30 days',
-        () => {
-          it('should not render a slim alert', () => {
-            const claim = {
-              id: 1,
-              attributes: {
-                claimDate: '2024-06-08',
-                claimPhaseDates: {
-                  phaseChangeDate: '2024-06-08',
-                  phaseType: 'GATHERING_OF_EVIDENCE',
-                },
-                claimTypeCode: compensationClaimTypeCode,
-                status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
-                evidenceSubmissions: [
-                  createFailedSubmission(
-                    new Date(
-                      Date.now() - 1 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                    new Date(
-                      Date.now() + 31 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                  ),
-                ],
+    context(
+      'when there are failed evidence submissions within the last 30 days',
+      () => {
+        it('should render a slim alert', () => {
+          const claim = {
+            id: 1,
+            attributes: {
+              claimDate: '2024-06-08',
+              claimPhaseDates: {
+                phaseChangeDate: '2024-06-08',
+                phaseType: 'GATHERING_OF_EVIDENCE',
               },
-            };
-            const { container } = renderWithRouter(
-              <Provider store={getStore(true, true)}>
-                <ClaimsListItem claim={claim} />
-              </Provider>,
-            );
-            const alert = container.querySelector('va-alert[status="error"]');
+              claimTypeCode: compensationClaimTypeCode,
+              status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
+              evidenceSubmissions: [
+                createFailedSubmission(
+                  new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
+                  new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                ),
+              ],
+            },
+          };
+          const { container } = renderWithRouter(
+            <Provider store={getStore()}>
+              <ClaimsListItem claim={claim} />
+            </Provider>,
+          );
+          const alert = container.querySelector('va-alert[status="error"]');
 
-            expect(alert).to.not.exist;
-          });
-        },
-      );
-
-      context(
-        'when there are failed evidence submissions within the last 30 days',
-        () => {
-          it('should render a slim alert', () => {
-            const claim = {
-              id: 1,
-              attributes: {
-                claimDate: '2024-06-08',
-                claimPhaseDates: {
-                  phaseChangeDate: '2024-06-08',
-                  phaseType: 'GATHERING_OF_EVIDENCE',
-                },
-                claimTypeCode: compensationClaimTypeCode,
-                status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
-                evidenceSubmissions: [
-                  createFailedSubmission(
-                    new Date(
-                      Date.now() + 28 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                    new Date(
-                      Date.now() - 2 * 24 * 60 * 60 * 1000,
-                    ).toISOString(),
-                  ),
-                ],
-              },
-            };
-            const { container } = renderWithRouter(
-              <Provider store={getStore(true, true)}>
-                <ClaimsListItem claim={claim} />
-              </Provider>,
-            );
-            const alert = container.querySelector('va-alert[status="error"]');
-
-            expect(alert).to.exist;
-            expect(alert.querySelector('p')).to.have.text(
-              'We need you to resubmit files for this claim.',
-            );
-          });
-        },
-      );
-    },
-  );
+          expect(alert).to.exist;
+          expect(alert.querySelector('p')).to.have.text(
+            'We need you to resubmit files for this claim.',
+          );
+        });
+      },
+    );
+  });
 
   context('multi-provider functionality', () => {
     it('includes provider in href when flag enabled and provider exists', () => {
@@ -945,7 +897,7 @@ describe('<ClaimsListItem>', () => {
       };
 
       const { container } = renderWithRouter(
-        <Provider store={getStore(true, false, true)}>
+        <Provider store={getStore(true, true)}>
           <ClaimsListItem claim={claim} />
         </Provider>,
       );
@@ -973,7 +925,7 @@ describe('<ClaimsListItem>', () => {
       };
 
       const { container } = renderWithRouter(
-        <Provider store={getStore(true, false, false)}>
+        <Provider store={getStore(true, false)}>
           <ClaimsListItem claim={claim} />
         </Provider>,
       );
@@ -1001,7 +953,7 @@ describe('<ClaimsListItem>', () => {
       };
 
       const { container } = renderWithRouter(
-        <Provider store={getStore(true, false, true)}>
+        <Provider store={getStore(true, true)}>
           <ClaimsListItem claim={claim} />
         </Provider>,
       );

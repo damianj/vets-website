@@ -16,7 +16,7 @@ jobs:
       app_list: ${{ env.APPLICATION_LIST }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -62,7 +62,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -110,7 +110,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -206,7 +206,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -266,7 +266,7 @@ jobs:
       APPLICATION_LIST: ${{ needs.testing-reports-prep.outputs.app_list }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials

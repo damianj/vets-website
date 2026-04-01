@@ -5,14 +5,15 @@ import { ID_NUMBER_OPTIONS } from '../../../chapters/resubmission/claimIdNumber'
 import formConfig from '../../../config/form';
 import mockData from '../../e2e/fixtures/data/medical-claim.json';
 import transformForSubmit from '../../../config/submitTransformer';
+import { ATTACHMENT_IDS } from '../../../utils/constants';
 
 describe('Submit transformer', () => {
   it('should add the file type to submitted files', () => {
     const result = JSON.parse(transformForSubmit(formConfig, mockData));
     const attachmentIds = result.supportingDocs.map(o => o.attachmentId);
     expect(attachmentIds.length).to.eq(2);
-    expect(attachmentIds.includes('MEDDOCS')).to.be.true;
-    expect(attachmentIds.includes('EOB')).to.be.true;
+    expect(attachmentIds.includes(ATTACHMENT_IDS.meddoc)).to.be.true;
+    expect(attachmentIds.includes(ATTACHMENT_IDS.eob)).to.be.true;
   });
 
   it('should set primaryContact name to false if none present', () => {

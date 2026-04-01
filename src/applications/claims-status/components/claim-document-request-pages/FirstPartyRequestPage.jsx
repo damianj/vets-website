@@ -175,29 +175,30 @@ export default function FirstPartyRequestPage({
         </div>
       )}
 
-      {hasDescriptionContent && (
-        <div
-          className="vads-u-margin-y--4"
-          data-testid="learn-about-request-section"
-        >
-          <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
-            Learn about this request in your claim letter
-          </h3>
-          <p className="vads-u-margin-y--2">
-            On {dateFormatter(item.requestedDate)}, we mailed you a letter
-            titled "Request for Specific Evidence or Information," which may
-            include more details about this request.
-          </p>
-          <p className="vads-u-margin-top--2 vads-u-margin-bottom--0">
-            You can access this and all your claim letters online.
-          </p>
-          <VaLink
-            text="Access your claim letters"
-            label="Access your claim letters"
-            href="/track-claims/your-claim-letters"
-          />
-        </div>
-      )}
+      {hasDescriptionContent &&
+        !item.hideClaimLetterSection && (
+          <div
+            className="vads-u-margin-y--4"
+            data-testid="learn-about-request-section"
+          >
+            <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+              Learn about this request in your claim letter
+            </h3>
+            <p className="vads-u-margin-y--2">
+              On {dateFormatter(item.requestedDate)}, we mailed you a letter
+              titled "Request for Specific Evidence or Information," which may
+              include more details about this request.
+            </p>
+            <p className="vads-u-margin-top--2 vads-u-margin-bottom--0">
+              You can access this and all your claim letters online.
+            </p>
+            <VaLink
+              text="Access your claim letters"
+              label="Access your claim letters"
+              href="/track-claims/your-claim-letters"
+            />
+          </div>
+        )}
 
       {nextStepsContent && (
         <div className="vads-u-margin-y--4">

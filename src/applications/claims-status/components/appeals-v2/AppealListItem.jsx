@@ -115,13 +115,20 @@ export default function AppealListItem({ appeal, name }) {
           </span>
         </p>
         <p>Last updated: {updatedOn}</p>
-        <Toggler toggleName={Toggler.TOGGLE_NAMES.cstShowDocumentUploadStatus}>
+        <Toggler
+          toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
+        >
           <Toggler.Enabled>
+            {failedSubmissionsWithinLast30Days.length > 0 && (
+              <va-tag-status status="warning" text="Action may be needed" />
+            )}
+          </Toggler.Enabled>
+          <Toggler.Disabled>
             <UploadType2ErrorAlertSlim
               claimId={appeal.id}
               failedSubmissions={failedSubmissionsWithinLast30Days}
             />
-          </Toggler.Enabled>
+          </Toggler.Disabled>
         </Toggler>
       </div>
       <ClaimCard.Link ariaLabel={ariaLabel} href={href} />

@@ -351,13 +351,17 @@ describe('MedicalRecordsPage', () => {
     const primaryButton = container.querySelector('va-modal');
     fireEvent(primaryButton, new CustomEvent('primaryButtonClick'));
 
-    await waitFor(() => {
-      const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
-      expect(alert.textContent).to.include(
-        'We’ve removed information about your medical centers from this claim.',
-      );
-    });
+    await waitFor(
+      () => {
+        const alert = container.querySelector('va-alert');
+        expect(alert).to.exist;
+        expect(alert).to.have.attribute('visible', 'true');
+        expect(alert.textContent).to.include(
+          'We’ve removed information about your medical centers from this claim.',
+        );
+      },
+      { timeout: 200 },
+    );
   });
 
   it('should cancel modal and reset selection after user click cancel change', async () => {
@@ -514,7 +518,7 @@ describe('MedicalRecordsPage', () => {
     expect(goForward.firstCall.args[0]).to.deep.equal(data);
   });
 
-  it('should focus success alert when evidence is removed', async () => {
+  it('should focus continue button and show alert after removing evidence', async () => {
     const setFormData = sinon.spy();
     const data = {
       'view:selectableEvidenceTypes': {
@@ -525,8 +529,6 @@ describe('MedicalRecordsPage', () => {
     };
 
     const { container } = render(page({ data, setFormData }));
-    const alert = container.querySelector('va-alert');
-    const focusSpy = sinon.spy(alert, 'focus');
 
     fireEvent.click($('button[type="submit"]', container));
 
@@ -538,10 +540,18 @@ describe('MedicalRecordsPage', () => {
     const modal = container.querySelector('va-modal');
     fireEvent(modal, new CustomEvent('primaryButtonClick'));
 
-    await waitFor(() => {
-      expect(alert).to.have.attribute('visible', 'true');
-      expect(focusSpy.called).to.be.true;
-    });
+    // After modal closes, button should be focused and alert should appear
+    await waitFor(
+      () => {
+        const alert = container.querySelector('va-alert');
+        expect(alert).to.exist;
+        expect(alert).to.have.attribute('visible', 'true');
+        // Focus should be on continue button
+        const continueButton = container.querySelector('.usa-button-primary');
+        expect(document.activeElement).to.equal(continueButton);
+      },
+      { timeout: 200 },
+    );
   });
 
   it('should open modal on review page when update is clicked and evidence should be removed', async () => {
@@ -631,19 +641,20 @@ describe('MedicalRecordsPage', () => {
       expect(modal).to.have.attribute('visible', 'true');
     });
 
-    const modal = container.querySelector('va-modal');
-    fireEvent(modal, new CustomEvent('primaryButtonClick'));
+    fireEvent(
+      container.querySelector('va-modal'),
+      new CustomEvent('primaryButtonClick'),
+    );
 
     await waitFor(() => {
       const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
+      expect(alert).to.exist;
     });
 
     const alert = container.querySelector('va-alert');
     fireEvent(alert, new CustomEvent('closeEvent'));
-
     await waitFor(() => {
-      expect(alert).to.have.attribute('visible', 'false');
+      expect(container.querySelector('va-alert')).to.not.exist;
     });
   });
 });

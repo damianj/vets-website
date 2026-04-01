@@ -272,6 +272,40 @@ const validateForm = () => {
 - Focus alert after display for accessibility (error alerts only — see Focus Restriction below)
 - Modals in `components/Modals/` — use `visible` prop, always manage focus on open/close
 
+### VaModal Inside V3 Web Components (Shadow DOM)
+
+**When to use:** Rendering a `VaModal` inside a V3 web component that uses shadow DOM (e.g., `va-accordion-item`, `va-card`).
+
+**Problem:** V3 web components with shadow DOM can create a CSS layout containment context (via `contain`, `transform`, or `will-change` properties). This causes `position: fixed` — used by `VaModal` for its overlay — to be calculated relative to the web component's bounding box instead of the viewport. On mobile viewports the modal appears visibly off-center.
+
+**Pattern:** Use `ReactDOM.createPortal` to render the modal at `document.body`, escaping the web component's layout context:
+```jsx
+import ReactDOM from 'react-dom';
+
+// Inside render:
+return ReactDOM.createPortal(
+  <VaModal visible={visible} onCloseEvent={onClose} modalTitle="Title" status="warning">
+    <p>Content</p>
+  </VaModal>,
+  document.body,
+);
+```
+
+**Anti-pattern:**
+```jsx
+// ❌ VaModal rendered inline inside va-accordion-item — modal will be off-center on mobile
+<va-accordion-item>
+  <ReplyForm />
+  <VaModal visible={showModal}>...</VaModal>
+</va-accordion-item>
+```
+
+**Why:** `ReactDOM.createPortal` mounts the modal DOM at `document.body` while preserving React context (state, event bubbling, refs). Focus management via refs (`focusElement(buttonRef.current)`) continues to work because React refs are component-scoped, not DOM-position-scoped. `VaModal`'s built-in focus trap/restore also works independently of mount location.
+
+**Affected components (as of #117792):**
+- `DeleteDraftModal.jsx` — portaled to `document.body`
+- `ReplyDraftItem.jsx` — `saveError` modal portaled to `document.body`
+
 **Why SmAlert exists (VaAlert limitation):** VaAlert's `visible` prop triggers a complete DOM swap — when `visible=false`, VaAlert renders a `<div aria-live="polite"></div>` placeholder; when `visible=true`, that div is destroyed and replaced with the full alert DOM tree (which has no `aria-live`). Because the live region is removed during the transition, screen readers never detect the content change and skip the announcement entirely. SmAlert works around this by managing its own persistent `aria-live="polite"` span inside the alert.
 
 **Anti-pattern:**

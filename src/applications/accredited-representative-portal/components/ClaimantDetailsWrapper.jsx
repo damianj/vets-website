@@ -33,7 +33,7 @@ const ClaimantDetailsWrapper = ({ firstName, lastName, children }) => {
         </div>
         {lastName}, {firstName}
       </h1>
-      <hr />
+      <hr className="vads-u-margin-y--4" />
       <div className="vads-grid-row">
         <div className="vads-u-padding-right--2p5 vads-grid-col-12 tablet:vads-grid-col-4 desktop-lg:vads-grid-col-3">
           <VaSidenav

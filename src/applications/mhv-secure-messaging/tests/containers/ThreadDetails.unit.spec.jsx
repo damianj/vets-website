@@ -1266,8 +1266,8 @@ describe('Thread Details container', () => {
   });
 
   describe('when migrating facility and blocked triage group and replyDisabled and stale', () => {
-    const MIGRATION_ALERT_H2 = /You can.t use messages to contact providers at some facilities right now/i;
-
+    const MIGRATION_ALERT_H2 = /You can.t reply to conversations with some care teams/i;
+    const MIGRATION_ALERT_NOTE = /After February 15, 2026, you.ll be able to start a new message to contact your care teams/i;
     it('renders MigratingFacilitiesAlerts only', async () => {
       stubUseFeatureToggles({
         useCanReplyField: true,
@@ -1355,6 +1355,8 @@ describe('Thread Details container', () => {
       const h2 = screen.getByText(MIGRATION_ALERT_H2);
       expect(h2.tagName).to.equal('H2');
 
+      expect(screen.getByText(MIGRATION_ALERT_NOTE)).to.exist;
+
       // does not render blocked triage group alert
       expect(screen.queryByTestId('blocked-triage-group-alert')).to.be.null;
 
@@ -1366,7 +1368,8 @@ describe('Thread Details container', () => {
     });
   });
   describe('when migrating facility and stale', () => {
-    const MIGRATION_ALERT_H2 = /You can.t use messages to contact providers at some facilities right now/i;
+    const MIGRATION_ALERT_H2 = /You can.t reply to conversations with some care teams/i;
+    const MIGRATION_ALERT_NOTE = /After February 15, 2026, you.ll be able to start a new message to contact your care teams/i;
     it('renders MigratingFacilitiesAlerts only', async () => {
       stubUseFeatureToggles({
         useCanReplyField: true,
@@ -1455,6 +1458,8 @@ describe('Thread Details container', () => {
       // renders migration alert
       const h2 = screen.getByText(MIGRATION_ALERT_H2);
       expect(h2.tagName).to.equal('H2');
+
+      expect(screen.getByText(MIGRATION_ALERT_NOTE)).to.exist;
 
       // does not render blocked triage group alert
       expect(screen.queryByTestId('blocked-triage-group-alert')).to.be.null;

@@ -2,7 +2,7 @@ import { sanitize, formatIsoDate, maskSsn } from './helpers';
 
 export const transformDeathCertificateEntry = data => {
   const entry = data || {};
-  const name = entry.DECENDENT_FULL_NAME || {};
+  const name = entry.decendentFullName || {};
   return [
     {
       heading: "Veteran's information",
@@ -13,7 +13,7 @@ export const transformDeathCertificateEntry = data => {
         { label: 'Suffix', value: sanitize(name.suffix) },
         {
           label: 'Social Security number',
-          value: maskSsn(entry.DECENDENT_SSN),
+          value: maskSsn(entry.decendentSsn),
         },
       ],
     },
@@ -22,29 +22,29 @@ export const transformDeathCertificateEntry = data => {
       rows: [
         {
           label: 'Disposition date',
-          value: formatIsoDate(entry.DECENDENT_DATE_OF_DISPOSITION),
+          value: formatIsoDate(entry.decendentDateOfDisposition),
         },
         {
           label: 'Date of death',
-          value: formatIsoDate(entry.DECENDENT_DATE_OF_DEATH),
+          value: formatIsoDate(entry.decendentDateOfDeath),
         },
-        { label: 'Cause of death A', value: sanitize(entry.CAUSE_OF_DEATH) },
+        { label: 'Cause of death A', value: sanitize(entry.causeOfDeath) },
         {
           label: 'Cause of death B',
-          value: sanitize(entry.UNDERLYING_CAUSE_OF_DEATH_B),
+          value: sanitize(entry.underlyingCauseOfDeathB),
         },
         {
           label: 'Cause of death C',
-          value: sanitize(entry.UNDERLYING_CAUSE_OF_DEATH_C),
+          value: sanitize(entry.underlyingCauseOfDeathC),
         },
         {
           label: 'Cause of death D',
-          value: sanitize(entry.UNDERLYING_CAUSE_OF_DEATH_D),
+          value: sanitize(entry.underlyingCauseOfDeathD),
         },
-        { label: 'Manner of death', value: sanitize(entry.MANNER_OF_DEATH) },
+        { label: 'Manner of death', value: sanitize(entry.mannerOfDeath) },
         {
           label: 'Marital status at time of death',
-          value: sanitize(entry.DECENDENT_MARITAL_STATUS),
+          value: sanitize(entry.decendentMaritalStatus),
         },
       ],
     },

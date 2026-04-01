@@ -34,7 +34,7 @@ export const convertScdfImagingStudy = record => {
  * Maximum allowed difference (in milliseconds) between a lab record's date
  * and an imaging study's date for them to be considered the same study.
  */
-const IMAGING_MATCH_TOLERANCE_MS = 10 * 60 * 1000; // 10 minutes
+const IMAGING_MATCH_TOLERANCE_MS = 30 * 1000; // 30 seconds
 
 /**
  * Merge SCDF imaging study metadata into a labs-and-tests list by matching
@@ -148,17 +148,6 @@ const mergeRadiologyRecords = (phrRecord, cvixRecord) => {
 };
 
 /**
- * Extract the hash from a record ID. Record IDs are in the format "r{rawId}-{hash}".
- * @param {string} id - The record ID (e.g., "r12345-abc123ef")
- * @returns {string|null} - The hash portion or null if not found
- */
-const extractHashFromId = id => {
-  if (!id || typeof id !== 'string') return null;
-  const parts = id.split('-');
-  return parts.length >= 2 ? parts[parts.length - 1] : null;
-};
-
-/**
  * Check if two dates are on the same calendar day.
  * @param {string} date1 - First date string
  * @param {string} date2 - Second date string (can be ISO string or timestamp)
@@ -188,12 +177,47 @@ const areDatesOnSameDay = (date1, date2) => {
 };
 
 /**
- * Create a union of the radiology reports from PHR and CVIX. This function will merge
- * duplicates between the two lists using any of the following matching strategies
- * (evaluated in parallel - a match on ANY strategy will trigger a merge):
- * 1. Hash matching (computed from procedure name, radiologist, station, and date)
- * 2. Timestamp matching (to the minute)
- * 3. Procedure name + date matching (normalized comparison, same calendar day)
+ * Run a single matching pass over unmatched PHR and CVIX records using the
+ * provided predicate. Returns a Map of phrRecord.id → cvixRecord for each
+ * new match found. Already-matched IDs (in matchedPhrIds / matchedCvixIds)
+ * are skipped.
+ */
+const runMatchingPass = (
+  phrList,
+  cvixList,
+  matchedPhrIds,
+  matchedCvixIds,
+  predicate,
+) => {
+  const newMatches = new Map();
+  for (const phrRecord of phrList) {
+    if (!matchedPhrIds.has(phrRecord.id)) {
+      for (const cvixRecord of cvixList) {
+        if (
+          !matchedCvixIds.has(cvixRecord.id) &&
+          predicate(phrRecord, cvixRecord)
+        ) {
+          newMatches.set(phrRecord.id, cvixRecord);
+          matchedPhrIds.add(phrRecord.id);
+          matchedCvixIds.add(cvixRecord.id);
+          break;
+        }
+      }
+    }
+  }
+  return newMatches;
+};
+
+/**
+ * Create a union of the radiology reports from PHR and CVIX. Duplicates are
+ * merged using a multi-stage strategy so that the most specific match criteria
+ * are evaluated first, preventing greedy mismatches when multiple studies share
+ * the same date.
+ *
+ * Stages (each stage only considers records not yet matched by an earlier stage):
+ *   1. Procedure name (normalized) AND timestamp equal to the minute
+ *   2. Timestamp equal to the minute (any procedure name)
+ *   3. Procedure name (normalized) AND same calendar day
  *
  * @param {Array} phrRadiologyTestsList - List of PHR radiology records.
  * @param {Array} cvixRadiologyTestsList - List of CVIX radiology records.
@@ -203,50 +227,76 @@ export const mergeRadiologyLists = (
   phrRadiologyTestsList,
   cvixRadiologyTestsList,
 ) => {
-  const mergedArray = [];
+  const matchedPhrIds = new Set();
   const matchedCvixIds = new Set();
+  // Accumulates all matches across stages: phrId → cvixRecord
+  const allMatches = new Map();
 
-  for (const phrRecord of phrRadiologyTestsList) {
-    let matchingCvix = null;
-    const phrHash = extractHashFromId(phrRecord.id);
-    const phrNormalizedName = normalizeProcedureName(phrRecord.name);
+  // Precompute normalized names so stages 1 & 3 don't redo this in inner loops
+  const phrNames = new Map(
+    phrRadiologyTestsList.map(r => [r.id, normalizeProcedureName(r.name)]),
+  );
+  const cvixNames = new Map(
+    cvixRadiologyTestsList.map(r => [r.id, normalizeProcedureName(r.name)]),
+  );
 
-    for (const cvixRecord of cvixRadiologyTestsList) {
-      // Skip if this CVIX record was already matched to another PHR record
-      if (!matchedCvixIds.has(cvixRecord.id)) {
-        const cvixHash = extractHashFromId(cvixRecord.id);
-        const cvixNormalizedName = normalizeProcedureName(cvixRecord.name);
+  // Stage 1: procedure name + timestamp to the minute (most specific)
+  const stage1 = runMatchingPass(
+    phrRadiologyTestsList,
+    cvixRadiologyTestsList,
+    matchedPhrIds,
+    matchedCvixIds,
+    (phr, cvix) => {
+      const phrName = phrNames.get(phr.id);
+      const cvixName = cvixNames.get(cvix.id);
+      return (
+        phrName &&
+        cvixName &&
+        phrName === cvixName &&
+        areDatesEqualToMinute(phr.sortDate, cvix.sortDate)
+      );
+    },
+  );
+  stage1.forEach((v, k) => allMatches.set(k, v));
 
-        // Match by hash (primary) - catches records with same core fields
-        const hashesMatch = phrHash && cvixHash && phrHash === cvixHash;
+  // Stage 2: timestamp to the minute only
+  const stage2 = runMatchingPass(
+    phrRadiologyTestsList,
+    cvixRadiologyTestsList,
+    matchedPhrIds,
+    matchedCvixIds,
+    (phr, cvix) => areDatesEqualToMinute(phr.sortDate, cvix.sortDate),
+  );
+  stage2.forEach((v, k) => allMatches.set(k, v));
 
-        // Match by timestamp to the minute (legacy behavior)
-        const datesMatchToMinute = areDatesEqualToMinute(
-          phrRecord.sortDate,
-          cvixRecord.sortDate,
-        );
+  // Stage 3: procedure name + same calendar day (loosest)
+  const stage3 = runMatchingPass(
+    phrRadiologyTestsList,
+    cvixRadiologyTestsList,
+    matchedPhrIds,
+    matchedCvixIds,
+    (phr, cvix) => {
+      const phrName = phrNames.get(phr.id);
+      const cvixName = cvixNames.get(cvix.id);
+      return (
+        phrName &&
+        cvixName &&
+        phrName === cvixName &&
+        areDatesOnSameDay(phr.sortDate, cvix.sortDate)
+      );
+    },
+  );
+  stage3.forEach((v, k) => allMatches.set(k, v));
 
-        // Match by normalized procedure name + same calendar day (fallback for
-        // records where radiologist differs between PHR and CVIX)
-        const nameAndDayMatch =
-          phrNormalizedName &&
-          cvixNormalizedName &&
-          phrNormalizedName === cvixNormalizedName &&
-          areDatesOnSameDay(phrRecord.sortDate, cvixRecord.sortDate);
+  // Build the merged output: matched PHR records get CVIX data merged in,
+  // unmatched PHR records pass through, unmatched CVIX records are appended.
+  const mergedArray = phrRadiologyTestsList.map(phrRecord => {
+    const matchingCvix = allMatches.get(phrRecord.id);
+    return matchingCvix
+      ? mergeRadiologyRecords(phrRecord, matchingCvix)
+      : phrRecord;
+  });
 
-        if (hashesMatch || datesMatchToMinute || nameAndDayMatch) {
-          matchingCvix = cvixRecord;
-          matchedCvixIds.add(matchingCvix.id);
-          break;
-        }
-      }
-    }
-    if (matchingCvix) {
-      mergedArray.push(mergeRadiologyRecords(phrRecord, matchingCvix));
-    } else {
-      mergedArray.push(phrRecord);
-    }
-  }
   return mergedArray.concat(
     cvixRadiologyTestsList.filter(record => !matchedCvixIds.has(record.id)),
   );

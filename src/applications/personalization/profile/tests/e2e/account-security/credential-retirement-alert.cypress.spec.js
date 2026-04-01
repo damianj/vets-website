@@ -30,7 +30,7 @@ context('credential retirement alerts on account security', () => {
   it('should show credential retirement alert content for DS Logon account', () => {
     cy.login(dsLogonUser);
 
-    cy.visit(PROFILE_PATHS.ACCOUNT_SECURITY);
+    cy.visit(PROFILE_PATHS.SIGNIN_INFORMATION);
 
     cy.findByText(
       `you’ll no longer be able to sign in with your DS Logon username and password`,
@@ -45,7 +45,7 @@ context('credential retirement alerts on account security', () => {
   it('should show credential retirement alert content for MHV account', () => {
     cy.login(mhvUser);
 
-    cy.visit(PROFILE_PATHS.ACCOUNT_SECURITY);
+    cy.visit(PROFILE_PATHS.SIGNIN_INFORMATION);
 
     cy.findByText(
       `you’ll no longer be able to sign in with your My HealtheVet username and password`,
@@ -60,7 +60,7 @@ context('credential retirement alerts on account security', () => {
   it('should show credential retirement alert content for LOA1 - DS Logon users', () => {
     cy.login(loa1UserDSLogon);
 
-    cy.visit(PROFILE_PATHS.ACCOUNT_SECURITY);
+    cy.visit(PROFILE_PATHS.SIGNIN_INFORMATION);
 
     cy.findByText(
       `Verify your identity with Login.gov or ID.me to manage your profile information`,
@@ -78,7 +78,7 @@ context('credential retirement alerts on account security', () => {
   it('should show credential retirement alert content for LOA1 - MHV users', () => {
     cy.login(loa1UserMHV);
 
-    cy.visit(PROFILE_PATHS.ACCOUNT_SECURITY);
+    cy.visit(PROFILE_PATHS.SIGNIN_INFORMATION);
 
     cy.findByText(
       `Verify your identity with Login.gov or ID.me to manage your profile information`,
@@ -96,7 +96,7 @@ context('credential retirement alerts on account security', () => {
   it('should show standard verify identity alert content for LOA1 - id.me users', () => {
     cy.login(loa1User);
 
-    cy.visit(PROFILE_PATHS.ACCOUNT_SECURITY);
+    cy.visit(PROFILE_PATHS.SIGNIN_INFORMATION);
 
     cy.get('va-alert-sign-in');
 

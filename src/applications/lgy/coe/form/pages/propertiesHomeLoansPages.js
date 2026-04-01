@@ -43,7 +43,6 @@ const options = {
   nounPlural: 'properties with VA home loans',
   required: false,
   isItemIncomplete: item =>
-    !item?.loanDate ||
     !item?.entitlementRestoration ||
     !item?.propertyAddress?.street1 ||
     !item?.propertyAddress?.city ||

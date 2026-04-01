@@ -53,4 +53,22 @@ const schema = {
   },
 };
 
-export { schema, uiSchema };
+const updateFormData = (_oldFormData, newFormData) => {
+  if (
+    _oldFormData.securityQuestion?.question !==
+    newFormData.securityQuestion?.question
+  ) {
+    return {
+      ...newFormData,
+      securityAnswerText: undefined,
+      securityAnswerLocation: { city: undefined, state: undefined },
+      securityAnswerCreate: { question: undefined, answer: undefined },
+    };
+  }
+
+  return {
+    ...newFormData,
+  };
+};
+
+export { schema, uiSchema, updateFormData };

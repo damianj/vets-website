@@ -71,6 +71,13 @@ export default function transform(formConfig, form) {
 
   const informationToDiscloseTransform = formData => {
     const clonedData = cloneDeep(formData);
+    if (formData.claimInformationOther) {
+      clonedData.claimInformation = {
+        ...clonedData.claimInformation,
+        other: true,
+        otherText: formData.claimInformationOther,
+      };
+    }
     const filteredList = Object.entries(clonedData.claimInformation)
       .filter(([_, value]) => value)
       .map(([key, value]) => {
@@ -80,6 +87,7 @@ export default function transform(formConfig, form) {
       });
 
     clonedData.claimInformation = Object.assign({}, ...filteredList);
+    delete clonedData.claimInformationOther;
     return clonedData;
   };
 

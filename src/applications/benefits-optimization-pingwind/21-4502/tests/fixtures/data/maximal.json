@@ -1,0 +1,49 @@
+{
+  "veteran": {
+    "fullName": { "first": "Jane", "middle": "M", "last": "Doe" },
+    "ssn": "123456789",
+    "dateOfBirth": "1985-03-15",
+    "vaFileNumber": "12345678",
+    "veteranServiceNumber": "987654",
+    "address": {
+      "street": "123 Main St",
+      "street2": "Apt 2",
+      "city": "Springfield",
+      "state": "VA",
+      "postalCode": "22150",
+      "country": "US"
+    },
+    "plannedAddress": {
+      "street": "123 Future St",
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "78701",
+      "country": "US"
+    },
+    "homePhone": { "contact": "5551234567" },
+    "alternatePhone": { "contact": "5552222222" },
+    "email": "jane@example.com",
+    "agreeToElectronicCorrespondence": true
+  },
+  "applicationInfo": {
+    "branchOfService": "army",
+    "activeDutyStatus": true,
+    "currentlyOnActiveDuty": true,
+    "placeOfEntry": "Fort Benning",
+    "dateOfEntry": "2018-01-15",
+    "placeOfRelease": "Fort Hood",
+    "dateOfRelease": "2022-06-30",
+    "vaOfficeLocation": "Houston Regional Office",
+    "conveyanceType": "other",
+    "conveyanceTypeOther": "Motorcycle with sidecar",
+    "driverOrPassenger": "passenger",
+    "previouslyAppliedConveyance": true,
+    "previouslyAppliedPlace": "Philadelphia VA Regional Office",
+    "previouslyAppliedDate": "2020-03-15",
+    "appliedDisabilityCompensation": true,
+    "appliedDisabilityCompensationPlace": "Baltimore VA Medical Center",
+    "dateApplied": "2019-07-22"
+  },
+  "certifyLicensing": true,
+  "certifyNoPriorGrant": true
+}

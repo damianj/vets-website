@@ -27,7 +27,9 @@ describe('SM SAVING DRAFT WITH ATTACHMENT BY KEYBOARD', () => {
 
     SharedComponents.clickBackBreadcrumb();
 
-    cy.findByTestId('route-guard-secondary-button')
+    cy.findByTestId('navigation-warning-modal')
+      .shadow()
+      .find('button.usa-button--outline')
       .should('be.visible')
       .click();
 

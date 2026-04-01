@@ -142,7 +142,9 @@ class LabsAndTests {
   };
 
   selectLabAndTest = ({ labName }) => {
-    cy.contains(labName).click({ waitForAnimations: true });
+    cy.get('[data-testid="record-list-item"]')
+      .contains(labName)
+      .click({ waitForAnimations: true });
     cy.get('[data-testid="lab-name"]').should('be.visible');
     cy.get('[data-testid="lab-name"]').contains(labName);
   };

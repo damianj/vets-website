@@ -20,7 +20,7 @@
 
 /**
  * @typedef {Object} FormConfig
- * @property {Array<Object>} [additionalRoutes]
+ * @property {Array<AdditionalRoute>} [additionalRoutes]
  * @property {boolean} [allowDuplicatePaths]
  * @property {string} [ariaDescribedBySubmit]
  * @property {string} [backLinkText]
@@ -80,6 +80,15 @@
  * @property {number} [version]
  * @property {string} [wizardStorageKey]
  * @property {boolean} [dynamicPaths] do the form pages have dynamic paths, e.g. form-upload
+ */
+
+/**
+ * @typedef {Object} AdditionalRoute
+ * @property {string} path
+ * @property {string} pageKey
+ * @property {React.Component} component
+ * @property {boolean} [allowDirectAccess] If false, prevents direct URL navigation to this route (defaults to true)
+ * @property {((formData: Object) => boolean)} [depends]
  */
 
 /**

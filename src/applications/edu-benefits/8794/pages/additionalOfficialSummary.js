@@ -4,7 +4,7 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 
 export const arrayBuilderOptions = {
-  arrayPath: 'additional-certifying-official',
+  arrayPath: 'additionalCertifyingOfficials',
   nounSingular: 'certifying official',
   nounPlural: 'certifying officials',
   required: false,

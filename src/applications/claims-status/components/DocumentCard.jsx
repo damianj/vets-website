@@ -3,6 +3,7 @@ import React from 'react';
 import {
   VaCard,
   VaLink,
+  VaTagStatus,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 
 import { buildDateFormatter } from '../utils/helpers';
@@ -27,6 +28,7 @@ const VARIANT_CONFIG = {
 const DocumentCard = ({
   index,
   variant,
+  statusBadgeStatus,
   statusBadgeText,
   headingRef,
   fileName,
@@ -44,10 +46,7 @@ const DocumentCard = ({
     <VaCard className="vads-u-margin-y--3" data-testid={testId}>
       {statusBadgeText && (
         <div className="file-status-badge vads-u-margin-bottom--2">
-          <span className="vads-u-visibility--screen-reader">Status</span>
-          <span className="usa-label vads-u-padding-x--1">
-            {statusBadgeText}
-          </span>
+          <VaTagStatus status={statusBadgeStatus} text={statusBadgeText} />
         </div>
       )}
       <h4
@@ -101,6 +100,7 @@ DocumentCard.propTypes = {
     text: PropTypes.string.isRequired,
     label: PropTypes.string,
   }),
+  statusBadgeStatus: PropTypes.string,
   statusBadgeText: PropTypes.string,
 };
 

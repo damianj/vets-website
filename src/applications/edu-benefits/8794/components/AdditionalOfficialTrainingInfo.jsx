@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   certifyingOfficialTrainingInfo,
   capitalizeFirstLetter,
@@ -8,9 +9,8 @@ import {
 const AdditionalOfficialTrainingInfo = ({ formContext }) => {
   const formState = useSelector(state => state?.form?.data || {});
   const index = formContext.pagePerItemIndex;
-  const official = Array.isArray(formState['additional-certifying-official'])
-    ? formState['additional-certifying-official'][index]
-        ?.additionalOfficialDetails
+  const official = Array.isArray(formState.additionalCertifyingOfficials)
+    ? formState.additionalCertifyingOfficials[index]?.additionalOfficialDetails
     : {};
   const firstName = official?.fullName?.first;
   const lastName = official?.fullName?.last;
@@ -26,6 +26,12 @@ const AdditionalOfficialTrainingInfo = ({ formContext }) => {
       {certifyingOfficialTrainingInfo}
     </>
   );
+};
+
+AdditionalOfficialTrainingInfo.propTypes = {
+  formContext: PropTypes.shape({
+    pagePerItemIndex: PropTypes.string,
+  }),
 };
 
 export default AdditionalOfficialTrainingInfo;

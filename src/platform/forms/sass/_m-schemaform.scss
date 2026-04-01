@@ -88,6 +88,9 @@ dl.review {
     column-gap: 0.9375rem;
     > dd {
       font-weight: bold;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      min-width: 0;
       @media (min-width: $xsmall-screen) {
         text-align: right;
       }
@@ -115,6 +118,9 @@ dl.review-auto-margin {
     > dd {
       font-weight: bold;
       text-align: right;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      min-width: 0;
     }
     > dt > p {
       margin-top: 0;

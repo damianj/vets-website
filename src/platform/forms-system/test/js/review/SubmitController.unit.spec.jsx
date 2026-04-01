@@ -57,6 +57,7 @@ const createFormConfig = options => ({
 });
 
 const createForm = options => ({
+  formId: 'test-form',
   submission: {
     hasAttemptedSubmit: false,
     status: false,
@@ -345,83 +346,7 @@ describe('Schemaform review: SubmitController', () => {
     tree.unmount();
   });
 
-  it('should submit submission error data to Sentry', () => {
-    // Form with missing required field
-    const page = {
-      title: 'Missing stuff',
-      schema: {
-        type: 'object',
-        required: ['stuff'],
-        properties: {
-          stuff: { type: 'string' },
-        },
-      },
-    };
-    const form = createForm({
-      data: { privacyAgreementAccepted: true },
-      pages: { page1: { schema: page.schema } },
-    });
-    const formConfig = createFormConfig({
-      chapters: {
-        chapter1: {
-          pages: {
-            page1: page,
-          },
-        },
-      },
-    });
-    const pageList = [
-      { path: 'page-1', pageKey: 'page1', schema: page.schema },
-    ];
-    const user = createUserLogIn();
-    const setPreSubmit = sinon.spy();
-    const setSubmission = sinon.spy();
-    const submitForm = sinon.spy();
-    const autoSaveForm = sinon.spy();
-    const setFormErrors = sinon.spy();
-
-    const store = createStore({
-      form,
-    });
-
-    const tree = render(
-      <Provider store={store}>
-        <SubmitController
-          autoSaveForm={autoSaveForm}
-          form={form}
-          formConfig={formConfig}
-          pageList={pageList}
-          route={{ formConfig, pageList }}
-          setPreSubmit={setPreSubmit}
-          setSubmission={setSubmission}
-          setFormErrors={setFormErrors}
-          submitForm={submitForm}
-          trackingPrefix={formConfig.trackingPrefix}
-          user={user}
-        />
-      </Provider>,
-    );
-
-    const submitButton = tree.getByText('Submit application');
-    fireEvent.click(submitButton);
-
-    expect(submitForm.called).to.be.false;
-
-    const sentryReports = testkit.reports();
-    expect(sentryReports.length).to.equal(1);
-    expect(sentryReports[0].user.id).to.equal(user.profile.accountUuid);
-    expect(sentryReports[0].extra.inProgressFormId).to.equal('123');
-    expect(sentryReports[0].extra.prefix).to.equal('test-');
-    expect(sentryReports[0].extra.errors)
-      .to.be.an('array')
-      .with.length('1');
-    expect(setFormErrors.called).to.be.true;
-    expect(autoSaveForm.called).to.be.true;
-
-    tree.unmount();
-  });
-
-  it('should submit submission error data to DataDog', () => {
+  it('should submit submission error data to Datadog', () => {
     // Form with missing required field
     const page = {
       title: 'Missing stuff',
@@ -457,7 +382,7 @@ describe('Schemaform review: SubmitController', () => {
     const setFormErrors = sinon.spy();
     global.window.DD_LOGS = {
       logger: {
-        error: sinon.spy(),
+        log: sinon.spy(),
       },
     };
 
@@ -488,15 +413,101 @@ describe('Schemaform review: SubmitController', () => {
 
     expect(submitForm.called).to.be.false;
 
-    const loggerSpy = window.DD_LOGS.logger.error;
+    const loggerSpy = window.DD_LOGS.logger.log;
+
     expect(loggerSpy.called).to.be.true;
-    expect(loggerSpy.args[0][0]).to.equal('Validation issue not displayed');
+    expect(loggerSpy.args[0][0]).to.equal('Submission attempt');
     expect(loggerSpy.args[0][1].userId).to.equal(user.profile.accountUuid);
     expect(loggerSpy.args[0][1].inProgressFormId).to.equal('123');
-    expect(loggerSpy.args[0][1].errors)
+    expect(loggerSpy.args[0][1].errors).to.be.undefined;
+    expect(loggerSpy.args[0][2]).to.eq('info');
+    expect(loggerSpy.args[0][3]).to.be.undefined;
+
+    expect(setFormErrors.called).to.be.true;
+    expect(autoSaveForm.called).to.be.true;
+    delete global.window.DD_LOGS;
+
+    tree.unmount();
+  });
+
+  it('should submit submission error data to Datadog', () => {
+    // Form with missing required field
+    const page = {
+      title: 'Missing stuff',
+      schema: {
+        type: 'object',
+        required: ['stuff'],
+        properties: {
+          stuff: { type: 'string' },
+        },
+      },
+    };
+    const form = createForm({
+      data: { privacyAgreementAccepted: true },
+      pages: { page1: { schema: page.schema } },
+    });
+    const formConfig = createFormConfig({
+      chapters: {
+        chapter1: {
+          pages: {
+            page1: page,
+          },
+        },
+      },
+    });
+    const pageList = [
+      { path: 'page-1', pageKey: 'page1', schema: page.schema },
+    ];
+    const user = createUserLogIn();
+    const setPreSubmit = sinon.spy();
+    const setSubmission = sinon.spy();
+    const submitForm = sinon.spy();
+    const autoSaveForm = sinon.spy();
+    const setFormErrors = sinon.spy();
+    global.window.DD_LOGS = {
+      logger: {
+        log: sinon.spy(),
+      },
+    };
+
+    const store = createStore({
+      form,
+    });
+
+    const tree = render(
+      <Provider store={store}>
+        <SubmitController
+          autoSaveForm={autoSaveForm}
+          form={form}
+          formConfig={formConfig}
+          pageList={pageList}
+          route={{ formConfig, pageList }}
+          setPreSubmit={setPreSubmit}
+          setSubmission={setSubmission}
+          setFormErrors={setFormErrors}
+          submitForm={submitForm}
+          trackingPrefix={formConfig.trackingPrefix}
+          user={user}
+        />
+      </Provider>,
+    );
+
+    const submitButton = tree.getByText('Submit application');
+    fireEvent.click(submitButton);
+
+    expect(submitForm.called).to.be.false;
+
+    const loggerSpy = window.DD_LOGS.logger.log;
+
+    expect(loggerSpy.called).to.be.true;
+    expect(loggerSpy.args[1][0]).to.equal('Validation issue not displayed');
+    expect(loggerSpy.args[1][1].userId).to.equal(user.profile.accountUuid);
+    expect(loggerSpy.args[1][1].inProgressFormId).to.equal('123');
+    expect(loggerSpy.args[1][1].errors)
       .to.be.an('array')
       .with.length('1');
-    expect(loggerSpy.args[0][2]).to.eq('validationError');
+    expect(loggerSpy.args[1][2]).to.eq('error');
+    expect(loggerSpy.args[1][3]).to.eq('validationError');
 
     delete global.window.DD_LOGS;
     tree.unmount();
@@ -514,6 +525,11 @@ describe('Schemaform review: SubmitController', () => {
     const submitForm = sinon.spy();
     const autoSaveForm = sinon.spy();
     const setFormErrors = sinon.spy();
+    global.window.DD_LOGS = {
+      logger: {
+        log: sinon.spy(),
+      },
+    };
 
     const store = createStore({
       form,
@@ -544,6 +560,18 @@ describe('Schemaform review: SubmitController', () => {
     expect(submitForm.called).to.be.true;
     expect(autoSaveForm.called).to.be.true;
     expect(setFormErrors.called).to.be.false;
+
+    const loggerSpy = window.DD_LOGS.logger.log;
+
+    expect(loggerSpy.called).to.be.true;
+    expect(loggerSpy.args[0][0]).to.equal('Submission attempt');
+    expect(loggerSpy.args[0][1].userId).to.equal(user.profile.accountUuid);
+    expect(loggerSpy.args[0][1].inProgressFormId).to.equal('123');
+    expect(loggerSpy.args[0][1].errors).to.be.undefined;
+    expect(loggerSpy.args[0][2]).to.eq('info');
+    expect(loggerSpy.args[0][3]).to.be.undefined;
+    delete global.window.DD_LOGS;
+
     tree.unmount();
   });
 

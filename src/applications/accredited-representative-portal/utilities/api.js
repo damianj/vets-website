@@ -169,9 +169,23 @@ const api = {
     const sort = subParam
       ? `&sort[by]=${subParam.sortBy}&sort[order]=${subParam.order}`
       : sortDefaults;
-    const identifier = query.identifier ? `&id=${query.identifier}` : '';
 
-    return [`/claim_submissions?${pagination}${sort}${identifier}`];
+    return [`/claim_submissions?${pagination}${sort}`];
+  }),
+
+  getClaimantSubmissions: wrapApiRequest(query => {
+    const pagination = query.size
+      ? `&page[size]=${query.size}&page[number]=${query.number}`
+      : paginationDefaults;
+
+    const subParam = paramUpdate(query.sort);
+    const sort = subParam
+      ? `&sort[by]=${subParam.sortBy}&sort[order]=${subParam.order}`
+      : sortDefaults;
+
+    return [
+      `/claimant_claim_submissions/${query.identifier}?${pagination}${sort}`,
+    ];
   }),
 
   claimantSearch: wrapApiRequest(data => {

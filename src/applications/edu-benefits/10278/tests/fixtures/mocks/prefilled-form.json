@@ -13,9 +13,7 @@
       "currentBenefit": false,
       "paymentHistory": false,
       "amountOwed": false,
-      "minor": false,
-      "other": false,
-      "otherText": "other"
+      "minor": false
     }
   },
   "metadata": {

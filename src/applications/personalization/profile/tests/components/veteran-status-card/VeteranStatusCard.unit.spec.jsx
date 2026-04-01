@@ -10,13 +10,14 @@ const testData = {
   totalDisabilityRating: 70,
 };
 
-const renderWithTestData = data => {
+const renderWithTestData = (data, useSharedService = false) => {
   return render(
     <VeteranStatusCard
       edipi={data.edipi}
       formattedFullName={data.formattedFullName}
       latestService={data.latestService}
       totalDisabilityRating={data.totalDisabilityRating}
+      useSharedService={useSharedService}
     />,
   );
 };
@@ -83,10 +84,50 @@ describe('VeteranStatusCard', () => {
       view.queryByText(/This card doesn’t entitle you to any VA benefits./),
     ).to.exist;
   });
-  it('should render the description', () => {
-    const view = renderWithTestData(testData);
+  it('should render the seal with alt text when useSharedService is false', () => {
+    const view = renderWithTestData(testData, false);
     expect(
       view.queryByAltText(/Seal of the U.S. Department of Veterans Affairs/),
     ).to.exist;
+  });
+
+  describe('useSharedService feature flag behavior', () => {
+    it('should not have shared-service modifier class when useSharedService is false', () => {
+      const { container } = renderWithTestData(testData, false);
+      const card = container.querySelector('.veteran-status-card');
+      expect(card).to.exist;
+      expect(card.classList.contains('veteran-status-card--shared-service')).to
+        .be.false;
+    });
+
+    it('should have shared-service modifier class when useSharedService is true', () => {
+      const { container } = renderWithTestData(testData, true);
+      const card = container.querySelector('.veteran-status-card');
+      expect(card).to.exist;
+      expect(card.classList.contains('veteran-status-card--shared-service')).to
+        .be.true;
+    });
+
+    it('should make seal decorative (empty alt, aria-hidden) when useSharedService is true', () => {
+      const { container } = renderWithTestData(testData, true);
+      const sealImg = container.querySelector(
+        'img[src="/img/design/seal/seal.png"]',
+      );
+      expect(sealImg).to.exist;
+      expect(sealImg.getAttribute('alt')).to.equal('');
+      expect(sealImg.getAttribute('aria-hidden')).to.equal('true');
+    });
+
+    it('should have descriptive alt text on seal when useSharedService is false', () => {
+      const { container } = renderWithTestData(testData, false);
+      const sealImg = container.querySelector(
+        'img[src="/img/design/seal/seal.png"]',
+      );
+      expect(sealImg).to.exist;
+      expect(sealImg.getAttribute('alt')).to.equal(
+        'Seal of the U.S. Department of Veterans Affairs',
+      );
+      expect(sealImg.getAttribute('aria-hidden')).to.be.null;
+    });
   });
 });

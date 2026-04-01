@@ -6,9 +6,11 @@
 
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { focusElement, scrollToTop } from 'platform/utilities/ui';
 import FormTitle from 'platform/forms-system/src/js/components/FormTitle';
-import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import SaveInProgressIntro from 'platform/forms/save-in-progress/SaveInProgressIntro';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 
 import {
   TITLE,
@@ -96,10 +98,13 @@ const ProcessList = () => {
  * @param {Object} props.route - Route configuration from react-router
  * @param {Object} props.route.formConfig - Form configuration object
  * @param {Array} props.route.pageList - List of form pages
- * @param {Object} props.location - Location object from react-router
  * @returns {React.ReactElement} Introduction page component
  */
-export const IntroductionPage = ({ router }) => {
+export const IntroductionPage = ({ route, router }) => {
+  const { formConfig, pageList } = route;
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const authRequired = useToggleValue(TOGGLE_NAMES.aquiaBioAuthRequired);
+
   useEffect(() => {
     scrollToTop();
     focusElement('h1');
@@ -118,15 +123,33 @@ export const IntroductionPage = ({ router }) => {
       </h2>
       <ProcessList />
 
-      <VaLinkAction
-        data-testid="start-burial-allowance-link"
-        href="/organization-information"
-        onClick={e => {
-          e.preventDefault();
-          router.push('/organization-information');
-        }}
-        text="Start the state and tribal organization interment allowance benefits application"
-      />
+      {authRequired ? (
+        /* IAL1 only — no identity verification (LOA3) required.
+           Any logged-in user can start the form regardless of verification status. */
+        <SaveInProgressIntro
+          headingLevel={2}
+          prefillEnabled={formConfig.prefillEnabled}
+          verifiedPrefillAlert={<></>}
+          messages={formConfig.savedFormMessages}
+          pageList={pageList}
+          startText="Start the state and tribal organization interment allowance benefits application"
+          hideUnauthedStartLink
+          devOnly={{
+            forceShowFormControls: true,
+          }}
+        />
+      ) : (
+        <VaLinkAction
+          data-testid="start-burial-allowance-link"
+          href="/organization-information"
+          onClick={e => {
+            e.preventDefault();
+            router.push('/organization-information');
+          }}
+          text="Start the state and tribal organization interment allowance benefits application"
+        />
+      )}
+
       <p />
       <va-omb-info
         res-burden={OMB_RES_BURDEN}
@@ -138,9 +161,13 @@ export const IntroductionPage = ({ router }) => {
 };
 
 IntroductionPage.propTypes = {
-  location: PropTypes.shape({
-    basename: PropTypes.string,
-  }),
+  route: PropTypes.shape({
+    formConfig: PropTypes.shape({
+      prefillEnabled: PropTypes.bool.isRequired,
+      savedFormMessages: PropTypes.object.isRequired,
+    }).isRequired,
+    pageList: PropTypes.arrayOf(PropTypes.object).isRequired,
+  }).isRequired,
   router: PropTypes.shape({
     push: PropTypes.func,
   }),

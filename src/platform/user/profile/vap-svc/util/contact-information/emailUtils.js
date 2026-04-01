@@ -5,7 +5,6 @@ export const emailFormSchema = {
   properties: {
     emailAddress: {
       type: 'string',
-      format: 'email',
       maxLength: 255,
       pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$',
     },
@@ -19,9 +18,10 @@ export const emailUiSchema = {
     'ui:autocomplete': 'email',
     'ui:webComponentField': VaTextInputField,
     'ui:errorMessages': {
-      required: 'You must enter your email address, using this format: X@X.com',
+      required:
+        'Enter a valid email address without spaces using this format: email@domain.com',
       pattern:
-        'You must enter your email address again, using this format: X@X.com',
+        'Enter a valid email address without spaces using this format: email@domain.com',
     },
     'ui:options': {
       inputType: 'email',

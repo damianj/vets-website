@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { expect } from 'chai';
-import { waitFor, act, cleanup } from '@testing-library/react';
+import { waitFor, cleanup } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -113,6 +113,7 @@ const getMockQueryResponse = (overrides = {}) => ({
   error: undefined,
   isLoading: false,
   isFetching: false,
+  isUninitialized: false,
   ...overrides,
 });
 
@@ -151,7 +152,6 @@ describe('useFetchMedicationHistory', () => {
         );
         expect(result.current.prescriptionsApiError).to.be.undefined;
         expect(result.current.isLoading).to.be.false;
-        expect(result.current.setQueryParams).to.be.a('function');
         expect(result.current.currentPage).to.equal(1);
       });
     });
@@ -194,6 +194,30 @@ describe('useFetchMedicationHistory', () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse({ isFetching: true }));
+
+      const mockStore = createMockStore();
+      const wrapper = createTestWrapper(mockStore);
+
+      const { result } = renderHook(() => useFetchMedicationHistory(), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).to.be.true;
+      });
+    });
+
+    it('returns loading true when query is uninitialized', async () => {
+      useGetPrescriptionsListQueryStub = sandbox
+        .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
+        .returns(
+          getMockQueryResponse({
+            data: undefined,
+            isLoading: false,
+            isFetching: false,
+            isUninitialized: true,
+          }),
+        );
 
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
@@ -321,43 +345,6 @@ describe('useFetchMedicationHistory', () => {
         expect(queryParams.filterOption).to.equal(
           getFilterUrl(ACTIVE_FILTER_KEY, false, false),
         );
-      });
-    });
-  });
-
-  describe('setQueryParams function', () => {
-    it('allows updating query params via setQueryParams', async () => {
-      useGetPrescriptionsListQueryStub = sandbox
-        .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
-        .returns(getMockQueryResponse());
-
-      const mockStore = createMockStore();
-      const wrapper = createTestWrapper(mockStore);
-
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
-        wrapper,
-      });
-
-      await waitFor(() => {
-        expect(result.current.setQueryParams).to.be.a('function');
-      });
-
-      await act(async () => {
-        result.current.setQueryParams(prev => ({
-          ...prev,
-          page: 10,
-          perPage: 20,
-        }));
-      });
-
-      await waitFor(() => {
-        expect(
-          useGetPrescriptionsListQueryStub
-            .getCalls()
-            .some(
-              call => call.args[0]?.page === 10 && call.args[0]?.perPage === 20,
-            ),
-        ).to.equal(true);
       });
     });
   });
@@ -517,6 +504,53 @@ describe('useFetchMedicationHistory', () => {
         expect(queryParams.sortEndpoint).to.equal(
           rxListSortingOptionsV2.mostRecentlyFilled.API_ENDPOINT,
         );
+      });
+    });
+
+    it('skips the query while feature toggles are loading', async () => {
+      useGetPrescriptionsListQueryStub = sandbox
+        .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
+        .returns(getMockQueryResponse({ data: undefined, isLoading: true }));
+
+      const mockStore = createMockStore({
+        featureToggles: {
+          loading: true,
+        },
+      });
+      const wrapper = createTestWrapper(mockStore);
+
+      const { result } = renderHook(() => useFetchMedicationHistory(), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        // Query should be called with skip: true
+        const options = useGetPrescriptionsListQueryStub.firstCall.args[1];
+        expect(options.skip).to.be.true;
+        // Hook should report loading
+        expect(result.current.isLoading).to.be.true;
+      });
+    });
+
+    it('does not skip the query when feature toggles have loaded', async () => {
+      useGetPrescriptionsListQueryStub = sandbox
+        .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
+        .returns(getMockQueryResponse());
+
+      const mockStore = createMockStore({
+        featureToggles: {
+          loading: false,
+        },
+      });
+      const wrapper = createTestWrapper(mockStore);
+
+      renderHook(() => useFetchMedicationHistory(), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        const options = useGetPrescriptionsListQueryStub.firstCall.args[1];
+        expect(options.skip).to.be.false;
       });
     });
   });

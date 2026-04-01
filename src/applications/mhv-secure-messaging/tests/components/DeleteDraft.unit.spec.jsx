@@ -97,7 +97,10 @@ describe('Delete Draft component', () => {
       );
       screen.getByText(Prompts.Draft.DELETE_DRAFT_CONFIRM_CONTENT);
       screen.getByText('Delete draft');
-      screen.getByTestId('cancel-delete-draft');
+      expect(deleteDraftModal).to.have.attribute(
+        'secondary-button-text',
+        'Cancel',
+      );
     });
   });
 
@@ -131,7 +134,8 @@ describe('Delete Draft component', () => {
     );
 
     fireEvent.click(getByTestId('delete-draft-button'));
-    fireEvent.click(getByTestId('confirm-delete-draft'));
+    const deleteModal = getByTestId('delete-draft-modal');
+    deleteModal.__events.primaryButtonClick();
 
     expect(queryByTestId('delete-draft-modal')).to.have.attribute(
       'visible',
@@ -203,7 +207,8 @@ describe('Delete Draft component', () => {
     );
 
     fireEvent.click(getByTestId('delete-draft-button'));
-    fireEvent.click(getByTestId('cancel-delete-draft'));
+    const deleteModal = getByTestId('delete-draft-modal');
+    deleteModal.__events.secondaryButtonClick();
 
     expect(queryByTestId('delete-draft-modal')).to.have.attribute(
       'visible',
@@ -244,8 +249,7 @@ describe('Delete Draft component', () => {
     expect(deleteModal).to.exist;
     expect(deleteModal).to.have.attribute('visible', 'true');
 
-    const deleteModalButton = getByTestId('confirm-delete-draft');
-    fireEvent.click(deleteModalButton);
+    deleteModal.__events.primaryButtonClick();
     await waitFor(() => {
       expect(history.push.calledWith('/inbox/')).to.be.true;
     });
@@ -293,7 +297,8 @@ describe('Delete Draft component', () => {
     expect(screen.getByTestId('delete-draft-modal')).to.have.text(
       Prompts.Draft.DELETE_DRAFT_CONFIRM_CONTENT,
     );
-    fireEvent.click(screen.getByTestId('cancel-delete-draft'));
+    const deleteDraftModalEl = screen.getByTestId('delete-draft-modal');
+    deleteDraftModalEl.__events.secondaryButtonClick();
     expect(screen.queryByTestId('delete-draft-modal')).to.have.attribute(
       'visible',
       'false',
@@ -344,7 +349,8 @@ describe('Delete Draft component', () => {
     expect(screen.getByTestId('delete-draft-modal')).to.have.text(
       Prompts.Draft.DELETE_DRAFT_CONFIRM_CONTENT,
     );
-    fireEvent.click(screen.getByTestId('cancel-delete-draft'));
+    const deleteDraftModalEl2 = screen.getByTestId('delete-draft-modal');
+    deleteDraftModalEl2.__events.secondaryButtonClick();
     expect(screen.queryByTestId('delete-draft-modal')).to.have.attribute(
       'visible',
       'false',
@@ -399,8 +405,7 @@ describe('Delete Draft component', () => {
       Prompts.Draft.DELETE_DRAFT_CONFIRM_CONTENT,
     );
 
-    const deleteModalButton = getByTestId('confirm-delete-draft');
-    fireEvent.click(deleteModalButton);
+    deleteModal.__events.primaryButtonClick();
     await waitFor(() => {
       expect(setNavigationErrorSpy.calledWith(null)).to.be.true;
     });

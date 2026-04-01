@@ -1,13 +1,18 @@
 import directDepositMocks from '@@profile/mocks/endpoints/direct-deposits';
 import { loa3User72, loa1User } from '@@profile/mocks/endpoints/user';
 
+import { generateFeatureToggles } from '@@profile/mocks/endpoints/feature-toggles';
 import DirectDepositPage from './page-objects/DirectDeposit';
 
 const directDeposit = new DirectDepositPage();
 
 describe('Direct Deposit Consistently', () => {
   beforeEach(() => {
-    directDeposit.setup();
+    directDeposit.setup({
+      featureToggles: generateFeatureToggles({
+        profile2Enabled: true,
+      }),
+    });
   });
 
   it('should display the menu item for a standard user -- happy path', () => {
@@ -16,7 +21,10 @@ describe('Direct Deposit Consistently', () => {
 
     directDeposit.visitPage();
     cy.injectAxeThenAxeCheck();
-    directDeposit.confirmDirectDepositInSubnav({ visitPage: false });
+    directDeposit.confirmDirectDepositInSubnav({
+      profile2Enabled: true,
+      visitPage: false,
+    });
   });
   it('should hide the menu item for a LOA1 user', () => {
     cy.login(loa1User);

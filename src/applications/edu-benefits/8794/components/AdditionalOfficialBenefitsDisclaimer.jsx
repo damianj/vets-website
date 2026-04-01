@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VaCheckbox } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import { setData } from 'platform/forms-system/src/js/actions';
 
 const AdditionalOfficialBenefitsDisclaimer = ({ required, ...props }) => {
@@ -40,22 +41,22 @@ const AdditionalOfficialBenefitsDisclaimer = ({ required, ...props }) => {
           dispatch(
             setData({
               ...formState,
-              'additional-certifying-official': formState[
-                'additional-certifying-official'
-              ].map((official, index) => {
-                if (index !== Number(props.formContext.pagePerItemIndex)) {
-                  return official;
-                }
-                return {
-                  ...official,
-                  additionalOfficialBenefitStatus: {
-                    hasVaEducationBenefits: true,
-                    'view:benefitsDisclaimer': event.target.checked
-                      ? true
-                      : undefined,
-                  },
-                };
-              }),
+              additionalCertifyingOfficials: formState.additionalCertifyingOfficials.map(
+                (official, index) => {
+                  if (index !== Number(props.formContext.pagePerItemIndex)) {
+                    return official;
+                  }
+                  return {
+                    ...official,
+                    additionalOfficialBenefitStatus: {
+                      hasVaEducationBenefits: true,
+                      'view:benefitsDisclaimer': event.target.checked
+                        ? true
+                        : undefined,
+                    },
+                  };
+                },
+              ),
             }),
           );
         }}
@@ -70,6 +71,15 @@ const AdditionalOfficialBenefitsDisclaimer = ({ required, ...props }) => {
       />
     </div>
   );
+};
+
+AdditionalOfficialBenefitsDisclaimer.propTypes = {
+  formContext: PropTypes.shape({
+    pagePerItemIndex: PropTypes.string,
+    submitted: PropTypes.bool,
+  }),
+  formData: PropTypes.bool,
+  required: PropTypes.bool,
 };
 
 export default AdditionalOfficialBenefitsDisclaimer;

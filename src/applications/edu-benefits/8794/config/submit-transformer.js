@@ -23,6 +23,7 @@ export function transform(formConfig, form) {
       ...clonedData,
     };
   };
+
   const primaryOfficialTransform = formData => {
     const clonedData = _.cloneDeep(formData);
 
@@ -43,54 +44,58 @@ export function transform(formConfig, form) {
       ...clonedData,
     };
   };
+
   const additionalOfficialTransform = formData => {
     const clonedData = _.cloneDeep(formData);
 
-    if (clonedData['additional-certifying-official']?.length > 0) {
+    if (clonedData.additionalCertifyingOfficials?.length > 0) {
       return {
         ...clonedData,
-        additionalCertifyingOfficials: clonedData[
-          'additional-certifying-official'
-        ]?.map(additionalOfficial => {
-          return {
-            additionalCertifyingOfficialsDetails: {
-              hasVaEducationBenefits:
-                additionalOfficial.additionalOfficialBenefitStatus
-                  .hasVaEducationBenefits,
-              trainingCompletionDate: additionalOfficial
-                .additionalOfficialTraining?.trainingCompletionDate
-                ? additionalOfficial.additionalOfficialTraining
-                    ?.trainingCompletionDate
-                : null,
-              fullName: additionalOfficial.additionalOfficialDetails.fullName,
-              title: additionalOfficial.additionalOfficialDetails.title,
-              phoneNumber:
-                additionalOfficial.additionalOfficialDetails.phoneNumber
-                  .countryCode === 'US'
-                  ? getTransformIntlPhoneNumber(
-                      additionalOfficial.additionalOfficialDetails.phoneNumber,
-                    )
+        additionalCertifyingOfficials: clonedData.additionalCertifyingOfficials?.map(
+          additionalOfficial => {
+            return {
+              additionalCertifyingOfficialsDetails: {
+                hasVaEducationBenefits:
+                  additionalOfficial.additionalOfficialBenefitStatus
+                    .hasVaEducationBenefits,
+                trainingCompletionDate: additionalOfficial
+                  .additionalOfficialTraining?.trainingCompletionDate
+                  ? additionalOfficial.additionalOfficialTraining
+                      ?.trainingCompletionDate
                   : null,
-              // additionalOfficial?.additionalOfficialDetails?.phoneNumber
-              //   .contact,
-              internationalPhoneNumber:
-                additionalOfficial.additionalOfficialDetails.phoneNumber
-                  .countryCode !== 'US'
-                  ? getTransformIntlPhoneNumber(
-                      additionalOfficial.additionalOfficialDetails.phoneNumber,
-                    )
-                  : null,
-              emailAddress:
-                additionalOfficial.additionalOfficialDetails.emailAddress,
-              trainingExempt: additionalOfficial?.additionalOfficialTraining
-                ?.trainingExempt
-                ? additionalOfficial.additionalOfficialTraining.trainingExempt
-                : false,
-            },
-          };
-        }),
+                fullName: additionalOfficial.additionalOfficialDetails.fullName,
+                title: additionalOfficial.additionalOfficialDetails.title,
+                phoneNumber:
+                  additionalOfficial.additionalOfficialDetails.phoneNumber
+                    .countryCode === 'US'
+                    ? getTransformIntlPhoneNumber(
+                        additionalOfficial.additionalOfficialDetails
+                          .phoneNumber,
+                      )
+                    : null,
+                // additionalOfficial?.additionalOfficialDetails?.phoneNumber
+                //   .contact,
+                internationalPhoneNumber:
+                  additionalOfficial.additionalOfficialDetails.phoneNumber
+                    .countryCode !== 'US'
+                    ? getTransformIntlPhoneNumber(
+                        additionalOfficial.additionalOfficialDetails
+                          .phoneNumber,
+                      )
+                    : null,
+                emailAddress:
+                  additionalOfficial.additionalOfficialDetails.emailAddress,
+                trainingExempt: additionalOfficial?.additionalOfficialTraining
+                  ?.trainingExempt
+                  ? additionalOfficial.additionalOfficialTraining.trainingExempt
+                  : false,
+              },
+            };
+          },
+        ),
       };
     }
+
     return {
       ...clonedData,
     };
@@ -128,7 +133,6 @@ export function transform(formConfig, form) {
   const removeExcessTransform = formData => {
     const clonedData = _.cloneDeep(formData);
 
-    delete clonedData['additional-certifying-official'];
     delete clonedData.additionalCertifyingOfficial;
     delete clonedData.readOnlyCertifyingOfficials;
 
@@ -136,6 +140,7 @@ export function transform(formConfig, form) {
       ...clonedData,
     };
   };
+
   const privacyAgreementTransform = formData => {
     const clonedData = _.cloneDeep(formData);
 
@@ -156,6 +161,7 @@ export function transform(formConfig, form) {
       readOnlyCertifyingOfficial: clonedData.readOnlyCertifyingOfficials,
     };
   };
+
   const usFormTransform = formData =>
     transformForSubmit(
       formConfig,

@@ -17,7 +17,7 @@ yarn test:unit src/applications/personalization/form-renderer/tests/App.unit.spe
 
 # E2E tests
 yarn cy:open
-yarn cy:run --spec "src/applications/form-renderer/tests/e2e/form-renderer.cypress.spec.js"
+yarn cy:run --spec "src/applications/personalization/form-renderer/tests/e2e/form-renderer.cypress.spec.js"
 ```
 
 ## Mock API
@@ -34,7 +34,7 @@ The same goes for the 686c form data. If you need more expanded 686 data, check 
 
 Start the mock API by running:
 
-`yarn mock-api --responses src/applications/form-renderer/mocks/mock-api-full-data.js`
+`yarn mock-api --responses src/applications/personalization/form-renderer/mocks/mock-api-full-data.js`
 
 Start the application by running:
 
@@ -50,7 +50,7 @@ Note that the renderer will only load if you hit '/my-va/submissions/12345' spec
 
 Start the mock API by running:
 
-`yarn mock-api --responses src/applications/form-renderer/mocks/mock-api-full-data.js`
+`yarn mock-api --responses src/applications/personalization/form-renderer/mocks/mock-api-full-data.js`
 
 Start the mock API by running:
 

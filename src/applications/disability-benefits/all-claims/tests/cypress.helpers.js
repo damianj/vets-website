@@ -779,17 +779,28 @@ export const pageHooks = (cy, testOptions) => ({
     });
   },
 
-  'supporting-evidence/separation-health-assessment-upload': () => {
+  'supporting-evidence/separation-health-assessment': () => {
     cy.get('@testData').then(data => {
       if (
         !data?.disability526NewBddShaEnforcementWorkflowEnabled ||
-        !data?.['view:isBddData'] ||
-        !data?.['view:hasSeparationHealthAssessment']
+        !data?.['view:isBddData']
       ) {
         cy.findByText(/continue/i, { selector: 'button' }).click();
         return;
       }
 
+      const shouldUploadSha =
+        data?.['view:hasSeparationHealthAssessment'] === true;
+      const selectionValue = shouldUploadSha ? 'true' : 'false';
+
+      cy.get(`va-radio-option[value="${selectionValue}"]`)
+        .find('input[type="radio"]')
+        .check({ force: true });
+    });
+  },
+
+  'supporting-evidence/separation-health-assessment-upload': () => {
+    cy.get('@testData').then(() => {
       cy.get('input[type="file"]').selectFile(
         'src/platform/testing/example-upload.png',
         { force: true },
@@ -797,11 +808,24 @@ export const pageHooks = (cy, testOptions) => ({
 
       cy.get('.schemaform-file-uploading').should('not.exist');
 
-      cy.wait('@uploadFile').then(({ _request, response }) => {
+      cy.wait('@uploadFile').then(({ response }) => {
         expect(response.statusCode).to.eq(200);
       });
+    });
+  },
 
-      cy.findByText(/continue/i, { selector: 'button' }).click();
+  'supporting-evidence/separation-health-assessment-upload-v1': () => {
+    cy.get('@testData').then(() => {
+      cy.get('input[type="file"]').selectFile(
+        'src/platform/testing/example-upload.png',
+        { force: true },
+      );
+
+      cy.get('.schemaform-file-uploading').should('not.exist');
+
+      cy.wait('@uploadFile').then(({ response }) => {
+        expect(response.statusCode).to.eq(200);
+      });
     });
   },
 
@@ -809,15 +833,22 @@ export const pageHooks = (cy, testOptions) => ({
     cy.get('@testData').then(data => {
       if (
         !data?.disability526NewBddShaEnforcementWorkflowEnabled ||
-        !data?.['view:isBddData'] ||
-        !data?.['view:hasSeparationHealthAssessment']
+        !data?.['view:isBddData']
       ) {
         return;
       }
-
       cy.contains(/summary of evidence/i).should('exist');
-      cy.contains(/Separation Health Assessment Part A/i).should('exist');
-      cy.contains(/you haven’t uploaded any evidence/i).should('not.exist');
+      const hasShaUploads =
+        data?.['view:hasSeparationHealthAssessment'] === true &&
+        data?.separationHealthAssessmentUploads?.length > 0;
+      if (!hasShaUploads && !data?.['view:hasEvidence']) {
+        cy.contains(/you haven’t uploaded any evidence/i).should('exist');
+      } else {
+        cy.contains(/you haven’t uploaded any evidence/i).should('not.exist');
+        if (hasShaUploads) {
+          cy.contains(/Separation Health Assessment/i).should('exist');
+        }
+      }
     });
   },
 

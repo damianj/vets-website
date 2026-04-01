@@ -20,6 +20,7 @@ import {
 } from './EditContactInfo';
 import ContactInfo from './ContactInfo';
 import ContactInfoReview from './ContactInfoReview';
+import { createContactInfoConfirmationField } from './ContactInfoConfirmationField';
 
 /**
  * Add this page containing 4 edit pages to config/form
@@ -46,6 +47,7 @@ import ContactInfoReview from './ContactInfoReview';
  * @param {string} [options.mobilePhoneKey] - mobile phone key value set in ContactInfoKeys
  * @param {Object} [options.phoneSchema] - Phone schema object with country code, area code, phone number & extension values
  * @param {boolean} [options.prefillPatternEnabled] - enable prefill pattern for contact info
+ * @param {boolean} [options.showProfileAlert=true] - show blue info alert on edit pages ("changes will also be reflected on your profile")
  * @param {string} [options.wrapperKey] - wrapper key value set in ContactInfoKeys
  * @returns {Object} - form config pages for a chapter
  */
@@ -79,25 +81,39 @@ const profileContactInfoPages = ({
   contactSectionHeadingLevel = null,
   editContactInfoHeadingLevel = null,
   prefillPatternEnabled = true,
+  showProfileAlert = true,
 } = {}) => {
   const config = {};
   const wrapperProperties = {};
   const keys = { wrapper: wrapperKey };
   const requiredList = contactInfoRequiredKeys;
 
+  const getFieldTitle = (formData, fieldKey, editText, addText) => {
+    const fieldData = formData?.[wrapperKey]?.[fieldKey];
+    if (!fieldData || typeof fieldData !== 'object') return addText;
+    const hasData = Object.values(fieldData).some(v => v);
+    return hasData ? editText : addText;
+  };
+
   if (included.includes(addressKey)) {
     keys.address = addressKey;
     wrapperProperties[addressKey] = addressSchema || profileAddressSchema;
     config[`${contactInfoPageKey}EditMailingAddress`] = {
-      title: content.editMailingAddress,
       path: `${contactPath}/edit-mailing-address`,
       CustomPage: props =>
         EditAddress({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            addressKey,
+            content.editMailingAddress,
+            content.addMailingAddress,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
           prefillPatternEnabled,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -117,14 +133,20 @@ const profileContactInfoPages = ({
     wrapperProperties[homePhoneKey] =
       phoneSchema || standardPhoneSchema(requiredList.includes(keys.homePhone));
     config[`${contactInfoPageKey}EditHomePhone`] = {
-      title: content.editHomePhone,
       path: `${contactPath}/edit-home-phone`,
       CustomPage: props =>
         EditHomePhone({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            homePhoneKey,
+            content.editHomePhone,
+            content.addHomePhone,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -144,14 +166,20 @@ const profileContactInfoPages = ({
       phoneSchema ||
       standardPhoneSchema(requiredList.includes(keys.mobilePhone));
     config[`${contactInfoPageKey}EditMobilePhone`] = {
-      title: content.editMobilePhone,
       path: `${contactPath}/edit-mobile-phone`,
       CustomPage: props =>
         EditMobilePhone({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            mobilePhoneKey,
+            content.editMobilePhone,
+            content.addMobilePhone,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -169,14 +197,20 @@ const profileContactInfoPages = ({
     keys.email = emailKey;
     wrapperProperties[emailKey] = emailSchema || standardEmailObjectSchema;
     config[`${contactInfoPageKey}EditEmailAddress`] = {
-      title: content.editEmail,
       path: `${contactPath}/edit-email-address`,
       CustomPage: props =>
         EditEmail({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            emailKey,
+            content.editEmail,
+            content.addEmail,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -223,7 +257,10 @@ const profileContactInfoPages = ({
           contactInfoPageKey={contactInfoPageKey}
         />
       ),
-      uiSchema: contactInfoUiSchema,
+      uiSchema: {
+        'ui:confirmationField': createContactInfoConfirmationField({ keys }),
+        ...contactInfoUiSchema,
+      },
       schema: {
         type: 'object',
         properties: {

@@ -9,7 +9,10 @@ describe('Profile - Hub page', () => {
   beforeEach(() => {
     cy.login(mockUser);
     mockProfileLOA3(
-      generateFeatureToggles({ profileHideHealthCareContacts: false }),
+      generateFeatureToggles({
+        profile2Enabled: true,
+        profileHideHealthCareContacts: false,
+      }),
     );
   });
 
@@ -17,19 +20,15 @@ describe('Profile - Hub page', () => {
     cy.visit(PROFILE_PATHS.PROFILE_ROOT);
 
     cy.findByText('Profile', { selector: 'h1' }).should('exist');
-    cy.findByText('Personal information', { selector: 'h2' }).should('exist');
-    cy.findByText('Contact information', { selector: 'h2' }).should('exist');
-    cy.findByText('Personal health care contacts', { selector: 'h2' }).should(
-      'exist',
-    );
-    cy.findByText('Military information', { selector: 'h2' }).should('exist');
-    cy.findByText('Veteran Status Card', { selector: 'h2' }).should('exist');
-    cy.findByText('Direct deposit information', { selector: 'h2' }).should(
-      'exist',
-    );
-    cy.findByText('Notification settings', { selector: 'h2' }).should('exist');
-    cy.findByText('Account security', { selector: 'h2' }).should('exist');
-    cy.findByText('Connected apps', { selector: 'h2' }).should('exist');
+    cy.get('va-link[text="Personal information"]').should('exist');
+    cy.get('va-link[text="Contact information"]').should('exist');
+    cy.get('va-link[text="Service history information"]').should('exist');
+    cy.get('va-link[text="Financial information"]').should('exist');
+    cy.get('va-link[text="Health care settings"]').should('exist');
+    cy.get('va-link[text="Dependents and contacts"]').should('exist');
+    cy.get('va-link[text="Letters and documents"]').should('exist');
+    cy.get('va-link[text="Email and text notifications"]').should('exist');
+    cy.get('va-link[text="Account security"]').should('exist');
 
     cy.url().should('not.include', 'personal-information');
 
@@ -58,6 +57,7 @@ describe('Profile - Hub page', () => {
     cy.intercept(
       'v0/feature_toggles*',
       generateFeatureToggles({
+        profile2Enabled: true,
         profileLighthouseDirectDeposit: true,
       }),
     );

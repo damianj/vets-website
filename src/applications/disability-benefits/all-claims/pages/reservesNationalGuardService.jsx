@@ -1,3 +1,4 @@
+import React from 'react';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 import dateUI from '@department-of-veterans-affairs/platform-forms-system/date';
 import { validateDateRange } from '@department-of-veterans-affairs/platform-forms-system/validation';
@@ -9,7 +10,11 @@ const {
 } = fullSchema.properties.serviceInformation.properties.reservesNationalGuardService;
 
 export const uiSchema = {
-  'ui:title': 'Reserve and National Guard Information',
+  'ui:title': (
+    <h3 className="vads-u-margin-y--0">
+      Reserve and National Guard information
+    </h3>
+  ),
   'ui:description': ReservesGuardDescription,
   serviceInformation: {
     reservesNationalGuardService: {

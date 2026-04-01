@@ -29,10 +29,6 @@ describe('VAOS Component: ScheduleReferral', () => {
 
     const details = await screen.findByTestId('referral-details');
     const link = await screen.findByTestId('referral-community-care-office');
-    const helpText = await screen.findByTestId('help-text');
-    const informationalText = await screen.findByTestId(
-      'referral-informational-text',
-    );
 
     const expectedDate = format(
       new Date(referral.attributes.expirationDate),
@@ -41,10 +37,20 @@ describe('VAOS Component: ScheduleReferral', () => {
 
     expect(details).to.exist;
     expect(details).to.contain.text(expectedDate);
-    expect(helpText).to.exist;
 
     expect(link).to.exist;
-    expect(informationalText).to.exist;
+
+    const commonQuestionsHeading = screen.getByRole('heading', {
+      name: 'Common questions about referrals',
+    });
+    expect(commonQuestionsHeading).to.exist;
+
+    const accordion = screen.container.querySelector('va-accordion');
+    expect(accordion).to.exist;
+    const accordionItems = screen.container.querySelectorAll(
+      'va-accordion-item',
+    );
+    expect(accordionItems.length).to.equal(2);
   });
   it('should reset slot selection', async () => {
     const referral = createReferralById(referralDate, '222');
@@ -121,11 +127,6 @@ describe('VAOS Component: ScheduleReferral', () => {
     // Verify that the schedule appointment button is not rendered
     const scheduleButton = screen.queryByTestId('schedule-appointment-button');
     expect(scheduleButton).to.be.null;
-
-    // Verify provider info shows correct values
-    const details = await screen.findByTestId('referral-details');
-    expect(details).to.contain.text('Provider: Dr. Moreen S. Rafa');
-    expect(details).to.contain.text('Location: fake facility name');
   });
   it('should display schedule appointment button when provider npi is available', async () => {
     const referral = createReferralById(referralDate, '444');
@@ -158,11 +159,6 @@ describe('VAOS Component: ScheduleReferral', () => {
     // Verify warning alert is not displayed
     const alert = screen.queryByTestId('referral-alert');
     expect(alert).to.be.null;
-
-    // Verify provider info shows correct values
-    const details = await screen.findByTestId('referral-details');
-    expect(details).to.contain.text('Provider: Dr. Jane Smith');
-    expect(details).to.contain.text('Location: Community Care Clinic');
   });
   it('should handle undefined provider field gracefully', async () => {
     const referral = createReferralById(referralDate, '555');
@@ -184,11 +180,46 @@ describe('VAOS Component: ScheduleReferral', () => {
     // Verify that the schedule appointment button is not rendered
     const scheduleButton = screen.queryByTestId('schedule-appointment-button');
     expect(scheduleButton).to.be.null;
+  });
+  it('should display warning alert when onlineSchedule is false', async () => {
+    const referral = createReferralById(referralDate, '666');
+    referral.attributes.onlineSchedule = false;
 
-    // Verify provider info shows "Not available"
-    const details = await screen.findByTestId('referral-details');
-    expect(details).to.contain.text('Provider: Not available');
-    expect(details).to.contain.text('Location: Not available');
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const alert = await screen.findByTestId('referral-alert');
+    expect(alert).to.exist;
+    expect(alert).to.contain.text(
+      'Online scheduling isn\u2019t available for this referral right now.',
+    );
+
+    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
+    expect(scheduleButton).to.be.null;
+  });
+  it('should display warning alert when onlineSchedule is false', async () => {
+    const referral = createReferralById(referralDate, '666');
+    referral.attributes.onlineSchedule = false;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const alert = await screen.findByTestId('referral-alert');
+    expect(alert).to.exist;
+    expect(alert).to.contain.text(
+      'Online scheduling isn\u2019t available for this referral right now.',
+    );
+
+    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
+    expect(scheduleButton).to.be.null;
   });
   it('should allow user to schedule from pilot expansion station', async () => {
     const referral = createReferralById(referralDate, '99999');

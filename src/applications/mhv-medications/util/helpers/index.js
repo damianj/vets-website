@@ -26,6 +26,7 @@ export { getShowRefillHistory } from './getShowRefillHistory';
 export { getTrackingUrl, getCarrierLabel } from './getTrackingInfo';
 export { hasCmopNdcNumber } from './hasCmopNdcNumber';
 export { isArrayAndHasItems } from './isArrayAndHasItems';
+export { isExpirationDatePassed } from './isExpirationDatePassed';
 export { isOracleHealthPrescription } from './isOracleHealthPrescription';
 export { isUnfilledOhPrescription } from './isUnfilledOhPrescription';
 export {

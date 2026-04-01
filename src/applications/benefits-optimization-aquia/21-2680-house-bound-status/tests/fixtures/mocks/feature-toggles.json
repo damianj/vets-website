@@ -5,6 +5,10 @@
       {
         "name": "form_2680_enabled",
         "value": true
+      },
+      {
+        "name": "bio_aquia_usps_address_validation",
+        "value": true
       }
     ]
   }

@@ -72,7 +72,7 @@ const ProcessList = () => {
           </li>
           <li>
             Have your receipt that lists the prep course costs and a copy of
-            your enrollment vertification ready. If you don’t already have them,
+            your enrollment verification ready. If you don’t already have them,
             gather them now.
           </li>
         </ul>

@@ -1,3 +1,4 @@
+import React from 'react';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 
 import dateUI from 'platform/forms-system/src/js/definitions/date';
@@ -17,7 +18,7 @@ const {
 const activationDate = dateUI('Activation date');
 
 export const uiSchema = {
-  'ui:title': 'Federal Orders',
+  'ui:title': <h3 className="vads-u-margin-y--0">Federal orders</h3>,
   serviceInformation: {
     'ui:validations': [title10BeforeRad],
     reservesNationalGuardService: {

@@ -78,7 +78,7 @@ describe('IntroductionPage', () => {
     // Ensure FormTitle is present by checking the h1 text rendered by it
     const h1 = getByTestId('form-title');
     expect(h1?.textContent).to.contain(
-      'Education benefit entitlement restoration for school closure (VA Form 22-0989)',
+      'Request entitlement restoration online',
     );
   });
 

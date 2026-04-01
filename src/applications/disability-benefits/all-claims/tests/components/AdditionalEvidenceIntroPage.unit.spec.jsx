@@ -206,7 +206,6 @@ describe('AdditionalEvidenceIntroPage', () => {
 
     await waitFor(() => {
       const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
       expect(alert.textContent).to.include(
         'We’ve deleted the documents you uploaded supporting your claim.',
       );
@@ -393,14 +392,13 @@ describe('AdditionalEvidenceIntroPage', () => {
 
     await waitFor(() => {
       const alert = container.querySelector('va-alert');
-      expect(alert).to.have.attribute('visible', 'true');
+      expect(alert).to.exist;
     });
 
     const alert = container.querySelector('va-alert');
     fireEvent(alert, new CustomEvent('closeEvent'));
-
     await waitFor(() => {
-      expect(alert).to.have.attribute('visible', 'false');
+      expect(container.querySelector('va-alert')).to.not.exist;
     });
   });
 

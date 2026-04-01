@@ -73,6 +73,7 @@ export default {
         confirmRemoveDescription:
           'Are you sure you want to remove this employer?',
         addAnotherText: 'Add another employer',
+        itemAriaLabel: item => `employer: ${item?.employerName || 'Employer'}`,
       },
       items: {
         'ui:options': {

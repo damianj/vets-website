@@ -1,7 +1,7 @@
 export const ATTACHMENT_IDS = Object.freeze({
   dutyToAssist: 'DTA',
   eob: 'EOB',
-  meddoc: 'MEDDOC',
+  meddoc: 'MEDDOCS',
 });
 
 export const CHAMPVA_FAX_NUMBER = '3033317809';

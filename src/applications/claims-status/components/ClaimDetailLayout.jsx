@@ -27,10 +27,6 @@ const focusHeader = () => {
 export default function ClaimDetailLayout(props) {
   const { claim, clearNotification, currentTab, loading, message } = props;
 
-  // Get type1UnknownErrors from Redux (only if feature flag is enabled)
-  const showDocumentUploadStatus = useSelector(
-    state => state.featureToggles?.cst_show_document_upload_status || false,
-  );
   const type1UnknownErrors = useSelector(
     state => state.disability.status.notifications.type1UnknownErrors,
   );
@@ -77,11 +73,7 @@ export default function ClaimDetailLayout(props) {
         </h1>
 
         {message &&
-          !(
-            showDocumentUploadStatus &&
-            type1UnknownErrors &&
-            type1UnknownErrors.length > 0
-          ) && (
+          !(type1UnknownErrors && type1UnknownErrors.length > 0) && (
             <div className="vads-u-margin-top--5">
               <Notification
                 title={message.title}
@@ -97,8 +89,7 @@ export default function ClaimDetailLayout(props) {
             </div>
           )}
 
-        {showDocumentUploadStatus &&
-          type1UnknownErrors &&
+        {type1UnknownErrors &&
           type1UnknownErrors.length > 0 &&
           (currentTab === 'Files' || currentTab === 'Status') && (
             <div className="vads-u-margin-top--5">

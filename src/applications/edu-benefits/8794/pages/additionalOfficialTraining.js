@@ -20,8 +20,8 @@ const uiSchema = {
       'ui:options': {
         hint: 'If exempt, see information below',
         hideIf: (formData, index) => {
-          if (formData['additional-certifying-official']) {
-            return formData['additional-certifying-official'][index]
+          if (formData.additionalCertifyingOfficials) {
+            return formData.additionalCertifyingOfficials[index]
               ?.additionalOfficialTraining?.trainingExempt;
           }
           return formData?.additionalOfficialTraining?.trainingExempt;
@@ -36,8 +36,8 @@ const uiSchema = {
       ),
       'ui:options': {
         hideIf: (formData, index) => {
-          if (formData['additional-certifying-official']) {
-            return !formData['additional-certifying-official'][index]
+          if (formData.additionalCertifyingOfficials) {
+            return !formData.additionalCertifyingOfficials[index]
               ?.additionalOfficialTraining?.trainingExempt;
           }
           return !formData?.additionalOfficialTraining?.trainingExempt;
@@ -49,11 +49,11 @@ const uiSchema = {
     },
     'ui:options': {
       updateSchema: (formData, formSchema, ui, index) => {
-        const isAdding = !!formData['additional-certifying-official'];
+        const isAdding = !!formData.additionalCertifyingOfficials;
 
         if (isAdding) {
           const addingTraining =
-            formData['additional-certifying-official'][index]
+            formData.additionalCertifyingOfficials[index]
               .additionalOfficialTraining;
           if (addingTraining?.trainingExempt) {
             return {

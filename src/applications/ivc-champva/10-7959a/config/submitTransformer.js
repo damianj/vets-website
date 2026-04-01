@@ -3,6 +3,7 @@ import { transformForSubmit as formsSystemTransformForSubmit } from 'platform/fo
 import recordEvent from 'platform/monitoring/record-event';
 import { adjustYearString, concatStreets } from '../../shared/utilities';
 import { ID_NUMBER_OPTIONS } from '../chapters/resubmission/claimIdNumber';
+import { ATTACHMENT_IDS } from '../utils/constants';
 
 function getPrimaryContact(data) {
   // For callback API we need to know what data in the form should be
@@ -55,12 +56,13 @@ export default function transformForSubmit(
 
   // Add type/category info to file uploads for Pega/DOCMP ingestion:
   copyOfData.supportingDocs = applyAttachments(copyOfData, [
-    ['pharmacyUpload', 'MEDDOCS'],
-    ['medicalUpload', 'MEDDOCS'],
-    ['primaryEob', 'EOB'],
-    ['secondaryEob', 'EOB'],
-    ['resubmissionLetterUpload', 'EOB'],
-    ['resubmissionDocsUpload', 'MEDDOCS'],
+    ['pharmacyUpload', ATTACHMENT_IDS.meddoc],
+    ['medicalUpload', ATTACHMENT_IDS.meddoc],
+    ['primaryEob', ATTACHMENT_IDS.eob],
+    ['secondaryEob', ATTACHMENT_IDS.eob],
+    ['resubmissionLetterUpload', ATTACHMENT_IDS.eob],
+    ['resubmissionDocsUpload', ATTACHMENT_IDS.meddoc],
+    ['claimAddtlDocsUpload', ATTACHMENT_IDS.dutyToAssist],
   ]);
 
   // Combine all three street strings into one

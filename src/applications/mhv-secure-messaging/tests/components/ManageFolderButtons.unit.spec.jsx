@@ -72,9 +72,8 @@ describe('Manage Folder Buttons component', () => {
     expect(screen.queryByText("You can't remove a folder with messages in it."))
       .to.not.exist;
 
-    fireEvent.click(
-      document.querySelector('va-button[text="No, keep this folder"]'),
-    );
+    const modal = screen.getByTestId('remove-this-folder');
+    modal.__events.secondaryButtonClick();
 
     await waitFor(() => {
       expect(screen.getByTestId('remove-this-folder')).to.have.attribute(
@@ -94,9 +93,8 @@ describe('Manage Folder Buttons component', () => {
       },
     );
     fireEvent.click(screen.getByTestId('remove-folder-button'));
-    fireEvent.click(
-      document.querySelector('va-button[text="Yes, remove this folder"]'),
-    );
+    const removeModal = screen.getByTestId('remove-this-folder');
+    removeModal.__events.primaryButtonClick();
     sinon.assert.calledWith(deleteFolderSpy);
   });
 

@@ -236,3 +236,25 @@ export const isYes = val =>
 export const durationInDays = (startDate, endDate) => {
   return differenceInDays(new Date(endDate), new Date(startDate));
 };
+
+/**
+ * Determines whether expense pages should be skipped based on form data.
+ *
+ * Returns true (skip) only when all of the following are true:
+ * - The 2025 version feature flag is enabled
+ * - The claimant is claiming survivors pension
+ * - The claimant reported no income (`moreThanFourIncomeSources === 'NO_INCOME'`)
+ *
+ * In all other cases, expense pages should be shown.
+ *
+ * @param {object} formData - The current form data
+ * @param {boolean} [formData.survivorsBenefitsForm2025VersionEnabled] - Feature flag for 2025 form version
+ * @param {object} [formData.claims] - Benefit claims
+ * @param {boolean} [formData.claims.survivorsPension] - Whether surviving pension is claimed
+ * @param {string} [formData.moreThanFourIncomeSources] - Income source selection (e.g. 'NO_INCOME', 'ONE_TO_FOUR_SOURCES', 'MORE_THAN_FIVE_SOURCES')
+ * @returns {boolean} True if expense pages should be skipped, false otherwise
+ */
+export const shouldSkipExpensePages = formData =>
+  formData?.survivorsBenefitsForm2025VersionEnabled &&
+  formData?.claims?.survivorsPension === true &&
+  ['NO_INCOME'].includes(formData?.moreThanFourIncomeSources);

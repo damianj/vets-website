@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/node:22.22.0-bookworm
+FROM node:22.22.0-bookworm
 
 # default case is Jenkins, but we want to be able to overwrite this
 ARG userid=504

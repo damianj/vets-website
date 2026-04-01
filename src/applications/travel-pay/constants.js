@@ -286,17 +286,4 @@ export const TRIP_TYPES = Object.freeze({
   },
 });
 
-export const ACCEPTED_FILE_TYPES = Object.freeze([
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.pdf',
-  '.doc',
-  '.docx',
-  '.gif',
-  '.bmp',
-  '.tif',
-  '.tiff',
-]);
-
 export const PROOF_OF_ATTENDANCE_FILENAME = 'proof-of-attendance';

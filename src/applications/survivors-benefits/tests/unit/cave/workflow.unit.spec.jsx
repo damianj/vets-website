@@ -133,15 +133,18 @@ describe('cave/workflow', () => {
       expect(error).to.be.instanceOf(Error);
     });
 
-    it('throws when document status is not "completed"', async () => {
-      apiRequestStub.resolves({ scanStatus: 'failed' });
+    it('surfaces document processing failure details from status', async () => {
+      apiRequestStub.resolves({
+        scanStatus: 'failed',
+        error: { errorMessage: 'Unable to classify document' },
+      });
       let error;
       try {
         await processDocument({ id: 'doc-1' }, FAST);
       } catch (e) {
         error = e;
       }
-      expect(error.message).to.include('did not complete successfully');
+      expect(error.message).to.equal('Unable to classify document');
     });
 
     it('returns normalized sections on success', async () => {
@@ -174,14 +177,14 @@ describe('cave/workflow', () => {
 
       const result = await processDocument({ id: 'doc-1' }, FAST);
       const entry = result.dd214[0];
-      expect(entry.VETERAN_NAME).to.deep.equal({
+      expect(entry.veteranName).to.deep.equal({
         first: 'John',
         middle: 'Q',
         last: 'Smith',
         suffix: undefined,
       });
-      expect(entry.BRANCH_OF_SERVICE).to.equal('army');
-      expect(entry.VETERAN_DOB).to.equal('1950-03-15');
+      expect(entry.branchOfService).to.equal('Army');
+      expect(entry.veteranDob).to.equal('1950-03-15');
     });
   });
 
@@ -236,8 +239,8 @@ describe('cave/workflow', () => {
         [],
         FAST,
       );
-      // BRANCH_OF_SERVICE was null → should be filled from form's serviceBranch
-      expect(result.dd214[0].BRANCH_OF_SERVICE).to.equal('navy');
+      // branchOfService was null → should be filled from form's serviceBranch
+      expect(result.dd214[0].branchOfService).to.equal('navy');
     });
   });
 });

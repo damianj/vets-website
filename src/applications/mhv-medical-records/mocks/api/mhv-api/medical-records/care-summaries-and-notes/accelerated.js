@@ -16,6 +16,7 @@ const sample = {
         dischargeDate: null,
         location: 'CHYSHR TEST LAB',
         note: 'VGhpcyBpcyBhIHRlc3QgdGVsZWhlYWx0aCBkaXNjaGFyZ2Ugbm90ZS4NCg==',
+        addenda: null,
         source: 'vista',
       },
     },
@@ -37,6 +38,24 @@ const sample = {
         note:
           'VXJpbmFseXNpcyBwb3NpdGl2ZSBmb3IgUHJvdGV1cyBtaXJhYmlsaXMuIFByZXNjcmliZWQgQXVnbWVudGluIGFuZCBpbnN0cnVjdGVkIA0KTXIuIFNpbHZhIHRvIGRpc2NvbnRpbnVlIHRoZSBvcmlnaW5hbCBSeC4NCg==',
         source: 'vista',
+        addenda: [
+          {
+            date: '2024-12-18T05:22:40+00:00',
+            dateSigned: '2024-12-18T05:25:10+00:00',
+            writtenBy: 'MARCI P MCGUIRE',
+            signedBy: 'MARCI P MCGUIRE',
+            note:
+              'VXJpbmFseXNpcyBwb3NpdGl2ZSBmb3IgUHJvdGV1cyBtaXJhYmlsaXMuIFByZXNjcmliZWQgQXVnbWVudGluIGFuZCBpbnN0cnVjdGVkIA0KTXIuIFNpbHZhIHRvIGRpc2NvbnRpbnVlIHRoZSBvcmlnaW5hbCBSeC4NCg==',
+          },
+          {
+            date: '2024-12-19T09:15:00+00:00',
+            dateSigned: '2024-12-19T09:18:32+00:00',
+            writtenBy: 'VICTORIA A BORLAND',
+            signedBy: 'VICTORIA A BORLAND',
+            note:
+              'Q3VsdHVyZSByZXN1bHRzIGNvbmZpcm1lZCBQcm90ZXVzIG1pcmFiaWxpcy4gQXVnbWVudGluIHRoZXJhcHkgY29udGludWVkLiANClBhdGllbnQgdG9sZXJhdGluZyBtZWRpY2F0aW9uIHdlbGwuIEZvbGxvdyB1cCBpbiA3IGRheXMuDQo=',
+          },
+        ],
       },
     },
     {
@@ -56,6 +75,7 @@ const sample = {
         location: 'CHYSHR TEST LAB',
         note:
           'VGhpcyBpcyBhbiBhZGRlbmR1bSB0byBjb3JyZWN0IHByZXZpb3MgQXVkaW9sb2d5IHJlcG9ydC4gDQo=',
+        addenda: null,
         source: 'vista',
       },
     },
@@ -76,6 +96,7 @@ const sample = {
         location: 'CHYSHR TEST LAB',
         note:
           'TGFyZ2UgbnVtYmVycyBvZiBiYWN0ZXJpYSBpbiB1cmluZSBpbmRpY2F0aXZlIG9mIFVUSS4gUHJlc2NyaWJpbmcgTWFjcm9iaWQgDQpwZW5kaW5nIGNvbXBsZXRlIGxhYiByZXN1bHRzLg0K',
+        addenda: null,
         source: 'vista',
       },
     },
@@ -96,6 +117,7 @@ const sample = {
         location: '668 Mann-Grandstaff WA VA Medical Center',
         note:
           'Q2xpbmljYWwgU3VtbWFyeSAqIEZpbmFsIFJlcG9ydCAqIE5hbWU6U0lMVkEsIEFMRVhBTkRFUiBSSUNBUkRPIEFkZHJlc3M6IDIzNCBURVNUSU5HIEtBTlNBUyBDSVRZLCBNTyA4Nzk0NCBTZXg6TWFsZSBEYXRlIG9mIEJpcnRoOjAzLzAxLzE5OTAgUGhvbmU6KzMzNjU1MjEyMzQgUmFjZTogQmxhY2sgb3IgQWZyaWNhbiBBbWVyaWNhbiBFdGhuaWNpdHk6IE5vdCBIaXNwYW5pYyBvciBMYXRpbm8=',
+        addenda: null,
         source: 'oracle-health',
       },
     },
@@ -116,6 +138,7 @@ const sample = {
         location: '668 Mann-Grandstaff WA VA Medical Center',
         note:
           'SW5wYXRpZW50IERpc2NoYXJnZSBJbnN0cnVjdGlvbnMgLSBWQSAqIEZpbmFsIFJlcG9ydCAqIERpc2NoYXJnZSBJbnN0cnVjdGlvbnMgV2hhdCB0byBkbyBuZXh0IEluc3RydWN0aW9ucyBGcm9tIFlvdXIgUHJvdmlkZXIgRG9uJ3QgZGllIEFkZGl0aW9uYWwgRm9sbG93IFVwIEluc3RydWN0aW9ucyBObyBxdWFsaWZ5aW5nIGRhdGEgYXZhaWxhYmxlIFZBIEJlbmVmaWNpYXJ5IE5lZWRpbmcgSGVscCBBY2Nlc3MgeW91ciB2ZXRlcmFucyBiZW5lZml0cyBhbmQgbWFuYWdlIHlvdXIgaGVhbHRoY2FyZSBhdCB2YS5nb3YgTmF0aW9uYWwgU3VpY2lkZSBQcmV2ZW50aW9uIExpZmUgTGluZSAyNC83IGFzc2lzdGFuY2U6IDk4OCwgdGhlbiBwcmVzcyAxLCBvciBvbmxpbmUgYXQgVmV0ZXJhbnNDcmlzaXNMaW5lLm5ldCAtIFRoaW5raW5nIGFib3V0IGh1cnRpbmcgb3Iga2lsbGluZyB5b3Vyc2VsZiAtIExvb2tpbmcgZm9yIHdheXMgdG8ga2lsbCB5b3Vyc2VsZiAtIFRhbGtpbmcgYWJvdXQgZGVhdGgsIGR5aW5nLCBvciBzdWljaWRlIC0gU2VsZi1kZXN0cnVjdGl2ZSBiZWhhdmlvciBzdWNoIGFzIGRydWcgYWJ1c2UsIHdlYXBvbnMsIGV0YyBGb3IgaW5mb3JtYXRpb24gb24gd2hlcmUgdG8gcmVjZWl2ZSBhIHZhY2NpbmF0aW9uLCBwbGVhc2UgZWl0aGVyIHJlYWNoIG91dCB0byB5b3VyIHByaW1hcnkgY2FyZSBwaHlzaWNpYW4ncyBvZmZpY2Ugb3IgdmlzaXQgdmFjY2luZXMuZ292LiBJbmZvcm1hdGlvbiBmcm9tIHlvdXIgdmlzaXQgVGhpcyBJcyBZb3VyIE1lZGljYXRpb25zIExpc3QgTm8gRGF0YSBBdmFpbGFibGUgUHJvY2VkdXJlcyBQZXJmb3JtZWQgTm8gcHJvY2VkdXJlcyBwZXJmb3JtZWQgZHVyaW5nIHRoaXMgdmlzaXQgVGVzdCBSZXN1bHRzIE5vIHF1YWxpZnlpbmcgZGF0YSBhdmFpbGFibGUuIEFsbGVyZ2llcyBwZW5pY2lsbGlucyAoVXJ0aWNhcmlhIChIaXZlcyksIFNuZWV6aW5nKSBQcm9ibGVtcyBPbmdvaW5nIC0gQW55IHByb2JsZW0gdGhhdCB5b3UgYXJlIGN1cnJlbnRseSByZWNlaXZpbmcgdHJlYXRtZW50IGZvci4gRGlzZWFzZSBjYXVzZWQgYnkgMjAxOSBub3ZlbCBjb3JvbmF2aXJ1cyBDb21tb24gRW1lcmdlbmN5IEF3YXJlbmVzcyBUaXBzIElTIElUIEEgU1RST0tFPyBBY3QgRkFTVCBhbmQgQ2hlY2sgZm9yIHRoZXNlIHNpZ25zOiBGQUNFIERvZXMgdGhlIGZhY2UgbG9vayB1bmV2ZW4/IEFSTSBEb2VzIG9uZSBhcm0gZHJpZnQgZG93bj8gU1BFRUNIIERvZXMgdGhlaXIgc3BlZWNoIHNvdW5kIHN0cmFuZ2U/IFRJTUUgQ2FsbCA5LTEtMSBhdCBhbnkgc2lnbiBvZiBzdHJva2UgSGVhcnQgQXR0YWNrIFNpZ25zIENoZXN0IGRpc2NvbWZvcnQ6IE1vc3QgaGVhcnQgYXR0YWNrcyBpbnZvbHZlIGRpc2NvbWZvcnQgaW4gdGhlIGNlbnRlciBvZiB0aGUgY2hlc3QgYW5kIGxhc3RzIG1vcmUgdGhhbiBhIGZldyBtaW51dGVzLCBvciBnb2VzIGF3YXkgYW5kIGNvbWVzIGJhY2suIEl0IGNhbiBmZWVsIGxpa2UgdW5jb21mb3J0YWJsZSBwcmVzc3VyZSwgc3F1ZWV6aW5nLCBmdWxsbmVzcyBvciBwYWluLiBEaXNjb21mb3J0IGluIHVwcGVyIGJvZHk6IFN5bXB0b21zIGNhbiBpbmNsdWRlIHBhaW4gb3IgZGlzY29tZm9ydCBpbiBvbmUgb3IgYm90aCBhcm1zLCBiYWNrLCBuZWNrLCBqYXcgb3Igc3RvbWFjaC4gU2hvcnRuZXNzIG9mIGJyZWF0aDogV2l0aCBvciB3aXRob3V0IGRpc2NvbWZvcnQuIE90aGVyIHNpZ25zOiBCcmVha2luZyBvdXQgaW4gYSBjb2xkIHN3ZWF0LCBuYXVzZWEsIG9yIGxpZ2h0aGVhZGVkLiBSZW1lbWJlciwgTUlOVVRFUyBETyBNQVRURVIuIElmIHlvdSBleHBlcmllbmNlIGFueSBvZiB0aGVzZSBoZWFydCBhdHRhY2sgd2FybmluZyBzaWducywgY2FsbCA5LTEtMSB0byBnZXQgaW1tZWRpYXRlIG1lZGljYWwgYXR0ZW50aW9uISBSZXN1bHQgdHlwZTogSW5wYXRpZW50IFBhdGllbnQgU3VtbWFyeSBSZXN1bHQgZGF0ZTogSnVseSAyOSwgMjAyNSAxNzo0NyBVVEMgUmVzdWx0IHN0YXR1czogQXV0aCAoVmVyaWZpZWQpIFJlc3VsdCB0aXRsZTogSW5wYXRpZW50IERpc2NoYXJnZSBJbnN0cnVjdGlvbnMgLSBWQSBQZXJmb3JtZWQgYnk6IEJvcmxhbmQsIFZpY3RvcmlhIEEgb24gSnVseSAyOSwgMjAyNSAxMjo0NyBDRFQgVmVyaWZpZWQgYnk6IEJvcmxhbmQsIFZpY3RvcmlhIEEgb24gSnVseSAyOSwgMjAyNSAxMjo0NyBDRFQgRW5jb3VudGVyIGluZm86IDEyOTI2MzEyOSwgNjY4IFNQTyBXQSBWQSwgQmV0d2VlbiBWaXNpdCwgNi8yNi8yMDI1IC0=',
+        addenda: null,
         source: 'oracle-health',
       },
     },

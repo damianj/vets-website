@@ -65,6 +65,20 @@ describe('Schemaform <CurrencyWidget>', () => {
     fireEvent.change(input, { target: { value: '10.000' } });
     expect(onChange.calledWith('10.000')).to.be.true;
   });
+  it('should ignore values with multiple decimals', () => {
+    const onChange = sinon.spy();
+    const { container } = render(
+      <CurrencyWidget options={{}} onChange={onChange} />,
+    );
+    const input = container.querySelector('input');
+
+    fireEvent.change(input, { target: { value: '12.34' } });
+    expect(onChange.calledWith(12.34)).to.be.true;
+
+    fireEvent.change(input, { target: { value: '12.345.00' } });
+    expect(onChange.calledOnce).to.be.true;
+    expect(input.value).to.equal('12.34');
+  });
   it('should call onChange with undefined if the value is blank', () => {
     const onChange = sinon.spy();
     const { container } = render(

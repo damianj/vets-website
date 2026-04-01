@@ -3,7 +3,7 @@ import React from 'react';
 const TechnologyProgramAccordion = () => {
   return (
     <va-accordion open-single>
-      <va-accordion-item header="View Privacy Act Statement" id="first">
+      <va-accordion-item header="Privacy Act Statement" id="first">
         <p>
           The VA will not disclose information collected on this form to any
           source other than what has been authorized under the Privacy Act of
@@ -26,7 +26,7 @@ const TechnologyProgramAccordion = () => {
           prior to January 1, 1975, and still in effect.
         </p>
       </va-accordion-item>
-      <va-accordion-item header="View Respondent Burden" id="second">
+      <va-accordion-item header="Respondent Burden" id="second">
         <p>
           An agency may not conduct or sponsor, and a person is not required to
           respond to, a collection of information unless it displays a currently

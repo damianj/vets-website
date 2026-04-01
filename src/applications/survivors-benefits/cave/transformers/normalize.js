@@ -1,10 +1,7 @@
 import {
   CHARACTER_OF_SERVICE_OPTIONS,
   CHARACTER_OF_SERVICE_ABBREV_MAP,
-  SEPARATION_TYPE_OPTIONS,
-  SEPARATION_TYPE_ABBREV_MAP,
   PAY_GRADE_OPTIONS,
-  PAY_GRADE_ABBREV_MAP,
   SEPARATION_CODES,
   NAME_SUFFIXES,
 } from '../constants';
@@ -32,35 +29,6 @@ export const normalizeSuffix = v => {
 };
 
 // ---------------------------------------------------------------------------
-// Branch of service
-// ---------------------------------------------------------------------------
-
-// Flat map from the single expected IDP title-case value to the 534 form value.
-// Lookup is case-insensitive to handle minor casing variations from the IDP.
-const BRANCH_MAP = {
-  Army: 'army',
-  Navy: 'navy',
-  'Air Force': 'airForce',
-  'Coast Guard': 'coastGuard',
-  'Marine Corps': 'marineCorps',
-  'Space Force': 'spaceForce',
-  USPHS: 'usphs',
-  NOAA: 'noaa',
-};
-
-const BRANCH_MAP_LOWER = Object.fromEntries(
-  Object.entries(BRANCH_MAP).map(([k, v]) => [k.toLowerCase(), v]),
-);
-
-// Maps an IDP branch-of-service string to the 534 form value, or null if
-// the value is not a recognized branch name.
-export const normalizeBranchOfService = v => {
-  if (v == null) return null;
-  if (typeof v === 'string' && v.trim() === '') return '';
-  return BRANCH_MAP_LOWER[v.trim().toLowerCase()] ?? null;
-};
-
-// ---------------------------------------------------------------------------
 // SSN / date helpers
 // ---------------------------------------------------------------------------
 
@@ -69,7 +37,7 @@ const normalizeDigits = v => (v || '').replace(/\D/g, '');
 // Normalizes SSN to a bare 9-digit string (matching the 534 form's storage
 // format). Returns null for values that don't produce exactly 9 digits, ''
 // for blank fields (field was present but left empty in the document).
-const normalizeSsn = v => {
+export const normalizeSsn = v => {
   if (v == null) return null;
   if (typeof v === 'string' && v.trim() === '') return '';
   const digits = normalizeDigits(v);
@@ -151,20 +119,22 @@ const buildCaseInsensitiveMap = (abbrevMap, fullFormOptions) => {
   return map;
 };
 
+// Trim and enforce maxLength. Returns '' for blank, null if too long or wrong type.
+export const normalizeFreeText = (v, max) => {
+  if (v == null) return null;
+  if (typeof v !== 'string') return null;
+  const trimmed = v.trim();
+  if (!trimmed) return '';
+  if (max != null && trimmed.length > max) return null;
+  return trimmed;
+};
+
 const CHARACTER_OF_SERVICE_MAP = buildCaseInsensitiveMap(
   CHARACTER_OF_SERVICE_ABBREV_MAP,
   CHARACTER_OF_SERVICE_OPTIONS,
 );
 
-const SEPARATION_TYPE_MAP = buildCaseInsensitiveMap(
-  SEPARATION_TYPE_ABBREV_MAP,
-  SEPARATION_TYPE_OPTIONS,
-);
-
-const PAY_GRADE_MAP = buildCaseInsensitiveMap(
-  PAY_GRADE_ABBREV_MAP,
-  PAY_GRADE_OPTIONS,
-);
+const PAY_GRADE_MAP = buildCaseInsensitiveMap({}, PAY_GRADE_OPTIONS);
 
 const SEPARATION_CODES_SET = new Set(SEPARATION_CODES);
 
@@ -173,13 +143,6 @@ export const normalizeCharacterOfService = v => {
   const trimmed = typeof v === 'string' ? v.trim() : '';
   if (!trimmed) return '';
   return CHARACTER_OF_SERVICE_MAP[trimmed.toLowerCase()] ?? null;
-};
-
-export const normalizeSeparationType = v => {
-  if (v == null) return null;
-  const trimmed = typeof v === 'string' ? v.trim() : '';
-  if (!trimmed) return '';
-  return SEPARATION_TYPE_MAP[trimmed.toLowerCase()] ?? null;
 };
 
 export const normalizePayGrade = v => {
@@ -197,64 +160,52 @@ export const normalizeSeparationCode = v => {
   return SEPARATION_CODES_SET.has(trimmed) ? trimmed : null;
 };
 
-// Trim and enforce maxLength. Returns '' for blank, null if too long or wrong type.
-export const normalizeFreeText = (v, max) => {
-  if (v == null) return null;
-  if (typeof v !== 'string') return null;
-  const trimmed = v.trim();
-  if (!trimmed) return '';
-  if (max != null && trimmed.length > max) return null;
-  return trimmed;
-};
-
 // ---------------------------------------------------------------------------
 // Entry normalizers
 // ---------------------------------------------------------------------------
 
 const normalizeDd214Entry = entry => ({
-  ...entry,
-  VETERAN_NAME: parseFullName(entry.VETERAN_NAME),
-  VETERAN_SSN: normalizeSsn(entry.VETERAN_SSN),
-  VETERAN_DOB: normalizeArtifactDate(entry.VETERAN_DOB),
-  BRANCH_OF_SERVICE: normalizeBranchOfService(entry.BRANCH_OF_SERVICE),
-  GRADE_RATE_RANK: normalizeFreeText(entry.GRADE_RATE_RANK, 100),
-  PAY_GRADE: normalizePayGrade(entry.PAY_GRADE),
-  DATE_INDUCTED: normalizeArtifactDate(entry.DATE_INDUCTED),
-  DATE_ENTERED_ACTIVE_SERVICE: normalizeArtifactDate(
+  veteranName: parseFullName(entry.VETERAN_NAME),
+  veteranSsn: normalizeSsn(entry.VETERAN_SSN),
+  veteranDob: normalizeArtifactDate(entry.VETERAN_DOB),
+  branchOfService: normalizeFreeText(entry.BRANCH_OF_SERVICE, 100),
+  gradeRateRank: normalizeFreeText(entry.GRADE_RATE_RANK, 100),
+  payGrade: normalizePayGrade(entry.PAY_GRADE),
+  dateInducted: normalizeArtifactDate(entry.DATE_INDUCTED),
+  dateEnteredActiveService: normalizeArtifactDate(
     entry.DATE_ENTERED_ACTIVE_SERVICE,
   ),
-  DATE_SEPARATED_FROM_SERVICE: normalizeArtifactDate(
+  dateSeparatedFromService: normalizeArtifactDate(
     entry.DATE_SEPARATED_FROM_SERVICE,
   ),
-  CAUSE_OF_SEPARATION: normalizeFreeText(entry.CAUSE_OF_SEPARATION, 1000),
-  CHARACTER_OF_SERVICE: normalizeCharacterOfService(entry.CHARACTER_OF_SERVICE),
-  SEPARATION_TYPE: normalizeSeparationType(entry.SEPARATION_TYPE),
-  SEPARATION_CODE: normalizeSeparationCode(entry.SEPARATION_CODE),
+  causeOfSeparation: normalizeFreeText(entry.CAUSE_OF_SEPARATION, 1000),
+  characterOfService: normalizeCharacterOfService(entry.CHARACTER_OF_SERVICE),
+  separationType: normalizeFreeText(entry.SEPARATION_TYPE, 1000),
+  separationCode: normalizeSeparationCode(entry.SEPARATION_CODE),
 });
 
 const normalizeDeathCertificateEntry = entry => ({
-  ...entry,
-  DECENDENT_FULL_NAME: parseFullName(entry.DECENDENT_FULL_NAME),
-  DECENDENT_SSN: normalizeSsn(entry.DECENDENT_SSN),
-  DECENDENT_DATE_OF_DEATH: normalizeArtifactDate(entry.DECENDENT_DATE_OF_DEATH),
-  DECENDENT_DATE_OF_DISPOSITION: normalizeArtifactDate(
+  decendentFullName: parseFullName(entry.DECENDENT_FULL_NAME),
+  decendentSsn: normalizeSsn(entry.DECENDENT_SSN),
+  decendentDateOfDeath: normalizeArtifactDate(entry.DECENDENT_DATE_OF_DEATH),
+  decendentDateOfDisposition: normalizeArtifactDate(
     entry.DECENDENT_DATE_OF_DISPOSITION,
   ),
-  CAUSE_OF_DEATH: normalizeFreeText(entry.CAUSE_OF_DEATH, 1000),
-  UNDERLYING_CAUSE_OF_DEATH_B: normalizeFreeText(
+  causeOfDeath: normalizeFreeText(entry.CAUSE_OF_DEATH, 1000),
+  underlyingCauseOfDeathB: normalizeFreeText(
     entry.UNDERLYING_CAUSE_OF_DEATH_B,
     1000,
   ),
-  UNDERLYING_CAUSE_OF_DEATH_C: normalizeFreeText(
+  underlyingCauseOfDeathC: normalizeFreeText(
     entry.UNDERLYING_CAUSE_OF_DEATH_C,
     1000,
   ),
-  UNDERLYING_CAUSE_OF_DEATH_D: normalizeFreeText(
+  underlyingCauseOfDeathD: normalizeFreeText(
     entry.UNDERLYING_CAUSE_OF_DEATH_D,
     1000,
   ),
-  MANNER_OF_DEATH: normalizeFreeText(entry.MANNER_OF_DEATH, 1000),
-  DECENDENT_MARITAL_STATUS: normalizeFreeText(
+  mannerOfDeath: normalizeFreeText(entry.MANNER_OF_DEATH, 1000),
+  decendentMaritalStatus: normalizeFreeText(
     entry.DECENDENT_MARITAL_STATUS,
     1000,
   ),

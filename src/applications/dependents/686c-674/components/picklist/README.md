@@ -1,5 +1,11 @@
 # Picklist
 
+## History
+
+The design for the picklist did not match any built-in form library patterns ([see key decisions](https://github.com/department-of-veterans-affairs/va.gov-team/blob/master/products/dependents/picklist/key-decisions.md)). A list of active dependents are shown to the Veteran, and they are able to select from that list which dependent they want to remove. Navigating to the next page would show specific questions about the dependent according to their relationship to the Veteran: child, spouse or parent. If multiple dependents are selected, then the question pages will be shown one-after the other. See the picklist main flow diagram below.
+
+After running through all the selected dependents, the Veteran would continue through the rest of the form. To build this flow, we used a CustomPage with custom routing.
+
 ## Why is this using custom code?
 
 The flow of how the picklist works doesn't match any built-in form system routing methods.
@@ -21,11 +27,13 @@ The flow of how the picklist works doesn't match any built-in form system routin
 
 But, we discovered that the `itemFilter` didn't allow us to navigate through multiple follow up pages and branches based on the picklist choices.
 
+We also thought about creating a new array with selected dependents, without using the `itemFilter` ([similar to what was done pensions with Marriage count](https://github.com/department-of-veterans-affairs/vets-website/blob/12f806889c9ee6f1702386dbead91e0e6ef776c2/src/applications/pensions/components/MarriageCount.jsx#L54-L60)), but that method wouldn't make it easy to create follow up page that use different fields, or a page that allows you to exit the form.
+
 ### Overview of picklist flow
 
 ```mermaid
 flowchart TD
-  Start[Active dependents with checkboxes<br><br>✓ Spouse<br>✓ Child<br>✓ Parent]
+  Start([Active<br>dependents<br>with checkboxes<br><br>✓ Spouse<br>✓ Child<br>✓ Parent])
 
   subgraph DepLoop[Dependent picklist loop]
     direction TB
@@ -64,6 +72,12 @@ flowchart TD
     NextDep l1@-- "More dependents" --> DepType
     NextDep -- "All done" --> Done([Continue to next page])
   end
+
+  classDef animate stroke-dasharray: 9,5,stroke-dashoffset: 1200,animation: dash 25s linear infinite, stroke:#ff9500, stroke-width:3px;
+  class l1 animate
+
+  %% Styling
+  style NextDep fill:#ff9500,stroke:#ff6600,stroke-width:2px,color:#000000
 ```
 
 ### Why use custom pages?

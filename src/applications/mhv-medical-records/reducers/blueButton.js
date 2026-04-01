@@ -3,8 +3,22 @@ import { pharmacyPhoneNumber } from '@department-of-veterans-affairs/mhv/exports
 import { format, isAfter } from 'date-fns';
 import { capitalize } from 'lodash';
 import { Actions } from '../util/actionTypes';
-import { medicationTypes, NA, NONE_RECORDED, UNKNOWN } from '../util/constants';
-import { dateFormat } from '../util/helpers';
+import {
+  medicationTypes,
+  NA,
+  NONE_RECORDED,
+  UNKNOWN,
+  labTypes,
+  noteTypes,
+  allowedVitalLoincs,
+} from '../util/constants';
+import { dateFormat, sortByDate } from '../util/helpers';
+import { convertAllergy } from './allergies';
+import { convertVaccine } from './vaccines';
+import { convertVital } from './vitals';
+import { convertCondition } from './conditions';
+import { convertCareSummariesAndNotesRecord } from './careSummariesAndNotes';
+import { convertLabsAndTestsRecord } from './labsAndTests';
 
 /**
  * Check if a date value is valid and can be safely formatted.
@@ -79,6 +93,24 @@ const initialState = {
 
   /** The account summary info returned from the api @type {Array} */
   accountSummary: undefined,
+
+  /** The list of labs and tests for Blue Button reports @type {Array} */
+  labsAndTestsList: undefined,
+
+  /** The list of care summaries and notes for Blue Button reports @type {Array} */
+  notesList: undefined,
+
+  /** The list of vaccines for Blue Button reports @type {Array} */
+  vaccinesList: undefined,
+
+  /** The list of allergies for Blue Button reports @type {Array} */
+  allergiesList: undefined,
+
+  /** The list of conditions for Blue Button reports @type {Array} */
+  conditionsList: undefined,
+
+  /** The list of vitals for Blue Button reports @type {Array} */
+  vitalsList: undefined,
 
   /** A list of domains which failed during fetch @type {Array} */
   failedDomains: [],
@@ -376,54 +408,107 @@ export const convertAccountSummary = data => {
   };
 };
 
+const sortByDateDesc = (a, b) => {
+  const timeA = new Date(a.date).getTime();
+  const timeB = new Date(b.date).getTime();
+  if (Number.isNaN(timeA) && Number.isNaN(timeB)) return 0;
+  if (Number.isNaN(timeA)) return 1;
+  if (Number.isNaN(timeB)) return -1;
+  return timeB - timeA;
+};
+
+const sortByNullableDateDesc = (a, b) => {
+  if (!a.sortByDate) return 1;
+  if (!b.sortByDate) return -1;
+  return b.sortByDate.getTime() - a.sortByDate.getTime();
+};
+
+const toArray = v => (Array.isArray(v) ? v : []);
+
+const processGetAction = action => {
+  const updates = {};
+
+  if ('medicationsResponse' in action) {
+    updates.medicationsList =
+      action.medicationsResponse?.data?.map(convertMedication) || [];
+  }
+
+  if ('appointmentsResponse' in action) {
+    updates.appointmentsList =
+      action.appointmentsResponse?.data?.map(convertAppointment) || [];
+  }
+
+  if ('demographicsResponse' in action) {
+    updates.demographics =
+      action.demographicsResponse?.content?.map(convertDemographics) || [];
+  }
+
+  if ('militaryServiceResponse' in action) {
+    updates.militaryService = action.militaryServiceResponse || NONE_RECORDED;
+  }
+
+  if ('patientResponse' in action) {
+    updates.accountSummary = action.patientResponse
+      ? convertAccountSummary(action.patientResponse)
+      : { authenticationSummary: {}, vaTreatmentFacilities: [] };
+  }
+
+  if ('allergiesResponse' in action) {
+    updates.allergiesList =
+      action.allergiesResponse?.entry
+        ?.map(allergy => convertAllergy(allergy.resource))
+        .sort(sortByDateDesc) || [];
+  }
+
+  if ('vaccinesResponse' in action) {
+    updates.vaccinesList =
+      action.vaccinesResponse?.entry
+        ?.map(record => convertVaccine(record.resource))
+        .sort(sortByDateDesc) || [];
+  }
+
+  if ('vitalsResponse' in action) {
+    updates.vitalsList =
+      action.vitalsResponse?.entry
+        ?.filter(entry =>
+          entry.resource?.code?.coding?.some(coding =>
+            allowedVitalLoincs.includes(coding.code),
+          ),
+        )
+        .map(vital => convertVital(vital.resource)) || [];
+  }
+
+  if ('conditionsResponse' in action) {
+    updates.conditionsList = toArray(action.conditionsResponse?.entry)
+      .map(record => convertCondition(record.resource))
+      .sort(sortByDateDesc);
+  }
+
+  if ('notesResponse' in action) {
+    updates.notesList = toArray(action.notesResponse?.entry)
+      .map(note => convertCareSummariesAndNotesRecord(note.resource))
+      .filter(record => record.type !== noteTypes.OTHER)
+      .sort(sortByNullableDateDesc);
+  }
+
+  if ('labsAndTestsResponse' in action || 'radiologyResponse' in action) {
+    const labsList = toArray(action.labsAndTestsResponse?.entry)
+      .map(record => convertLabsAndTestsRecord(record.resource))
+      .filter(record => record && record.type !== labTypes.OTHER);
+    const radiologyList = toArray(action.radiologyResponse)
+      .filter(Boolean)
+      .map(convertLabsAndTestsRecord)
+      .filter(Boolean);
+    updates.labsAndTestsList = sortByDate([...labsList, ...radiologyList]);
+  }
+
+  return updates;
+};
+
 export const blueButtonReducer = (state = initialState, action) => {
   switch (action.type) {
     case Actions.BlueButtonReport.GET: {
-      const updates = {};
-
-      if ('medicationsResponse' in action) {
-        updates.medicationsList =
-          action.medicationsResponse?.data?.map(med => {
-            return convertMedication(med);
-          }) || [];
-      }
-
-      if ('appointmentsResponse' in action) {
-        updates.appointmentsList =
-          action.appointmentsResponse?.data?.map(appt => {
-            return convertAppointment(appt);
-          }) || [];
-      }
-
-      if ('demographicsResponse' in action) {
-        updates.demographics =
-          action.demographicsResponse?.content?.map(item => {
-            return convertDemographics(item);
-          }) || [];
-      }
-
-      if ('militaryServiceResponse' in action) {
-        updates.militaryService =
-          action.militaryServiceResponse || NONE_RECORDED;
-      }
-
-      if ('patientResponse' in action) {
-        if (action.patientResponse) {
-          updates.accountSummary = convertAccountSummary(
-            action.patientResponse,
-          );
-        } else {
-          updates.accountSummary = {
-            authenticationSummary: {},
-            vaTreatmentFacilities: [],
-          };
-        }
-      }
-
-      return {
-        ...state,
-        ...updates,
-      };
+      return { ...state, ...processGetAction(action) };
     }
     case Actions.BlueButtonReport.ADD_FAILED: {
       const failedDomain = action.payload;

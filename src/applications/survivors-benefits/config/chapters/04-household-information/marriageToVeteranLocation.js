@@ -15,15 +15,19 @@ import {
   COUNTRY_NAMES,
 } from '../../../utils/labels';
 import { customAddressSchema } from '../../definitions';
+import { validations } from '../../validations';
 
 /** @type {PageSchema} */
 export default {
   uiSchema: {
     ...titleUI('When and where did you get married?'),
-    marriageToVeteranStartDate: currentOrPastDateUI({
-      title: 'Date of marriage',
-      monthSelect: false,
-    }),
+    marriageToVeteranStartDate: {
+      ...currentOrPastDateUI({
+        title: 'Date of marriage',
+        monthSelect: false,
+      }),
+      'ui:validations': [validations.isBeforeVeteranDeathDate],
+    },
     marriageToVeteranStartOutsideUs: checkboxUI({
       title: 'I got married outside the U.S.',
     }),

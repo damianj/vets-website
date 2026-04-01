@@ -186,7 +186,7 @@ const createEnhancementTestConfig = ({ v3Enabled }) => {
          * Private Medical Records Upload (V0) page hook - uploads a test file
          * via `va-file-input-multiple` and selects a document type.
          */
-        'supporting-evidence/private-medical-records-upload-enhancement': () => {
+        'supporting-evidence/private-medical-records-upload-evidence': () => {
           cy.get('va-file-input-multiple')
             .shadow()
             .find('input[type="file"]')
@@ -223,7 +223,7 @@ const createEnhancementTestConfig = ({ v3Enabled }) => {
          * Additional Evidence Upload (V0) page hook - uploads a test file
          * via `va-file-input-multiple` and selects a document type.
          */
-        'supporting-evidence/additional-evidence-enhancement': () => {
+        'supporting-evidence/additional-evidence-upload-file': () => {
           cy.get('va-file-input-multiple')
             .shadow()
             .find('input[type="file"]')
@@ -256,7 +256,7 @@ const createEnhancementTestConfig = ({ v3Enabled }) => {
          * Private Medical Records Upload (V1) page hook - uploads a test file
          * via legacy FileField `<input type="file">` and selects a document type.
          */
-        'supporting-evidence/private-medical-records-upload-enhancement-v1': () => {
+        'supporting-evidence/private-medical-records-upload-file': () => {
           cy.get('input[type="file"]').selectFile(
             {
               contents: Cypress.Buffer.from('test content'),
@@ -278,7 +278,7 @@ const createEnhancementTestConfig = ({ v3Enabled }) => {
          * Additional Evidence Upload (V1) page hook - uploads a test file
          * via legacy FileField `<input type="file">` and selects a document type.
          */
-        'supporting-evidence/additional-evidence-enhancement-v1': () => {
+        'supporting-evidence/additional-evidence-upload': () => {
           cy.get('input[type="file"]').selectFile(
             {
               contents: Cypress.Buffer.from('test content'),

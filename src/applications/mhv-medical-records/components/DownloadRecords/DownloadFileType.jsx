@@ -66,15 +66,13 @@ const DownloadFileType = props => {
   const dob = formatUserDob(user);
 
   const labsAndTests = useSelector(
-    state => state.mr.labsAndTests.labsAndTestsList,
+    state => state.mr.blueButton.labsAndTestsList,
   );
-  const notes = useSelector(
-    state => state.mr.careSummariesAndNotes.careSummariesAndNotesList,
-  );
-  const vaccines = useSelector(state => state.mr.vaccines.vaccinesList);
-  const allergies = useSelector(state => state.mr.allergies.allergiesList);
-  const conditions = useSelector(state => state.mr.conditions.conditionsList);
-  const vitals = useSelector(state => state.mr.vitals.vitalsList);
+  const notes = useSelector(state => state.mr.blueButton.notesList);
+  const vaccines = useSelector(state => state.mr.blueButton.vaccinesList);
+  const allergies = useSelector(state => state.mr.blueButton.allergiesList);
+  const conditions = useSelector(state => state.mr.blueButton.conditionsList);
+  const vitals = useSelector(state => state.mr.blueButton.vitalsList);
   const medications = useSelector(state => state.mr.blueButton.medicationsList);
   const appointments = useSelector(
     state => state.mr.blueButton.appointmentsList,

@@ -198,12 +198,9 @@ describe('ReplyDraftItem component', () => {
     const { getByText, findByTestId } = setup({ props: customProps });
     fireEvent.click(getByText('Delete draft'));
     const deleteDraftModal = await findByTestId('delete-draft-modal');
-    const deleteConfirmButton = deleteDraftModal.querySelector(
-      'va-button[text="Delete draft"]',
-    );
     mockApiRequest({ status: 204, method: 'DELETE' }, true);
     await waitFor(() => {
-      fireEvent.click(deleteConfirmButton);
+      deleteDraftModal.__events.primaryButtonClick();
     });
     await waitFor(() => {
       expect(refreshThreadCallbackSpy.calledOnce).to.be.true;

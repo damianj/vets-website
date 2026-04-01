@@ -2,6 +2,7 @@ import mockSingleMessageResponse from '../fixtures/customResponse/custom-single-
 import mockFolders from '../fixtures/folder-response.json';
 import mockSingleThreadResponse from '../fixtures/customResponse/custom-single-thread-response.json';
 import { Paths, Locators, Data, Assertions } from '../utils/constants';
+import { clickModalPrimaryButtonByTestId } from '../utils/modal-helpers';
 import createdFolderResponse from '../fixtures/customResponse/created-folder-response.json';
 import mockThreadsResponse from '../fixtures/threads-response.json';
 import FolderLoadPage from './FolderLoadPage';
@@ -200,9 +201,10 @@ class PatientMessageCustomFolderPage {
       'updatedFoldersList',
     );
 
-    cy.findByTestId(Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID).click({
-      force: true,
-    });
+    clickModalPrimaryButtonByTestId(
+      Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID,
+      { force: true },
+    );
   };
 
   deleteParticularCustomFolder = (folderId, updatedFoldersResponse) => {
@@ -216,8 +218,10 @@ class PatientMessageCustomFolderPage {
       updatedFoldersResponse,
     ).as('updatedFoldersList');
 
-    cy.get(Locators.ALERTS.REMOVE_THIS_FOLDER)
-      .find(`va-button[text*='remove']`)
+    cy.findByTestId(Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID)
+      .shadow()
+      .find(`button`)
+      .contains('remove')
       .click();
   };
 

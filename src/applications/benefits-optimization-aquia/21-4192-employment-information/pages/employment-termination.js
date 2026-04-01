@@ -8,7 +8,40 @@ import {
   textareaUI,
   currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { convertToDateField } from 'platform/forms-system/src/js/validation';
+import { dateFieldToDate } from 'platform/utilities/date';
 import { MemorableDateUI } from '../components/memorable-date-ui';
+
+const isValidDateObject = date =>
+  date instanceof Date && !Number.isNaN(date.getTime());
+
+const toDate = value => {
+  if (!value) {
+    return null;
+  }
+
+  return dateFieldToDate(convertToDateField(value));
+};
+
+const validateDateLastWorked = (errors, fieldData, fullData) => {
+  const dateLastWorked = toDate(fieldData?.dateLastWorked);
+  if (!isValidDateObject(dateLastWorked)) {
+    return;
+  }
+
+  const beginningDate = toDate(fullData?.employmentDates?.beginningDate);
+  const endingDate = toDate(fullData?.employmentDates?.endingDate);
+
+  if (isValidDateObject(beginningDate) && dateLastWorked < beginningDate) {
+    errors.dateLastWorked.addError(
+      "Date last worked can't be before beginning date of employment",
+    );
+  } else if (isValidDateObject(endingDate) && dateLastWorked > endingDate) {
+    errors.dateLastWorked.addError(
+      "Date last worked can't be after ending date of employment",
+    );
+  }
+};
 
 /**
  * uiSchema for Employment Termination page
@@ -17,6 +50,7 @@ import { MemorableDateUI } from '../components/memorable-date-ui';
 export const employmentTerminationUiSchema = {
   'ui:title': 'Termination of employment',
   employmentTermination: {
+    'ui:validations': [validateDateLastWorked],
     terminationReason: textareaUI({
       title: 'Reason for termination of employment',
       hint:

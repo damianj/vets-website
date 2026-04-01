@@ -2,10 +2,12 @@ export const config = {
   $schema:
     'https://vefs-forms-api.prod.bip.vba.va.gov/api/v1/rest/forms/formTemplateSchema/versions/1.0/schema',
   formId: '21-686c',
+  formDescription: 'Add or remove a dependent on VA benefits',
+  formVersion: 'OMB Version Aug 2025, Control #: 2900-0043',
   title: '21-686c Form Template',
   description:
     'Form Template for 21-686c Application Request to Add and/or Remove Dependents',
-  version: '1.0',
+  version: '0.2.0',
   sections: [
     {
       sectionNumber: '1',
@@ -23,14 +25,14 @@ export const config = {
                 '{{veteranInformation.fullName.first}} {{#veteranInformation.fullName.middle}}{{.}} {{/veteranInformation.fullName.middle}}{{veteranInformation.fullName.last}}',
             },
             {
-              fieldLabel: 'Last 4 Digits of Social Security number:',
-              fieldFormat: 'lastFourSSN',
+              fieldLabel: 'Social Security number:',
+              fieldFormat: 'ssn',
               fieldType: 'string',
-              fieldValue: '{{veteranInformation.ssnLastFour}}',
+              fieldValue: '{{veteranInformation.ssn}}',
             },
             {
               fieldLabel: 'Date of Birth:',
-              fieldFormat: 'dob',
+              fieldFormat: 'biographicalDate',
               fieldType: 'string',
               fieldValue: '{{veteranInformation.birthDate}}',
             },
@@ -40,46 +42,42 @@ export const config = {
           blockLabel: 'Mailing address',
           fields: [
             {
-              fieldLabel:
-                'I live on a United States military base outside of the U.S.:',
-              fieldType: 'string',
-              fieldValue: '{{veteranContactInformation.veteranAddress.todo}}',
-            },
-            {
               fieldLabel: 'Country:',
-              fieldType: 'string',
               fieldValue:
                 '{{veteranContactInformation.veteranAddress.country}}',
             },
             {
               fieldLabel: 'Street address:',
-              fieldType: 'string',
               fieldValue: '{{veteranContactInformation.veteranAddress.street}}',
             },
             {
-              fieldLabel: 'Street address line 2:',
-              fieldType: 'string',
+              fieldLabel: 'Apartment or unit number:',
               fieldValue:
                 '{{veteranContactInformation.veteranAddress.street2}}',
             },
             {
-              fieldLabel: 'Street address line 3:',
-              fieldType: 'string',
-              fieldValue: '{{veteranContactInformation.veteranAddress.todo}}',
-            },
-            {
-              fieldLabel: 'City:',
-              fieldType: 'string',
+              showIf: 'veteranContactInformation.veteranAddress.isMilitary',
+              fieldLabel: 'Military post office:',
+              fieldFormat: 'militaryPostOffice',
               fieldValue: '{{veteranContactInformation.veteranAddress.city}}',
             },
             {
-              fieldLabel: 'State:',
-              fieldType: 'string',
+              showUnless: 'veteranContactInformation.veteranAddress.isMilitary',
+              fieldLabel: 'City:',
+              fieldValue: '{{veteranContactInformation.veteranAddress.city}}',
+            },
+            {
+              showIf: 'veteranContactInformation.veteranAddress.isMilitary',
+              fieldLabel: "Overseas 'state' abbreviation:",
               fieldValue: '{{veteranContactInformation.veteranAddress.state}}',
             },
             {
-              fieldLabel: 'Postal Code:',
-              fieldType: 'string',
+              showUnless: 'veteranContactInformation.veteranAddress.isMilitary',
+              fieldLabel: 'State:',
+              fieldValue: '{{veteranContactInformation.veteranAddress.state}}',
+            },
+            {
+              fieldLabel: 'Postal code:',
               fieldValue:
                 '{{veteranContactInformation.veteranAddress.postalCode}}',
             },
@@ -98,7 +96,8 @@ export const config = {
               fieldLabel: 'International phone number:',
               fieldFormat: 'internationalPhone',
               fieldType: 'string',
-              fieldValue: 'todo',
+              fieldValue:
+                '{{veteranContactInformation.internationalPhoneNumber}}',
             },
             {
               fieldLabel: 'Email address:',
@@ -108,8 +107,8 @@ export const config = {
             {
               fieldLabel:
                 'I agree to receive electronic correspondence from the VA about my claim.',
-              fieldType: 'boolean',
-              fieldValue: 'todo',
+              fieldValue:
+                "{{formatBool veteranContactInformation.electronicCorrespondence '✓ Selected' 'Not selected'}}",
             },
           ],
         },
@@ -119,25 +118,31 @@ export const config = {
 };
 
 export const data = {
+  statementOfTruthSignature: 'John Quincy Veteran',
+  statementOfTruthCertified: true,
   veteranInformation: {
     fullName: {
-      first: 'Bruno',
-      last: 'Mars',
+      first: 'John',
+      middle: 'Quincy',
+      last: 'Veteran',
     },
-    birthDate: '1985-10-08',
-    ssnLastFour: '1234',
+    birthDate: '1980-05-12',
+    ssn: '123456789',
     vaFileLastFour: '5678',
   },
   veteranContactInformation: {
     veteranAddress: {
       street: '123 Main St',
       street2: 'Apt 4B',
-      city: 'Los Angeles',
-      state: 'CA',
+      city: 'Richmond',
       country: 'USA',
-      postalCode: '90001',
+      state: 'VA',
+      postalCode: '23220',
     },
-    phoneNumber: '1234567890',
-    emailAddress: 'bruno.mars@example.com',
+    phoneNumber: '8045551212',
+    internationalPhoneNumber: '3123456789',
+    emailAddress: 'john.veteran@example.com',
+    electronicCorrespondence: true,
   },
+  householdIncome: true,
 };

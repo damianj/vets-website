@@ -46,6 +46,7 @@ describe('verify delete functionality of multiple drafts in one thread', () => {
     PatientMessageDraftsPage.deleteMultipleDraft(
       updatedMultiDraftResponse,
       reducedMultiDraftResponse,
+      1,
     );
     PatientMessageDraftsPage.verifyConfirmationMessage(
       Alerts.Message.DELETE_DRAFT_SUCCESS,

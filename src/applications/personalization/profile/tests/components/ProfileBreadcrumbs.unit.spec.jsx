@@ -61,15 +61,15 @@ describe('<ProfileBreadcrumbs />', () => {
       expect(breadcrumbList[2].label).to.equal('Contact information');
     });
 
-    it('renders military information breadcrumb', () => {
+    it('renders Service history information breadcrumb', () => {
       const { breadcrumbList } = setup(
-        PROFILE_PATHS.MILITARY_INFORMATION,
+        PROFILE_PATHS.SERVICE_HISTORY_INFORMATION,
         false,
       );
 
       expect(breadcrumbList[0].label).to.equal('VA.gov home');
       expect(breadcrumbList[1].label).to.equal('Profile');
-      expect(breadcrumbList[2].label).to.equal('Military information');
+      expect(breadcrumbList[2].label).to.equal('Service history information');
     });
 
     it('renders direct deposit breadcrumb', () => {
@@ -77,7 +77,8 @@ describe('<ProfileBreadcrumbs />', () => {
 
       expect(breadcrumbList[0].label).to.equal('VA.gov home');
       expect(breadcrumbList[1].label).to.equal('Profile');
-      expect(breadcrumbList[2].label).to.equal('Direct deposit information');
+      expect(breadcrumbList[2].label).to.equal('Financial information');
+      expect(breadcrumbList[3].label).to.equal('Direct deposit information');
     });
 
     it('renders notification settings breadcrumb', () => {
@@ -88,7 +89,7 @@ describe('<ProfileBreadcrumbs />', () => {
 
       expect(breadcrumbList[0].label).to.equal('VA.gov home');
       expect(breadcrumbList[1].label).to.equal('Profile');
-      expect(breadcrumbList[2].label).to.equal('Notification settings');
+      expect(breadcrumbList[2].label).to.equal('Email and text notifications');
     });
 
     it('renders connected apps breadcrumb', () => {
@@ -99,7 +100,8 @@ describe('<ProfileBreadcrumbs />', () => {
 
       expect(breadcrumbList[0].label).to.equal('VA.gov home');
       expect(breadcrumbList[1].label).to.equal('Profile');
-      expect(breadcrumbList[2].label).to.equal('Connected apps');
+      expect(breadcrumbList[2].label).to.equal('Account security');
+      expect(breadcrumbList[3].label).to.equal('Connected apps');
     });
 
     it('renders root breadcrumb when path is invalid', () => {

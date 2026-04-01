@@ -11,6 +11,42 @@ import {
   fullNameNoSuffixSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { isValidNameLength } from '../../shared/utils/validators/validators';
+import {
+  MAX_REASONABLE_AGE_YEARS,
+  MIN_WORKING_AGE_YEARS,
+  normalizeDate,
+  parseDateValue,
+  shiftDateByYears,
+} from '../utils/date-validation-helpers';
+
+const validateVeteranDateOfBirthBusinessRules = (errors, dateOfBirth) => {
+  if (!dateOfBirth) {
+    return;
+  }
+
+  const veteranDob = parseDateValue(dateOfBirth);
+  if (!veteranDob) {
+    // Base date widget validation handles malformed/partial dates.
+    return;
+  }
+
+  // Compare at day precision to avoid timezone-related boundary drift.
+  const today = normalizeDate(new Date());
+  const youngestAllowedDob = shiftDateByYears(today, -MIN_WORKING_AGE_YEARS);
+  const oldestAllowedDob = shiftDateByYears(today, -MAX_REASONABLE_AGE_YEARS);
+
+  if (veteranDob > youngestAllowedDob) {
+    // Too recent means Veteran would be younger than minimum working age.
+    errors.addError(
+      `Veteran date of birth must be at least ${MIN_WORKING_AGE_YEARS} years before today`,
+    );
+  } else if (veteranDob < oldestAllowedDob) {
+    // Too old is treated as likely bad input.
+    errors.addError(
+      `Veteran date of birth can't be more than ${MAX_REASONABLE_AGE_YEARS} years before today`,
+    );
+  }
+};
 
 /**
  * Format title function for veteran's full name fields
@@ -80,6 +116,7 @@ export const veteranInformationUiSchema = {
     dateOfBirth: dateOfBirthUI({
       title: "Veteran's date of birth",
       dataDogHidden: true,
+      validations: [validateVeteranDateOfBirthBusinessRules],
       errorMessages: {
         required: 'Date of birth is required',
       },

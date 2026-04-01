@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -80,7 +80,7 @@ jobs:
       app_list: ${{ env.APPLICATION_LIST }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -126,7 +126,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -170,7 +170,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS Credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -180,7 +180,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@183a1442edf41672e66566b7fc560e297a290896 # v2.1.1
         with:
           mask-password: false
 
@@ -201,7 +201,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
@@ -287,7 +287,7 @@ jobs:
       # the job to always run, and skips each step if no tests are selected.
       # Previously, the above conditional was included in the job's if statement.
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         if: needs.cypress-tests-prep.outputs.tests != '[]'
@@ -298,7 +298,7 @@ jobs:
 
       - name: Checkout vets-website
         if: needs.cypress-tests-prep.outputs.tests != '[]'
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Download production build artifact
         if: needs.cypress-tests-prep.outputs.tests != '[]'
@@ -424,7 +424,7 @@ jobs:
       APPLICATION_LIST: ${{ needs.testing-reports-prep.outputs.app_list }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials

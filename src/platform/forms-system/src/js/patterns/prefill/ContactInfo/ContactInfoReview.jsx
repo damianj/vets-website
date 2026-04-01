@@ -74,46 +74,6 @@ const ContactInfoReview = ({
    * */
   const display = [
     [
-      content.homePhone, // label
-      () => {
-        // keys.homePhone is undefined if not in `included` option within
-        // `profileContactInfoPage`
-        if (!keys.homePhone) {
-          return ''; // Don't render row
-        }
-        const errorMsg = validatePhone(content, homePhoneObj);
-        return errorMsg
-          ? showValueOrNotProvided('')
-          : renderTelephone(homePhoneObj); // va-telephone web component
-      },
-    ],
-    [
-      content.mobilePhone,
-      () => {
-        // keys.mobilePhone is undefined if not in `included` option within
-        // `profileContactInfoPage`
-        if (!keys.mobilePhone) {
-          return ''; // Don't render row
-        }
-        const errorMsg = validatePhone(content, mobilePhoneObj);
-        return errorMsg
-          ? showValueOrNotProvided('')
-          : renderTelephone(mobilePhoneObj); // va-telephone web component
-      },
-    ],
-    [
-      content.email,
-      () => {
-        // keys.email is undefined if not in `included` option within
-        // `profileContactInfoPage`
-        if (!keys.email) {
-          return ''; // Don't render row
-        }
-        const errorMsg = validateEmail(content, emailObj.emailAddress);
-        return errorMsg ? showValueOrNotProvided('') : emailObj.emailAddress;
-      },
-    ],
-    [
       content.country,
       () => {
         // keys.address is undefined if not in `included` option within
@@ -214,6 +174,46 @@ const ContactInfoReview = ({
           return ''; // Don't render row
         }
         return addressObj.internationalPostalCode; // No error because it's optional
+      },
+    ],
+    [
+      content.email,
+      () => {
+        // keys.email is undefined if not in `included` option within
+        // `profileContactInfoPage`
+        if (!keys.email) {
+          return ''; // Don't render row
+        }
+        const errorMsg = validateEmail(content, emailObj.emailAddress);
+        return errorMsg ? showValueOrNotProvided('') : emailObj.emailAddress;
+      },
+    ],
+    [
+      content.homePhone, // label
+      () => {
+        // keys.homePhone is undefined if not in `included` option within
+        // `profileContactInfoPage`
+        if (!keys.homePhone) {
+          return ''; // Don't render row
+        }
+        const errorMsg = validatePhone(content, homePhoneObj);
+        return errorMsg
+          ? showValueOrNotProvided('')
+          : renderTelephone(homePhoneObj); // va-telephone web component
+      },
+    ],
+    [
+      content.mobilePhone,
+      () => {
+        // keys.mobilePhone is undefined if not in `included` option within
+        // `profileContactInfoPage`
+        if (!keys.mobilePhone) {
+          return ''; // Don't render row
+        }
+        const errorMsg = validatePhone(content, mobilePhoneObj);
+        return errorMsg
+          ? showValueOrNotProvided('')
+          : renderTelephone(mobilePhoneObj); // va-telephone web component
       },
     ],
   ];

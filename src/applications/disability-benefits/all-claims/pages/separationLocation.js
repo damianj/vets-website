@@ -1,3 +1,4 @@
+import React from 'react';
 import * as autosuggest from 'platform/forms-system/src/js/definitions/autosuggest';
 
 import {
@@ -10,7 +11,9 @@ import { requireSeparationLocation } from '../validations';
 
 export const uiSchema = {
   serviceInformation: {
-    'ui:title': SeparationLocationTitle,
+    'ui:title': (
+      <h3 className="vads-u-margin-y--0">{SeparationLocationTitle}</h3>
+    ),
     'ui:description': SeparationLocationDescription,
     separationLocation: autosuggest.uiSchema(
       'Enter a location',

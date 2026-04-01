@@ -10,6 +10,24 @@ describe('VAOS referral generator', () => {
     it('Create a referral based on specific date', () => {
       expect(referral.expirationDate).to.equal('2025-04-30');
     });
+    it('includes onlineSchedule defaulting to true', () => {
+      expect(referral.onlineSchedule).to.be.true;
+    });
+  });
+  describe('createReferralListItem', () => {
+    it('includes onlineSchedule defaulting to true', () => {
+      const referral = MockReferralListResponse.createReferral({
+        id: 'test-online',
+      });
+      expect(referral.attributes.onlineSchedule).to.be.true;
+    });
+    it('allows onlineSchedule to be set to false', () => {
+      const referral = MockReferralListResponse.createReferral({
+        id: 'test-offline',
+        onlineSchedule: false,
+      });
+      expect(referral.attributes.onlineSchedule).to.be.false;
+    });
   });
   describe('getReferralSlotKey', () => {
     expect(referralUtil.getReferralSlotKey('111')).to.equal(

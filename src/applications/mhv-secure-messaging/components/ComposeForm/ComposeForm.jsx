@@ -181,7 +181,7 @@ const ComposeForm = props => {
 
   useEffect(
     () => {
-      // Consider draftInProgress "empty" if it has no recipientId
+      // Consider draftInProgress "empty" if it has no recipient-related content
       const isDraftInProgressEmpty =
         !draftInProgress ||
         Object.keys(draftInProgress).length === 0 ||
@@ -210,9 +210,9 @@ const ComposeForm = props => {
                 draft.suggestedNameDisplay ||
                 draft.recipientName,
               ohTriageGroup: ohTriageGroup(draft.recipientId),
-              category: draftInProgress?.category || draft.category,
-              subject: draftInProgress?.subject || draft.subject,
-              body: draftInProgress?.body || draft.body,
+              category: draftInProgress?.category ?? draft.category,
+              subject: draftInProgress?.subject ?? draft.subject,
+              body: draftInProgress?.body ?? draft.body,
               messageId: draftInProgress?.messageId || draft.messageId,
             }),
           );
@@ -223,9 +223,9 @@ const ComposeForm = props => {
               careSystemName: null,
               recipientId: null,
               recipientName: null,
-              category: draftInProgress?.category || draft.category,
-              subject: draftInProgress?.subject || draft.subject,
-              body: draftInProgress?.body || draft.body,
+              category: draftInProgress?.category ?? draft.category,
+              subject: draftInProgress?.subject ?? draft.subject,
+              body: draftInProgress?.body ?? draft.body,
               messageId: draftInProgress.messageId || draft.messageId,
             }),
           );

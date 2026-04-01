@@ -21,6 +21,7 @@ import * as InterruptedMod from '../../../components/ApplicationInterruptedAlert
 import * as LoadFailedMod from '../../../components/LoadCaseDetailsFailedAlert';
 
 const sandbox = sinon.createSandbox();
+let caseProgressBarProps;
 
 const makeStore = state => {
   const dispatch = sandbox.spy();
@@ -77,6 +78,7 @@ const activeBenefitsStateList = [
 
 describe('<MyCaseManagementHub>', () => {
   beforeEach(() => {
+    caseProgressBarProps = null;
     sandbox.stub(UI, 'scrollToTop');
     sandbox.stub(UI, 'focusElement');
 
@@ -84,9 +86,10 @@ describe('<MyCaseManagementHub>', () => {
       .stub(actions, 'fetchCh31CaseStatusDetails')
       .returns({ type: 'FETCH_CH31_CASE_STATUS_DETAILS' });
 
-    sandbox
-      .stub(CaseProgressBarMod, 'default')
-      .callsFake(() => <div data-testid="case-progress-bar" />);
+    sandbox.stub(CaseProgressBarMod, 'default').callsFake(props => {
+      caseProgressBarProps = props;
+      return <div data-testid="case-progress-bar" />;
+    });
     sandbox
       .stub(HubCardListMod, 'default')
       .callsFake(() => <div data-testid="hub-card-list" />);
@@ -135,6 +138,70 @@ describe('<MyCaseManagementHub>', () => {
     const { getByText, queryByText } = renderPage(makeState({ attrs }));
     expect(queryByText(/This page isn’t available right now/i)).to.equal(null);
     getByText(/Your VR&E Benefit Status/i);
+  });
+
+  it('passes appointment details to CaseProgressBar for step 4', () => {
+    const attrs = {
+      orientationAppointmentDetails: {
+        appointmentDateTime: '2026-01-14T18:46:18.688Z',
+        appointmentPlace: '31223 Corn Drive, Hamilton NJ-21223',
+      },
+      externalStatus: {
+        isDiscontinued: false,
+        discontinuedReason: null,
+        isInterrupted: false,
+        interruptedReason: null,
+        stateList: [
+          { stepCode: 'APPL', status: 'COMPLETED' },
+          { stepCode: 'ELGLDET', status: 'COMPLETED' },
+          { stepCode: 'ORICMPT', status: 'COMPLETED' },
+          { stepCode: 'INTAKE', status: 'ACTIVE' },
+        ],
+      },
+    };
+
+    const { getByText, getByTestId } = renderPage(makeState({ attrs }));
+
+    const introCopy = getByText(
+      /The Veteran Readiness and Employment \(VR&E\) benefits tracker helps you manage your Chapter 31 process on your own/i,
+    );
+    const progressBar = getByTestId('case-progress-bar');
+
+    expect(introCopy.nextElementSibling).to.equal(progressBar);
+    expect(caseProgressBarProps).to.deep.equal({
+      current: 4,
+      stepLabels: [
+        'Application received',
+        'Eligibility determination',
+        'Orientation video',
+        'Initial evaluation counselor meeting',
+        'Entitlement determination date',
+        'Rehabilitation plan or career track',
+        'Benefits initiated',
+      ],
+      attributes: attrs,
+    });
+  });
+
+  it('passes the non-step-4 state into CaseProgressBar outside the counselor meeting step', () => {
+    const attrs = {
+      orientationAppointmentDetails: {
+        appointmentDateTime: '2026-01-14T18:46:18.688Z',
+        appointmentPlace: '31223 Corn Drive, Hamilton NJ-21223',
+      },
+      externalStatus: {
+        isDiscontinued: false,
+        discontinuedReason: null,
+        isInterrupted: false,
+        interruptedReason: null,
+        stateList: activeBenefitsStateList,
+      },
+    };
+
+    const { queryByTestId } = renderPage(makeState({ attrs }));
+
+    expect(queryByTestId('case-progress-bar')).to.exist;
+    expect(caseProgressBarProps.current).to.equal(7);
   });
 
   it('redirects interrupted cases back to the root route instead of keeping the active step slug', async () => {

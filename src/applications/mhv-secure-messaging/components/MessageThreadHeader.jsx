@@ -4,7 +4,7 @@ import { focusElement } from '@department-of-veterans-affairs/platform-utilities
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePageTitle } from '@department-of-veterans-affairs/mhv/exports';
-import MigratingFacilitiesAlerts from 'platform/mhv/components/CernerFacilityAlert/MigratingFacilitiesAlerts';
+import SmMigratingFacilitiesAlerts from './shared/SmMigratingFacilitiesAlerts';
 import MessageActionButtons from './MessageActionButtons';
 import {
   Categories,
@@ -138,10 +138,10 @@ const MessageThreadHeader = props => {
         <AlertBackgroundBox closeable className="vads-u-margin-y--1 va-alert" />
 
         {isInMigrationPhase && (
-          <MigratingFacilitiesAlerts
-            healthTool="SECURE_MESSAGING"
+          <SmMigratingFacilitiesAlerts
             className="vads-u-margin-y--4"
             migratingFacilities={migratingFacilities}
+            stationNumber={message?.triageGroup?.stationNumber}
           />
         )}
         {useCanReplyField ? (

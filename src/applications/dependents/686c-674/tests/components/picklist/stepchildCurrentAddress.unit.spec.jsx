@@ -187,6 +187,38 @@ describe('stepchildCurrentAddress', () => {
     });
   });
 
+  context('onChange address payload', () => {
+    it('should omit street2 from address when not provided', async () => {
+      const onChange = sinon.spy();
+      renderComponent({ onChange });
+
+      await waitFor(() => {
+        expect(onChange.called).to.be.true;
+      });
+
+      const { address } = onChange.lastCall.args[0];
+      expect(address).to.not.have.property('street2');
+    });
+
+    it('should include street2 in address when provided', async () => {
+      const onChange = sinon.spy();
+      renderComponent({
+        onChange,
+        data: {
+          ...defaultData,
+          address: { ...defaultData.address, street2: 'Apt 2' },
+        },
+      });
+
+      await waitFor(() => {
+        expect(onChange.called).to.be.true;
+      });
+
+      const { address } = onChange.lastCall.args[0];
+      expect(address.street2).to.equal('Apt 2');
+    });
+  });
+
   context('stepchildCurrentAddress handlers', () => {
     const { handlers } = stepchildCurrentAddress;
 

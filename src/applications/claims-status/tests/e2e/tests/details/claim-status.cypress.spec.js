@@ -28,8 +28,33 @@ describe('Claim status', () => {
         heading: { name: 'Claim status', level: 2 },
       });
 
-      cy.findByText('Here’s the latest information on your claim.');
       cy.axeCheck();
+    });
+
+    describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
+      context('when enabled', () => {
+        beforeEach(() => {
+          mockFeatureToggles({
+            cstAlertImprovementsEvidenceRequests: true,
+          });
+        });
+
+        it('should display intro text', () => {
+          setupClaimTest({ claim: createBenefitsClaim() });
+
+          cy.findByText('Review the latest status of your claim.');
+          cy.axeCheck();
+        });
+      });
+
+      context('when disabled', () => {
+        it('should display intro text', () => {
+          setupClaimTest({ claim: createBenefitsClaim() });
+
+          cy.findByText('Here’s the latest information on your claim.');
+          cy.axeCheck();
+        });
+      });
     });
 
     it('should display as in progress with last updated date', () => {
@@ -42,15 +67,196 @@ describe('Claim status', () => {
     });
 
     describe('What you need to do', () => {
-      it('should display heading and, when no tracked items, nothing needed message', () => {
+      const nothingNeededMessage =
+        'There’s nothing we need from you right now. We’ll let you know when there’s an update.';
+
+      it('should display heading', () => {
         setupClaimTest({
           claim: createBenefitsClaim({ trackedItems: [] }),
         });
 
         cy.findByRole('heading', { name: 'What you need to do', level: 3 });
-        cy.findByText('nothing we need from you', { exact: false });
-
         cy.axeCheck();
+      });
+
+      describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
+        context('when enabled', () => {
+          beforeEach(() => {
+            mockFeatureToggles({
+              cstAlertImprovementsEvidenceRequests: true,
+            });
+          });
+
+          it('should display nothing needed message when no tracked items and no failed submissions', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({ trackedItems: [] }),
+            });
+
+            cy.findByText(nothingNeededMessage);
+
+            cy.axeCheck();
+          });
+
+          it('should not display nothing needed message when failed submissions exist', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [],
+                evidenceSubmissions: [
+                  createEvidenceSubmission({
+                    uploadStatus: 'FAILED',
+                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  }),
+                ],
+              }),
+            });
+
+            cy.findByText(nothingNeededMessage).should('not.exist');
+            cy.axeCheck();
+          });
+
+          it('should display nothing needed message and additional info when no tracked items and documentsNeeded is true', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [],
+                documentsNeeded: true,
+              }),
+            });
+
+            cy.findByText(nothingNeededMessage);
+            cy.get('va-additional-info')
+              .shadow()
+              .findByText(/Why we still say.*Action may be needed.*after you/);
+            cy.axeCheck();
+          });
+
+          it('should display nothing needed message and no additional info when documentsNeeded is false', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [],
+                documentsNeeded: false,
+              }),
+            });
+
+            cy.findByText(nothingNeededMessage);
+            cy.get('va-additional-info').should('not.exist');
+            cy.axeCheck();
+          });
+
+          it('should display intro paragraph and files needed when open requests exist', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [createTrackedItem()],
+              }),
+            });
+
+            cy.findByText(
+              'We identified this information as needed to support your claim.',
+              { exact: false },
+            );
+            cy.get('[data-testid="item-123456"]').within(() => {
+              cy.findByRole('heading', { name: 'Provide medical records' });
+              cy.findByText('Please provide your medical records.');
+            });
+            cy.get('va-critical-action').should(
+              'have.attr',
+              'text',
+              'Requested by Jan. 1, 2050',
+            );
+            cy.get('va-alert[status="warning"]').should('not.exist');
+            cy.findByText(nothingNeededMessage).should('not.exist');
+            cy.get('va-additional-info').should('not.exist');
+
+            cy.axeCheck();
+          });
+
+          it('should navigate to document request page when clicking critical action', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [createTrackedItem()],
+              }),
+            });
+
+            cy.get('va-critical-action')
+              .shadow()
+              .find('a')
+              .click();
+            cy.url().should('contain', '/needed-from-you/123456');
+
+            cy.axeCheck();
+          });
+
+          it('should display sensitive item as Request for evidence in card', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [
+                  createTrackedItem({
+                    displayName: 'ASB - tell us where, when, how exposed',
+                    isSensitive: true,
+                  }),
+                ],
+              }),
+            });
+
+            cy.get('[data-testid="item-123456"]').within(() => {
+              cy.findByRole('heading', { name: 'Request for evidence' });
+            });
+
+            cy.axeCheck();
+          });
+        });
+
+        context('when disabled', () => {
+          it('should display nothing needed message when no tracked items and no failed submissions', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({ trackedItems: [] }),
+            });
+
+            cy.findByText(nothingNeededMessage);
+            cy.axeCheck();
+          });
+
+          it('should hide nothing needed message when failed submissions exist', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [],
+                evidenceSubmissions: [
+                  createEvidenceSubmission({
+                    uploadStatus: 'FAILED',
+                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  }),
+                ],
+              }),
+            });
+
+            cy.findByText(nothingNeededMessage).should('not.exist');
+            cy.axeCheck();
+          });
+
+          it('should display files needed without intro paragraph when tracked items exist', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [createTrackedItem()],
+              }),
+            });
+
+            cy.get('[data-testid="item-123456"]')
+              .should('have.prop', 'tagName')
+              .then(tag => expect(tag.toLowerCase()).to.equal('va-alert'));
+            cy.get('[data-testid="item-123456"]').should(
+              'have.attr',
+              'status',
+              'warning',
+            );
+            cy.get('[data-testid="item-123456"]').within(() => {
+              cy.findByText('Provide medical records');
+            });
+            cy.findByText(
+              'We identified this information as needed to support your claim.',
+              { exact: false },
+            ).should('not.exist');
+            cy.axeCheck();
+          });
+        });
       });
 
       it('should display alert when standard evidence is requested', () => {
@@ -97,96 +303,65 @@ describe('Claim status', () => {
         cy.axeCheck();
       });
 
-      describe('Feature flag: cstShowDocumentUploadStatus', () => {
-        context('when disabled', () => {
-          beforeEach(() => {
-            mockFeatureToggles({ showDocumentUploadStatus: false });
+      describe('Upload error alerts', () => {
+        it('should show upload error alert and hide nothing needed message when failed submissions exist', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim({
+              evidenceSubmissions: [
+                createEvidenceSubmission({
+                  uploadStatus: 'FAILED',
+                  acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                }),
+              ],
+              trackedItems: [],
+            }),
           });
 
-          it('should hide upload error alert and show nothing needed message even when failed submissions exist', () => {
-            setupClaimTest({
-              claim: createBenefitsClaim({
-                evidenceSubmissions: [
-                  createEvidenceSubmission({
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                  }),
-                ],
-                trackedItems: [],
-              }),
-            });
+          cy.get('va-alert[status="error"]')
+            .contains('We need you to submit files by mail or in person')
+            .should('be.visible');
+          cy.findByText('nothing we need from you', { exact: false }).should(
+            'not.exist',
+          );
 
-            cy.get('va-alert[status="error"]').should('not.exist');
-            cy.findByText('nothing we need from you', { exact: false });
-
-            cy.axeCheck();
-          });
+          cy.axeCheck();
         });
 
-        context('when enabled', () => {
-          beforeEach(() => {
-            mockFeatureToggles({ showDocumentUploadStatus: true });
+        it('should display failed files as most recent first', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim({
+              evidenceSubmissions: [
+                createEvidenceSubmission({
+                  id: 1,
+                  uploadStatus: 'FAILED',
+                  acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  fileName: 'older-file.pdf',
+                  failedDate: '2025-01-10T12:00:00.000Z',
+                }),
+                createEvidenceSubmission({
+                  id: 2,
+                  uploadStatus: 'FAILED',
+                  acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  fileName: 'newer-file.pdf',
+                  failedDate: '2025-01-15T12:00:00.000Z',
+                }),
+              ],
+              trackedItems: [],
+            }),
           });
 
-          it('should show upload error alert and hide nothing needed message when failed submissions exist', () => {
-            setupClaimTest({
-              claim: createBenefitsClaim({
-                evidenceSubmissions: [
-                  createEvidenceSubmission({
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                  }),
-                ],
-                trackedItems: [],
-              }),
-            });
-
-            cy.get('va-alert[status="error"]')
-              .contains('We need you to submit files by mail or in person')
-              .should('be.visible');
-            cy.findByText('nothing we need from you', { exact: false }).should(
-              'not.exist',
-            );
-
-            cy.axeCheck();
+          cy.get('va-alert[status="error"]').within(() => {
+            cy.findAllByRole('listitem').as('listItems');
+            cy.get('@listItems').should('have.length', 2);
+            cy.get('@listItems')
+              .eq(0)
+              .findByText('newer-file.pdf');
+            cy.get('@listItems')
+              .eq(1)
+              .findByText('older-file.pdf');
           });
 
-          it('should display failed files as most recent first', () => {
-            setupClaimTest({
-              claim: createBenefitsClaim({
-                evidenceSubmissions: [
-                  createEvidenceSubmission({
-                    id: 1,
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                    fileName: 'older-file.pdf',
-                    failedDate: '2025-01-10T12:00:00.000Z',
-                  }),
-                  createEvidenceSubmission({
-                    id: 2,
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                    fileName: 'newer-file.pdf',
-                    failedDate: '2025-01-15T12:00:00.000Z',
-                  }),
-                ],
-                trackedItems: [],
-              }),
-            });
-
-            cy.get('va-alert[status="error"]').within(() => {
-              cy.findAllByRole('listitem').as('listItems');
-              cy.get('@listItems').should('have.length', 2);
-              cy.get('@listItems')
-                .eq(0)
-                .findByText('newer-file.pdf');
-              cy.get('@listItems')
-                .eq(1)
-                .findByText('older-file.pdf');
-            });
-
-            cy.axeCheck();
-          });
+          cy.axeCheck();
         });
       });
     });
@@ -350,52 +525,6 @@ describe('Claim status', () => {
         cy.axeCheck();
       });
 
-      it('should display request outside the VA with info alert', () => {
-        setupClaimTest({ claim: createBenefitsClaim() });
-
-        cy.findByText('We made a request outside the VA: “reserve records.”')
-          .closest('li')
-          .within(() => {
-            cy.get('va-alert').within(() => {
-              cy.findByText(
-                "We've requested your reserve records on your behalf. No action is needed.",
-              );
-              cy.findByRole('link', {
-                name: 'About this notice for Reserve records',
-              }).should(
-                'have.attr',
-                'href',
-                '/track-claims/your-claims/123456789/needed-from-others/654321-2',
-              );
-            });
-          });
-
-        cy.axeCheck();
-      });
-
-      it('should display disability exam request with info alert', () => {
-        setupClaimTest({ claim: createBenefitsClaim() });
-
-        cy.findByText('We made a request: “disability exam for hearing.”')
-          .closest('li')
-          .within(() => {
-            cy.get('va-alert').within(() => {
-              cy.findByText(
-                'We’ve requested an exam related to your claim. The examiner’s office will contact you to schedule this appointment.',
-              );
-              cy.findByRole('link', {
-                name: 'About this notice for Disability exam for hearing',
-              }).should(
-                'have.attr',
-                'href',
-                '/track-claims/your-claims/123456789/needed-from-others/123456-1',
-              );
-            });
-          });
-
-        cy.axeCheck();
-      });
-
       it('should display claim phase activity', () => {
         setupClaimTest({ claim: createBenefitsClaim() });
 
@@ -423,15 +552,136 @@ describe('Claim status', () => {
         cy.axeCheck();
       });
 
-      it('should navigate to document request page when clicking info alert link', () => {
-        setupClaimTest({ claim: createBenefitsClaim() });
+      describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
+        context('when enabled', () => {
+          beforeEach(() => {
+            mockFeatureToggles({
+              cstAlertImprovementsEvidenceRequests: true,
+            });
+          });
 
-        cy.findByRole('link', {
-          name: 'About this notice for Reserve records',
-        }).click();
-        cy.url().should('contain', '/needed-from-others/654321-2');
+          it('should display “Requested for you” tag on third-party requests', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
 
-        cy.axeCheck();
+            cy.findByText(
+              'We made a request outside the VA: “reserve records.”',
+            )
+              .closest('li')
+              .within(() => {
+                cy.findByText('Requested for you');
+              });
+
+            cy.axeCheck();
+          });
+
+          it('should display plain text and link for reserve records request', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
+
+            cy.findByText(
+              'We made a request outside the VA: “reserve records.”',
+            )
+              .closest('li')
+              .within(() => {
+                cy.contains(
+                  "We've requested your reserve records on your behalf.",
+                ).should('be.visible');
+                cy.findByRole('link', {
+                  name: 'Learn more about this notice for Reserve records',
+                });
+                cy.get('va-alert').should('not.exist');
+              });
+
+            cy.axeCheck();
+          });
+
+          it('should display plain text and link for disability exam request', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
+
+            cy.findByText('We made a request: “disability exam for hearing.”')
+              .closest('li')
+              .within(() => {
+                cy.findByText(
+                  'We’ve requested an exam related to your claim.',
+                  { exact: false },
+                );
+                cy.findByRole('link', {
+                  name:
+                    'Learn more about this notice for Disability exam for hearing',
+                });
+                cy.get('va-alert').should('not.exist');
+              });
+
+            cy.axeCheck();
+          });
+
+          it('should navigate to document request page when clicking notice link', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
+
+            cy.findByRole('link', {
+              name: 'Learn more about this notice for Reserve records',
+            }).click();
+            cy.url().should('contain', '/needed-from-others/654321-2');
+
+            cy.axeCheck();
+          });
+        });
+
+        context('when disabled', () => {
+          it('should display reserve records request with info alert', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
+
+            cy.findByText(
+              'We made a request outside the VA: “reserve records.”',
+            )
+              .closest('li')
+              .within(() => {
+                cy.get('va-alert').within(() => {
+                  cy.findByText(
+                    "We've requested your reserve records on your behalf. No action is needed.",
+                  );
+                  cy.findByRole('link', {
+                    name: 'About this notice for Reserve records',
+                  }).should(
+                    'have.attr',
+                    'href',
+                    '/track-claims/your-claims/123456789/needed-from-others/654321-2',
+                  );
+                });
+              });
+
+            cy.axeCheck();
+          });
+
+          it('should display disability exam request with info alert', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
+
+            cy.findByText('We made a request: “disability exam for hearing.”')
+              .closest('li')
+              .within(() => {
+                cy.get('va-alert').within(() => {
+                  cy.contains(
+                    'We’ve requested an exam related to your claim.',
+                  ).should('be.visible');
+                  cy.findByRole('link', {
+                    name: 'About this notice for Disability exam for hearing',
+                  });
+                });
+              });
+
+            cy.axeCheck();
+          });
+
+          it('should navigate to document request page when clicking info alert link', () => {
+            setupClaimTest({ claim: createBenefitsClaim() });
+
+            cy.findByRole('link', {
+              name: 'About this notice for Reserve records',
+            }).click();
+            cy.url().should('contain', '/needed-from-others/654321-2');
+
+            cy.axeCheck();
+          });
+        });
       });
     });
   });

@@ -9,7 +9,7 @@ export default function ListItem({
   children,
   status,
 }) {
-  const uniqueIdentifier = appointment.id || appointment.uuid;
+  const uniqueIdentifier = appointment?.id || appointment?.uuid || '';
   const idClickable = `id-${uniqueIdentifier.replace(/[.=\\]/g, '\\$&')}`;
 
   return (
@@ -18,7 +18,7 @@ export default function ListItem({
       data-request-id={uniqueIdentifier}
       data-status={status}
       className={classNames(
-        'vaos-appts__listItem--clickable',
+        uniqueIdentifier && 'vaos-appts__listItem--clickable',
         'vads-u-margin--0',
         {
           'vads-u-border-top--1px': borderTop,
@@ -34,7 +34,7 @@ export default function ListItem({
 }
 
 ListItem.propTypes = {
-  appointment: PropTypes.object.isRequired,
+  appointment: PropTypes.object,
   borderBottom: PropTypes.bool,
   borderTop: PropTypes.bool,
   children: PropTypes.object,

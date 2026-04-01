@@ -5,23 +5,6 @@ import WhatYouNeedToDo from '../../../components/claim-status-tab/WhatYouNeedToD
 
 const nothingNeededText =
   'There’s nothing we need from you right now. We’ll let you know when there’s an update.';
-// cst_show_document_upload_status false for old behavior
-const defaultReduxState = {
-  initialState: {
-    featureToggles: {
-      // eslint-disable-next-line camelcase
-      cst_show_document_upload_status: false,
-    },
-  },
-};
-const enabledReduxState = {
-  initialState: {
-    featureToggles: {
-      // eslint-disable-next-line camelcase
-      cst_show_document_upload_status: true,
-    },
-  },
-};
 const createClaimAttributes = (overrides = {}) => ({
   status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
   closeDate: null,
@@ -56,7 +39,6 @@ describe('<WhatYouNeedToDo>', () => {
 
     const { container, queryByText } = renderWithReduxAndRouter(
       <WhatYouNeedToDo claim={claim} />,
-      defaultReduxState,
     );
 
     expect(queryByText(nothingNeededText)).not.to.exist;
@@ -75,7 +57,6 @@ describe('<WhatYouNeedToDo>', () => {
 
     const { container, queryByText } = renderWithReduxAndRouter(
       <WhatYouNeedToDo claim={claim} />,
-      defaultReduxState,
     );
 
     expect(queryByText(nothingNeededText)).not.to.exist;
@@ -106,10 +87,7 @@ describe('<WhatYouNeedToDo>', () => {
           queryByText,
           getByTestId,
           getByText,
-        } = renderWithReduxAndRouter(
-          <WhatYouNeedToDo claim={claim} />,
-          defaultReduxState,
-        );
+        } = renderWithReduxAndRouter(<WhatYouNeedToDo claim={claim} />);
 
         expect(queryByText(nothingNeededText)).not.to.exist;
         expect(container.querySelector('va-alert')).to.exist;
@@ -138,136 +116,80 @@ describe('<WhatYouNeedToDo>', () => {
       ...overrides,
     });
 
-    context(
-      "when the 'cst_show_document_upload_status' feature toggle is disabled",
-      () => {
-        it('should NOT render the alert', () => {
-          const claim = createClaim({
-            evidenceWaiverSubmitted5103: true,
-            evidenceSubmissions: [createEvidenceSubmission()],
-          });
-          const {
-            container,
-            getByText,
-            queryByText,
-          } = renderWithReduxAndRouter(
-            <WhatYouNeedToDo claim={claim} />,
-            defaultReduxState,
-          );
+    it('should render the alert when there are failed submissions within the last 30 days', () => {
+      const claim = createClaim({
+        evidenceWaiverSubmitted5103: true,
+        evidenceSubmissions: [
+          createEvidenceSubmission({
+            id: 1,
+            fileName: 'first-file.pdf',
+            failedDate: fiveDaysAgo,
+            trackedItemId: 1,
+            trackedItemDisplayName: 'Medical records',
+          }),
+          createEvidenceSubmission({
+            id: 2,
+            fileName: 'second-file.pdf',
+            failedDate: tenDaysAgo,
+          }),
+        ],
+      });
+      const { container, getByText, queryByText } = renderWithReduxAndRouter(
+        <WhatYouNeedToDo claim={claim} />,
+      );
 
-          expect(container.querySelector('va-alert[status="error"]')).not.to
-            .exist;
-          expect(
-            queryByText('We need you to submit files by mail or in person'),
-          ).not.to.exist;
-          // Should show "nothing needed" message (since no tracked items)
-          getByText(nothingNeededText);
-        });
+      expect(container.querySelector('va-alert[status="error"]')).to.exist;
+      getByText('We need you to submit files by mail or in person');
 
-        it('should render no-documents description when there are no tracked items or standard 5103', () => {
-          const claim = createClaim({
-            evidenceWaiverSubmitted5103: true,
-          });
-          const { container, getByText } = renderWithReduxAndRouter(
-            <WhatYouNeedToDo claim={claim} />,
-            defaultReduxState,
-          );
+      const listItems = container.querySelectorAll('ul li');
+      // The failures should be in chronological order (most recent first)
+      expect(listItems).to.have.length(2);
+      expect(listItems[0].textContent).to.include('first-file.pdf');
+      expect(listItems[0].textContent).to.include(
+        'Request type: Medical records',
+      );
+      expect(listItems[1].textContent).to.include('second-file.pdf');
+      expect(listItems[1].textContent).to.include(
+        'You submitted this file as additional evidence',
+      );
+      // Should not show "nothing needed" message
+      expect(queryByText(nothingNeededText)).not.to.exist;
+    });
 
-          getByText(nothingNeededText);
-          expect(container.querySelector('va-alert')).not.to.exist;
-        });
-      },
-    );
+    it('should not render alert when there are no failed submissions within the last 30 days', () => {
+      const claim = createClaim({
+        evidenceWaiverSubmitted5103: true,
+        evidenceSubmissions: [
+          createEvidenceSubmission({
+            fileName: 'successful-document.pdf',
+            uploadStatus: 'SUCCESS',
+          }),
+          createEvidenceSubmission({
+            id: 2,
+            acknowledgementDate: fiveDaysAgo,
+          }),
+        ],
+      });
+      const { container, getByText } = renderWithReduxAndRouter(
+        <WhatYouNeedToDo claim={claim} />,
+      );
+      expect(container.querySelector('va-alert[status="error"]')).not.to.exist;
+      getByText(nothingNeededText);
+    });
 
-    context(
-      "when the 'cst_show_document_upload_status' feature toggle is enabled",
-      () => {
-        it('should render the alert when there are failed submissions within the last 30 days', () => {
-          const claim = createClaim({
-            evidenceWaiverSubmitted5103: true,
-            evidenceSubmissions: [
-              createEvidenceSubmission({
-                id: 1,
-                fileName: 'first-file.pdf',
-                failedDate: fiveDaysAgo,
-                trackedItemId: 1,
-                trackedItemDisplayName: 'Medical records',
-              }),
-              createEvidenceSubmission({
-                id: 2,
-                fileName: 'second-file.pdf',
-                failedDate: tenDaysAgo,
-              }),
-            ],
-          });
-          const {
-            container,
-            getByText,
-            queryByText,
-          } = renderWithReduxAndRouter(
-            <WhatYouNeedToDo claim={claim} />,
-            enabledReduxState,
-          );
+    it('should render no-documents description when there are no failed submissions and no tracked items', () => {
+      const claim = createClaim({
+        evidenceWaiverSubmitted5103: true,
+        evidenceSubmissions: [
+          createEvidenceSubmission({ acknowledgementDate: fiveDaysAgo }),
+        ],
+      });
+      const { container, getByText } = renderWithReduxAndRouter(
+        <WhatYouNeedToDo claim={claim} />,
+      );
 
-          expect(container.querySelector('va-alert[status="error"]')).to.exist;
-          getByText('We need you to submit files by mail or in person');
-
-          const listItems = container.querySelectorAll('ul li');
-          // The failures should be in chronological order (most recent first)
-          expect(listItems).to.have.length(2);
-          expect(listItems[0].textContent).to.include('first-file.pdf');
-          expect(listItems[0].textContent).to.include(
-            'Request type: Medical records',
-          );
-          expect(listItems[1].textContent).to.include('second-file.pdf');
-          expect(listItems[1].textContent).to.include(
-            'You submitted this file as additional evidence',
-          );
-          // Should not show "nothing needed" message
-          expect(queryByText(nothingNeededText)).not.to.exist;
-        });
-
-        it('should not render alert when there are no failed submissions within the last 30 days', () => {
-          const claim = createClaim({
-            evidenceWaiverSubmitted5103: true,
-            evidenceSubmissions: [
-              createEvidenceSubmission({
-                fileName: 'successful-document.pdf',
-                uploadStatus: 'SUCCESS',
-              }),
-              createEvidenceSubmission({
-                id: 2,
-                acknowledgementDate: fiveDaysAgo,
-              }),
-            ],
-          });
-          const { container, getByText } = renderWithReduxAndRouter(
-            <WhatYouNeedToDo claim={claim} />,
-            enabledReduxState,
-          );
-          // Should not show error alert
-          expect(container.querySelector('va-alert[status="error"]')).not.to
-            .exist;
-          // Should show "nothing needed" message
-          getByText(nothingNeededText);
-        });
-
-        it('should render no-documents description when there are no failed submissions within the last 30 days and no tracked items or standard 5103', () => {
-          const claim = createClaim({
-            evidenceWaiverSubmitted5103: true,
-            evidenceSubmissions: [
-              createEvidenceSubmission({ acknowledgementDate: fiveDaysAgo }),
-            ],
-          });
-          const { container, getByText } = renderWithReduxAndRouter(
-            <WhatYouNeedToDo claim={claim} />,
-            enabledReduxState,
-          );
-
-          getByText(nothingNeededText);
-          expect(container.querySelector('va-alert')).not.to.exist;
-        });
-      },
-    );
+      getByText(nothingNeededText);
+      expect(container.querySelector('va-alert')).not.to.exist;
+    });
   });
 });

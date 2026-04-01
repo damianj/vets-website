@@ -584,11 +584,7 @@ describe('VA File Input Multiple', () => {
       cy.get('va-alert[status="error"]').should('be.visible');
       cy.get('va-alert[status="error"] h2').should(
         'contain.text',
-        `Error uploading ${fileName}`,
-      );
-      cy.get('va-alert[status="error"] div').should(
-        'contain.text',
-        errorMessage,
+        `We need you to submit files by mail or in person`,
       );
 
       cy.axeCheck();
@@ -967,7 +963,7 @@ describe('VA File Input Multiple', () => {
       cy.wait('@documents');
       cy.get('va-alert')
         .should('be.visible')
-        .and('contain.text', 'We received your file upload on');
+        .and('contain.text', 'Document submission started on');
       cy.axeCheck();
     });
 
@@ -1027,7 +1023,7 @@ describe('VA File Input Multiple', () => {
       cy.wait('@documents');
       cy.get('va-alert[status="success"]')
         .should('be.visible')
-        .and('contain.text', 'We received your file upload on');
+        .and('contain.text', 'Document submission started on');
 
       cy.axeCheck();
     });

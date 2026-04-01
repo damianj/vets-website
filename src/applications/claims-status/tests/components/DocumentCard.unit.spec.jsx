@@ -104,21 +104,35 @@ describe('<DocumentCard>', () => {
     });
 
     it('should render status badge when statusBadgeText is provided', () => {
-      const { getByText, container } = render(
-        <DocumentCard {...defaultProps} statusBadgeText="Pending review" />,
-      );
-      expect($('.file-status-badge', container)).to.exist;
-      expect(getByText('Pending review')).to.exist;
-    });
-
-    it('should include screen reader text for status badge', () => {
       const { container } = render(
         <DocumentCard {...defaultProps} statusBadgeText="Pending review" />,
       );
-      const srText = container.querySelector(
-        '.vads-u-visibility--screen-reader',
-      );
-      expect(srText.textContent).to.equal('Status');
+      expect($('.file-status-badge', container)).to.exist;
+      const tag = $('va-tag-status', container);
+      expect(tag).to.exist;
+      expect(tag.getAttribute('text')).to.equal('Pending review');
+    });
+
+    [
+      { statusBadgeStatus: undefined, expected: null, label: 'not provided' },
+      { statusBadgeStatus: 'info', expected: 'info', label: '"info"' },
+      { statusBadgeStatus: 'success', expected: 'success', label: '"success"' },
+    ].forEach(({ statusBadgeStatus, expected, label }) => {
+      it(`should set status to ${label} when statusBadgeStatus is ${label}`, () => {
+        const { container } = render(
+          <DocumentCard
+            {...defaultProps}
+            statusBadgeStatus={statusBadgeStatus}
+            statusBadgeText="Pending review"
+          />,
+        );
+        const tag = $('va-tag-status', container);
+        if (expected === null) {
+          expect(tag.getAttribute('status')).to.be.null;
+        } else {
+          expect(tag.getAttribute('status')).to.equal(expected);
+        }
+      });
     });
   });
 

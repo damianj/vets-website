@@ -59,17 +59,14 @@ describe('mcp statement view', () => {
           staTAddress3: 'Address 3',
           city: 'New York',
           state: 'NY',
-          ziPCde: '10001',
-          recipientAddress1: '456 Alternate St',
-          recipientAddress2: 'Apt 2',
-          recipientAddress3: 'Test Patient Address 3',
+          ziPCdeOutput: '10001',
         },
         pHAddress1: '456 Alternate St',
         pHAddress2: 'Apt 2',
         pHAddress3: 'Test Patient Address 3',
         pHCity: 'Tampa',
         pHState: 'FL',
-        pHZipCde: '33333',
+        pHZipCdeOutput: '33333',
       };
 
       // Create store with full state including selectedStatement

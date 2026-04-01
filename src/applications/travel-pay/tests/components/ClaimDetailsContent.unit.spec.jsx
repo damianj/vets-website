@@ -1196,5 +1196,153 @@ describe('ClaimDetailsContent', () => {
         ).to.not.exist;
       });
     });
+
+    describe('Appointment data error alert', () => {
+      const getStateWithNoAppointment = (overrides = {}) =>
+        getState({
+          hasComplexClaimsFlag: true,
+          appointment: { data: null, isLoading: false, error: null },
+          ...overrides,
+        });
+
+      it('shows the error alert for a VaGov Saved claim when appointment ID is missing', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Saved"
+            claimSource="VaGov"
+            documents={[]}
+          />,
+          {
+            initialState: getStateWithNoAppointment(),
+            reducers: reducer,
+          },
+        );
+
+        expect(screen.getByTestId('appointment-data-error-alert')).to.exist;
+        expect(
+          screen.getByText(
+            /We can't access your travel reimbursement claim status right now/i,
+          ),
+        ).to.exist;
+      });
+
+      it('hides claim status and claim information sections when showing the error alert', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Saved"
+            claimSource="VaGov"
+            documents={[]}
+          />,
+          {
+            initialState: getStateWithNoAppointment(),
+            reducers: reducer,
+          },
+        );
+
+        expect(screen.getByTestId('appointment-data-error-alert')).to.exist;
+        expect(screen.queryByText(/Claim status:/i)).to.not.exist;
+        expect(screen.queryByText(/Claim information/i)).to.not.exist;
+        expect(screen.queryByText(/Claim timeline/i)).to.not.exist;
+      });
+
+      it('does NOT show the error alert when the appointment ID is present', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Saved"
+            claimSource="VaGov"
+            documents={[]}
+          />,
+          {
+            initialState: getState({ hasComplexClaimsFlag: true }),
+            reducers: reducer,
+          },
+        );
+
+        expect(screen.queryByTestId('appointment-data-error-alert')).to.not
+          .exist;
+      });
+
+      it('does NOT show the error alert for a non-VaGov claim (BTSSS link shown instead)', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Saved"
+            claimSource="BTSSS"
+            documents={[]}
+          />,
+          {
+            initialState: getStateWithNoAppointment(),
+            reducers: reducer,
+          },
+        );
+
+        expect(screen.queryByTestId('appointment-data-error-alert')).to.not
+          .exist;
+        expect(
+          $(
+            `va-link[text="Complete and file your claim in BTSSS"][href="${BTSSS_PORTAL_URL}"]`,
+          ),
+        ).to.exist;
+      });
+
+      it('shows the error alert for a Denied claim when appointment ID is missing', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Denied"
+            claimSource="VaGov"
+            documents={[]}
+          />,
+          {
+            initialState: getStateWithNoAppointment(),
+            reducers: reducer,
+          },
+        );
+
+        expect(screen.getByTestId('appointment-data-error-alert')).to.exist;
+      });
+
+      it('does NOT show the error alert when the complexClaimsToggle is off', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Saved"
+            claimSource="VaGov"
+            documents={[]}
+          />,
+          {
+            initialState: getState({
+              hasComplexClaimsFlag: false,
+              appointment: { data: null, isLoading: false, error: null },
+            }),
+            reducers: reducer,
+          },
+        );
+
+        expect(screen.queryByTestId('appointment-data-error-alert')).to.not
+          .exist;
+      });
+
+      it('does NOT show the "Complete and file" VA.gov action when appointment ID is missing', () => {
+        renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            claimStatus="Saved"
+            claimSource="VaGov"
+            documents={[]}
+          />,
+          {
+            initialState: getStateWithNoAppointment(),
+            reducers: reducer,
+          },
+        );
+
+        expect($('va-link-action[text="Complete and file your claim"]')).to.not
+          .exist;
+      });
+    });
   });
 });

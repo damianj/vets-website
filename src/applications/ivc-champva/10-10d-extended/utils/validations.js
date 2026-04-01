@@ -167,6 +167,35 @@ export const validateOHIDates = (errors, data) => {
 };
 
 /**
+ * Validates that only one applicant has a spousal relationship to the sponsor.
+ * Prevents multiple spouse/partner applicants by checking existing relationships,
+ * excluding the current applicant being edited.
+ *
+ * @param {Object} errors - The validation errors object to add errors to
+ * @param {string} fieldData - The relationship value ('spouse', 'child', etc.)
+ * @param {Object} formData - The complete form data containing all applicants
+ */
+export const validateSpousalRelationship = (errors, fieldData, formData) => {
+  if (fieldData !== 'spouse') return;
+
+  const currentIndex = getCurrentItemIndex();
+  const isReviewPage = window?.location?.pathname?.includes(
+    'review-and-submit',
+  );
+
+  const spouseCount = (formData?.applicants ?? []).filter(
+    (a, i) =>
+      a?.applicantRelationshipToSponsor?.relationshipToVeteran === 'spouse' &&
+      (isReviewPage || currentIndex === null || i !== currentIndex),
+  ).length;
+
+  const duplicateThreshold = isReviewPage ? 1 : 0;
+  if (spouseCount > duplicateThreshold) {
+    errors.addError(content['validation--spousal-relationship']);
+  }
+};
+
+/**
  * Validates file upload has proper structure
  * @param {Array} fileArray - Array of uploaded files
  * @returns {boolean} - true if file upload is valid

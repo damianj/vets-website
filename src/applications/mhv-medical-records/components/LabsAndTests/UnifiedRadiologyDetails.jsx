@@ -206,6 +206,34 @@ const UnifiedRadiologyDetails = props => {
           labelClass="vads-font-weight-regular"
         />
 
+        {hasLoadedThumbnails && (
+          <va-alert
+            status="success"
+            visible
+            class="vads-u-margin-top--4 no-print"
+            role="alert"
+            data-testid="alert-images-ready"
+          >
+            <h2 className="vads-u-font-size--lg no-print" slot="headline">
+              Images ready
+            </h2>
+            <p className="vads-u-margin-bottom--0">
+              <Link
+                to={`/labs-and-tests/${labId}/images`}
+                data-testid="images-ready-view-link"
+                data-dd-privacy="mask"
+                data-dd-action-name="[images ready alert - view images]"
+                onClick={() => sendDataDogAction('View all images')}
+              >
+                <strong>
+                  View all {scdfImageThumbnails.length}{' '}
+                  {scdfImageThumbnails.length === 1 ? 'image' : 'images'}
+                </strong>
+              </Link>
+            </p>
+          </va-alert>
+        )}
+
         {downloadStarted && <DownloadSuccessAlert />}
 
         {/*                   TEST DETAILS                          */}

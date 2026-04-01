@@ -1,5 +1,6 @@
 import { apiRequest } from 'platform/utilities/api';
 import { buildStatusUrl } from './endpoints';
+import { createCaveError, isTerminalCaveApiError } from './errors';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -23,7 +24,14 @@ export const pollDocumentStatus = async (documentId, options = {}) => {
         return payload;
       }
     } catch (error) {
-      lastError = error;
+      lastError = createCaveError(error, {
+        prefix: 'CAVE status request failed',
+        fallbackDetail: 'Unable to retrieve document processing status.',
+      });
+
+      if (isTerminalCaveApiError(error)) {
+        throw lastError;
+      }
     }
 
     // eslint-disable-next-line no-await-in-loop

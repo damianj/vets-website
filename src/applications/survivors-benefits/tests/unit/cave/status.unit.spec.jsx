@@ -71,7 +71,7 @@ describe('cave/status — pollDocumentStatus', () => {
   });
 
   it('rethrows the last API error when timed out after a failure', async () => {
-    const apiError = new Error('Network error');
+    const apiError = { status: 502, error: 'Gateway failure' };
     // Make apiRequest always throw; use a very short timeout so we time out
     apiRequestStub.rejects(apiError);
     let error;
@@ -81,8 +81,32 @@ describe('cave/status — pollDocumentStatus', () => {
     } catch (e) {
       error = e;
     }
-    // Either rethrows the API error or the timeout error, but it must throw
     expect(error).to.be.instanceOf(Error);
+    expect(error.message).to.include('CAVE status request failed');
+    expect(error.message).to.include('502');
+  });
+
+  it('stops retrying on terminal 404 errors', async () => {
+    apiRequestStub.rejects({
+      errors: [
+        {
+          status: '404',
+          code: 'idp_not_found',
+          detail: 'Item not found.',
+        },
+      ],
+    });
+    let error;
+    try {
+      await pollDocumentStatus('doc-1', FAST);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).to.be.instanceOf(Error);
+    expect(error.message).to.include('404');
+    expect(error.message).to.include('Item not found.');
+    expect(apiRequestStub.callCount).to.equal(1);
   });
 
   it('calls the status URL containing the document id', async () => {

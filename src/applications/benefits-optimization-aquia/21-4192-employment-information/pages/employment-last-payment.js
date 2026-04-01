@@ -11,6 +11,8 @@ import {
   radioUI,
   radioSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { convertToDateField } from 'platform/forms-system/src/js/validation';
+import { dateFieldToDate } from 'platform/utilities/date';
 import { MemorableDateUI } from '../components/memorable-date-ui';
 
 // Constants for required fields
@@ -26,6 +28,45 @@ const LUMP_SUM_REQUIRED_FIELDS = [
   'datePaid',
 ];
 
+const isValidDateObject = date =>
+  date instanceof Date && !Number.isNaN(date.getTime());
+
+const toDate = value => {
+  if (!value) {
+    return null;
+  }
+
+  return dateFieldToDate(convertToDateField(value));
+};
+
+const validateLastPaymentDates = (errors, fieldData, fullData) => {
+  const beginningDate = toDate(fullData?.employmentDates?.beginningDate);
+  if (!isValidDateObject(beginningDate)) {
+    return;
+  }
+
+  const dateOfLastPayment = toDate(fieldData?.dateOfLastPayment);
+  if (
+    isValidDateObject(dateOfLastPayment) &&
+    dateOfLastPayment < beginningDate
+  ) {
+    errors.dateOfLastPayment.addError(
+      "Date of last payment can't be before beginning date of employment",
+    );
+  }
+
+  if (fieldData?.lumpSumPayment !== 'yes') {
+    return;
+  }
+
+  const lumpSumDatePaid = toDate(fieldData?.datePaid);
+  if (isValidDateObject(lumpSumDatePaid) && lumpSumDatePaid < beginningDate) {
+    errors.datePaid.addError(
+      "Date of lump sum payment can't be before beginning date of employment",
+    );
+  }
+};
+
 /**
  * uiSchema for Employment Last Payment page
  * Collects information about the last payment received
@@ -33,6 +74,7 @@ const LUMP_SUM_REQUIRED_FIELDS = [
 export const employmentLastPaymentUiSchema = {
   'ui:title': 'Last payment',
   employmentLastPayment: {
+    'ui:validations': [validateLastPaymentDates],
     dateOfLastPayment: MemorableDateUI({
       title: 'Date of last payment',
       dataDogHidden: true,

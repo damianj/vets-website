@@ -96,5 +96,44 @@ describe('EditContactInfo', () => {
 
       expect(getReturnState()).to.eq('home-phone,canceled');
     });
+
+    it('should show the blue profile alert by default', () => {
+      const { container } = renderInReduxProvider(
+        <EditHomePhone {...props} />,
+        {
+          initialState: { user: { profile: { vapContactInfo: vapProfile } } },
+          reducers: { vapService },
+        },
+      );
+
+      const alert = container.querySelector('va-alert[status="info"]');
+      expect(alert).to.exist;
+    });
+
+    it('should show the blue profile alert when showProfileAlert is true', () => {
+      const { container } = renderInReduxProvider(
+        <EditHomePhone {...props} showProfileAlert />,
+        {
+          initialState: { user: { profile: { vapContactInfo: vapProfile } } },
+          reducers: { vapService },
+        },
+      );
+
+      const alert = container.querySelector('va-alert[status="info"]');
+      expect(alert).to.exist;
+    });
+
+    it('should hide the blue profile alert when showProfileAlert is false', () => {
+      const { container } = renderInReduxProvider(
+        <EditHomePhone {...props} showProfileAlert={false} />,
+        {
+          initialState: { user: { profile: { vapContactInfo: vapProfile } } },
+          reducers: { vapService },
+        },
+      );
+
+      const alert = container.querySelector('va-alert[status="info"]');
+      expect(alert).to.not.exist;
+    });
   });
 });

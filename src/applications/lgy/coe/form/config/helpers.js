@@ -11,9 +11,10 @@ export const customCOEsubmit = (formConfig, form) => {
   const { periodsOfService = [], relevantPriorLoans = [] } = formCopy.data;
 
   const isoDateString = (dateString = '') => {
-    const [year, month, setDay = ''] = dateString.split('-');
+    const [year, setMonth, setDay = ''] = dateString.split('-');
     // set day to the 1st when not set
     const day = setDay === 'XX' ? '01' : setDay.padStart(2, '0');
+    const month = setMonth === 'XX' ? '01' : setMonth.padStart(2, '0');
     // using new Date().toISOString() includes the timezone offset, so we're building it
     return dateString
       ? `${year}-${month.padStart(2, '0')}-${day}T00:00:00.000Z`

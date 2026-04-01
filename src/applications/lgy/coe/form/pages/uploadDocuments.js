@@ -7,18 +7,13 @@ import {
   fileInputMultipleSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { VaSelect } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { serviceStatuses, entitlementRestorationOptions } from '../constants';
+import { serviceStatuses } from '../constants';
 import { FILE_TYPES } from '../../status/constants';
 import { UploadDocumentsReview } from '../components/UploadDocumentsReview';
 import UploadInformation from '../components/UploadInformation';
 import DocumentsNeeded from '../components/DocumentsNeeded';
 
-const containsOneTimeRestoration = formData =>
-  formData?.relevantPriorLoans?.some(
-    loan =>
-      loan?.entitlementRestoration ===
-      entitlementRestorationOptions.ONE_TIME_RESTORATION,
-  );
+const hadPriorLoans = formData => formData?.loanHistory?.hadPriorLoans;
 
 export const DocumentTypeSelect = () => {
   const formData = useSelector(state => state?.form?.data);
@@ -48,12 +43,16 @@ export const DocumentTypeSelect = () => {
     );
   }
 
-  if (containsOneTimeRestoration(formData)) {
+  if (hadPriorLoans(formData)) {
     requiredDocumentTypes.push('Loan evidence');
   }
 
   return (
-    <VaSelect required label="Document type" name="attachmentType">
+    <VaSelect
+      required
+      label="What type of document is this?"
+      name="attachmentType"
+    >
       {requiredDocumentTypes.map(type => (
         <option key={type} value={type}>
           {type}
@@ -64,27 +63,18 @@ export const DocumentTypeSelect = () => {
 };
 
 export const getUiSchema = () => ({
-  ...titleUI('Upload your documents', ({ formData }) => {
-    const hasOneTimeRestoration = containsOneTimeRestoration(formData);
-    return (
-      <>
-        <DocumentsNeeded
-          formData={formData}
-          hasOneTimeRestoration={hasOneTimeRestoration}
-        />
-        <UploadInformation
-          formData={formData}
-          hasOneTimeRestoration={hasOneTimeRestoration}
-        />
-      </>
-    );
-  }),
+  ...titleUI('Upload documents', ({ formData }) => (
+    <>
+      <DocumentsNeeded formData={formData} hadPriorLoans={hadPriorLoans} />
+      <UploadInformation formData={formData} hadPriorLoans={hadPriorLoans} />
+    </>
+  )),
   files2: fileInputMultipleUI({
-    title: 'Upload your documents',
-    required: true,
+    title: 'Select a file to upload',
+    required: false,
     accept: FILE_TYPES.map(type => `.${type}`).join(','),
     hint:
-      'You can upload a .jpg, .pdf, or a .png file. Be sure that your file size is 99MB or less for a PDF and 50MB or less for a .jpg or .png',
+      'You can upload a .jpg, .pdf, or a .png file. Be sure that your file size is 99MB or less for a .pdf and 50MB or less for a .jpg or .png',
     disallowEncryptedPdfs: true,
     fileSizesByFileType: {
       pdf: {
@@ -115,7 +105,7 @@ export const getUiSchema = () => ({
     },
     handleAdditionalInput: e => {
       const { value } = e.detail;
-      if (value === '') return null;
+      if (value === '') return {};
       return { attachmentType: e.detail.value };
     },
     reviewField: UploadDocumentsReview,

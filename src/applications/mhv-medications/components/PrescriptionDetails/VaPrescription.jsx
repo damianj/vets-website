@@ -34,9 +34,12 @@ import SendRxRenewalMessage from '../shared/SendRxRenewalMessage';
 import MedicationDescription from '../shared/MedicationDescription';
 import {
   selectCernerPilotFlag,
+  selectMhvMedicationsOracleHealthCutoverFlag,
   selectPartialFillContentFlag,
   selectV2StatusMappingFlag,
 } from '../../util/selectors';
+import { selectOracleHealthMigrations } from '../../selectors/selectUser';
+import { shouldBlockRefills } from '../../util/oracleHealthTransition';
 import VaPharmacyText from '../shared/VaPharmacyText';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import GroupedMedications from './GroupedMedications';
@@ -50,10 +53,19 @@ const VaPrescription = prescription => {
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
   const cernerFacilityIds = useSelector(selectCernerFacilityIds);
+  const isOracleHealthCutoverEnabled = useSelector(
+    selectMhvMedicationsOracleHealthCutoverFlag,
+  );
+  const migratingFacilities = useSelector(selectOracleHealthMigrations);
   const isOracleHealth = isOracleHealthPrescription(
     prescription,
     cernerFacilityIds,
   );
+  const isRefillBlocked = shouldBlockRefills({
+    prescription,
+    isFeatureFlagEnabled: isOracleHealthCutoverEnabled,
+    migrations: migratingFacilities,
+  });
   const refillHistory = getRefillHistory(prescription);
   const showRefillHistory = getShowRefillHistory(refillHistory);
   const pharmacyPhone = pharmacyPhoneNumber(prescription);
@@ -244,21 +256,22 @@ const VaPrescription = prescription => {
                   <>Most recent prescription</>
                 )}
               </h2>
-              {prescription?.isRefillable && (
-                <Link
-                  className="vads-u-display--block vads-c-action-link--green vads-u-margin-bottom--3"
-                  to="/refill"
-                  data-testid="refill-nav-link"
-                  onClick={() => {
-                    datadogRum.addAction(
-                      dataDogActionNames.detailsPage.FILL_THIS_PRESCRIPTION,
-                      { facilityId: prescription?.stationNumber },
-                    );
-                  }}
-                >
-                  {`Request a ${hasBeenDispensed ? 'refill' : 'fill'}`}
-                </Link>
-              )}
+              {prescription?.isRefillable &&
+                !isRefillBlocked && (
+                  <Link
+                    className="vads-u-display--block vads-c-action-link--green vads-u-margin-bottom--3"
+                    to="/refill"
+                    data-testid="refill-nav-link"
+                    onClick={() => {
+                      datadogRum.addAction(
+                        dataDogActionNames.detailsPage.FILL_THIS_PRESCRIPTION,
+                        { facilityId: prescription?.stationNumber },
+                      );
+                    }}
+                  >
+                    {`Request a ${hasBeenDispensed ? 'refill' : 'fill'}`}
+                  </Link>
+                )}
 
               {prescription && (
                 <ExtraDetails

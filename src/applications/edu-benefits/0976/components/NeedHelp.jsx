@@ -10,10 +10,10 @@ export default function NeedHelp() {
               If you need help gathering your information or filling out your
               form,
             </strong>{' '}
+            contact{' '}
             <va-link
-              external
-              href="https://www.benefits.va.gov/gibill/resources/education_resources/school_certifying_officials/elr.asp"
-              text="contact your Education Liaison Representative."
+              href="mailto:Federal.Approvals@va.gov"
+              text="Federal.Approvals@va.gov"
             />
           </p>
         </div>

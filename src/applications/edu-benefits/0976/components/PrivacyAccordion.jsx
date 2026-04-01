@@ -5,7 +5,7 @@ export default function PrivacyAccoridion() {
     <va-accordion open-single>
       <va-accordion-item
         bordered
-        header="View Privacy Act Statement"
+        header="Privacy Act Statement"
         data-testid="privacy-act"
       >
         <p>
@@ -31,7 +31,7 @@ export default function PrivacyAccoridion() {
       </va-accordion-item>
       <va-accordion-item
         bordered
-        header="View Respondent Burden"
+        header="Respondent Burden"
         data-testid="respondent-burden"
       >
         <p>

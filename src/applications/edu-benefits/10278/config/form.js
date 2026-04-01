@@ -1,4 +1,6 @@
+import React from 'react';
 import footerContent from 'platform/forms/components/FormFooter';
+import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
 import { arrayBuilderPages } from '~/platform/forms-system/src/js/patterns/array-builder';
 import { VA_FORM_IDS } from 'platform/forms/constants';
 import { profilePersonalInfoPage } from 'platform/forms-system/src/js/patterns/prefill/PersonalInformation';
@@ -28,6 +30,7 @@ import {
   thirdPartyPersonName,
   thirdPartyPersonAddress,
   discloseInformation,
+  informationToDiscloseOther,
   lengthOfRelease,
   securitySetup,
   securitySetupPinPassword,
@@ -110,6 +113,24 @@ const formConfig = {
             ssnPath: 'ssn',
           },
           depends: formData => formData?.userLoggedIn === true,
+          note: (
+            <div className="vads-u-margin-bottom--4">
+              <p>
+                <strong>Note:</strong> To protect your personal information, we
+                don’t allow online changes to your name, date of birth, or
+                Social Security number. If you need to change this information,
+                call us at <va-telephone contact={CONTACTS.VA_BENEFITS} /> (
+                <va-telephone contact="711" tty />
+                ). We’re here Monday through Friday, between 8:00 a.m. and 9:00
+                p.m. ET.
+              </p>
+              <va-link
+                external
+                href="https://www.va.gov/resources/how-to-change-your-legal-name-on-file-with-va/"
+                text="Find more detailed instructions for how to change your legal name"
+              />
+            </div>
+          ),
         }),
         ...profileContactInfoPages({
           content: {
@@ -220,6 +241,12 @@ const formConfig = {
             goPath('/third-party-person-details-1');
           },
         },
+        informationToDiscloseOther: {
+          path: 'information-to-disclose-other',
+          title: 'Other information to disclose',
+          uiSchema: informationToDiscloseOther.uiSchema,
+          schema: informationToDiscloseOther.schema,
+        },
       },
     },
     lengthOfReleaseChapter: {
@@ -241,6 +268,7 @@ const formConfig = {
           title: 'Security setup',
           uiSchema: securitySetup.uiSchema,
           schema: securitySetup.schema,
+          updateFormData: securitySetup.updateFormData,
           onNavForward: ({ formData, goPath }) => {
             const question = formData?.securityQuestion?.question;
             if (question === 'pin') {

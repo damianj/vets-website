@@ -25,13 +25,34 @@ export const replaceNumberWithWord = (_, word, number) => {
  * @returns {string} predefined error message
  */
 /**
+ * @typedef FormConfig~reviewErrorOverrideContext
+ * @type {Object}
+ * @property {Object} [formData] - current form data at the time of validation
+ * @property {string[]} [__errors] - array of error message strings from the
+ *  validator (present when the error source is a `__errors` array)
+ * @property {string} [stack] - full error stack string from the validator
+ * @property {string|string[]} [argument] - error argument value from the
+ *  validator
+ */
+/**
+ * @typedef FormConfig~reviewErrorOverrideResult
+ * @type {Object}
+ * @property {string} chapterKey - chapter key associated with the error
+ * @property {string} pageKey - page key associated with the error
+ * @property {string} [navigationType='edit'] - navigation behavior when the
+ *  error link is clicked; use 'redirect' to navigate to the page directly
+ *  instead of opening the review accordion
+ */
+/**
  * @typedef FormConfig~reviewErrorOverride
  * @type {function}
  * @param {string} error - error containing either the name of the property with
  *  the error, or the error stack (if it exists), or the error argument
- * @returns {object} - object containing the `chapterKey` and `pageKey`
- *  associated with the error; needed for summary pages on the review & submit
- *  page
+ * @param {FormConfig~reviewErrorOverrideContext} context - object containing
+ *  the current formData and any additional error metadata from the validator
+ * @returns {FormConfig~reviewErrorOverrideResult|null} - object containing
+ *  the `chapterKey`, `pageKey`, and optional `navigationType` associated with
+ *  the error, or null if the error is not recognized
  */
 /**
  * @typedef FormConfig~reviewErrors - Cross-reference of required schema names
@@ -40,8 +61,9 @@ export const replaceNumberWithWord = (_, word, number) => {
  * @property {Object.<string>} - required schema name (key)
  * @property {FormConfig~reviewErrorMessage} - Error message string or function
  *  that returns a string
- * @property {FormConfig~reviewErrorOverride} - Function to return the chapter
- *  and page key for a particular error
+ * @property {FormConfig~reviewErrorOverride} [_override] - Function to return
+ *  the chapter, page key, and navigation type for a particular error; receives
+ *  a context object with formData as its second argument
  */
 /**
  * Get error message contained in FormConfig~reviewErrors
@@ -249,9 +271,11 @@ const errorExists = (list, name, index) =>
  * Process rawErrors from jsonschema validator into a more friendly list
  * @param {Form~rawErrors} errors - raw form errors from jsonschema validator
  * @param {Form~pageList} pageList - list of all form pages from `route.pageList`
+ * @param {FormConfig~reviewErrors} [reviewErrors] - custom review error overrides
+ * @param {Object} [formData] - current form data, passed to reviewErrors._override
  * @return {Form~errors} - Finely curated list of form errors
  */
-export const reduceErrors = (errors, pageList, reviewErrors = {}) =>
+export const reduceErrors = (errors, pageList, reviewErrors = {}, formData) =>
   errors.reduce((processedErrors, error) => {
     let errorIndex = null; // save key (index) of array items with __error
     const findErrors = (name, err) => {
@@ -264,8 +288,10 @@ export const reduceErrors = (errors, pageList, reviewErrors = {}) =>
           !errorExists(processedErrors, name, errorIndex)
         ) {
           const overrideResult =
-            reviewErrors._override?.(name || err.stack || err.argument, err) ||
-            getPropertyInfo(pageList, name);
+            reviewErrors._override?.(name || err.stack || err.argument, {
+              ...err,
+              formData,
+            }) || getPropertyInfo(pageList, name);
           const { chapterKey = '', pageKey = '', navigationType = 'edit' } =
             overrideResult || {};
           // `message` can be null if a reviewErrors function explicitly returns null
@@ -315,7 +341,10 @@ export const reduceErrors = (errors, pageList, reviewErrors = {}) =>
           */
           if (!errorExists(processedErrors, propertyName, index)) {
             const overrideResult =
-              reviewErrors._override?.(property || err?.stack || argument) ||
+              reviewErrors._override?.(property || err?.stack || argument, {
+                ...err,
+                formData,
+              }) ||
               getPropertyInfo(
                 // List of all form pages; includes chapterKey, pageKey and
                 // uiSchema

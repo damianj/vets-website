@@ -16,7 +16,10 @@ describe('VAOS Component: AppointmentTasks', () => {
 
   const renderWithFeatureToggles = (
     ui,
-    { travelPayEnableComplexClaims = false } = {},
+    {
+      travelPayEnableComplexClaims = false,
+      travelPayEnableCommunityCare = false,
+    } = {},
   ) => {
     return renderWithStoreAndRouter(ui, {
       initialState: {
@@ -24,6 +27,7 @@ describe('VAOS Component: AppointmentTasks', () => {
           loading: false,
           // eslint-disable-next-line camelcase
           travel_pay_enable_complex_claims: travelPayEnableComplexClaims,
+          travelPayEnableCommunityCare,
         },
       },
       reducers,
@@ -155,6 +159,33 @@ describe('VAOS Component: AppointmentTasks', () => {
     );
 
     expect(screen.queryByText(/Appointment tasks/i)).to.not.exist;
+  });
+  it('should display Appointment tasks section if appointment is cc and flag is on', async () => {
+    const appointment = {
+      id: appointmentId,
+      start: new Date('2021-09-01T10:00:00Z'),
+      vaos: {
+        apiData: {
+          travelPayClaim: {
+            metadata: {
+              status: 200,
+              message: 'No claims found.',
+              success: true,
+            },
+          },
+        },
+        isPastAppointment: true,
+        isCommunityCare: true,
+        isPhoneAppointment: false,
+        isVideo: false,
+      },
+    };
+    const screen = renderWithFeatureToggles(
+      <AppointmentTasksSection appointment={appointment} />,
+      { travelPayEnableCommunityCare: true },
+    );
+
+    expect(screen.queryByText(/Appointment tasks/i)).to.exist;
   });
   it('should not display Appointment tasks section if appointment is video', async () => {
     const appointment = {

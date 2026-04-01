@@ -22,7 +22,7 @@ describe('Private Medical Records Upload V1 page', () => {
 
     it('should have correct path', () => {
       expect(page.path).to.equal(
-        'supporting-evidence/private-medical-records-upload-enhancement-v1',
+        'supporting-evidence/private-medical-records-upload-file',
       );
     });
 
@@ -118,6 +118,18 @@ describe('Private Medical Records Upload V1 page', () => {
     it('should have correct schema type', () => {
       expect(schema.type).to.equal('object');
     });
+
+    it('should require privateMedicalRecordAttachments field', () => {
+      expect(schema.required).to.deep.equal([
+        'privateMedicalRecordAttachments',
+      ]);
+    });
+
+    it('should have minItems of 1 for privateMedicalRecordAttachments', () => {
+      expect(
+        schema.properties.privateMedicalRecordAttachments.minItems,
+      ).to.equal(1);
+    });
   });
 
   describe('uiSchema', () => {
@@ -125,8 +137,9 @@ describe('Private Medical Records Upload V1 page', () => {
       expect(uiSchema['ui:title']).to.exist;
     });
 
-    it('should have ui:description', () => {
+    it('should have ui:description as JSX element', () => {
       expect(uiSchema['ui:description']).to.exist;
+      expect(React.isValidElement(uiSchema['ui:description'])).to.be.true;
     });
 
     it('should have privateMedicalRecordAttachments field', () => {

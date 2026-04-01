@@ -32,6 +32,7 @@ import createViewDependentsCTA from './view-modify-dependents/view-dependents-ct
 import createViewPaymentHistoryCTA from './view-payment-history/createViewPaymentHistoryCTA';
 import facilityReducer from './facilities/reducers';
 // Other widgets.
+import createAccessVAToolsWidget from './widget-creators/createAccessVAToolsWidget';
 import createAskVAWidget from './ask-va-widget';
 import createApplicationStatus from './widget-creators/createApplicationStatus';
 import createBTSSSLogin from './BTSSS-login/createBTSSSLogin';
@@ -204,6 +205,7 @@ createTrackYourVreBenefitsWidget(
 );
 createViewDependentsCTA(store, widgetTypes.VIEW_DEPENDENTS_CTA);
 form686CTA(store, widgetTypes.FORM_686_CTA);
+createAccessVAToolsWidget(store, widgetTypes.ACCESSVA_TOOLS);
 createAskVAWidget(store, widgetTypes.ASK_VA);
 createEventsPage(store, widgetTypes.EVENTS);
 createMedicalCopaysCTA(store, widgetTypes.MEDICAL_COPAYS_CTA);

@@ -84,11 +84,11 @@ export const SearchResultsHeader = props => {
         >
           {handleNumberOfResults()} for
           {` `}
-          <b>{repFormat[representativeType]}</b>
+          <b>“{repFormat[representativeType]}”</b>
           {representativeType === 'veteran_service_officer' &&
             organization && (
               <>
-                , <b>{organization}</b>
+                , <b>“{organization}”</b>
               </>
             )}
           {context.repOrgName && (
@@ -96,7 +96,7 @@ export const SearchResultsHeader = props => {
               {` `}
               named
               {` `}
-              <b>{context.repOrgName}</b>
+              <b>“{context.repOrgName}”</b>
             </>
           )}
           {` `}
@@ -106,21 +106,21 @@ export const SearchResultsHeader = props => {
               {` `}
               <b>
                 {searchArea === 'Show all' ? (
-                  'Show all'
+                  '“Show all”'
                 ) : (
-                  <>{searchArea} miles</>
+                  <>“{searchArea} miles”</>
                 )}
               </b>
               {` `}
               of
               {` `}
-              <b>{context.location}</b>{' '}
+              <b>“{context.location}”</b>{' '}
             </>
           )}
           <>
             sorted by
             {` `}
-            <b>{sortOptions[sortType]}</b>
+            <b>“{sortOptions[sortType]}”</b>
           </>
         </p>
 

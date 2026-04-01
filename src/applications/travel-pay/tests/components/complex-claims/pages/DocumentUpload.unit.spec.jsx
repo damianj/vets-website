@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import { waitFor } from '@testing-library/react';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import DocumentUpload from '../../../../components/complex-claims/pages/DocumentUpload';
-import { ACCEPTED_FILE_TYPES } from '../../../../constants';
+import { getAcceptedFileTypes } from '../../../../util/complex-claims-helper';
 
 describe('DocumentUpload component', () => {
   const defaultProps = {
@@ -71,7 +71,7 @@ describe('DocumentUpload component', () => {
     const fileInput = container.querySelector('va-file-input');
     const acceptAttr = fileInput.getAttribute('accept').split(',');
 
-    const expected = ACCEPTED_FILE_TYPES.map(ext => `${ext}`);
+    const expected = getAcceptedFileTypes(false);
     expect(acceptAttr).to.deep.equal(expected);
   });
 
@@ -81,7 +81,7 @@ describe('DocumentUpload component', () => {
     const fileInput = container.querySelector('va-file-input');
     const acceptAttr = fileInput.getAttribute('accept').split(',');
 
-    const expected = [...ACCEPTED_FILE_TYPES, '.heic', '.heif'];
+    const expected = getAcceptedFileTypes(true);
     expect(acceptAttr).to.deep.equal(expected);
   });
 
@@ -119,52 +119,19 @@ describe('DocumentUpload component', () => {
   });
 
   describe('Hint text behavior', () => {
-    it('displays default hint text when additionalHint is false (for expenses)', () => {
-      const { container } = renderComponent({ additionalHint: false });
-
-      const fileInput = container.querySelector('va-file-input');
-      const hintText = fileInput.getAttribute('hint');
-
-      expect(hintText).to.include('You can upload');
-      expect(hintText).to.include('Your file should be no larger than 5MB');
-      expect(hintText).to.not.include('proof-of-attendance');
-    });
-
-    it('displays default hint text when additionalHint is not provided', () => {
+    it('shows no hint text when the hint prop is not provided', () => {
       const { container } = renderComponent();
 
       const fileInput = container.querySelector('va-file-input');
-      const hintText = fileInput.getAttribute('hint');
-
-      expect(hintText).to.include('You can upload');
-      expect(hintText).to.include('Your file should be no larger than 5MB');
-      expect(hintText).to.not.include('proof-of-attendance');
+      expect(fileInput.getAttribute('hint')).to.equal('');
     });
 
-    it('displays file types hint when additionalHint is true', () => {
-      const { container } = renderComponent({ additionalHint: true });
+    it('displays custom hint text when the hint prop is provided', () => {
+      const customHint = 'Only PDF files are accepted';
+      const { container } = renderComponent({ hint: customHint });
 
       const fileInput = container.querySelector('va-file-input');
-      const hintText = fileInput.getAttribute('hint');
-
-      expect(hintText).to.include('Make sure your file is no larger than 5MB');
-      expect(hintText).to.not.include('proof-of-attendance');
-    });
-
-    it('injects additional hint HTML into shadow DOM when additionalHint is true', async () => {
-      const { container } = renderComponent({ additionalHint: true });
-
-      const fileInput = container.querySelector('va-file-input');
-
-      // Wait for the useEffect to potentially inject the HTML
-      await waitFor(
-        () => {
-          // The hint should mention file types
-          const hintText = fileInput.getAttribute('hint');
-          expect(hintText).to.include('Make sure your file is no larger than');
-        },
-        { timeout: 100 },
-      );
+      expect(fileInput.getAttribute('hint')).to.equal(customHint);
     });
   });
 
@@ -184,18 +151,6 @@ describe('DocumentUpload component', () => {
 
       const fileInput = container.querySelector('va-file-input');
       expect(fileInput.getAttribute('label')).to.equal(customLabel);
-    });
-
-    it('uses POA-specific label for proof of attendance uploads', () => {
-      const { container } = renderComponent({
-        label: 'Upload your proof of attendance',
-        additionalHint: true,
-      });
-
-      const fileInput = container.querySelector('va-file-input');
-      expect(fileInput.getAttribute('label')).to.equal(
-        'Upload your proof of attendance',
-      );
     });
   });
 });

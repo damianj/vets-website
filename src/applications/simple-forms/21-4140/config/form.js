@@ -3,6 +3,7 @@ import environment from '@department-of-veterans-affairs/platform-utilities/envi
 import { toggleValues } from 'platform/site-wide/feature-toggles/selectors';
 import footerContent from 'platform/forms/components/FormFooter';
 import { VA_FORM_IDS } from 'platform/forms/constants';
+import { minimalHeaderFormConfigOptions } from 'platform/forms-system/src/js/patterns/minimal-header';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import { TITLE, SUBTITLE } from '../constants';
 import manifest from '../manifest.json';
@@ -36,7 +37,6 @@ const formConfig = {
   introduction: IntroductionPage,
   confirmation: ConfirmationPage,
   transformForSubmit,
-  prefillTransformer,
   preSubmitInfo: {
     statementOfTruth: {
       body:
@@ -61,6 +61,7 @@ const formConfig = {
   },
   version: 0,
   prefillEnabled: true,
+  prefillTransformer,
   savedFormMessages: {
     notFound:
       'Please start over to apply for Employment Questionnaire (VA Form 21-4140).',
@@ -87,7 +88,7 @@ const formConfig = {
       pages: {
         identificationInformation: {
           path: 'identification-information',
-          title: 'Your identification information Numbers',
+          title: 'Your identification information',
           uiSchema: identificationInformation.uiSchema,
           schema: identificationInformation.schema,
         },
@@ -125,7 +126,8 @@ const formConfig = {
       pages: {
         employmentCheck: {
           path: 'employment-check',
-          title: 'Employment in the past 12 months',
+          title:
+            'Were you employed or self-employed at any time in the past 12 months?',
           uiSchema: employmentCheck.uiSchema,
           schema: employmentCheck.schema,
           updateFormData: employmentCheck.updateFormData,
@@ -155,7 +157,7 @@ const formConfig = {
 
         employed: {
           path: 'employed',
-          title: 'Employed',
+          title: 'Do you certify that you have employment to report?',
           uiSchema: employed.uiSchema,
           schema: employed.schema,
           depends: shouldShowEmploymentSection,
@@ -167,7 +169,7 @@ const formConfig = {
       pages: {
         unemployed: {
           path: 'unemployed',
-          title: 'Unemployed',
+          title: 'Do you certify that you have no employment to report?',
           uiSchema: unemployed.uiSchema,
           schema: unemployed.schema,
           depends: shouldShowUnemploymentSection,
@@ -190,5 +192,10 @@ const formConfig = {
   getHelp,
   footerContent,
 };
+
+export const getFormConfig = ({ useMinimalHeader = false } = {}) => ({
+  ...formConfig,
+  ...(useMinimalHeader ? minimalHeaderFormConfigOptions() : {}),
+});
 
 export default formConfig;

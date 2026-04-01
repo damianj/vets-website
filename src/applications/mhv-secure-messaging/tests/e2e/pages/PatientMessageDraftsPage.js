@@ -1,6 +1,10 @@
 import mockDraftFolderMetaResponse from '../fixtures/folder-drafts-metadata.json';
 import mockDraftResponse from '../fixtures/message-draft-response.json';
 import { Data, Locators, Paths } from '../utils/constants';
+import {
+  clickModalPrimaryButtonByTestId,
+  clickModalSecondaryButtonByTestId,
+} from '../utils/modal-helpers';
 import { Alerts } from '../../../util/constants';
 import mockMultiDraftsResponse from '../fixtures/draftsResponse/multi-draft-response.json';
 import mockMessages from '../fixtures/threads-response.json';
@@ -111,10 +115,7 @@ class PatientMessageDraftsPage {
       draftMessage,
     ).as('deletedDraftResponse');
 
-    cy.get(Locators.BUTTONS.DELETE_CONFIRM)
-      .shadow()
-      .find(`button`)
-      .click({ force: true });
+    clickModalPrimaryButtonByTestId('delete-draft-modal', { force: true });
   };
 
   clickMultipleDeleteButton = number => {
@@ -185,7 +186,11 @@ class PatientMessageDraftsPage {
       reducedMockResponse,
     ).as('updatedThreadResponse');
 
-    cy.get(Locators.BUTTONS.DELETE_CONFIRM).click({ force: true });
+    cy.get('va-modal[visible][status="warning"]')
+      .shadow()
+      .find('button.usa-button:not(.usa-button--outline)')
+      .first()
+      .click({ force: true });
   };
 
   verifyDeleteConfirmationMessage = () => {
@@ -350,7 +355,7 @@ class PatientMessageDraftsPage {
   };
 
   verifySaveWithAttachmentAlert = () => {
-    cy.get(Locators.ALERTS.ALERT_MODAL)
+    cy.findByTestId(Locators.ALERTS.ALERT_MODAL)
       .shadow()
       .find('h2')
       .should('contain', `can't save attachment`);
@@ -398,29 +403,8 @@ class PatientMessageDraftsPage {
       .and(`contain.text`, Data.BUTTONS.DELETE_DRAFT);
   };
 
-  verifyCantSaveAlert = (
-    alertText,
-    firstBtnText = `Edit draft`,
-    secondBtnText = `Delete draft`,
-  ) => {
-    cy.get(`va-modal[status="warning"]`)
-      .find(`h2`)
-      .should('be.visible')
-      .and(`contain.text`, alertText);
-
-    cy.get(`va-modal[status="warning"]`)
-      .find(`va-button[text='${firstBtnText}']`)
-      .should('be.visible');
-
-    cy.get(`va-modal[status="warning"]`)
-      .find(`va-button[text='${secondBtnText}']`)
-      .should('be.visible');
-  };
-
   clickDeleteChangesButton = () => {
-    cy.get(`[status="warning"]`)
-      .find(`va-button[text="Delete changes"]`)
-      .click();
+    clickModalSecondaryButtonByTestId('navigation-warning-modal');
   };
 
   verifyDraftToFieldContainsPlainTGName = value => {

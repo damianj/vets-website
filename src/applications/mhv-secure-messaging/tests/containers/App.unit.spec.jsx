@@ -7,11 +7,11 @@ import { createServiceMap } from '@department-of-veterans-affairs/platform-monit
 import { pageNotFoundHeading } from '@department-of-veterans-affairs/platform-site-wide/PageNotFound';
 import sinon from 'sinon';
 import { addDays, subDays, format } from 'date-fns';
-import { fireEvent, waitFor } from '@testing-library/dom';
+import { waitFor } from '@testing-library/dom';
 import App from '../../containers/App';
 import * as SmApi from '../../api/SmApi';
 import reducer from '../../reducers';
-import { PageHeaders, Paths, SelectCareTeamPage } from '../../util/constants';
+import { PageHeaders, Paths } from '../../util/constants';
 
 describe('App', () => {
   const initialState = {
@@ -298,18 +298,31 @@ describe('App', () => {
   });
 
   it('renders CareTeamHelp when cerner pilot feature flag is enabled', async () => {
+    const recipients = [
+      {
+        triageTeamId: 12345,
+        name: 'Test Team',
+        stationNumber: '123',
+        blockedStatus: false,
+        relationType: 'PATIENT',
+        preferredTeam: true,
+      },
+    ];
     const customState = {
       ...initialState,
       sm: {
         ...initialState.sm,
         threadDetails: {
-          acceptInterstitial: 'true',
-          draftInProgress: {
-            recipientId: '12345',
-            category: 'TEST',
-            subject: 'Test Subject',
-            body: 'Test Body',
-          },
+          acceptInterstitial: true,
+        },
+        recipients: {
+          noAssociations: false,
+          allTriageGroupsBlocked: false,
+          allowedRecipients: recipients,
+          allRecipients: recipients,
+          recentRecipients: [],
+          allFacilities: ['123'],
+          blockedFacilities: [],
         },
       },
       featureToggles: {},
@@ -321,18 +334,8 @@ describe('App', () => {
     const screen = renderWithStoreAndRouter(<App />, {
       initialState: customState,
       reducers: reducer,
-      path: Paths.COMPOSE,
+      path: Paths.CARE_TEAM_HELP,
     });
-
-    // Accept interstitial (sets acceptInterstitial internally)
-    const startMessageLink = await screen.findByTestId('start-message-link');
-    startMessageLink.click();
-
-    // Navigate to Care Team Help route
-    const link = await screen.findByText(
-      SelectCareTeamPage.CANT_FIND_CARE_TEAM_LINK,
-    );
-    fireEvent.click(link);
 
     await waitFor(() => {
       expect(
@@ -482,7 +485,6 @@ describe('App', () => {
       ...initialState,
       featureToggles: {
         loading: false,
-        [FEATURE_FLAG_NAMES.mhvSecureMessagingMilestone2AAL]: true,
       },
     };
 

@@ -369,4 +369,66 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       'Something went wrong on our end. Please try again later.',
     );
   });
+  it('should display Community Care details section with correct content', async () => {
+    server.use(
+      createPostHandler(
+        `${environment.API_URL}/vaos/v2/appointments/draft`,
+        () => jsonResponse({ data: draftAppointmentInfo }),
+      ),
+    );
+
+    const store = createTestStore(initialFullState);
+
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+      },
+    );
+
+    await screen.findByTestId('continue-button');
+
+    expect(screen.getByRole('heading', { name: 'Details' })).to.exist;
+    expect(screen.getByText('Community care')).to.exist;
+    expect(screen.getByText(draftAppointmentInfo.attributes.provider.name)).to
+      .exist;
+    expect(
+      screen.getByText(
+        draftAppointmentInfo.attributes.provider.providerOrganization.name,
+      ),
+    ).to.exist;
+    expect(screen.getByText('In-person')).to.exist;
+    expect(screen.getByTestId('edit-details-link')).to.exist;
+    expect(screen.getByTestId('continue-button')).to.have.attr(
+      'text',
+      'Confirm appointment',
+    );
+  });
+  it('should display the Date and time section with Edit link', async () => {
+    server.use(
+      createPostHandler(
+        `${environment.API_URL}/vaos/v2/appointments/draft`,
+        () => jsonResponse({ data: draftAppointmentInfo }),
+      ),
+    );
+
+    const store = createTestStore(initialFullState);
+
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+      },
+    );
+
+    await screen.findByTestId('continue-button');
+
+    expect(screen.getByRole('heading', { name: 'Date and time' })).to.exist;
+    expect(screen.getByTestId('edit-when-information-link')).to.exist;
+    expect(screen.getByTestId('slot-day-time')).to.exist;
+  });
 });

@@ -42,14 +42,8 @@
       "view:uploadServiceTreatmentRecordsQualifier": {
         "view:hasServiceTreatmentRecordsToUpload": false
       },
-      "view:hasSeparationHealthAssessment": true,
-      "separationHealthAssessmentUploads": [
-        {
-          "name": "sha-minimal.pdf",
-          "confirmationCode": "sha-minimal-code",
-          "attachmentId": "L702"
-        }
-      ],
+      "view:hasSeparationHealthAssessment": false,
+      "separationHealthAssessmentUploads": [],
       "view:powStatus": false,
       "view:disabilitiesClarification": {},
       "serviceInformation": {

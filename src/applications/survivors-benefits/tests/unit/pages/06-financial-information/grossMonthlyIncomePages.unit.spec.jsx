@@ -1,4 +1,6 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 import {
@@ -15,6 +17,24 @@ import {
   typeOfIncomeLabels,
 } from '../../../../utils/labels';
 
+const TOGGLE_KEY = 'survivors_benefits_form_2025_version_enabled';
+
+const createMockStore = (is2025Enabled = false) =>
+  createStore(() => ({
+    featureToggles: {
+      [TOGGLE_KEY]: is2025Enabled,
+      loading: false,
+    },
+    form: { data: {} },
+  }));
+
+// Mirrors `incomeRecipientTypeLabels2025` from ui-2025-migration-updates.js
+const incomeRecipientTypeLabels2025 = {
+  ...incomeRecipientTypeLabels,
+  CUSTODIAN: 'Custodian',
+  CUSTODIAN_SPOUSE: "Custodian's spouse",
+};
+
 const arrayPath = 'incomeEntries';
 
 describe('Gross Monthly Income Pages', () => {
@@ -30,17 +50,20 @@ describe('Gross Monthly Income Pages', () => {
     );
     expect(form.getByRole('heading')).to.have.text(grossMonthlyIncome.title);
   });
-  it('should only show otherTypeExplanation if Other is selected', () => {
+
+  it('should only show otherTypeExplanation if Other is selected (is2025Enabled = false)', () => {
     const { monthlyIncomeDetails } = grossMonthlyIncomePages;
 
     const form = render(
-      <DefinitionTester
-        schema={monthlyIncomeDetails.schema}
-        uiSchema={monthlyIncomeDetails.uiSchema}
-        data={{ [arrayPath]: [{}] }}
-        pagePerItemIndex={0}
-        arrayPath={arrayPath}
-      />,
+      <Provider store={createMockStore(false)}>
+        <DefinitionTester
+          schema={monthlyIncomeDetails.schema}
+          uiSchema={monthlyIncomeDetails.uiSchema}
+          data={{ [arrayPath]: [{}] }}
+          pagePerItemIndex={0}
+          arrayPath={arrayPath}
+        />
+      </Provider>,
     );
     const formDOM = getFormDOM(form.container);
     expect(form.getByRole('heading')).to.have.text(
@@ -52,6 +75,7 @@ describe('Gross Monthly Income Pages', () => {
     const vaOtherTypeExplanationText =
       'va-text-input[label*="Tell us the type of income"]';
     expect($(vaOtherTypeExplanationText, formDOM)).to.not.exist;
+    // 2 recipient options (incomeRecipientTypeLabels) + 5 income type options
     expect(vaOptions.length).to.equal(7);
     Object.keys({
       ...incomeRecipientTypeLabels,
@@ -75,6 +99,56 @@ describe('Gross Monthly Income Pages', () => {
       $(vaOtherTypeExplanationText, formDOM).getAttribute('required'),
     ).to.equal('true');
   });
+
+  it('should only show otherTypeExplanation if Other is selected (is2025Enabled = true)', () => {
+    const { monthlyIncomeDetails2025 } = grossMonthlyIncomePages;
+
+    const form = render(
+      <Provider store={createMockStore(true)}>
+        <DefinitionTester
+          schema={monthlyIncomeDetails2025.schema}
+          uiSchema={monthlyIncomeDetails2025.uiSchema}
+          data={{ [arrayPath]: [{}] }}
+          pagePerItemIndex={0}
+          arrayPath={arrayPath}
+        />
+      </Provider>,
+    );
+    const formDOM = getFormDOM(form.container);
+    expect(form.getByRole('heading')).to.have.text(
+      'Gross monthly income details',
+    );
+    const vaRecipient = $('va-radio[label*="What type of income?"]', formDOM);
+    expect(vaRecipient.getAttribute('required')).to.equal('true');
+    const vaOptions = $$('va-radio-option', formDOM);
+    const vaOtherTypeExplanationText =
+      'va-text-input[label*="Tell us the type of income"]';
+    expect($(vaOtherTypeExplanationText, formDOM)).to.not.exist;
+    // 4 recipient options (incomeRecipientTypeLabels2025) + 5 income type options
+    expect(vaOptions.length).to.equal(9);
+    Object.keys({
+      ...incomeRecipientTypeLabels2025,
+      ...typeOfIncomeLabels,
+    }).forEach((key, index) => {
+      if (index < Object.keys(incomeRecipientTypeLabels2025).length) {
+        expect(vaOptions[index].getAttribute('label')).to.equal(
+          incomeRecipientTypeLabels2025[key],
+        );
+      } else {
+        expect(vaOptions[index].getAttribute('label')).to.equal(
+          typeOfIncomeLabels[key],
+        );
+      }
+    });
+    vaRecipient.__events.vaValueChange({
+      detail: { value: 'OTHER' },
+    });
+    expect($(vaOtherTypeExplanationText, formDOM)).to.exist;
+    expect(
+      $(vaOtherTypeExplanationText, formDOM).getAttribute('required'),
+    ).to.equal('true');
+  });
+
   it('should show pages if claimed survivor pension', () => {
     const {
       monthlyIncomeDetails,
@@ -82,9 +156,7 @@ describe('Gross Monthly Income Pages', () => {
       grossMonthlyIncome,
     } = grossMonthlyIncomePages;
     const formDataWithPension = { claims: { survivorsPension: true } };
-    const formDataWithoutPension = {
-      claims: { survivorsPension: false },
-    };
+    const formDataWithoutPension = { claims: { survivorsPension: false } };
 
     expect(monthlyIncomeDetails.depends(formDataWithPension)).to.be.true;
     expect(monthlyIncomeDetails.depends(formDataWithoutPension)).to.be.false;
@@ -92,6 +164,71 @@ describe('Gross Monthly Income Pages', () => {
     expect(addIncomeSource.depends(formDataWithoutPension)).to.be.false;
     expect(grossMonthlyIncome.depends(formDataWithPension)).to.be.true;
     expect(grossMonthlyIncome.depends(formDataWithoutPension)).to.be.false;
+  });
+
+  describe('monthlyIncomeDetails2025 depends', () => {
+    let depends;
+
+    beforeEach(() => {
+      depends = grossMonthlyIncomePages.monthlyIncomeDetails2025.depends;
+    });
+
+    it('returns false when survivorsPension is false', () => {
+      expect(
+        depends({
+          claims: { survivorsPension: false },
+          survivorsBenefitsForm2025VersionEnabled: true,
+        }),
+      ).to.be.false;
+    });
+
+    it('returns false when survivorsBenefitsForm2025VersionEnabled is false', () => {
+      expect(
+        depends({
+          claims: { survivorsPension: true },
+          survivorsBenefitsForm2025VersionEnabled: false,
+        }),
+      ).to.be.false;
+    });
+
+    it('returns true when pension is true, toggle is true, and moreThanFourIncomeSources is not set', () => {
+      expect(
+        depends({
+          claims: { survivorsPension: true },
+          survivorsBenefitsForm2025VersionEnabled: true,
+        }),
+      ).to.be.true;
+    });
+
+    it('returns true when pension is true, toggle is true, and moreThanFourIncomeSources is ONE_TO_FOUR_SOURCES', () => {
+      expect(
+        depends({
+          claims: { survivorsPension: true },
+          survivorsBenefitsForm2025VersionEnabled: true,
+          moreThanFourIncomeSources: 'ONE_TO_FOUR_SOURCES',
+        }),
+      ).to.be.true;
+    });
+
+    it('returns false when moreThanFourIncomeSources is NO_INCOME', () => {
+      expect(
+        depends({
+          claims: { survivorsPension: true },
+          survivorsBenefitsForm2025VersionEnabled: true,
+          moreThanFourIncomeSources: 'NO_INCOME',
+        }),
+      ).to.be.false;
+    });
+
+    it('returns false when moreThanFourIncomeSources is MORE_THAN_FIVE_SOURCES', () => {
+      expect(
+        depends({
+          claims: { survivorsPension: true },
+          survivorsBenefitsForm2025VersionEnabled: true,
+          moreThanFourIncomeSources: 'MORE_THAN_FIVE_SOURCES',
+        }),
+      ).to.be.false;
+    });
   });
 
   it('should show the correct getItemName output', () => {

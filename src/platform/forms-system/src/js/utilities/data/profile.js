@@ -17,6 +17,11 @@ import {
 /**
  * @typedef ContactInfoContent
  * @type {Object}
+ * @property {String} add - Add link text
+ * @property {String} addEmail - Add email page title
+ * @property {String} addHomePhone - Add home phone page title
+ * @property {String} addMailingAddress - Add mailing address page title
+ * @property {String} addMobilePhone - Add mobile phone page title
  * @property {String} address1 - review & submit address line 1 entry
  * @property {String} address2 - review & submit address line 2 entry
  * @property {String} address3 - review & submit address line 3 entry
@@ -73,6 +78,11 @@ export const getContent = (appName = 'application') => ({
   editMobilePhone: 'Edit mobile phone number',
   editEmail: 'Edit email address',
   editMailingAddress: 'Edit mailing address',
+
+  addHomePhone: 'Add home phone number',
+  addMobilePhone: 'Add mobile phone number',
+  addEmail: 'Add email address',
+  addMailingAddress: 'Add mailing address',
 
   edit: 'Edit', // link text - edit existing contact info
   add: 'Add', // link text - add new contact info

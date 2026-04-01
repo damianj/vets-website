@@ -8,6 +8,8 @@ import React, { useEffect } from 'react';
 import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 
 import FormTitle from 'platform/forms-system/src/js/components/FormTitle';
+import SaveInProgressIntro from 'platform/forms/save-in-progress/SaveInProgressIntro';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import { focusElement, scrollToTop } from 'platform/utilities/ui';
 
 import {
@@ -23,7 +25,11 @@ const OMB_EXP_DATE = '08/31/2027';
  * Introduction page component for VA Form 21-4192
  * @returns {React.ReactElement} Introduction page component
  */
-export const IntroductionPage = ({ router }) => {
+export const IntroductionPage = ({ route, router }) => {
+  const { formConfig, pageList } = route;
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const authRequired = useToggleValue(TOGGLE_NAMES.aquiaBioAuthRequired);
+
   useEffect(() => {
     scrollToTop();
     focusElement('h1');
@@ -86,15 +92,33 @@ export const IntroductionPage = ({ router }) => {
         </va-process-list-item>
       </va-process-list>
 
-      <VaLinkAction
-        href="/veteran-information"
-        data-testid="start-employment-info-link"
-        onClick={e => {
-          e.preventDefault();
-          router.push('/veteran-information');
-        }}
-        text="Submit employment information in connection with claim for Individual Unemployability"
-      />
+      {authRequired ? (
+        /* IAL1 only — no identity verification (LOA3) required.
+           Any logged-in user can start the form regardless of verification status. */
+        <SaveInProgressIntro
+          headingLevel={2}
+          prefillEnabled={formConfig.prefillEnabled}
+          verifiedPrefillAlert={<></>}
+          messages={formConfig.savedFormMessages}
+          pageList={pageList}
+          startText="Submit employment information in connection with claim for Individual Unemployability"
+          hideUnauthedStartLink
+          devOnly={{
+            forceShowFormControls: true,
+          }}
+        />
+      ) : (
+        <VaLinkAction
+          href="/veteran-information"
+          data-testid="start-employment-info-link"
+          onClick={e => {
+            e.preventDefault();
+            router.push('/veteran-information');
+          }}
+          text="Submit employment information in connection with claim for Individual Unemployability"
+        />
+      )}
+
       <div className="vads-u-margin-top--4">
         <va-omb-info
           res-burden={OMB_RES_BURDEN}
@@ -107,9 +131,13 @@ export const IntroductionPage = ({ router }) => {
 };
 
 IntroductionPage.propTypes = {
-  location: PropTypes.shape({
-    basename: PropTypes.string,
-  }),
+  route: PropTypes.shape({
+    formConfig: PropTypes.shape({
+      prefillEnabled: PropTypes.bool.isRequired,
+      savedFormMessages: PropTypes.object.isRequired,
+    }).isRequired,
+    pageList: PropTypes.arrayOf(PropTypes.object).isRequired,
+  }).isRequired,
   router: PropTypes.shape({
     push: PropTypes.func,
   }),

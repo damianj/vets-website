@@ -43,13 +43,15 @@ describe('SM DELETE CUSTOM FOLDER', () => {
     PatientMessageCustomFolderPage.loadMessages(emptyThread);
     PatientMessageCustomFolderPage.clickRemoveFolderButton();
 
-    cy.get(Locators.ALERTS.REMOVE_THIS_FOLDER)
+    cy.findByTestId(Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID)
       .shadow()
       .find('.va-modal-close')
       .should(`be.visible`)
       .and(`be.focused`);
-    cy.get(Locators.ALERTS.REMOVE_THIS_FOLDER)
-      .find(`va-button[text*='keep']`)
+    cy.findByTestId(Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID)
+      .shadow()
+      .find(`button`)
+      .contains('keep')
       .click();
     cy.get(Locators.BUTTONS.REMOVE_FOLDER).should(`be.focused`);
 

@@ -115,4 +115,53 @@ describe('transformForSubmit', () => {
     );
     expect(transformedResult).to.deep.equal(expectedData);
   });
+
+  context(
+    'when idNumber is stripped by inactive page filtering (prefill flow)',
+    () => {
+      it('restores idNumber from raw form data when SSN is prefilled', () => {
+        const idNumber = { ssn: '123456789' };
+        const inputData = {
+          data: {
+            ...fixtureUser.data,
+            idNumber,
+          },
+        };
+        // Simulate filterInactivePageData removing idNumber because the
+        // identification page was skipped (depends returned false)
+        sharedTransformStub.returns(
+          JSON.stringify({
+            ...fixtureUser.data,
+            formNumber: '21-4138',
+          }),
+        );
+        const transformedResult = JSON.parse(
+          transformForSubmit(formConfig, inputData),
+        );
+        expect(transformedResult.idNumber).to.deep.equal(idNumber);
+      });
+
+      it('passes through idNumber unchanged when identification page was active', () => {
+        const idNumber = { ssn: '321540987' };
+        const inputData = {
+          data: {
+            ...fixtureUser.data,
+            idNumber,
+          },
+        };
+        // Simulate identification page being active — idNumber is NOT stripped
+        sharedTransformStub.returns(
+          JSON.stringify({
+            ...fixtureUser.data,
+            idNumber,
+            formNumber: '21-4138',
+          }),
+        );
+        const transformedResult = JSON.parse(
+          transformForSubmit(formConfig, inputData),
+        );
+        expect(transformedResult.idNumber).to.deep.equal(idNumber);
+      });
+    },
+  );
 });

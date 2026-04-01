@@ -1,12 +1,16 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { expect } from 'chai';
+import { renderInReduxProvider } from 'platform/testing/unit/react-testing-library-helpers';
 import PortalRemovalNotice from '../components/PortalRemovalNotice';
 
 describe('PortalRemovalNotice Component', () => {
   describe('H1 Heading', () => {
     it('should render the h1 heading', () => {
-      const { queryByText } = render(<PortalRemovalNotice />);
+      const { queryByText } = renderInReduxProvider(<PortalRemovalNotice />, {
+        initialState: {
+          featureToggles: { portalNoticeInterstitialSunset: true },
+        },
+      });
       expect(
         queryByText(/Manage your health care for all VA facilities on VA.gov/i),
       ).to.exist;
@@ -15,7 +19,11 @@ describe('PortalRemovalNotice Component', () => {
 
   describe('Action Links', () => {
     it('should render primary va-link-action with correct attributes', () => {
-      const { container } = render(<PortalRemovalNotice />);
+      const { container } = renderInReduxProvider(<PortalRemovalNotice />, {
+        initialState: {
+          featureToggles: { portalNoticeInterstitialSunset: true },
+        },
+      });
       const primaryLink = container.querySelector(
         'va-link-action[type="primary"]',
       );
@@ -32,7 +40,11 @@ describe('PortalRemovalNotice Component', () => {
     });
 
     it('should render secondary va-link-action with correct attributes', () => {
-      const { container } = render(<PortalRemovalNotice />);
+      const { container } = renderInReduxProvider(<PortalRemovalNotice />, {
+        initialState: {
+          featureToggles: { portalNoticeInterstitialSunset: true },
+        },
+      });
       const secondaryLink = container.querySelector(
         'va-link-action[type="secondary"]',
       );

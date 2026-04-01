@@ -28,6 +28,11 @@ import { isInProgressPath } from '../helpers';
 import { getSaveInProgressState } from './selectors';
 import { APP_TYPE_DEFAULT } from '../../forms-system/src/js/constants';
 
+const getAdditionalNonFormPaths = (routes = []) =>
+  routes
+    .filter(route => route.allowDirectAccess !== false)
+    .map(route => route.path);
+
 /*
  * Primary component for a schema generated form app.
  */
@@ -52,9 +57,9 @@ class RoutedSavableApp extends React.Component {
     // If we're in production, we'll redirect if we start in the middle of a form
     // In development, we won't redirect unless we append the URL with `?redirect`
     const { currentLocation, formConfig } = this.props;
-    const { additionalRoutes = [] } = formConfig;
-    const additionalSafePaths =
-      additionalRoutes && additionalRoutes.map(route => route.path);
+    const additionalNonFormPaths = getAdditionalNonFormPaths(
+      formConfig.additionalRoutes,
+    );
     const trimmedPathname = currentLocation.pathname.replace(/\/$/, '');
     const resumeForm = trimmedPathname.endsWith('resume');
     const devRedirect =
@@ -63,7 +68,7 @@ class RoutedSavableApp extends React.Component {
       currentLocation.search.includes('redirect');
     const goToStartPage = resumeForm || devRedirect;
     if (
-      isInProgressPath(currentLocation.pathname, additionalSafePaths) &&
+      isInProgressPath(currentLocation.pathname, additionalNonFormPaths) &&
       goToStartPage
     ) {
       // We started on a page that isn't the first, so after we know whether
@@ -202,14 +207,15 @@ class RoutedSavableApp extends React.Component {
       return null;
     }
 
-    const { additionalRoutes = [] } = formConfig;
     const appType = formConfig?.customText?.appType || APP_TYPE_DEFAULT;
     const trimmedPathname = currentLocation.pathname.replace(/\/$/, '');
-    const additionalSafePaths = additionalRoutes.map(route => route.path);
+    const additionalNonFormPaths = getAdditionalNonFormPaths(
+      formConfig.additionalRoutes,
+    );
     let message;
     if (
       autoSavedStatus !== SAVE_STATUSES.success &&
-      isInProgressPath(trimmedPathname, additionalSafePaths)
+      isInProgressPath(trimmedPathname, additionalNonFormPaths)
     ) {
       message = `Are you sure you wish to leave this ${appType}? All progress will be lost.`;
       // Chrome requires this to be set

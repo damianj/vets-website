@@ -6,15 +6,25 @@ const VeteranStatusCard = ({
   formattedFullName,
   latestService,
   totalDisabilityRating,
+  useSharedService,
 }) => {
+  const cardClasses = `veteran-status-card${
+    useSharedService ? ' veteran-status-card--shared-service' : ''
+  } vads-u-margin-bottom--2 vads-u-background-color--primary-darker vads-u-color--white`;
+
   return (
-    <div className="veteran-status-card vads-u-margin-bottom--2 vads-u-background-color--primary-darker vads-u-color--white ">
+    <div className={cardClasses}>
       <h2 className="veteran-status-card-title vads-u-background-color--primary-dark vads-u-margin-top--0 vads-u-padding-top--2p5 vads-u-padding-left--2 vads-u-padding-bottom--2">
         Veteran Status Card
       </h2>
       <img
         src="/img/design/seal/seal.png"
-        alt="Seal of the U.S. Department of Veterans Affairs"
+        alt={
+          useSharedService
+            ? ''
+            : 'Seal of the U.S. Department of Veterans Affairs'
+        }
+        aria-hidden={useSharedService ? 'true' : undefined}
       />
       <div className="vads-u-padding-left--2p5 vads-u-padding-right--2p5 vads-u-padding-bottom--2p5 dd-privacy-mask">
         <h3>Name</h3>
@@ -49,6 +59,7 @@ VeteranStatusCard.propTypes = {
   formattedFullName: PropTypes.string,
   latestService: PropTypes.string,
   totalDisabilityRating: PropTypes.number,
+  useSharedService: PropTypes.bool,
 };
 
 export default VeteranStatusCard;

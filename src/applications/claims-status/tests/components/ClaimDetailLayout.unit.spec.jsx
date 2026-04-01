@@ -256,7 +256,6 @@ describe('<ClaimDetailLayout>', () => {
   });
 
   describe('Type 1 Unknown Error Alert', () => {
-    const FEATURE_FLAG_KEY = 'cst_show_document_upload_status';
     const mockClaim = {
       attributes: {
         claimType: 'Compensation',
@@ -269,9 +268,9 @@ describe('<ClaimDetailLayout>', () => {
       { fileName: 'test-document.pdf', docType: 'Medical records' },
     ];
 
-    it('should not render Type 1 Unknown error alert when feature flag is disabled', () => {
+    it('should not render Type 1 Unknown error alert when no errors exist', () => {
       const { container } = renderWithRouter(
-        <Provider store={getStore({ [FEATURE_FLAG_KEY]: false })}>
+        <Provider store={getStore()}>
           <ClaimDetailLayout currentTab="Files" claim={mockClaim} />
         </Provider>,
       );
@@ -279,13 +278,10 @@ describe('<ClaimDetailLayout>', () => {
       expect($('.claims-alert', container)).to.not.exist;
     });
 
-    it('should render Type 1 Unknown error alert when feature flag is enabled and errors exist', () => {
+    it('should render Type 1 Unknown error alert when errors exist on Files and Status tabs', () => {
       const { container: filesContainer } = renderWithRouter(
         <Provider
-          store={getStore(
-            { [FEATURE_FLAG_KEY]: true },
-            { type1UnknownErrors: mockType1UnknownErrors },
-          )}
+          store={getStore({}, { type1UnknownErrors: mockType1UnknownErrors })}
         >
           <ClaimDetailLayout currentTab="Files" claim={mockClaim} />
         </Provider>,
@@ -293,10 +289,7 @@ describe('<ClaimDetailLayout>', () => {
 
       const { container: statusContainer } = renderWithRouter(
         <Provider
-          store={getStore(
-            { [FEATURE_FLAG_KEY]: true },
-            { type1UnknownErrors: mockType1UnknownErrors },
-          )}
+          store={getStore({}, { type1UnknownErrors: mockType1UnknownErrors })}
         >
           <ClaimDetailLayout currentTab="Status" claim={mockClaim} />
         </Provider>,
@@ -318,10 +311,7 @@ describe('<ClaimDetailLayout>', () => {
     it('should not render Type 1 Unknown error alert on Overview tab', () => {
       const { container } = renderWithRouter(
         <Provider
-          store={getStore(
-            { [FEATURE_FLAG_KEY]: true },
-            { type1UnknownErrors: mockType1UnknownErrors },
-          )}
+          store={getStore({}, { type1UnknownErrors: mockType1UnknownErrors })}
         >
           <ClaimDetailLayout currentTab="Overview" claim={mockClaim} />
         </Provider>,

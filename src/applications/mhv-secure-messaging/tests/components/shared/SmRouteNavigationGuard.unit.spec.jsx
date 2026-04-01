@@ -57,9 +57,8 @@ describe('SmRouteNavigationGuard component', () => {
 
     const screen = setup(customProps, Paths.CONTACT_LIST);
 
-    await fireEvent.click(
-      screen.getByTestId('sm-route-navigation-guard-cancel-button'),
-    );
+    const modal = screen.getByTestId('sm-route-navigation-guard-modal');
+    modal.__events.secondaryButtonClick();
     expect(cancelChangesSpy.calledOnce).to.be.true;
     screen.unmount();
   });
@@ -73,9 +72,8 @@ describe('SmRouteNavigationGuard component', () => {
 
     const screen = setup(customProps, Paths.CONTACT_LIST);
 
-    await fireEvent.click(
-      screen.getByTestId('sm-route-navigation-guard-confirm-button'),
-    );
+    const modal = screen.getByTestId('sm-route-navigation-guard-modal');
+    modal.__events.primaryButtonClick();
     expect(saveChangesSpy.calledOnce).to.be.true;
     screen.unmount();
   });

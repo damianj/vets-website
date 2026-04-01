@@ -1,5 +1,6 @@
 import pollDocumentStatus from './status';
 import { fetchArtifactSummary, downloadArtifactData } from './artifacts';
+import { extractProcessingFailureDetail } from './errors';
 import { normalizeSections } from './transformers/normalize';
 import { autoResolveArtifacts } from './utils/conflictDetection';
 import { VETERAN_INFO_FIELDS, MILITARY_HISTORY_FIELDS } from './fieldMapping';
@@ -52,7 +53,10 @@ export const processDocument = async (contract, options = {}) => {
 
   const status = await pollDocumentStatus(contract.id, options.polling);
   if (status?.scanStatus !== 'completed') {
-    throw new Error('Document processing did not complete successfully.');
+    throw new Error(
+      extractProcessingFailureDetail(status) ||
+        'Document processing did not complete successfully.',
+    );
   }
 
   const sections = await fetchRelevantArtifacts(contract.id);

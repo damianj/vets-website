@@ -1,3 +1,4 @@
+import React from 'react';
 import FullNameField from 'platform/forms-system/src/js/fields/FullNameField';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
 import get from 'platform/utilities/data/get';
@@ -12,6 +13,7 @@ const hasAlternateName = formData =>
   get('view:hasAlternateName', formData, true);
 
 export const uiSchema = {
+  'ui:title': <h3 className="vads-u-margin-y--0">Alternate names</h3>,
   'view:hasAlternateName': yesNoUI({
     title: 'Have you served under a different name?',
   }),

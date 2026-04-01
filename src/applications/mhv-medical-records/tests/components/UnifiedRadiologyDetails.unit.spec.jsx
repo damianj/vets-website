@@ -109,6 +109,26 @@ describe('UnifiedRadiologyDetails component', () => {
   });
 
   describe('Images section', () => {
+    it('shows "Images ready" alert when thumbnails are loaded', () => {
+      const screen = setup({
+        labsAndTests: {
+          scdfImageThumbnails: [
+            'https://example.com/thumb1.jpg',
+            'https://example.com/thumb2.jpg',
+            'https://example.com/thumb3.jpg',
+          ],
+        },
+      });
+      expect(screen.getByTestId('alert-images-ready')).to.exist;
+      const link = screen.getByTestId('images-ready-view-link');
+      expect(link.textContent).to.include('3 images');
+    });
+
+    it('does not show "Images ready" alert when thumbnails are not loaded', () => {
+      const screen = setup();
+      expect(screen.queryByTestId('alert-images-ready')).to.not.exist;
+    });
+
     it('shows Images section when imageCount > 0', () => {
       const screen = setup({
         labsAndTests: {

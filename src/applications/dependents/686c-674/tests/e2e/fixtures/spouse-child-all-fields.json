@@ -1,5 +1,6 @@
 {
   "vaDependentsNetWorthAndPension": false,
+  "netWorthLimit": 163699,
   "view:householdIncome": true,
   "householdIncome": false,
   "view:childrenToAddMissingInformation": {},
@@ -22,7 +23,7 @@
   "doesLiveWithSpouse": {
     "spouseIncome": "Y",
     "currentSpouseReasonForSeparation": "OTHER",
-    "other": "Work and property management reasons",
+    "currentSpouseOtherReasonForSeparation": "Work and property management reasons",
     "address": {
       "view:militaryBaseDescription": {},
       "country": "USA",
@@ -66,6 +67,7 @@
       "view:militaryBaseDescription": {},
       "country": "USA",
       "street": "123 Fake St.",
+      "street2": "  ",
       "city": "Fakesville",
       "state": "AL",
       "postalCode": "12345"
@@ -140,6 +142,7 @@
         "view:militaryBaseDescription": {},
         "country": "USA",
         "street": "123 Fake St.",
+        "street2": "  ",
         "city": "Fakesville",
         "state": "MO",
         "postalCode": "12345"

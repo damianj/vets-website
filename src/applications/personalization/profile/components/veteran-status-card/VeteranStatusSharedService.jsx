@@ -185,6 +185,7 @@ const VeteranStatusSharedService = ({
                 edipi={cardEdipi}
                 formattedFullName={formattedFullName}
                 totalDisabilityRating={disabilityRating}
+                useSharedService
               />
             </div>
           </div>

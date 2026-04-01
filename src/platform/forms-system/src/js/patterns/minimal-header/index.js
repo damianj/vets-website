@@ -66,7 +66,8 @@ const minimalHeaderScrollAndFocus = () => {
   } else if (checkboxGroupHeader) {
     focusElement('h1', null, checkboxGroupHeader);
   } else {
-    focusByOrder(['form h1', 'va-segmented-progress-bar']);
+    // if there is an h1, focus on it before falling back on progress bar
+    focusByOrder(['form h1', 'h1', 'va-segmented-progress-bar']);
   }
 };
 

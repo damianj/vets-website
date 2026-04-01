@@ -1,5 +1,6 @@
 import { apiRequest } from 'platform/utilities/api';
 import { buildIntakeUrl } from './endpoints';
+import { createCaveError } from './errors';
 
 const isPdfFile = file =>
   file?.type === 'application/pdf' ||
@@ -52,10 +53,10 @@ export const uploadDocument = async file => {
       body: JSON.stringify(requestBody),
     });
   } catch (error) {
-    const status = error?.status || 'unknown';
-    const message =
-      error?.error || error?.message || 'CAVE intake request failed.';
-    throw new Error(`CAVE intake failed (${status}): ${message}`);
+    throw createCaveError(error, {
+      prefix: 'CAVE intake failed',
+      fallbackDetail: 'CAVE intake request failed.',
+    });
   }
 
   const { id, bucket, pdfKey } = payload || {};

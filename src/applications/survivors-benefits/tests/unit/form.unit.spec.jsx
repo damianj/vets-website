@@ -131,6 +131,25 @@ describe('Survivors Benefits Form config', () => {
       expect(pages.marriageToVeteranEnd.depends(marriedAtDeath)).to.be.false;
     });
 
+    it('should show marriageToVeteranEndInfo when not married at time of death', () => {
+      const { householdInformation } = formConfig.chapters;
+      const { pages } = householdInformation;
+
+      const notMarriedAtDeath = {
+        claimantRelationship: 'SURVIVING_SPOUSE',
+        marriedToVeteranAtTimeOfDeath: false,
+      };
+      const marriedAtDeath = {
+        claimantRelationship: 'SURVIVING_SPOUSE',
+        marriedToVeteranAtTimeOfDeath: true,
+      };
+
+      expect(pages.marriageToVeteranEndInfo.depends(notMarriedAtDeath)).to.be
+        .true;
+      expect(pages.marriageToVeteranEndInfo.depends(marriedAtDeath)).to.be
+        .false;
+    });
+
     it('should show reasonForSeparation when spouse did not live continuously with veteran', () => {
       const { householdInformation } = formConfig.chapters;
       const { pages } = householdInformation;

@@ -28,8 +28,8 @@ const createMockStore = (profile = mockProfile) =>
   }));
 
 const getData = ({
-  ssn = '1234',
-  vaFileLastFour = '5678',
+  ssn = '321540987',
+  vaFileLastFour = '321545678',
   config = {},
   dataAdapter = {},
   title = 'Personal information',
@@ -57,7 +57,7 @@ describe('<PersonalInformationReview>', () => {
     expect(getByText('Name')).to.exist;
     expect(container.textContent).to.include('John Michael Doe, Jr.');
     expect(getByText('Last 4 digits of Social Security number')).to.exist;
-    expect(container.textContent).to.include('1 2 3 4');
+    expect(container.textContent).to.include('●●●-●●-0987');
     expect(getByText('Date of birth')).to.exist;
     expect(container.textContent).to.include('January 15, 1980');
   });
@@ -92,7 +92,7 @@ describe('<PersonalInformationReview>', () => {
     );
 
     expect(getByText('Last 4 digits of VA file number')).to.exist;
-    expect(container.textContent).to.include('5 6 7 8');
+    expect(container.textContent).to.include('●●●-●●-5678');
   });
 
   it('should render sex when configured', () => {
@@ -128,6 +128,18 @@ describe('<PersonalInformationReview>', () => {
     );
 
     expect(getByTestId('name-not-available')).to.exist;
+  });
+
+  it('should display only the 4 digits when backend returns a 4-digit SSN', () => {
+    const store = createMockStore();
+    const props = getData({ ssn: '0987' });
+    const { container } = render(
+      <Provider store={store}>
+        <PersonalInformationReview {...props} />
+      </Provider>,
+    );
+
+    expect(container.textContent).to.include('0987');
   });
 
   it('should show "Not available" for missing SSN', () => {
@@ -266,14 +278,14 @@ describe('<PersonalInformationReview>', () => {
   it('should handle data adapter for SSN path', () => {
     const store = createMockStore();
     const props = getData({
-      ssn: '9876',
+      ssn: '123459876',
       dataAdapter: {
         ssnPath: 'veteran.ssnLastFour',
       },
     });
     props.data = {
       veteran: {
-        ssnLastFour: '9876',
+        ssnLastFour: '123459876',
       },
     };
     const { container } = render(
@@ -282,13 +294,13 @@ describe('<PersonalInformationReview>', () => {
       </Provider>,
     );
 
-    expect(container.textContent).to.include('9 8 7 6');
+    expect(container.textContent).to.include('●●●-●●-9876');
   });
 
   it('should handle data adapter for VA file number path', () => {
     const store = createMockStore();
     const props = getData({
-      vaFileLastFour: '4321',
+      vaFileLastFour: '321544321',
       config: {
         vaFileNumber: {
           show: true,
@@ -301,7 +313,7 @@ describe('<PersonalInformationReview>', () => {
     });
     props.data = {
       veteran: {
-        vaFileLastFour: '4321',
+        vaFileLastFour: '321544321',
       },
     };
     const { container } = render(
@@ -310,7 +322,7 @@ describe('<PersonalInformationReview>', () => {
       </Provider>,
     );
 
-    expect(container.textContent).to.include('4 3 2 1');
+    expect(container.textContent).to.include('●●●-●●-4321');
   });
 
   it('should have proper data-dd-action-name attributes for privacy', () => {
