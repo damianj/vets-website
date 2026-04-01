@@ -7,6 +7,7 @@ import DetailPageLayout, {
   When,
   Prepare,
 } from './DetailPageLayout';
+import CCProofOfAttendanceSection from '../CCProofOfAttendanceSection';
 import Section from '../Section';
 import { APPOINTMENT_STATUS } from '../../utils/constants';
 import { selectConfirmedAppointmentData } from '../../appointment-list/redux/selectors';
@@ -130,6 +131,7 @@ export default function CCLayout({ data: appointment }) {
               </p>
             </Prepare>
           )}
+        {!isPastAppointment && <CCProofOfAttendanceSection />}
         {APPOINTMENT_STATUS.booked === status &&
           !isPastAppointment && (
             <Section heading="Need to make changes?">

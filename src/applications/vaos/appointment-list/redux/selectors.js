@@ -4,6 +4,7 @@ import { selectIsCernerOnlyPatient } from 'platform/user/cerner-dsot/selectors';
 import { createSelector } from 'reselect';
 import {
   selectFeatureRequests,
+  selectFeatureTravelPayEnableCommunityCare,
   selectFeatureUseVpg,
 } from '../../redux/selectors';
 import {
@@ -21,11 +22,9 @@ import {
   sortByDateAscending,
   sortByDateDescending,
 } from '../../services/appointment';
-import { getTypeOfCareById } from '../../utils/appointment';
 import {
   APPOINTMENT_STATUS,
   APPOINTMENT_TYPES,
-  COMP_AND_PEN,
   FETCH_STATUS,
   TYPE_OF_CARE_IDS,
 } from '../../utils/constants';
@@ -221,24 +220,13 @@ export function selectCCProvider(appointment) {
 export function selectTypeOfCareName(appointment) {
   if (!appointment) return '';
 
-  const { name } =
-    getTypeOfCareById(appointment.vaos.apiData?.serviceType) || '';
-  const serviceCategoryName =
-    appointment.vaos.apiData?.serviceCategory?.[0]?.text || {};
-  if (serviceCategoryName === COMP_AND_PEN) {
-    const { displayName } = getTypeOfCareById(serviceCategoryName);
-    return displayName;
+  const typeOfCare = appointment.vaos.apiData?.typeOfCare;
+
+  if (typeOfCare) {
+    return typeOfCare;
   }
 
-  if (
-    !name &&
-    appointment.vaos?.isCerner &&
-    appointment.vaos.apiData?.description
-  ) {
-    return appointment.vaos.apiData.description;
-  }
-
-  return name;
+  return '';
 }
 
 export function selectIsPhone(appointment) {
@@ -593,10 +581,13 @@ export function selectAppointmentTravelClaim(appointment) {
   return appointment?.vaos?.apiData?.travelPayClaim;
 }
 
-export function selectIsEligibleForTravelClaim(appointment) {
+export function selectIsEligibleForTravelClaim(state, appointment) {
   return (
     selectIsPast(appointment) &&
-    (isInPersonVisit(appointment) || isClinicVideoAppointment(appointment)) &&
+    (isInPersonVisit(appointment) ||
+      isClinicVideoAppointment(appointment) ||
+      (selectIsCommunityCare(appointment) &&
+        selectFeatureTravelPayEnableCommunityCare(state))) &&
     selectAppointmentTravelClaim(appointment)
   );
 }
@@ -712,8 +703,7 @@ export function selectRequestedAppointmentData(state, appointment) {
   const providerAddress = selectProviderAddress(appointment);
   const preferredDates = appointment?.preferredDates;
   const status = appointment?.status;
-  const typeOfCare = getTypeOfCareById(appointment?.vaos.apiData.serviceType);
-  const typeOfCareName = typeOfCare?.name;
+  const typeOfCareName = selectTypeOfCareName(appointment);
   const isPendingAppointment = selectIsPendingAppointment(appointment);
 
   return {
@@ -737,7 +727,6 @@ export function selectRequestedAppointmentData(state, appointment) {
     provider,
     providerAddress,
     status,
-    typeOfCare,
     typeOfCareName,
     isCerner,
   };
@@ -770,8 +759,7 @@ export function selectRequestedAppointmentDetails(state, id) {
   const providerAddress = selectProviderAddress(appointment);
   const preferredDates = appointment?.preferredDates;
   const status = appointment?.status;
-  const typeOfCare = getTypeOfCareById(appointment?.vaos.apiData.serviceType);
-  const typeOfCareName = typeOfCare?.name;
+  const typeOfCareName = selectTypeOfCareName(appointment);
   const preferredModality = appointment?.preferredModality;
 
   return {
@@ -795,9 +783,21 @@ export function selectRequestedAppointmentDetails(state, id) {
     provider,
     providerAddress,
     status,
-    typeOfCare,
     typeOfCareName,
     preferredModality,
     isCerner,
   };
 }
+export const selectIsClaimExam = appointment => {
+  return appointment?.vaos?.isCompAndPenAppointment;
+};
+
+export const selectIsEligibleForAVS = appointment => {
+  return (
+    selectIsPast(appointment) &&
+    (APPOINTMENT_STATUS.booked === appointment?.status ||
+      APPOINTMENT_STATUS.fulfilled === appointment?.status) &&
+    !selectIsCommunityCare(appointment) &&
+    !selectIsClaimExam(appointment)
+  );
+};

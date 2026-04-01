@@ -14,8 +14,7 @@ const uiSchema = {
       charcount: true,
       validations: [validateWhiteSpace],
       errorMessages: {
-        maxLength:
-          'You are over the character limit. Please shorten your text.',
+        maxLength: 'You are over the character limit. Shorten your text.',
       },
     }),
   },

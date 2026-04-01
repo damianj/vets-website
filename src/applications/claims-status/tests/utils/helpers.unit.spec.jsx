@@ -43,6 +43,7 @@ import {
   makeAuthRequest,
   mockData,
   roundToNearest,
+  formatDateShortMonth,
   sentenceCase,
   setPageFocus,
   setTabDocumentTitle,
@@ -2106,6 +2107,72 @@ describe('Disability benefits helpers: ', () => {
         );
 
         expect(result).to.equal(null);
+      });
+    });
+  });
+
+  describe('formatDateShortMonth', () => {
+    context('abbreviated months (Jan, Feb, Aug, Oct, Nov, Dec)', () => {
+      it('formats January with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-01-15')).to.equal('Jan. 15, 2025');
+      });
+
+      it('formats February with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-02-28')).to.equal('Feb. 28, 2025');
+      });
+
+      it('formats August with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-08-01')).to.equal('Aug. 1, 2025');
+      });
+
+      it('formats October with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-10-31')).to.equal('Oct. 31, 2025');
+      });
+
+      it('formats November with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-11-11')).to.equal('Nov. 11, 2025');
+      });
+
+      it('formats December with period abbreviation', () => {
+        expect(formatDateShortMonth('2025-12-25')).to.equal('Dec. 25, 2025');
+      });
+    });
+
+    context('September abbreviates to Sept (not Sep)', () => {
+      it('formats September as Sept. with period', () => {
+        expect(formatDateShortMonth('2025-09-21')).to.equal('Sept. 21, 2025');
+      });
+    });
+
+    context('long-form months (March, April, May, June, July)', () => {
+      it('formats March without abbreviation', () => {
+        expect(formatDateShortMonth('2025-03-15')).to.equal('March 15, 2025');
+      });
+
+      it('formats April without abbreviation', () => {
+        expect(formatDateShortMonth('2025-04-01')).to.equal('April 1, 2025');
+      });
+
+      it('formats May without abbreviation', () => {
+        expect(formatDateShortMonth('2025-05-05')).to.equal('May 5, 2025');
+      });
+
+      it('formats June without abbreviation', () => {
+        expect(formatDateShortMonth('2025-06-30')).to.equal('June 30, 2025');
+      });
+
+      it('formats July without abbreviation', () => {
+        expect(formatDateShortMonth('2025-07-04')).to.equal('July 4, 2025');
+      });
+    });
+
+    context('invalid input', () => {
+      it('returns Invalid date for non-date string', () => {
+        expect(formatDateShortMonth('not-a-date')).to.equal('Invalid date');
+      });
+
+      it('returns Invalid date for empty string', () => {
+        expect(formatDateShortMonth('')).to.equal('Invalid date');
       });
     });
   });

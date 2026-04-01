@@ -73,7 +73,7 @@ const stepchildCurrentAddress = {
       postalCode: itemData.address?.postalCode || '',
       state: itemData.address?.state || '',
       street: itemData.address?.street || '',
-      street2: itemData.address?.street2 || '',
+      street2: (itemData.address?.street2 || '').trim(),
     });
     const [schema, setSchema] = useState(addressSchema({ omit: ['street3'] }));
     const [uiSchema, setUiSchema] = useState(initialAddressUI);

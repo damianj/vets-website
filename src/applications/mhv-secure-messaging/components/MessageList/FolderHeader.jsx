@@ -44,7 +44,6 @@ const FolderHeader = props => {
   const {
     cernerPilotSmFeatureFlag,
     mhvSecureMessagingCernerPilotSystemMaintenanceBannerFlag,
-    isAalEnabled,
   } = useFeatureToggles();
 
   const folderDescription = useMemo(
@@ -94,14 +93,11 @@ const FolderHeader = props => {
 
   const { folderName, ddTitle, ddPrivacy } = handleHeader(folder);
 
-  const handleMyVaHealthLinkClick = useCallback(
-    () => {
-      if (isAalEnabled) {
-        submitLaunchMyVaHealthAal();
-      }
-    },
-    [isAalEnabled],
-  );
+  const handleMyVaHealthLinkClick = useCallback(() => {
+    submitLaunchMyVaHealthAal().catch(() => {
+      // Intentionally swallow errors to prevent unhandled promise rejections
+    });
+  }, []);
 
   const RecipientListErrorAlert = () => {
     return (

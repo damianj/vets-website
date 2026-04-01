@@ -5,7 +5,6 @@ import {
   currentOrPastDateUI,
   currentOrPastDateSchema,
 } from '~/platform/forms-system/src/js/web-component-patterns';
-import { validateCurrentOrPastMemorableDate } from 'platform/forms-system/src/js/validation';
 import { validatePrepCourseStartDate } from '../helpers';
 
 const uiSchema = {
@@ -28,10 +27,7 @@ const uiSchema = {
         required: 'Enter a start date',
       },
     }),
-    'ui:validations': [
-      validateCurrentOrPastMemorableDate,
-      validatePrepCourseStartDate,
-    ],
+    'ui:validations': [validatePrepCourseStartDate],
   },
   prepCourseEndDate: {
     ...currentOrPastDateUI({
@@ -45,6 +41,7 @@ const uiSchema = {
         required: 'Enter an end date',
       },
     }),
+    'ui:validations': [],
   },
 };
 

@@ -28,3 +28,10 @@ export const generateParticipantNames = ({ item, applicants = [] }) => {
     ? selectedParticipants.join(', ')
     : MSG_NO_MEMBERS;
 };
+
+// Shared form predicates
+export const getPolicy = (formData, index) =>
+  formData?.healthInsurance?.[index];
+
+export const isMedigap = (formData, index) =>
+  getPolicy(formData, index)?.insuranceType === 'medigap';

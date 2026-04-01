@@ -16,7 +16,6 @@ import {
   selectAppointment,
   selectComplexClaim,
   selectComplexClaimCreationLoadingState,
-  selectComplexClaimFetchLoadingState,
   selectHasUnsavedExpenseChanges,
   selectIsUnsavedChangesModalVisible,
   selectUnsavedChangesModalSource,
@@ -116,10 +115,6 @@ const ComplexClaimSubmitFlowWrapper = () => {
     selectComplexClaimCreationLoadingState,
   );
 
-  const isComplexClaimFetchLoading = useSelector(
-    selectComplexClaimFetchLoadingState,
-  );
-
   const entryPoint = sessionStorage.getItem(
     TRAVEL_PAY_FILE_NEW_CLAIM_ENTRY.SESSION_KEY,
   );
@@ -132,13 +127,17 @@ const ComplexClaimSubmitFlowWrapper = () => {
   const needsClaimData = effectiveClaimId && !claimData && !claimError;
   const needsApptData = apptId && !apptData && !apptError;
 
+  // isComplexClaimFetchLoading is intentionally excluded. When isLoading is true, this
+  // component replaces the Outlet with a spinner (unmounting the active page). That is
+  // correct for the initial load (covered by needsClaimData), but mid-flow refreshes like
+  // the one triggered by deleteDocument → getComplexClaimDetails would cause pages to
+  // briefly flash blank before navigating away.
   const isLoading =
     toggleIsLoading ||
     needsClaimData ||
     needsApptData ||
     isApptLoading ||
-    isComplexClaimCreationLoading ||
-    isComplexClaimFetchLoading;
+    isComplexClaimCreationLoading;
 
   useEffect(
     () => {

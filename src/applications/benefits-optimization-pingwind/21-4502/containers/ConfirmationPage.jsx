@@ -31,15 +31,12 @@ export const ConfirmationPage = props => {
   const submitterName =
     veteranName?.first && veteranName?.last ? veteranName : null;
   const submitDate = submission.timestamp;
-  const confirmationNumber =
-    submission.response?.attributes?.confirmationNumber ||
-    submission.response?.data?.attributes?.confirmationNumber;
+  const confirmationNumber = submission.response?.confirmationNumber;
   const downloadPdfBase =
     props.route?.formConfig?.downloadPdfUrl || DEFAULT_DOWNLOAD_PDF_BASE;
   const pdfUrl = confirmationNumber
     ? `${downloadPdfBase}${confirmationNumber}/download_pdf`
-    : submission.response?.attributes?.pdfUrl ||
-      submission.response?.data?.attributes?.pdfUrl;
+    : submission.response?.pdfUrl;
 
   return (
     <ConfirmationView

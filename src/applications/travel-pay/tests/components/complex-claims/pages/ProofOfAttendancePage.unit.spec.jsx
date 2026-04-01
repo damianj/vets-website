@@ -32,6 +32,8 @@ const ChooseExpensePage = () => (
 
 const IntroPage = () => <div data-testid="intro-page">Intro</div>;
 
+const ReviewPage = () => <div data-testid="review-page">Review</div>;
+
 // Mocks FileReader.readAsDataURL for environments without full File API
 const mockFileReader = () => {
   const originalFileReader = global.FileReader;
@@ -50,6 +52,7 @@ const mockFileReader = () => {
   };
 };
 
+// State for add mode: no existing POA document
 const getInitialState = ({ isCCAppt = true, isUploading = false } = {}) => ({
   travelPay: {
     appointment: {
@@ -76,6 +79,50 @@ const getInitialState = ({ isCCAppt = true, isUploading = false } = {}) => ({
       expenseBackDestination: null,
       proofOfAttendance: {
         isLoading: isUploading,
+        error: null,
+      },
+    },
+  },
+});
+
+// State for edit mode: an existing POA document is already in the claim
+const getEditModeState = () => ({
+  travelPay: {
+    appointment: {
+      data: { id: apptId, kind: 'cc', isCC: true },
+      error: null,
+      isLoading: false,
+    },
+    complexClaim: {
+      claim: {
+        data: {
+          claimId,
+          claimStatus: 'InProgress',
+          claimSource: 'VaGov',
+          documents: [
+            {
+              documentId: 'existing-poa-doc-001',
+              filename: 'proof-of-attendance.pdf',
+              mimetype: 'application/pdf',
+            },
+          ],
+        },
+        fetch: { isLoading: false, error: null },
+        creation: { isLoading: false, error: null },
+        submission: { id: '', isSubmitting: false, error: null, data: null },
+      },
+      expenses: {
+        creation: { isLoading: false, error: null },
+        update: { id: '', isLoading: false, error: null },
+        delete: { id: '', isLoading: false, error: null },
+        fetch: { id: '', isLoading: false, error: null },
+        data: [],
+        hasUnsavedChanges: false,
+      },
+      documentDelete: { id: '', isLoading: false, error: null },
+      expenseBackDestination: null,
+      proofOfAttendance: {
+        isLoading: false,
         error: null,
       },
     },
@@ -117,6 +164,37 @@ const renderPage = ({ isCCAppt = true, ccFlagEnabled = true } = {}) => {
         <Route
           path="/file-new-claim/:apptId/:claimId/proof-of-attendance"
           element={<ProofOfAttendancePage />}
+        />
+        <Route
+          path="/file-new-claim/:apptId/:claimId/choose-expense"
+          element={<ChooseExpensePage />}
+        />
+        <Route path="/file-new-claim/:apptId" element={<IntroPage />} />
+      </Routes>
+      <LocationDisplay />
+    </MemoryRouter>,
+    { store, reducers: reducer },
+  );
+};
+
+// Render helper for edit mode (existing POA document present in state)
+const renderPageEditMode = () => {
+  const store = createTestStore(getEditModeState());
+
+  return renderWithStoreAndRouter(
+    <MemoryRouter
+      initialEntries={[
+        `/file-new-claim/${apptId}/${claimId}/proof-of-attendance`,
+      ]}
+    >
+      <Routes>
+        <Route
+          path="/file-new-claim/:apptId/:claimId/proof-of-attendance"
+          element={<ProofOfAttendancePage />}
+        />
+        <Route
+          path="/file-new-claim/:apptId/:claimId/review"
+          element={<ReviewPage />}
         />
         <Route
           path="/file-new-claim/:apptId/:claimId/choose-expense"
@@ -522,6 +600,323 @@ describe('Travel Pay – ProofOfAttendancePage', () => {
       await waitFor(() => {
         expect(getByTestId('intro-page')).to.exist;
       });
+    });
+  });
+
+  describe('Edit mode (existing POA document)', () => {
+    let apiStub;
+    let restoreFileReader;
+
+    beforeEach(() => {
+      restoreFileReader = mockFileReader();
+      // Stub differentiates by HTTP method so all mid-flow API calls are handled
+      apiStub = sinon.stub(api, 'apiRequest').callsFake((url, options) => {
+        const method = options?.method?.toUpperCase() || 'GET';
+
+        if (method === 'DELETE') {
+          return Promise.resolve({ id: 'existing-poa-doc-001' });
+        }
+
+        if (method === 'POST') {
+          return Promise.resolve({
+            documentId: 'new-poa-doc-002',
+            claimId,
+            filename: 'proof-of-attendance.png',
+          });
+        }
+
+        // GET /claims/:id/documents/:docId → document download
+        if (url.includes('/documents/')) {
+          const content = new Uint8Array([1, 2, 3, 4]);
+          return Promise.resolve({
+            headers: {
+              get: type => (type === 'Content-Type' ? 'application/pdf' : null),
+            },
+            arrayBuffer: () => Promise.resolve(content.buffer),
+          });
+        }
+
+        // GET /complex_claims/:id → claim details refresh
+        return Promise.resolve({
+          claimId,
+          claimStatus: 'InProgress',
+          documents: [
+            {
+              documentId: 'new-poa-doc-002',
+              filename: 'proof-of-attendance.png',
+              mimetype: 'image/png',
+            },
+          ],
+        });
+      });
+    });
+
+    afterEach(() => {
+      restoreFileReader();
+      apiStub.restore();
+    });
+
+    it('renders "Save and continue" and "Cancel" buttons instead of "Continue" and "Back"', async () => {
+      const { container } = renderPageEditMode();
+
+      // Allow the mount-time document fetch to settle
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      const buttonTexts = Array.from(
+        container.querySelectorAll('va-button'),
+      ).map(b => b.getAttribute('text'));
+      expect(buttonTexts).to.include('Save and continue');
+      expect(buttonTexts).to.include('Cancel');
+      expect(buttonTexts).to.not.include('Continue');
+      expect(buttonTexts).to.not.include('Back');
+    });
+
+    it('does not show a file validation error when Save and continue is clicked without a new file', async () => {
+      const { container, getByTestId } = renderPageEditMode();
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      // No error should be present on the file input before clicking Save and continue
+      const fileInput = container.querySelector('va-file-input');
+      expect(fileInput.getAttribute('error')).to.be.oneOf([null, '']);
+
+      const saveButton = Array.from(
+        container.querySelectorAll('va-button'),
+      ).find(btn => btn.getAttribute('text') === 'Save and continue');
+
+      await act(async () => {
+        fireEvent.click(saveButton);
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      // Successful navigation to review confirms no validation error blocked the save
+      await waitFor(() => {
+        expect(getByTestId('location-display').textContent).to.equal(
+          `/file-new-claim/${apptId}/${claimId}/review`,
+        );
+      });
+    });
+
+    it('navigates to the review page when Save and continue is clicked without selecting a new file', async () => {
+      const { container, getByTestId } = renderPageEditMode();
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      const saveButton = Array.from(
+        container.querySelectorAll('va-button'),
+      ).find(btn => btn.getAttribute('text') === 'Save and continue');
+
+      await act(async () => {
+        fireEvent.click(saveButton);
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('location-display').textContent).to.equal(
+          `/file-new-claim/${apptId}/${claimId}/review`,
+        );
+      });
+
+      // Only the initial document download should have fired – no delete or upload
+      const deleteCalls = apiStub
+        .getCalls()
+        .filter(c => (c.args[1]?.method || '').toUpperCase() === 'DELETE');
+      const postCalls = apiStub
+        .getCalls()
+        .filter(c => (c.args[1]?.method || '').toUpperCase() === 'POST');
+      expect(deleteCalls).to.have.lengthOf(0);
+      expect(postCalls).to.have.lengthOf(0);
+    });
+
+    it('navigates to the review page when Cancel is clicked', async () => {
+      const { container, getByTestId } = renderPageEditMode();
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      const cancelButton = Array.from(
+        container.querySelectorAll('va-button'),
+      ).find(btn => btn.getAttribute('text') === 'Cancel');
+
+      await act(async () => {
+        fireEvent.click(cancelButton);
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('location-display').textContent).to.equal(
+          `/file-new-claim/${apptId}/${claimId}/review`,
+        );
+      });
+    });
+
+    it('deletes the old document and uploads the new file when Save and continue is clicked with a replacement', async () => {
+      const { container, getByTestId } = renderPageEditMode();
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      const newFile = new File(['new content'], 'new-proof.png', {
+        type: 'image/png',
+      });
+      const fileInput = container.querySelector('va-file-input');
+
+      await act(async () => {
+        fileInput.dispatchEvent(
+          new CustomEvent('vaChange', {
+            detail: { files: [newFile] },
+            bubbles: true,
+          }),
+        );
+      });
+
+      const saveButton = Array.from(
+        container.querySelectorAll('va-button'),
+      ).find(btn => btn.getAttribute('text') === 'Save and continue');
+
+      await act(async () => {
+        fireEvent.click(saveButton);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      });
+
+      await waitFor(() => {
+        // DELETE should have been called for the old document
+        const deleteCalls = apiStub
+          .getCalls()
+          .filter(c => (c.args[1]?.method || '').toUpperCase() === 'DELETE');
+        expect(deleteCalls).to.have.lengthOf(1);
+        expect(deleteCalls[0].args[0]).to.include('existing-poa-doc-001');
+
+        // POST should have been called to upload the new document
+        const postCalls = apiStub
+          .getCalls()
+          .filter(c => (c.args[1]?.method || '').toUpperCase() === 'POST');
+        expect(postCalls).to.have.lengthOf(1);
+        const uploadBody = JSON.parse(postCalls[0].args[1].body);
+        expect(uploadBody.fileName).to.equal('proof-of-attendance.png');
+
+        // Should navigate to review
+        expect(getByTestId('location-display').textContent).to.equal(
+          `/file-new-claim/${apptId}/${claimId}/review`,
+        );
+      });
+    });
+
+    it('displays the upload error alert when file replacement fails', async () => {
+      // Override the stub to make POST fail
+      apiStub.restore();
+      apiStub = sinon.stub(api, 'apiRequest').callsFake((url, options) => {
+        const method = options?.method?.toUpperCase() || 'GET';
+
+        if (method === 'DELETE') {
+          return Promise.resolve({ id: 'existing-poa-doc-001' });
+        }
+
+        if (method === 'POST') {
+          return Promise.reject(new Error('Network error'));
+        }
+
+        if (url.includes('/documents/')) {
+          const content = new Uint8Array([1, 2, 3, 4]);
+          return Promise.resolve({
+            headers: {
+              get: type => (type === 'Content-Type' ? 'application/pdf' : null),
+            },
+            arrayBuffer: () => Promise.resolve(content.buffer),
+          });
+        }
+
+        return Promise.resolve({
+          claimId,
+          claimStatus: 'InProgress',
+          documents: [],
+        });
+      });
+
+      const { container } = renderPageEditMode();
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      const newFile = new File(['new content'], 'new-proof.png', {
+        type: 'image/png',
+      });
+      const fileInput = container.querySelector('va-file-input');
+
+      await act(async () => {
+        fileInput.dispatchEvent(
+          new CustomEvent('vaChange', {
+            detail: { files: [newFile] },
+            bubbles: true,
+          }),
+        );
+      });
+
+      const saveButton = Array.from(
+        container.querySelectorAll('va-button'),
+      ).find(btn => btn.getAttribute('text') === 'Save and continue');
+
+      await act(async () => {
+        fireEvent.click(saveButton);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      });
+
+      await waitFor(() => {
+        expect(container.querySelector('va-alert[status="error"]')).to.exist;
+      });
+    });
+
+    it('shows a file validation error and does not navigate when the user removes the existing file without selecting a replacement', async () => {
+      const { container, getByTestId } = renderPageEditMode();
+
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
+
+      // Simulate the user clearing the file in VaFileInput
+      const fileInput = container.querySelector('va-file-input');
+      await act(async () => {
+        fileInput.dispatchEvent(
+          new CustomEvent('vaChange', {
+            detail: { files: [] },
+            bubbles: true,
+          }),
+        );
+      });
+
+      const saveButton = Array.from(
+        container.querySelectorAll('va-button'),
+      ).find(btn => btn.getAttribute('text') === 'Save and continue');
+
+      await act(async () => {
+        fireEvent.click(saveButton);
+      });
+
+      // Should show validation error and stay on the POA page
+      await waitFor(() => {
+        expect(fileInput.getAttribute('error')).to.equal(
+          'Please upload your proof of attendance to continue.',
+        );
+        expect(getByTestId('proof-of-attendance-page')).to.exist;
+      });
+
+      // No delete or upload calls should have been made
+      const deleteCalls = apiStub
+        .getCalls()
+        .filter(c => (c.args[1]?.method || '').toUpperCase() === 'DELETE');
+      const postCalls = apiStub
+        .getCalls()
+        .filter(c => (c.args[1]?.method || '').toUpperCase() === 'POST');
+      expect(deleteCalls).to.have.lengthOf(0);
+      expect(postCalls).to.have.lengthOf(0);
     });
   });
 });

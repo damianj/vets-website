@@ -152,6 +152,7 @@ const formConfig = {
             title: 'Confirm the contact information we have on file for you',
           },
           contactInfoRequiredKeys: ['mailingAddress'],
+          prefillPatternEnabled: false,
         }),
       },
     },

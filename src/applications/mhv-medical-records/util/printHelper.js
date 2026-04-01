@@ -17,6 +17,7 @@ import {
 import {
   OBSERVATION_DISPLAY_LABELS,
   LABS_AND_TESTS_DISPLAY_LABELS,
+  interpretationMap,
 } from './constants';
 
 export const pdfPrinter = ({ record, user }) => {
@@ -78,12 +79,21 @@ export const txtPrinter = ({ record, user }) => {
   if (record.observations) {
     const observations = [
       'Results: \n',
-      ...record.observations.map(entry =>
-        [
+      ...record.observations.map(entry => {
+        const interpretationDisplay = entry.interpretation
+          ? interpretationMap[entry.interpretation] || entry.interpretation
+          : null;
+
+        return [
           `${txtLine}`,
           `${entry.testCode}`,
           `${txtLineDotted}`,
           `${OBSERVATION_DISPLAY_LABELS.VALUE}: ${entry.value.text}`,
+          interpretationDisplay
+            ? `${
+                OBSERVATION_DISPLAY_LABELS.INTERPRETATION
+              }: ${interpretationDisplay}`
+            : null,
           `${OBSERVATION_DISPLAY_LABELS.REFERENCE_RANGE}: ${
             entry.referenceRange
           }`,
@@ -109,8 +119,8 @@ export const txtPrinter = ({ record, user }) => {
             : `${OBSERVATION_DISPLAY_LABELS.COMMENTS}: None Noted`,
         ]
           .filter(line => line)
-          .join(`\n`),
-      ),
+          .join(`\n`);
+      }),
     ];
     content.push(...observations);
   }

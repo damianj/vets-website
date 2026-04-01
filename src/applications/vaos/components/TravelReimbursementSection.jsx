@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { VaModal } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useFeatureToggle } from 'platform/utilities/feature-toggles/useFeatureToggle';
+import { useSelector } from 'react-redux';
 import { TRAVEL_PAY_FILE_NEW_CLAIM_ENTRY } from '@department-of-veterans-affairs/mhv/exports';
 import { getDaysRemainingToFileClaim } from '../utils/appointment';
 import {
@@ -25,7 +26,9 @@ export default function TravelReimbursementSection({ appointment }) {
     TOGGLE_NAMES.travelPayEnableComplexClaims,
   );
 
-  const isEligibleForTravelClaim = selectIsEligibleForTravelClaim(appointment);
+  const isEligibleForTravelClaim = useSelector(state =>
+    selectIsEligibleForTravelClaim(state, appointment),
+  );
   if (!isEligibleForTravelClaim) return null;
 
   const claimData = selectAppointmentTravelClaim(appointment);
@@ -34,7 +37,7 @@ export default function TravelReimbursementSection({ appointment }) {
   const daysRemainingToFileClaim = getDaysRemainingToFileClaim(
     appointment.start,
   );
-  const heading = 'Travel reimbursement';
+  const heading = 'Travel reimbursement claim';
 
   const isClaimInProgress =
     claimData.claim?.claimStatus === 'Incomplete' ||

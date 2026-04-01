@@ -340,7 +340,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
     const studies = [
       {
         id: 'study-1',
-        rawDate: '2025-01-10T09:17:00Z',
+        rawDate: '2025-01-10T09:15:20Z',
         status: 'available',
         imageCount: 3,
       },
@@ -358,7 +358,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'lab-1', sortDate: '2025-01-10T09:15:00Z', name: 'CHEST XRAY' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:17:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:15:20Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imageCount).to.equal(0);
@@ -367,25 +367,25 @@ describe('mergeImagingStudiesIntoLabs', () => {
   it('does not match records outside the tolerance window', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:11:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
   });
 
-  it('matches at exactly 10 minutes apart', () => {
+  it('matches at exactly 30 seconds apart', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:10:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:30Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imagingStudyId).to.equal('study-1');
   });
 
-  it('does not match at 10 minutes and 1 second apart', () => {
+  it('does not match at 31 seconds apart', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:10:01Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
@@ -394,10 +394,10 @@ describe('mergeImagingStudiesIntoLabs', () => {
   it('uses each imaging study at most once (1:1 matching)', () => {
     const labs = [
       { id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' },
-      { id: 'lab-2', sortDate: '2025-01-10T09:02:00Z' },
+      { id: 'lab-2', sortDate: '2025-01-10T09:00:25Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:01:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     const matched = result.filter(r => r.imagingStudyId);
@@ -411,7 +411,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'with-date', sortDate: '2025-01-10T09:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:01:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
@@ -441,8 +441,8 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'lab-3', sortDate: '2025-01-11T10:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:02:00Z', status: 'available' },
-      { id: 'study-2', rawDate: '2025-01-11T10:05:00Z', status: 'complete' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:20Z', status: 'available' },
+      { id: 'study-2', rawDate: '2025-01-11T10:00:15Z', status: 'complete' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imagingStudyId).to.equal('study-1');
@@ -454,7 +454,7 @@ describe('mergeImagingStudiesIntoLabs', () => {
   it('does not mutate the original labs array', () => {
     const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:01:00Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(labs[0]).to.not.have.property('imagingStudyId');

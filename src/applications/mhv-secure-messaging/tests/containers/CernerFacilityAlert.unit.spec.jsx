@@ -3,7 +3,6 @@ import { fireEvent, waitFor } from '@testing-library/dom';
 import sinon from 'sinon';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import { expect } from 'chai';
-import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import { inbox } from '../fixtures/folder-inbox-response.json';
 import messageResponse from '../fixtures/message-response.json';
 import folderList from '../fixtures/folder-response.json';
@@ -104,29 +103,8 @@ describe.skip('Cerner Facility Alert', () => {
     expect(screen.queryByRole('ul')).to.not.exist;
   });
 
-  it('does not send AAL request when the link is clicked and feature toggle disabled', async () => {
+  it('sends AAL request when the link is clicked', async () => {
     const screen = setup(initialStateMock, Paths.INBOX, {
-      facilities: userProfileFacilities.filter(f => f.facilityId === '668'),
-    });
-    expect(screen.queryByTestId('cerner-facilities-alert')).to.exist;
-    const link = screen.getByTestId('cerner-facility-action-link');
-    expect(link).to.exist;
-    fetchStub.resetHistory();
-    fireEvent.click(link);
-    await waitFor(() => {
-      expect(fetchStub.calledOnce).to.be.false;
-    });
-  });
-
-  it('sends AAL request when the link is clicked and feature toggle enabled', async () => {
-    const customState = {
-      ...initialStateMock,
-    };
-    customState.featureToggles[
-      FEATURE_FLAG_NAMES.mhvSecureMessagingMilestone2AAL
-    ] = true;
-
-    const screen = setup(customState, Paths.INBOX, {
       facilities: userProfileFacilities.filter(f => f.facilityId === '668'),
     });
     expect(screen.queryByTestId('cerner-facilities-alert')).to.exist;

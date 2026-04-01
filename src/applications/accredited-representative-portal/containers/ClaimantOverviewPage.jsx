@@ -41,26 +41,31 @@ const formatAddress = address => {
     postal_code: postalCode,
   } = address;
 
-  const streetPart = formatAddressPart(street || line1);
-  const line2Part = formatAddressPart(line2);
+  const streetPart = [street || line1, line2]
+    .filter(Boolean)
+    .map(formatAddressPart)
+    .join(' ');
+
   const cityPart = city ? toTitleCase(city) : '';
   const statePart = state ? String(state).toUpperCase() : '';
   const zipPart = zip || postalCode || '';
 
-  if (!streetPart && !line2Part && !cityPart && !statePart && !zipPart) {
-    return '—';
-  }
+  if (!streetPart && !cityPart && !statePart && !zipPart) return '—';
 
   return (
     <>
-      {streetPart && <div>{streetPart}</div>}
-      {line2Part && <div>{line2Part}</div>}
-      {cityPart && <div>{cityPart},</div>}
-      {(statePart || zipPart) && (
+      {streetPart && (
         <div>
-          {statePart}
-          {statePart && zipPart ? ' ' : ''}
-          {zipPart}
+          {streetPart}
+          {(cityPart || statePart || zipPart) && ','}
+        </div>
+      )}
+      {(cityPart || statePart || zipPart) && (
+        <div>
+          {cityPart}
+          {cityPart && ','}
+          {statePart && ` ${statePart}`}
+          {zipPart && ` ${zipPart}`}
         </div>
       )}
     </>
@@ -301,7 +306,6 @@ const ClaimantOverviewPage = () => {
                     <ClaimantDetailRow
                       label="Address"
                       value={formatAddress(claimant?.address)}
-                      className="claimant-detail-row--multiline"
                     />
                     <ClaimantDetailRow
                       label="Phone"

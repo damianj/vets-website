@@ -216,7 +216,7 @@ export function sessionTypeUrl({
   // application is fetched from location, not the passed through queryParams arg
   const {
     application,
-    OAuth,
+    OAuth = true,
     codeChallenge,
     codeChallengeMethod,
     clientId,
@@ -378,7 +378,7 @@ export async function verify({
   version = API_VERSION,
   clickedEvent = AUTH_EVENTS.VERIFY,
   isLink = false,
-  useOAuth = false,
+  useOAuth = true,
   acr = null,
   queryParams = {},
 }) {
@@ -415,7 +415,7 @@ export async function signupOrVerify({
   policy = '',
   isSignup = true,
   isLink = false,
-  useOAuth = false,
+  useOAuth = true,
   allowVerification = true,
   config = 'default',
 }) {
@@ -457,9 +457,7 @@ export const logoutUrl = () => {
  * @param {Boolean} cernerNonEligibleSisEnabled feature toggle that controls logic
  * @returns {Boolean} Returns a boolean to determine AuthBroker
  */
-export const determineAuthBroker = (featureFlagEnabled, toggleIsLoading) => {
-  if (!featureFlagEnabled && !toggleIsLoading) return false;
-
+export const determineAuthBroker = () => {
   const cookieValue = Cookies.get('CERNER_ELIGIBLE');
 
   /**

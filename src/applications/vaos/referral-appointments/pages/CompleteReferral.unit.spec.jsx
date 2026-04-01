@@ -123,7 +123,7 @@ describe('CompleteReferral', () => {
 
   it('should render appointment details correctly', async () => {
     requestStub.resolves({ data: referralAppointmentInfo });
-    const { getByTestId } = renderWithStoreAndRouter(
+    const { getByTestId, getByRole, getByText } = renderWithStoreAndRouter(
       <CompleteReferral currentReferral={currentReferral} />,
       {
         store: createTestStore(initialState),
@@ -148,6 +148,11 @@ describe('CompleteReferral', () => {
     expect(getByTestId('appointment-type')).to.have.text(
       'Optometry with Dr. Moreen S. Rafa',
     );
+
+    expect(
+      getByRole('heading', { level: 2, name: /Travel reimbursement claim/i }),
+    ).to.exist;
+    expect(getByText(/proof that you attended the appointment/i)).to.exist;
 
     expect(getByTestId('survey-info-block')).to.exist;
     expect(getByTestId('survey-info-block')).to.contain.text(

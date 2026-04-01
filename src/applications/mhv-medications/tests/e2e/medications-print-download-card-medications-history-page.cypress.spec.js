@@ -18,6 +18,10 @@ describe('Medications History Page Print Download Card', () => {
     cy.intercept('GET', '/my_health/v1/prescriptions?*filter*', rxList).as(
       'filteredPrescriptions',
     );
+    // Catch-all for export requests (print/PDF/TXT) which use V2 sort params
+    cy.intercept('GET', '/my_health/v1/prescriptions?*sort*', rxList).as(
+      'exportPrescriptions',
+    );
     listPage.visitMedicationsListPageURL(rxList);
     cy.visit('/my-health/medications/history');
     cy.injectAxe();

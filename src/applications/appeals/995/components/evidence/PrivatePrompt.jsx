@@ -16,9 +16,6 @@ export const privateRecordsPromptTitle =
 export const privateRecordsPromptError =
   'Select if we should get your private (non-VA) medical records';
 
-/**
- * This page is needed to make the back button on this page to to the last
- */
 const PrivatePrompt = ({
   data = {},
   goBack,
@@ -73,6 +70,7 @@ const PrivatePrompt = ({
         form-heading={privateRecordsPromptTitle}
         form-heading-level="3"
         label="Do you want us to get your records?"
+        name="root_hasPrivateEvidence"
         onVaValueChange={handlers.onSelected}
         required
         use-forms-pattern="single"
@@ -83,6 +81,7 @@ const PrivatePrompt = ({
           value="y"
           checked={data[HAS_PRIVATE_EVIDENCE]}
           description="We'll ask you to authorize the release of your medical records to VA and then provide details for your private providers."
+          tile
         />
         <va-radio-option
           label="No"
@@ -90,6 +89,7 @@ const PrivatePrompt = ({
           value="n"
           checked={data[HAS_PRIVATE_EVIDENCE] === false}
           description="You can upload your private provider records later in this form, or you can authorize us to get them after you submit this application."
+          tile
         />
         <div slot="form-description" className={error ? 'error-bolding' : ''}>
           <p>
@@ -98,7 +98,6 @@ const PrivatePrompt = ({
           </p>
           <ul>
             <li>Private provider</li>
-            <li>Veterans Choice Program provider</li>
             <li>
               VA Vet Center (this is different from VA-paid community care)
             </li>

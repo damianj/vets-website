@@ -34,7 +34,7 @@ export const convertScdfImagingStudy = record => {
  * Maximum allowed difference (in milliseconds) between a lab record's date
  * and an imaging study's date for them to be considered the same study.
  */
-const IMAGING_MATCH_TOLERANCE_MS = 10 * 60 * 1000; // 10 minutes
+const IMAGING_MATCH_TOLERANCE_MS = 30 * 1000; // 30 seconds
 
 /**
  * Merge SCDF imaging study metadata into a labs-and-tests list by matching

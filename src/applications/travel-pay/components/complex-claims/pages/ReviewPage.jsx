@@ -146,19 +146,22 @@ const ReviewPage = () => {
           </p>
         </>
       ) : (
+        <p>
+          When you’re done adding expenses, select <b>Sign agreement</b> to
+          accept the travel agreement and submit your claim. Make sure to file
+          your claim within 30 days of your appointment.
+        </p>
+      )}
+      {numGroupedExpenses > 0 && !ccEnabled && <h2>Expense types</h2>}
+      {/* Always render so the POA accordion stays visible even when all expenses are removed */}
+      <ExpensesAccordion
+        expenses={expenses}
+        documents={documents}
+        groupAccordionItemsByType
+        headerLevel={ccEnabled ? 2 : 3}
+      />
+      {numGroupedExpenses > 0 && (
         <>
-          <p>
-            When you’re done adding expenses, select <b>Sign agreement</b> to
-            accept the travel agreement and submit your claim. Make sure to file
-            your claim within 30 days of your appointment.
-          </p>
-          {!ccEnabled && <h2>Expense types</h2>}
-          <ExpensesAccordion
-            expenses={expenses}
-            documents={documents}
-            groupAccordionItemsByType
-            headerLevel={ccEnabled ? 2 : 3}
-          />
           <div className="vads-u-margin-top--3">
             <EstimatedReimbursementCard
               expenses={expenses}

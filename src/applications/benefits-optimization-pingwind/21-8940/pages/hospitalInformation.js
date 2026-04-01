@@ -188,6 +188,7 @@ export default {
         confirmRemove: true,
         confirmRemoveDescription:
           'Are you sure you want to remove this hospital?',
+        itemAriaLabel: item => `hospital: ${item?.hospitalName || 'Hospital'}`,
         updateSchema: (
           _fieldData,
           schema,
@@ -352,6 +353,10 @@ export default {
             confirmRemoveDescription:
               'Are you sure you want to remove this treatment date?',
             addAnotherText: 'Add another treatment date',
+            itemAriaLabel: ({ from, to, startDate, endDate } = {}) =>
+              `Hospitalization Date: ${[from || startDate, to || endDate]
+                .filter(Boolean)
+                .join(' to ')}`,
             updateSchema: updateTreatmentDateSchema,
           },
           items: {

@@ -407,7 +407,7 @@ export const FORM_21_4502 = {
   },
   FORM_CONFIG: {
     TITLE:
-      'Application for Automobile or Other Conveyance and Adaptive Equipment (VA 21-4502)',
+      'Application for Automobile or Other Conveyance and Adaptive Equipment (UNDER 38 U.S.C. 3901-3904) (VA 21-4502)',
     SUB_TITLE: 'Please complete this form as accurately as you can.',
     CHAPTER_ELIGIBILITY: 'Is this the form I need?',
     CHAPTER_VETERAN_ID: 'Section I: Basic information',

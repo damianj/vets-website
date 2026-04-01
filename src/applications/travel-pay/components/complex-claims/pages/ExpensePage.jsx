@@ -14,6 +14,7 @@ import {
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/api';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import useSetPageTitle from '../../../hooks/useSetPageTitle';
 import useSetFocus from '../../../hooks/useSetFocus';
 import DocumentUpload from './DocumentUpload';
@@ -21,6 +22,7 @@ import {
   EXPENSE_TYPES,
   EXPENSE_TYPE_KEYS,
   TRIP_TYPES,
+  PROOF_OF_ATTENDANCE_FILENAME,
 } from '../../../constants';
 import {
   createExpense,
@@ -62,7 +64,10 @@ import ExpenseAirTravelFields from './ExpenseAirTravelFields';
 import ExpenseLodgingFields from './ExpenseLodgingFields';
 import ExpenseCommonCarrierFields from './ExpenseCommonCarrierFields';
 import CancelExpenseModal from './CancelExpenseModal';
-import { formatAmount } from '../../../util/complex-claims-helper';
+import {
+  formatAmount,
+  getAcceptedFileTypes,
+} from '../../../util/complex-claims-helper';
 
 export const toBase64 = file =>
   new Promise((resolve, reject) => {
@@ -83,6 +88,20 @@ const ExpensePage = () => {
   const { apptId, claimId, expenseId } = useParams();
 
   const isEditMode = !!expenseId;
+
+  // Feature toggles
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const heicConversionEnabled = useToggleValue(
+    TOGGLE_NAMES.travelPayEnableHeicConversion,
+  );
+
+  const acceptedFileTypes = getAcceptedFileTypes(heicConversionEnabled);
+  const documentUploadHint = `You can upload a ${acceptedFileTypes
+    .join(', ')
+    .replace(
+      /, ([^,]*)$/,
+      ', or $1',
+    )} file. Your file should be no larger than 5MB.`;
 
   // Redux hooks
   const dispatch = useDispatch();
@@ -593,6 +612,9 @@ const ExpensePage = () => {
     // If no receipt exists AND no prior error exists, set error
     if (!formState.receipt && !existingReceiptError) {
       errors.receipt = 'Select an approved file type under 5MB';
+    } else if (existingReceiptError) {
+      // Carry any existing receipt error into the blocking errors object so hasBlockingErrors is true and Continue is blocked
+      errors.receipt = existingReceiptError;
     }
 
     // Type-specific validations (pass null to validate all fields)
@@ -797,8 +819,19 @@ const ExpensePage = () => {
       return;
     }
 
+    const file = files[0];
+
+    if (
+      file.name.toLowerCase().startsWith(`${PROOF_OF_ATTENDANCE_FILENAME}.`)
+    ) {
+      setExtraFieldErrors(prev => ({
+        ...prev,
+        receipt: `Choose a name other than "${PROOF_OF_ATTENDANCE_FILENAME}"`,
+      }));
+      return;
+    }
+
     try {
-      const file = files[0];
       const base64File = await toBase64(file);
 
       // Update document state
@@ -888,6 +921,7 @@ const ExpensePage = () => {
             handleDocumentChange={handleDocumentChange}
             error={extraFieldErrors.receipt}
             onVaFileInputError={handleFileInputError}
+            hint={documentUploadHint}
           />
           {isMeal && (
             <ExpenseMealFields

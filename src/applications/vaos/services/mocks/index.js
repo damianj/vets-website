@@ -24,6 +24,53 @@ const facilitiesV2 = require('./v2/facilities.json');
 
 // Generate dynamic slots with conflicts based on confirmed appointments
 const mockConfirmedAppointments = getMockConfirmedAppointments();
+
+// Dynamically-dated upcoming CC appointment, always 3 days out.
+// Ensures CCProofOfAttendanceSection is visible in local dev without
+// depending on static dates in confirmed.json.
+const upcomingCCDate = new Date();
+upcomingCCDate.setDate(upcomingCCDate.getDate() + 3);
+upcomingCCDate.setHours(10, 0, 0, 0);
+const upcomingCCApptId = 'qa-upcoming-cc-appt';
+mockConfirmedAppointments.data.push({
+  id: upcomingCCApptId,
+  type: 'appointments',
+  attributes: {
+    id: upcomingCCApptId,
+    status: 'booked',
+    modality: 'communityCare',
+    kind: 'cc',
+    type: 'COMMUNITY_CARE_APPOINTMENT',
+    start: upcomingCCDate.toISOString(),
+    past: false,
+    future: true,
+    lastRetrieved: new Date().toISOString(),
+    isLatest: true,
+    cancellable: false,
+    provider: {
+      id: upcomingCCApptId,
+      name: 'Dr. QA Test @ QA Cardiology',
+      practice: 'QA Cardiology',
+      phone: '555-000-0001',
+      location: {
+        name: 'QA Test Hospital',
+        address: '123 Test St, Philadelphia, PA 19111',
+        latitude: 40.06999282694126,
+        longitude: -75.08769957031448,
+        timezone: 'America/New_York',
+      },
+    },
+    location: {
+      id: upcomingCCApptId,
+      type: 'appointments',
+      attributes: {
+        name: 'QA Test Hospital',
+        timezone: { timeZoneId: 'America/New_York' },
+      },
+    },
+  },
+});
+
 // Find appointments scheduled for the next business day to force conflicts
 const nextBusinessDay = findNextBusinessDay();
 const nextBusinessDayString = nextBusinessDay.toISOString().split('T')[0]; // Get YYYY-MM-DD format
@@ -80,6 +127,58 @@ const schedulingConfigurationsVPG = require('./v2/scheduling_configurations_vpg.
 const appointmentRequests = {
   data: requestsV2.data.concat(requestsOh.data),
 };
+
+// Dynamically-dated pending CC request, created 7 days ago.
+// Provides a community care request that always appears in the pending list.
+const qaCCRequestCreated = new Date();
+qaCCRequestCreated.setDate(qaCCRequestCreated.getDate() - 7);
+const qaCCRequestPeriodStart = new Date();
+qaCCRequestPeriodStart.setDate(qaCCRequestPeriodStart.getDate() - 3);
+const qaCCRequestId = 'qa-pending-cc-request';
+appointmentRequests.data.push({
+  id: qaCCRequestId,
+  type: 'appointments',
+  attributes: {
+    id: qaCCRequestId,
+    kind: 'cc',
+    status: 'proposed',
+    serviceType: 'primaryCare',
+    patientIcn: null,
+    locationId: '983',
+    created: qaCCRequestCreated.toISOString(),
+    requestedPeriods: [
+      {
+        start: qaCCRequestPeriodStart.toISOString(),
+        end: qaCCRequestPeriodStart.toISOString(),
+      },
+    ],
+    contact: {
+      telecom: [
+        { type: 'phone', value: '5550001234' },
+        { type: 'email', value: 'veteran@example.com' },
+      ],
+    },
+    preferredTimesForPhoneCall: ['Morning'],
+    preferredLanguage: 'English',
+    preferredDates: ['Next available'],
+    preferredProviderName: null,
+    cancellable: true,
+    type: 'COMMUNITY_CARE_REQUEST',
+    modality: 'communityCare',
+    past: false,
+    future: false,
+    pending: true,
+    location: {
+      id: '983',
+      type: 'appointments',
+      attributes: {
+        id: '983',
+        name: 'Cheyenne VA Medical Center',
+        timezone: { timeZoneId: 'America/Denver' },
+      },
+    },
+  },
+});
 
 // CC Direct Scheduling mocks
 const MockReferralListResponse = require('../../tests/fixtures/MockReferralListResponse');

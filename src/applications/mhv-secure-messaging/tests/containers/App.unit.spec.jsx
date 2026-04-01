@@ -485,7 +485,6 @@ describe('App', () => {
       ...initialState,
       featureToggles: {
         loading: false,
-        [FEATURE_FLAG_NAMES.mhvSecureMessagingMilestone2AAL]: true,
       },
     };
 

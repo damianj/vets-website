@@ -37,7 +37,10 @@ export function NeedHelp({ item }) {
         </p>
         {alias && (
           <p>
-            We may refer to the “{TrackedItem.getDisplayFriendlyName(item)}”
+            We may refer to the{' '}
+            <span className="vads-u-font-weight--bold">
+              “{TrackedItem.getDisplayFriendlyName(item)}”
+            </span>{' '}
             request as {alias}
           </p>
         )}

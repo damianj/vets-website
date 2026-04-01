@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import * as Sentry from '@sentry/browser';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-import recordEvent from '~/platform/monitoring/record-event';
+import recordEvent from 'platform/monitoring/record-event';
 import {
   fullNameReducer,
   statementOfTruthFullName,
-} from '~/platform/forms/components/review/PreSubmitSection';
-import { autoSaveForm } from '~/platform/forms/save-in-progress/actions';
-import { scrollToFirstError } from '~/platform/forms-system/src/js/utilities/ui';
+} from 'platform/forms/components/review/PreSubmitSection';
+import { autoSaveForm } from 'platform/forms/save-in-progress/actions';
+import { scrollToFirstError } from 'platform/forms-system/src/js/utilities/ui';
+import { dataDogLogger } from 'platform/monitoring/Datadog/utilities';
 
 import SubmitButtons from './SubmitButtons';
 import { isValidForm } from '../validation';
@@ -28,12 +28,24 @@ class SubmitController extends Component {
   componentDidUpdate(prevProps) {
     const nextStatus = this.props.form.submission.status;
     const previousStatus = prevProps.form.submission.status;
+    const { inProgressFormId } = this.props.form.loadedData?.metadata;
+    const { formId } = this.props.form;
 
     // Handle successful submission
     if (
       nextStatus !== previousStatus &&
       nextStatus === 'applicationSubmitted'
     ) {
+      // Datadog: Track successful submission
+      dataDogLogger({
+        message: 'Submission successful',
+        attributes: {
+          formId,
+          inProgressFormId,
+          userId: this.props.user.profile.accountUuid,
+        },
+      });
+
       const newRoute = `${this.props.formConfig.urlPrefix}confirmation`;
       this.props.router.push(newRoute);
     }
@@ -114,6 +126,16 @@ class SubmitController extends Component {
       timestamp: now,
     };
 
+    // Datadog: Track submission attempt, but after pre-submit check
+    dataDogLogger({
+      message: 'Submission attempt',
+      attributes: {
+        formId,
+        inProgressFormId,
+        userId: this.props.user.profile.accountUuid,
+      },
+    });
+
     // Combine custom errors with form validation errors
     const allErrors = [...customErrors, ...errors];
     const hasErrors = !isValid || customErrors.length > 0;
@@ -129,34 +151,25 @@ class SubmitController extends Component {
         rawErrors: allErrors,
         errors: processedErrors,
       });
-      recordEvent({
-        event: `${trackingPrefix}-validation-failed`,
-      });
-      // Sentry
-      Sentry.setUser({ id: user.profile.accountUuid });
-      Sentry.withScope(scope => {
-        scope.setExtra('rawErrors', allErrors);
-        scope.setExtra('errors', processedErrors);
-        scope.setExtra('prefix', trackingPrefix);
-        scope.setExtra('inProgressFormId', inProgressFormId);
-        Sentry.captureMessage('Validation issue not displayed');
-      });
+
+      // Google Analytics
+      recordEvent({ event: `${trackingPrefix}-validation-failed` });
+
       this.props.setSubmission('status', 'validationError');
       this.props.setSubmission('hasAttemptedSubmit', true);
 
-      // DataDog - must be initialized within the app
-      if (window.DD_LOGS) {
-        window.DD_LOGS.logger.error(
-          'Validation issue not displayed',
-          {
-            errors: processedErrors,
-            rawErrors: allErrors,
-            inProgressFormId,
-            userId: user.profile.accountUuid,
-          },
-          'validationError',
-        );
-      }
+      // Datadog: Track submission validation error
+      dataDogLogger({
+        message: 'Validation issue not displayed',
+        attributes: {
+          errors: processedErrors,
+          rawErrors: allErrors,
+          inProgressFormId,
+          userId: user.profile.accountUuid,
+        },
+        status: 'error',
+        error: 'validationError',
+      });
 
       if (isLoggedIn && formConfig.prefillEnabled) {
         // Update save-in-progress with failed submit

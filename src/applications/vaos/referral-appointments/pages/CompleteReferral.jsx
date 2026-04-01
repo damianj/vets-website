@@ -20,6 +20,7 @@ import {
 } from '../redux/selectors';
 import { FETCH_STATUS, GA_PREFIX } from '../../utils/constants';
 import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
+import CCProofOfAttendanceSection from '../../components/CCProofOfAttendanceSection';
 
 function handleScheduleClick(dispatch) {
   return () => {
@@ -210,6 +211,7 @@ export const CompleteReferral = props => {
               />
             </p>
           </div>
+          <CCProofOfAttendanceSection confirmation />
           <div className="vads-u-margin-top--2">
             <va-alert
               status="info"

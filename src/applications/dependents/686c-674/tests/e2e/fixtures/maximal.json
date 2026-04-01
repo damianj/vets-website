@@ -81,8 +81,16 @@
   },
   "doesLiveWithSpouse": {
     "spouseIncome": "N",
-    "spouseDoesLiveWithVeteran": true,
+    "spouseDoesLiveWithVeteran": false,
+    "currentSpouseReasonForSeparation": "Other",
+    "currentSpouseOtherReasonForSeparation": "other way",
     "address": {
+      "country": "USA",
+      "street": "123 Fake St.",
+      "street2": "  ",
+      "city": "Fakesville",
+      "state": "AL",
+      "postalCode": "12345",
       "view:militaryBaseDescription": {}
     }
   },
@@ -160,6 +168,7 @@
       "view:militaryBaseDescription": {},
       "country": "USA",
       "street": "123 Fake st",
+      "street2": "  ",
       "city": "Fakesville",
       "state": "NV",
       "postalCode": "89131"
@@ -284,7 +293,8 @@
       "address": {
         "view:militaryBaseDescription": {},
         "country": "USA",
-        "street": "123 Fake St.",
+        "street": "1234 Fake St.",
+        "street2": "  ",
         "city": "Fakesville",
         "state": "AL",
         "postalCode": "12345"
@@ -334,6 +344,7 @@
         "view:militaryBaseDescription": {},
         "country": "USA",
         "street": "123 Fake St.",
+        "street2": "  ",
         "city": "Las Vegas",
         "state": "NV",
         "postalCode": "12345"

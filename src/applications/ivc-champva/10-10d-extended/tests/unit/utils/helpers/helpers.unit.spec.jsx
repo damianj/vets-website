@@ -3,7 +3,6 @@ import sinon from 'sinon-v20';
 import {
   createModalTitleOrDescription,
   getAgeInYears,
-  isOfCollegeAge,
   requireBirthCertificate,
 } from '../../../../utils/helpers';
 
@@ -79,33 +78,6 @@ describe('1010d `getAgeInYears` util', () => {
     const asOfEveningUTC = new Date(Date.UTC(2025, 5, 15, 23, 59, 59)); // same day late
     expect(getAgeInYears(dob, asOfMorningUTC)).to.equal(35);
     expect(getAgeInYears(dob, asOfEveningUTC)).to.equal(35);
-  });
-});
-
-describe('1010d `isOfCollegeAge` util', () => {
-  it('should return `false` when birthdate is greater than 23 years from testdate', () => {
-    const testdate = new Date('2023-06-01');
-    expect(isOfCollegeAge('1986-06-01', testdate)).to.be.false;
-  });
-
-  it('should return `false` when birthdate is less than 18 years from testdate', () => {
-    const testdate = new Date('2023-06-01');
-    expect(isOfCollegeAge('2005-06-02', testdate)).to.be.false;
-  });
-
-  it('should return `true` when birthdate is exactly 18 years from testdate', () => {
-    const testdate = new Date('2023-06-01');
-    expect(isOfCollegeAge('2005-06-01', testdate)).to.be.true;
-  });
-
-  it('should return `true` when birthdate is exactly 23 years from testdate', () => {
-    const testdate = new Date('2023-06-01');
-    expect(isOfCollegeAge('2000-06-01', testdate)).to.be.true;
-  });
-
-  it('should return `true` when birthdate is between 18 and 23 years from testdate', () => {
-    const testdate = new Date('2023-06-01');
-    expect(isOfCollegeAge('2003-06-01', testdate)).to.be.true;
   });
 });
 

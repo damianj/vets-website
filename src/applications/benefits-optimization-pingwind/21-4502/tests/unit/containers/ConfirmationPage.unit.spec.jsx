@@ -9,16 +9,15 @@ import ConfirmationPage from '../../../containers/ConfirmationPage';
 
 const mockStore = state => createStore(() => state);
 
-const initConfirmationPage = formData => {
+const initConfirmationPage = (
+  formData,
+  response = { confirmationNumber: '1234567890' },
+) => {
   const store = mockStore({
     form: {
       ...createInitialState(formConfig),
       submission: {
-        response: {
-          attributes: {
-            confirmationNumber: '1234567890',
-          },
-        },
+        response,
         timestamp: new Date(),
       },
       data: formData,

@@ -201,6 +201,26 @@ describe('VAOS Component: ScheduleReferral', () => {
     const scheduleButton = screen.queryByTestId('schedule-appointment-button');
     expect(scheduleButton).to.be.null;
   });
+  it('should display warning alert when onlineSchedule is false', async () => {
+    const referral = createReferralById(referralDate, '666');
+    referral.attributes.onlineSchedule = false;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const alert = await screen.findByTestId('referral-alert');
+    expect(alert).to.exist;
+    expect(alert).to.contain.text(
+      'Online scheduling isn\u2019t available for this referral right now.',
+    );
+
+    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
+    expect(scheduleButton).to.be.null;
+  });
   it('should allow user to schedule from pilot expansion station', async () => {
     const referral = createReferralById(referralDate, '99999');
     referral.attributes.stationId = '648GE';

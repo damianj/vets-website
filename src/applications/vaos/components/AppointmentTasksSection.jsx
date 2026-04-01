@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { useFeatureToggle } from 'platform/utilities/feature-toggles/useFeatureToggle';
+import { useSelector } from 'react-redux';
 
 import { TRAVEL_PAY_FILE_NEW_CLAIM_ENTRY } from '@department-of-veterans-affairs/mhv/exports';
 import { getDaysRemainingToFileClaim } from '../utils/appointment';
@@ -16,7 +17,9 @@ export default function AppointmentTasksSection({ appointment }) {
   const complexClaimsEnabled = useToggleValue(
     TOGGLE_NAMES.travelPayEnableComplexClaims,
   );
-  const isEligibleForTravelClaim = selectIsEligibleForTravelClaim(appointment);
+  const isEligibleForTravelClaim = useSelector(state =>
+    selectIsEligibleForTravelClaim(state, appointment),
+  );
   if (!isEligibleForTravelClaim) return null;
 
   const claimData = selectAppointmentTravelClaim(appointment);

@@ -81,9 +81,9 @@ export const EligibilityFormPage = ({
 
   return (
     <div className="eligibility-form-page">
-      <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+      <h1 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
         {E.TITLE}
-      </h2>
+      </h1>
       <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">{E.INTRO}</p>
       <p className="vads-u-margin-top--4 vads-u-margin-bottom--3">
         {E.ANSWER_QUESTIONS}
@@ -140,9 +140,9 @@ export const EligibilityFormPage = ({
             background
             className="vads-u-margin-top--3 vads-u-margin-bottom--4"
           >
-            <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+            <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
               {E.SUMMARY_TITLE}
-            </h3>
+            </h2>
             <p className="vads-u-margin-bottom--2 vads-u-font-weight--bold">
               {E.YOUR_RESPONSES}
             </p>
@@ -166,12 +166,12 @@ export const EligibilityFormPage = ({
                 visible
                 className="vads-u-margin-top--3 vads-u-margin-bottom--0"
               >
-                <h4
+                <h3
                   slot="headline"
                   className="vads-u-font-weight--bold vads-u-margin-top--0"
                 >
                   {E.NOT_ELIGIBLE_HEADLINE}
-                </h4>
+                </h3>
                 {showNotEligibleContent ? (
                   <>
                     <p className="vads-u-margin-bottom--2">

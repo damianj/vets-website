@@ -160,3 +160,68 @@ describe('Admission and discharge summary details component header date', () => 
     expect(screen.queryByTestId('note-discharge-date')).to.exist;
   });
 });
+
+describe('Admission and discharge summary addenda', () => {
+  const sampleAddenda = [
+    {
+      date: '2024-12-18T05:22:40+00:00',
+      dateSigned: '2024-12-18T05:25:10+00:00',
+      writtenBy: 'MARCI P MCGUIRE',
+      signedBy: 'MARCI P MCGUIRE',
+      note:
+        'VXJpbmFseXNpcyBwb3NpdGl2ZSBmb3IgUHJvdGV1cyBtaXJhYmlsaXMuIFByZXNjcmliZWQgQXVnbWVudGluIGFuZCBpbnN0cnVjdGVkIA0KTXIuIFNpbHZhIHRvIGRpc2NvbnRpbnVlIHRoZSBvcmlnaW5hbCBSeC4NCg==',
+    },
+  ];
+
+  it('should render AddendaList when addenda are present', () => {
+    const record = {
+      ...convertCareSummariesAndNotesRecord(dischargeSummary),
+      addenda: sampleAddenda,
+    };
+    const screen = renderWithStoreAndRouter(
+      <AdmissionAndDischargeDetails record={record} runningUnitTest />,
+      {
+        initialState: {},
+        reducers: reducer,
+        path: '/summaries-and-notes/954',
+      },
+    );
+    expect(screen.getByTestId('notes-list')).to.exist;
+    expect(screen.getAllByTestId('notes-list-item').length).to.equal(1);
+    expect(
+      screen.getByTestId('note-list-item-written-by').textContent,
+    ).to.include('MARCI P MCGUIRE');
+  });
+
+  it('should not render AddendaList when addenda is null', () => {
+    const record = {
+      ...convertCareSummariesAndNotesRecord(dischargeSummary),
+      addenda: null,
+    };
+    const screen = renderWithStoreAndRouter(
+      <AdmissionAndDischargeDetails record={record} runningUnitTest />,
+      {
+        initialState: {},
+        reducers: reducer,
+        path: '/summaries-and-notes/954',
+      },
+    );
+    expect(screen.queryByTestId('notes-list')).to.not.exist;
+  });
+
+  it('should not render AddendaList when addenda is an empty array', () => {
+    const record = {
+      ...convertCareSummariesAndNotesRecord(dischargeSummary),
+      addenda: [],
+    };
+    const screen = renderWithStoreAndRouter(
+      <AdmissionAndDischargeDetails record={record} runningUnitTest />,
+      {
+        initialState: {},
+        reducers: reducer,
+        path: '/summaries-and-notes/954',
+      },
+    );
+    expect(screen.queryByTestId('notes-list')).to.not.exist;
+  });
+});

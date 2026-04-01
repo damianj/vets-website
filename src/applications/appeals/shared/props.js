@@ -25,7 +25,7 @@ const additionalIssue = {
   [SELECTED]: bool,
 };
 
-const evidence = {
+export const evidence = {
   name: string,
   confirmationCode: string,
   attachmentId: string,

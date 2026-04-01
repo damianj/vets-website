@@ -54,8 +54,15 @@
   },
   "doesLiveWithSpouse": {
     "spouseIncome": "N",
-    "spouseDoesLiveWithVeteran": true,
+    "currentSpouseOtherReasonForSeparation": "other way",
+    "currentSpouseReasonForSeparation": "Other",
+    "spouseDoesLiveWithVeteran": false,
     "address": {
+      "country": "USA",
+      "street": "123 Fake St.",
+      "city": "Fakesville",
+      "state": "AL",
+      "postalCode": "12345",
       "view:militaryBaseDescription": {}
     }
   },
@@ -210,7 +217,7 @@
       "address": {
         "view:militaryBaseDescription": {},
         "country": "USA",
-        "street": "123 Fake St.",
+        "street": "1234 Fake St.",
         "city": "Fakesville",
         "state": "AL",
         "postalCode": "12345"

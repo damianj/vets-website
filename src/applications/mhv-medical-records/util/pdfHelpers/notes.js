@@ -1,4 +1,42 @@
 import { EMPTY_FIELD } from '../constants';
+import { decodeBase64Report, isArrayAndHasItems } from '../helpers';
+import { formatDateTimeInUserTimezone } from '../dateHelpers';
+
+/**
+ * Generate PDF result items for addenda.
+ * Each addendum becomes a separate item group with header "Addendum".
+ */
+export const generateAddendaItems = addenda => {
+  if (!isArrayAndHasItems(addenda)) return [];
+  return addenda.map(addendum => {
+    const items = [
+      {
+        title: 'Date entered',
+        value: formatDateTimeInUserTimezone(addendum.date) || EMPTY_FIELD,
+        inline: true,
+      },
+    ];
+    if (addendum.writtenBy) {
+      items.push({
+        title: 'Written by',
+        value: addendum.writtenBy,
+        inline: true,
+      });
+    }
+    if (addendum.signedBy) {
+      items.push({
+        title: 'Signed by',
+        value: addendum.signedBy,
+        inline: true,
+      });
+    }
+    items.push({
+      value: decodeBase64Report(addendum.note) || EMPTY_FIELD,
+      monospace: true,
+    });
+    return { header: 'Addendum', items };
+  });
+};
 
 export const generateNotesIntro = record => {
   return {
@@ -44,6 +82,7 @@ export const generateDischargeSummaryContent = record => ({
           },
         ],
       },
+      ...generateAddendaItems(record.addenda),
     ],
   },
 });
@@ -86,6 +125,7 @@ export const generateProgressNoteContent = record => {
             },
           ],
         },
+        ...generateAddendaItems(record.addenda),
       ],
     },
   };

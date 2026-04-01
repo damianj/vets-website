@@ -92,4 +92,82 @@ describe('UnifiedLabAndTestObservations Component', () => {
 
     expect(screen.getByText('Old format string comment')).to.exist;
   });
+
+  it('displays interpretation when present, mapped via interpretationMap', () => {
+    const resultsWithInterpretation = [
+      {
+        testCode: 'Glucose',
+        value: { text: '250 mg/dL' },
+        referenceRange: '70 - 110',
+        status: 'final',
+        interpretation: 'H',
+        comments: [],
+      },
+    ];
+
+    const screen = render(
+      <UnifiedLabAndTestObservations results={resultsWithInterpretation} />,
+    );
+
+    expect(screen.getByText('Interpretation')).to.exist;
+    expect(screen.getByText('High')).to.exist;
+  });
+
+  it('displays critical high interpretation correctly', () => {
+    const resultsWithCriticalHigh = [
+      {
+        testCode: 'Potassium',
+        value: { text: '7.0 meq/L' },
+        referenceRange: '3.5 - 5.1',
+        status: 'final',
+        interpretation: 'HH',
+        comments: [],
+      },
+    ];
+
+    const screen = render(
+      <UnifiedLabAndTestObservations results={resultsWithCriticalHigh} />,
+    );
+
+    expect(screen.getByText('Interpretation')).to.exist;
+    expect(screen.getByText('Critical high')).to.exist;
+  });
+
+  it('does not render interpretation row when interpretation is absent', () => {
+    const resultsWithoutInterpretation = [
+      {
+        testCode: 'Sodium',
+        value: { text: '140 mmol/L' },
+        referenceRange: '136 - 145',
+        status: 'final',
+        comments: [],
+      },
+    ];
+
+    const screen = render(
+      <UnifiedLabAndTestObservations results={resultsWithoutInterpretation} />,
+    );
+
+    expect(screen.queryByText('Interpretation')).not.to.exist;
+  });
+
+  it('displays raw interpretation code when not found in interpretationMap', () => {
+    const resultsWithUnmappedCode = [
+      {
+        testCode: 'Custom Test',
+        value: { text: 'Positive' },
+        referenceRange: '',
+        status: 'final',
+        interpretation: 'UNKNOWN_CODE',
+        comments: [],
+      },
+    ];
+
+    const screen = render(
+      <UnifiedLabAndTestObservations results={resultsWithUnmappedCode} />,
+    );
+
+    expect(screen.getByText('Interpretation')).to.exist;
+    expect(screen.getByText('UNKNOWN_CODE')).to.exist;
+  });
 });

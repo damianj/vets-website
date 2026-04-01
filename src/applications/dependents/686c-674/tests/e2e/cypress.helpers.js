@@ -10,6 +10,7 @@ export { pageHooks };
 export const setupCypress = ({
   returnUrl = '',
   useTestDataInSip = false,
+  useFdfMocks = false,
 } = {}) => {
   // DoB in prefill processes MM/dd/yyyy format from `/show` endpoint to
   // MM-dd-yyyy
@@ -30,6 +31,15 @@ export const setupCypress = ({
     timestamp: '2020-11-12',
     attributes: {
       guid: '123fake-submission-id-567',
+    },
+  };
+
+  const fdfSubmission = {
+    data: {
+      digitalFormsApi: {
+        submissionId: '123fake-submission-id-567',
+        confirmationNumber: 'V-DEB-1234',
+      },
     },
   };
 
@@ -69,15 +79,26 @@ export const setupCypress = ({
     : mockUser;
 
   cy.intercept('GET', '/v0/user', userData);
+  const baseToggles = [
+    { name: 'vaDependentsNetWorthAndPension', value: true },
+    { name: 'va_dependents_net_worth_and_pension', value: true },
+    { name: 'vaDependentsDuplicateModals', value: true },
+    { name: 'va_dependents_duplicate_modals', value: true },
+  ];
+
+  const fdfToggles = useFdfMocks
+    ? [
+        { name: 'dependentsEnableFormViewerMFE', value: true },
+        { name: 'dependents_enable_form_viewer_mfe', value: true },
+        { name: 'dependentsModuleEnabled', value: true },
+        { name: 'dependents_module_enabled', value: true },
+      ]
+    : [];
+
   cy.intercept('GET', '/v0/feature_toggles?*', {
     data: {
       type: 'feature_toggles',
-      features: [
-        { name: 'vaDependentsNetWorthAndPension', value: true },
-        { name: 'va_dependents_net_worth_and_pension', value: true },
-        { name: 'vaDependentsDuplicateModals', value: true },
-        { name: 'va_dependents_duplicate_modals', value: true },
-      ],
+      features: [...baseToggles, ...fdfToggles],
     },
   });
   cy.intercept('GET', '/v0/maintenance_windows*', 'OK');
@@ -138,6 +159,12 @@ export const setupCypress = ({
     cy.intercept('POST', '/v0/dependents_applications', submission).as(
       'submitApplication',
     );
+
+    if (useFdfMocks) {
+      cy.intercept('POST', '/dependents_benefits/v0/claims', fdfSubmission).as(
+        'submitFdfApplication',
+      );
+    }
 
     cy.login(userData);
   });

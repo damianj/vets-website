@@ -1,5 +1,3 @@
-import { format } from 'date-fns';
-
 import { formatDateLong } from '@department-of-veterans-affairs/platform-utilities/exports';
 import { Actions } from '../util/actionTypes';
 import {
@@ -17,6 +15,7 @@ import {
   formatNameFirstToLast,
   buildInitialDateRange,
 } from '../util/helpers';
+import { formatDateTimeInUserTimezone } from '../util/dateHelpers';
 
 const initialState = {
   /**
@@ -268,37 +267,28 @@ const notesAndSummariesConverterMap = {
   [noteTypes.PHYSICIAN_PROCEDURE_NOTE]: convertProgressNote,
   [noteTypes.CONSULT_RESULT]: convertProgressNote,
 };
-// TODO: this is wet
-// TODO: need to adjust to handle the different formats
-// OH uses UTC ('2025-07-29T17:32:46.000Z'), VistA uses TZ offset ('2024-10-18T11:52:00+00:00')
-export function formatDateTime(datetimeString) {
-  if (!datetimeString) return null;
-  const dateTime = new Date(datetimeString);
-  if (Number.isNaN(dateTime.getTime())) {
-    return null;
-  }
-  const formattedDate = format(dateTime, 'MMMM d, yyyy');
-  const formattedTime = format(dateTime, 'h:mm a');
-
-  return `${formattedDate}, ${formattedTime}`;
-}
-
 export const convertUnifiedCareSummariesAndNotesRecord = record => {
-  const formattedNoteDate = formatDateTime(record.attributes.date);
+  const formattedNoteDate = formatDateTimeInUserTimezone(
+    record.attributes.date,
+  );
 
   const note = decodeBase64Report(record.attributes.note);
 
-  const formattedAdmissionDate = formatDateTime(
+  const formattedAdmissionDate = formatDateTimeInUserTimezone(
     record.attributes.admissionDate,
   );
 
-  const formattedDischargeDate = formatDateTime(
+  const formattedDischargeDate = formatDateTimeInUserTimezone(
     record.attributes.dischargedDate,
   );
 
-  const formattedDateEntered = formatDateTime(record.attributes.dateEntered);
+  const formattedDateEntered = formatDateTimeInUserTimezone(
+    record.attributes.dateEntered,
+  );
 
-  const formattedDateSigned = formatDateTime(record.attributes.dateSigned);
+  const formattedDateSigned = formatDateTimeInUserTimezone(
+    record.attributes.dateSigned,
+  );
 
   return {
     id: record.id,
@@ -319,6 +309,7 @@ export const convertUnifiedCareSummariesAndNotesRecord = record => {
     dateEntered: formattedDateEntered || formattedNoteDate || EMPTY_FIELD,
     sortByDate: new Date(record.attributes.date),
     source: record.attributes.source || null,
+    addenda: record.attributes?.addenda,
   };
 };
 /**

@@ -19,7 +19,6 @@ export default {
     veteranAddress: {
       country: 'USA',
       street: '1700 Clairmont Rd',
-      street2: '',
       city: 'Decatur',
       state: 'GA',
       postalCode: '30033',
@@ -292,7 +291,6 @@ export default {
         country: 'USA',
         state: 'AK',
         street: '123 Test St',
-        street2: 'Suite 100',
         postalCode: '99501',
       },
       whoDoesTheStepchildLiveWith: {
@@ -458,7 +456,6 @@ export default {
         postalCode: '99501',
         state: 'AK',
         street: '123 Test St',
-        street2: 'Suite 100',
       },
       birthDate: createDoB(4),
       dateStepchildLeftHousehold: '2025-06-05',

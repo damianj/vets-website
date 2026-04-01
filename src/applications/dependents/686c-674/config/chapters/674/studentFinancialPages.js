@@ -59,8 +59,9 @@ export const studentEarningsPage = {
         const { veteranInformation } = fullData || {};
         const { isInReceiptOfPension } = veteranInformation || {};
 
-        // When flipper is on, reset if api returns isInReceiptOfPension as 0 (no) or -1 (unknown) and
-        // the user has not confirmed they are in receipt of pension (view:checkVeteranPension)
+        // When flipper is on, reset if api returns isInReceiptOfPension as
+        // 0 (no) or -1 (unknown) and the user has not confirmed they are in
+        // receipt of pension (view:checkVeteranPension)
         // When flipper is off, reset if claimsOrReceivesPension is false
         const resetItemData = vaDependentsNetWorthAndPension
           ? isInReceiptOfPension === 0 ||

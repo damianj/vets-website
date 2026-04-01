@@ -11,13 +11,13 @@ const uiSchema = {
       <p>
         Enter the cost of the prep course you took or plan to take. You can only
         list one prep course per request, including any required fees. (We can
-        only reimburse you for requried test fees.) We have no authority to
+        only reimburse you for required test fees.) We have no authority to
         reimburse you for any optional costs related to prep course process.
       </p>
       <p>
         Fees that VA has no authority to reimburse include fees to take
         pre-tests, fees to receive scores quickly, or other costs or fees for
-        optional items that are not required to take an appoved test.
+        optional items that are not required to take an approved test.
       </p>
     </>
   ),

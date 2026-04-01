@@ -261,32 +261,6 @@
     padding-left: 16px;
     margin: 0;
   }
-
-  @media (min-width: $small-desktop-screen) {
-    .poa-request-details__list--info li.claimant-detail-row--multiline {
-      display: grid !important;
-      grid-template-columns: 48.5% 51.5%;
-      align-items: center !important;
-      height: auto !important;
-      min-height: 0 !important;
-      padding: 1px 16px !important;
-    }
-
-    .claimant-detail-row--multiline .claimant-detail-row__value {
-      padding-left: 16px;
-      display: flex;
-      flex-direction: column;
-      line-height: 0.95;
-    }
-  }
-
-  .claimant-detail-row--multiline .claimant-detail-row__label {
-    align-self: start;
-  }
-
-  .claimant-detail-row--multiline .claimant-detail-row__value > div {
-    margin: 0;
-  }
 }
 
 .claimant-overview__section-heading {

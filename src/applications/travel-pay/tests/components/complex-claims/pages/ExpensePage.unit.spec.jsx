@@ -2699,4 +2699,68 @@ describe('ExpensePage - File Upload Validation Error Messages', () => {
       );
     });
   });
+
+  it('shows error when file is named proof-of-attendance.<extension>', async () => {
+    const { container } = renderPage();
+
+    await waitFor(() => {
+      expect(container.querySelector('va-file-input')).to.exist;
+    });
+
+    const fileInput = container.querySelector('va-file-input');
+
+    const reservedFile = new File(
+      ['dummy content'],
+      'proof-of-attendance.pdf',
+      {
+        type: 'application/pdf',
+      },
+    );
+
+    await act(async () => {
+      fileInput.dispatchEvent(
+        new CustomEvent('vaChange', {
+          detail: { files: [reservedFile] },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(fileInput.getAttribute('error')).to.equal(
+        'Choose a name other than "proof-of-attendance"',
+      );
+    });
+  });
+
+  it('does not show proof-of-attendance error for a file with a different name', async () => {
+    const { container } = renderPage();
+
+    await waitFor(() => {
+      expect(container.querySelector('va-file-input')).to.exist;
+    });
+
+    const fileInput = container.querySelector('va-file-input');
+
+    const validFile = new File(['dummy content'], 'my-receipt.pdf', {
+      type: 'application/pdf',
+    });
+
+    await act(async () => {
+      fileInput.dispatchEvent(
+        new CustomEvent('vaChange', {
+          detail: { files: [validFile] },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    });
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
+
+    expect(fileInput.getAttribute('error')).to.be.null;
+  });
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom-v5-compat';
 import { useGetPrescriptionsListQuery } from '../../api/prescriptionsApi';
@@ -20,19 +20,20 @@ import {
 } from '../../util/selectors';
 
 /**
- * Resolves the API_ENDPOINT for a sort option key, checking both V2 and V1
- * option maps so it works regardless of which map the key belongs to.
+ * Resolves the API_ENDPOINT for a sort option key, using only the option
+ * map that matches the current feature flag state.
  */
 const resolveSortEndpoint = (key, isManagementImprovements) => {
-  const allOptions = isManagementImprovements
-    ? { ...rxListSortingOptionsV2, ...rxListSortingOptions }
-    : { ...rxListSortingOptions, ...rxListSortingOptionsV2 };
+  if (isManagementImprovements) {
+    return (
+      rxListSortingOptionsV2[key]?.API_ENDPOINT ||
+      rxListSortingOptionsV2[Object.keys(rxListSortingOptionsV2)[0]]
+        .API_ENDPOINT
+    );
+  }
   return (
-    allOptions[key]?.API_ENDPOINT ||
-    (isManagementImprovements
-      ? rxListSortingOptionsV2[Object.keys(rxListSortingOptionsV2)[0]]
-          .API_ENDPOINT
-      : rxListSortingOptions[defaultSelectedSortOption].API_ENDPOINT)
+    rxListSortingOptions[key]?.API_ENDPOINT ||
+    rxListSortingOptions[defaultSelectedSortOption].API_ENDPOINT
   );
 };
 
@@ -47,46 +48,62 @@ export const useFetchMedicationHistory = (perPage = 10) => {
   const isManagementImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
+  const featureTogglesLoading = useSelector(
+    state => state.featureToggles?.loading,
+  );
 
   const effectiveFilter = getDefaultFilterOption(
     selectedFilterOption,
     isManagementImprovements,
   );
 
-  const [queryParams, setQueryParams] = useState({
-    page,
-    perPage,
-    sortEndpoint: resolveSortEndpoint(
+  // Compute query params directly from current state on every render.
+  const queryParams = useMemo(
+    () => ({
+      page,
+      perPage,
+      sortEndpoint: resolveSortEndpoint(
+        selectedSortOption,
+        isManagementImprovements,
+      ),
+      filterOption: getFilterUrl(
+        effectiveFilter,
+        isCernerPilot,
+        isV2StatusMapping,
+      ),
+    }),
+    [
+      page,
+      perPage,
       selectedSortOption,
       isManagementImprovements,
-    ),
-    filterOption: getFilterUrl(
       effectiveFilter,
       isCernerPilot,
       isV2StatusMapping,
-    ),
-  });
-
-  useEffect(
-    () => {
-      setQueryParams(prev => ({ ...prev, page }));
-    },
-    [page],
+    ],
   );
 
+  // Skip the query until feature toggles have finished loading so we
+  // never fire a request with incorrect default sort/filter values.
   const {
     data: apiData,
     error: apiError,
     isLoading: apiIsLoading,
     isFetching: apiIsFetching,
-  } = useGetPrescriptionsListQuery(queryParams);
+    isUninitialized: apiIsUninitialized,
+  } = useGetPrescriptionsListQuery(queryParams, {
+    skip: featureTogglesLoading !== false,
+  });
 
   return {
     prescriptions: apiData?.prescriptions || [],
     prescriptionsData: apiData,
     prescriptionsApiError: apiError,
-    isLoading: apiIsLoading || apiIsFetching,
+    isLoading:
+      featureTogglesLoading !== false ||
+      apiIsLoading ||
+      apiIsFetching ||
+      apiIsUninitialized,
     currentPage: queryParams.page,
-    setQueryParams,
   };
 };

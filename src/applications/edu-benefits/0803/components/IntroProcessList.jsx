@@ -45,7 +45,11 @@ export default function ProcessList() {
             certification
           </li>
           <li>A receipt showing that you have paid in full</li>
-          <li>A copy of your test results</li>
+          <li>
+            A copy of your test results. If you do not have your test results
+            but have a copy of your license or certification that clearly
+            displays your name, you can attach that.
+          </li>
         </ul>
       </va-process-list-item>
       <va-process-list-item header="Fill out the online form">

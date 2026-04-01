@@ -16,6 +16,9 @@ import transformedMaximalFixture from '../e2e/fixtures/transformed-maximal.json'
 import removeV3Fixture from '../e2e/fixtures/removal-only-v3.json';
 import transformedRemoveV3Fixture from '../e2e/fixtures/transformed-remove-only-v3';
 
+import spouseChildAllFieldsFixture from '../e2e/fixtures/spouse-child-all-fields.json';
+import transformedSpouseChildAllFieldsFixture from '../e2e/fixtures/transformed-spouse-child-all-fields.json';
+
 const dataOptions = 'view:removeDependentOptions';
 
 describe('buildSubmissionData', () => {
@@ -1242,6 +1245,13 @@ describe('customTransformForSubmit integration', () => {
       data: maximalFixture,
     });
     expect(data.data).to.deep.equal(transformedMaximalFixture);
+  });
+
+  it('should transform maximal data', () => {
+    const { data } = customTransformForSubmit(formConfig, {
+      data: spouseChildAllFieldsFixture,
+    });
+    expect(data.data).to.deep.equal(transformedSpouseChildAllFieldsFixture);
   });
 
   it('should transform removal-only data', () => {

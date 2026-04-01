@@ -24,9 +24,7 @@ import {
 import { setSortOption, setFilterOption } from '../redux/preferencesSlice';
 import EmptyPrescriptionContent from '../components/MedicationsList/EmptyPrescriptionContent';
 import NoFilterMatches from '../components/MedicationsList/NoFilterMatches';
-import MedicationHistoryFilter, {
-  getFilterUrl,
-} from '../components/MedicationHistory/MedicationHistoryFilter';
+import MedicationHistoryFilter from '../components/MedicationHistory/MedicationHistoryFilter';
 
 import { useGetAllergiesQuery } from '../api/allergiesApi';
 import { getPrescriptionsExportList } from '../api/prescriptionsApi';
@@ -84,15 +82,26 @@ const MedicationHistory = () => {
     [isManagementImprovements],
   );
 
-  const activeSortingOptions = isManagementImprovements
-    ? rxListSortingOptionsV2
-    : rxListSortingOptions;
+  // Default to the first V2 sort option when management improvements is
+  // enabled and the current sort key belongs to V1 only.
+  useEffect(
+    () => {
+      if (
+        isManagementImprovements &&
+        !rxListSortingOptionsV2[selectedSortOption]
+      ) {
+        const defaultV2Key = Object.keys(rxListSortingOptionsV2)[0];
+        dispatch(setSortOption(defaultV2Key));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isManagementImprovements],
+  );
 
   const {
     prescriptionsData,
     prescriptionsApiError,
     isLoading,
-    setQueryParams,
   } = useFetchMedicationHistory();
 
   const { pagination, meta = {} } = prescriptionsData || {};
@@ -138,10 +147,13 @@ const MedicationHistory = () => {
     currentFilterOptions,
     features: { isCernerPilot, isV2StatusMapping },
     fetchExportList: async () => {
+      const sortOptions = isManagementImprovements
+        ? rxListSortingOptionsV2
+        : rxListSortingOptions;
       return dispatch(
         getPrescriptionsExportList.initiate(
           {
-            sortEndpoint: rxListSortingOptions[selectedSortOption].API_ENDPOINT,
+            sortEndpoint: sortOptions[selectedSortOption]?.API_ENDPOINT,
             filterOption: currentFilterOptions[selectedFilterOption]?.url || '',
             includeImage: false,
           },
@@ -175,15 +187,6 @@ const MedicationHistory = () => {
   const updateFilter = newFilterOption => {
     if (newFilterOption !== selectedFilterOption) {
       setLoadingMessage('Filtering your medications...');
-      setQueryParams(prev => ({
-        ...prev,
-        filterOption: getFilterUrl(
-          newFilterOption,
-          isCernerPilot,
-          isV2StatusMapping,
-        ),
-        page: 1,
-      }));
       navigate('/history', { replace: true });
     }
   };
@@ -191,11 +194,6 @@ const MedicationHistory = () => {
   const updateSort = (_filterOption, newSortOption) => {
     if (newSortOption && newSortOption !== selectedSortOption) {
       setLoadingMessage('Sorting your medications...');
-      setQueryParams(prev => ({
-        ...prev,
-        sortEndpoint: activeSortingOptions[newSortOption].API_ENDPOINT,
-        page: 1,
-      }));
       dispatch(setSortOption(newSortOption));
       resetExportState();
       navigate('/history', { replace: true });
@@ -259,13 +257,16 @@ const MedicationHistory = () => {
               updateLoadingStatus={setLoadingMessage}
             />
           )}
-        <PrintDownloadCard
-          onDownload={handleExportListDownload}
-          isSuccess={isExportSuccess}
-          isLoading={isExportLoading}
-          isFiltered={filterApplied}
-          list
-        />
+        {!isLoading &&
+          hasMedications && (
+            <PrintDownloadCard
+              onDownload={handleExportListDownload}
+              isSuccess={isExportSuccess}
+              isLoading={isExportLoading}
+              isFiltered={filterApplied}
+              list
+            />
+          )}
         {!isLoading && noFilterMatches && <NoFilterMatches />}
       </>
     );

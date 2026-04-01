@@ -5,6 +5,7 @@ import {
   transformVAOSAppointment,
   transformVAOSAppointments,
 } from '../../services/appointment/transformers';
+import { getTypeOfCareById } from '../../utils/appointment';
 import { parseApiList, parseApiObject } from '../../services/utils';
 import {
   APPOINTMENT_STATUS,
@@ -88,6 +89,7 @@ export default class MockAppointmentResponse {
       created: createdStamp,
       serviceName: undefined,
       serviceType: 'primaryCare',
+      typeOfCare: getTypeOfCareById('primaryCare')?.name || '',
       start:
         status === APPOINTMENT_STATUS.proposed
           ? null
@@ -258,7 +260,7 @@ export default class MockAppointmentResponse {
     return Array(count)
       .fill(count)
       .map((_, index) => {
-        return new MockAppointmentResponse({
+        const response = new MockAppointmentResponse({
           id: index + 1,
           future,
           isCerner,
@@ -266,9 +268,11 @@ export default class MockAppointmentResponse {
           past,
           pending,
           status,
-        })
-          .setModality('claimExamAppointment')
-          .setServiceCategory('COMPENSATION & PENSION');
+        }).setModality('claimExamAppointment');
+
+        // Directly set typeOfCare since Claim Exam isn't in TYPES_OF_CARE constants
+        response.attributes.typeOfCare = 'Claim exam';
+        return response;
       });
   }
 
@@ -821,14 +825,17 @@ export default class MockAppointmentResponse {
   } = {}) {
     return Array(count)
       .fill(count)
-      .map((_, index) =>
-        new MockAppointmentResponse({
+      .map((_, index) => {
+        const response = new MockAppointmentResponse({
           id: index + 1,
           localStartTime,
           future,
           isCerner,
-        }).setModality('claimExamAppointment'),
-      );
+        }).setModality('claimExamAppointment');
+        // Directly set typeOfCare since Claim Exam isn't in TYPES_OF_CARE constants
+        response.attributes.typeOfCare = 'Claim exam';
+        return response;
+      });
   }
 
   /**
@@ -1190,22 +1197,6 @@ export default class MockAppointmentResponse {
     return this;
   }
 
-  setServiceCategory() {
-    this.attributes.serviceCategory = [
-      {
-        coding: [
-          {
-            system: 'http://www.va.gov/Terminology/VistADefinedTerms/409_1',
-            code: 'COMPENSATION & PENSION',
-            display: 'COMPENSATION & PENSION',
-          },
-        ],
-        text: 'COMPENSATION & PENSION',
-      },
-    ];
-    return this;
-  }
-
   setServiceName(value) {
     this.attributes.serviceName = value;
     return this;
@@ -1240,6 +1231,8 @@ export default class MockAppointmentResponse {
 
   setTypeOfCare(value) {
     this.attributes.serviceType = value;
+    this.attributes.typeOfCare =
+      value === null ? null : getTypeOfCareById(value)?.name || '';
     return this;
   }
 

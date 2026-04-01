@@ -172,7 +172,11 @@ export const medicarePageTitleUI = (title, description = null) => {
   const pageTitle = ({ formData: item }) => (
     <MedicarePageTitle item={item} title={title} />
   );
-  return titleUI(pageTitle, description);
+  return titleUI({
+    title: pageTitle,
+    description,
+    classNames: DEFAULT_OPTS.piiClassNames,
+  });
 };
 
 /**

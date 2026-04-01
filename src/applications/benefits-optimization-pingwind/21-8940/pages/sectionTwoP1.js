@@ -53,6 +53,7 @@ export default {
         confirmRemoveDescription:
           'Are you sure you want to remove this disability?',
         addAnotherText: 'Add another disability',
+        itemAriaLabel: item => item?.disability || 'Disability',
       },
       items: {
         'ui:options': {

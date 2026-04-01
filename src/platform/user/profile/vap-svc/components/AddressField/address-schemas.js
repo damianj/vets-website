@@ -270,8 +270,8 @@ const uiSchema = {
     'ui:webComponentField': VaTextInputField,
     'ui:autocomplete': 'postal-code',
     'ui:errorMessages': {
-      required: 'Zip code is required',
-      pattern: 'Zip code must be 5 digits',
+      required: 'Enter a valid 5-digit zip code',
+      pattern: 'Enter a valid 5-digit zip code',
     },
     'ui:options': {
       widgetClassNames: 'usa-input-medium',

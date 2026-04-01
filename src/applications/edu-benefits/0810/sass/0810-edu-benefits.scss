@@ -2,20 +2,45 @@
 @import "../../../../platform/forms/sass/m-schemaform";
 @import "../../../../platform/forms/sass/m-form-confirmation";
 
-.form-22-0810-container
-  .progress-box.progress-box-schemaform
-  form
-  va-memorable-date {
-  white-space: nowrap;
+.form-22-0810-container {
+  va-need-help {
+    padding-left: 0;
+    padding-right: 0.5rem;
+  }
+}
 
-  @media (max-width: $small-screen) {
-    white-space: normal;
+.form-22-0810-container {
+  .progress-box.progress-box-schemaform form va-memorable-date {
+    white-space: nowrap;
+
+    @media (max-width: $small-screen) {
+      white-space: normal;
+    }
+  }
+
+  va-need-help {
+    padding-left: 0;
+    padding-right: 0.5rem;
   }
 }
 
 @media (max-width: $small-screen) {
   .form-22-0810-container {
     padding-inline: 0.5rem;
+
+    // Mobile padding for form content (not including Breadcrumbs or NeedHelp sections)
+    .form-app {
+      padding: 0 0.5rem;
+    }
+
+    .schemaform-intro {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    va-need-help {
+      padding: 0 0.5rem;
+    }
   }
 
   .form-22-0810-container .schemaform-buttons,

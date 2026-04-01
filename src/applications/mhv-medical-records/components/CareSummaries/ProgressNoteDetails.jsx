@@ -24,9 +24,11 @@ import {
   generateNotesIntro,
   generateProgressNoteContent,
 } from '../../util/pdfHelpers/notes';
+import { formatAddendaTxt } from '../../util/txtHelpers/notes';
 import DownloadSuccessAlert from '../shared/DownloadSuccessAlert';
 import HeaderSection from '../shared/HeaderSection';
 import LabelValue from '../shared/LabelValue';
+import AddendaList from './AddendaList';
 
 const ProgressNoteDetails = props => {
   const { record, runningUnitTest } = props;
@@ -87,7 +89,7 @@ ${record.signedBy !== EMPTY_FIELD && `Signed by: ${record.signedBy}\n`}
 Date signed: ${record.dateSigned}\n
 ${txtLine}\n\n
 Note\n
-${record.note}`;
+${record.note}${formatAddendaTxt(record.addenda)}`;
     generateTextFile(
       content,
       `VA-summaries-and-notes-details-${getNameDateAndTime(user)}`,
@@ -154,6 +156,11 @@ ${record.note}`;
             monospace
           />
         </div>
+        {record.addenda?.length > 0 && (
+          <div className="test-results-container">
+            <AddendaList addenda={record.addenda} />
+          </div>
+        )}
       </HeaderSection>
       <div className="vads-u-margin-y--4 vads-u-border-top--1px vads-u-border-color--gray-light" />
       <DownloadingRecordsInfo description="CS&N Detail" />

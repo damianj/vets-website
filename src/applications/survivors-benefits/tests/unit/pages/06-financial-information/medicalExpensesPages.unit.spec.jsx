@@ -22,7 +22,7 @@ const pageNames = [
   'medicalFrequencyCostPage',
 ];
 
-xdescribe('Medical Expenses Pages — depends', () => {
+describe('Medical Expenses Pages — depends', () => {
   pageNames.forEach(pageName => {
     describe(pageName, () => {
       let depends;
@@ -31,16 +31,17 @@ xdescribe('Medical Expenses Pages — depends', () => {
         depends = medicalExpensesPages[pageName].depends;
       });
 
-      it('returns false when survivorsBenefitsForm2025VersionEnabled is false', () => {
+      it('returns true when survivorsBenefitsForm2025VersionEnabled is false', () => {
         expect(depends({ survivorsBenefitsForm2025VersionEnabled: false })).to
-          .be.false;
+          .be.true;
       });
 
-      it('returns true when toggle is true and moreThanFourIncomeSources is not NO_INCOME', () => {
+      it('returns true when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is not in skip list', () => {
         expect(
           depends({
             survivorsBenefitsForm2025VersionEnabled: true,
-            moreThanFourIncomeSources: 'HAS_INCOME',
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'ONE_TO_FOUR_SOURCES',
           }),
         ).to.be.true;
       });
@@ -53,13 +54,33 @@ xdescribe('Medical Expenses Pages — depends', () => {
         ).to.be.true;
       });
 
-      it('returns false when toggle is true and moreThanFourIncomeSources is NO_INCOME', () => {
+      it('returns true when toggle is true and moreThanFourIncomeSources is NO_INCOME but survivorsPension is not true', () => {
         expect(
           depends({
             survivorsBenefitsForm2025VersionEnabled: true,
             moreThanFourIncomeSources: 'NO_INCOME',
           }),
+        ).to.be.true;
+      });
+
+      it('returns false when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is NO_INCOME', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
         ).to.be.false;
+      });
+
+      it('returns true when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is MORE_THAN_FIVE_SOURCES', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'MORE_THAN_FIVE_SOURCES',
+          }),
+        ).to.be.true;
       });
     });
   });
@@ -172,6 +193,26 @@ describe('Medical Expenses Pages', () => {
       'Expense 1: No provider name',
     );
   });
+  it('renders the medical expenses frequency and cost page', () => {
+    const { medicalFrequencyCostPage } = medicalExpensesPages;
+    const formData = {};
+    const form = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={medicalFrequencyCostPage.schema}
+        uiSchema={medicalFrequencyCostPage.uiSchema}
+        pagePerItemIndex={0}
+        data={{ [arrayPath]: [formData] }}
+      />,
+    );
+    const formDOM = getFormDOM(form);
+    const vaPaymentAmount = $(
+      'va-text-input[label*="How much is the payment?"]',
+      formDOM,
+    );
+    expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
+  });
+
   it('should show the correct cardDescription output', () => {
     const { text } = options;
     const itemWithData = {

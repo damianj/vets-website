@@ -69,6 +69,7 @@ describe('VAOS Component: VARequestLayout', () => {
           isCerner: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'proposed',
@@ -222,6 +223,7 @@ describe('VAOS Component: VARequestLayout', () => {
           isUpcomingAppointment: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'cancelled',
@@ -342,6 +344,7 @@ describe('VAOS Component: VARequestLayout', () => {
           isUpcomingAppointment: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'proposed',

@@ -49,7 +49,6 @@ const DesktopHeader = ({ isDesktop, megaMenuData }) => {
                   />
                   <p>An official website of the United States government</p>
                   <button
-                    type="button"
                     className="usa-accordion-button usa-banner-button"
                     aria-expanded="false"
                     aria-controls="gov-banner"
@@ -152,7 +151,6 @@ const DesktopHeader = ({ isDesktop, megaMenuData }) => {
               {/* start Search */}
               <div className="va-dropdown">
                 <button
-                  type="button"
                   id="search-dropdown-button"
                   className="va-btn-withicon va-dropdown-trigger"
                   aria-expanded={searchIsOpen}

@@ -6,6 +6,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { selectRequestedAppointmentData } from '../../appointment-list/redux/selectors';
 import DetailPageLayout, { CCDetails } from './DetailPageLayout';
+import CCProofOfAttendanceSection from '../CCProofOfAttendanceSection';
 import Section from '../Section';
 import ListBestTimeToCall from '../../appointment-list/components/ListBestTimeToCall';
 import PageLayout from '../../appointment-list/components/PageLayout';
@@ -131,6 +132,7 @@ export default function CCRequestLayout({ data: appointment }) {
           <ListBestTimeToCall timesToCall={preferredTimesForPhoneCall} />
           <br />
         </Section>
+        <CCProofOfAttendanceSection />
       </DetailPageLayout>
     </PageLayout>
   );

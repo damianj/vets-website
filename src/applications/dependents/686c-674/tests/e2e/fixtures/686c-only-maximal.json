@@ -15,6 +15,7 @@
       "view:militaryBaseDescription": {},
       "country": "USA",
       "street": "4826 ORCHID DR",
+      "street2": "  ",
       "city": "BROWNSVILLE",
       "state": "TX",
       "postalCode": "78526"
@@ -248,6 +249,7 @@
         "view:militaryBaseDescription": {},
         "country": "USA",
         "street": "484 PARKVIEW DR",
+        "street2": "  ",
         "city": "BLOOMSDALE",
         "state": "MO",
         "postalCode": "63627"
@@ -297,6 +299,7 @@
         "view:militaryBaseDescription": {},
         "country": "USA",
         "street": "123 Fake St.",
+        "street2": "  ",
         "city": "Las Vegas",
         "state": "NV",
         "postalCode": "12345"

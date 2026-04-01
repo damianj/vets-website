@@ -1,9 +1,12 @@
-import AddressSelectionPage, {
-  NOT_SHARED,
-} from '../../components/FormPages/AddressSelectionPage';
-import AddressSelectionReviewPage from '../../components/FormReview/AddressSelectionReviewPage';
-import { blankSchema } from '../../definitions';
-import { whenAll } from '../../utils/helpers';
+import {
+  hasCertifierAddress,
+  isNotSponsor,
+  sponsorHasNoSharedAddressSelection,
+  sponsorIsDeceased,
+  sponsorIsNotDeceased,
+  whenAll,
+} from '../../utils/helpers';
+import addressSelection from './addressSelection';
 import contactInformation from './contactInformation';
 import deathInformation from './deathInformation';
 import identityInformation from './identityInformation';
@@ -11,27 +14,6 @@ import livingStatus from './livingStatus';
 import mailingAddress from './mailingAddress';
 import personalInformation from './personalInformation';
 import sectionOverview from './sectionOverview';
-
-// Shared `depends` predicates
-const isSponsor = formData => formData?.certifierRole === 'sponsor';
-const isNotSponsor = formData => !isSponsor(formData);
-
-const isDeceased = formData =>
-  isNotSponsor(formData) && Boolean(formData?.sponsorIsDeceased);
-const isNotDeceased = formData => !isDeceased(formData);
-
-const hasCertifierStreet = formData =>
-  Boolean(formData?.certifierAddress?.street);
-// Entry page is needed when the user picked NOT_SHARED ("no, enter my own") OR
-// has never made a selection. It must NOT show when a real shared address was chosen.
-const noSharedAddress = formData => {
-  const val = formData?.['view:sharesAddressWith'];
-  return !val || val === NOT_SHARED;
-};
-
-// CustomPage declarations
-const SponsorAddressSelectionPage = props =>
-  AddressSelectionPage({ ...props, dataKey: 'sponsorAddress' });
 
 export const sponsorPages = {
   sponsorInformationOverview: {
@@ -58,28 +40,25 @@ export const sponsorPages = {
   sponsorDeathInformation: {
     path: 'veteran-death-information',
     title: 'Veteran’s death details',
-    depends: isDeceased,
+    depends: sponsorIsDeceased,
     ...deathInformation,
   },
   sponsorAddress: {
     path: 'veteran-address',
     title: 'Veteran’s address',
-    depends: whenAll(isNotDeceased, hasCertifierStreet),
-    CustomPage: SponsorAddressSelectionPage,
-    CustomPageReview: AddressSelectionReviewPage,
-    uiSchema: {},
-    schema: blankSchema,
+    depends: whenAll(sponsorIsNotDeceased, hasCertifierAddress),
+    ...addressSelection,
   },
   sponsorMailingAddress: {
     path: 'veteran-mailing-address',
     title: 'Veteran’s mailing address',
-    depends: whenAll(isNotDeceased, noSharedAddress),
+    depends: whenAll(sponsorIsNotDeceased, sponsorHasNoSharedAddressSelection),
     ...mailingAddress,
   },
   sponsorContactInformation: {
     path: 'veteran-contact-information',
     title: 'Veteran’s contact information',
-    depends: isNotDeceased,
+    depends: sponsorIsNotDeceased,
     ...contactInformation,
   },
 };

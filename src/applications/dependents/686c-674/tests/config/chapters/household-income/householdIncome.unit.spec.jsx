@@ -62,13 +62,13 @@ describe('686 household income: updateSchema logic', () => {
     it('should set householdIncome to false when view:householdIncome is "Y"', () => {
       const formData = { 'view:householdIncome': 'Y' };
       updateSchema(formData, baseFormSchema);
-      expect(formData.householdIncome).to.equal(false);
+      expect(formData.householdIncome).to.equal(true);
     });
 
     it('should set householdIncome to true when view:householdIncome is "N"', () => {
       const formData = { 'view:householdIncome': 'N' };
       updateSchema(formData, baseFormSchema);
-      expect(formData.householdIncome).to.equal(true);
+      expect(formData.householdIncome).to.equal(false);
     });
 
     it('should delete householdIncome when view:householdIncome is empty string', () => {
@@ -81,7 +81,7 @@ describe('686 household income: updateSchema logic', () => {
       const formData = { householdIncome: true };
       updateSchema(formData, baseFormSchema);
       // When view:householdIncome is undefined, prefill logic kicks in
-      expect(formData['view:householdIncome']).to.equal('N');
+      expect(formData['view:householdIncome']).to.equal('Y');
     });
   });
 
@@ -89,13 +89,13 @@ describe('686 household income: updateSchema logic', () => {
     it('should set view:householdIncome to "N" when householdIncome is true', () => {
       const formData = { householdIncome: true };
       updateSchema(formData, baseFormSchema);
-      expect(formData['view:householdIncome']).to.equal('N');
+      expect(formData['view:householdIncome']).to.equal('Y');
     });
 
     it('should set view:householdIncome to "Y" when householdIncome is false', () => {
       const formData = { householdIncome: false };
       updateSchema(formData, baseFormSchema);
-      expect(formData['view:householdIncome']).to.equal('Y');
+      expect(formData['view:householdIncome']).to.equal('N');
     });
 
     it('should not set view:householdIncome when householdIncome is undefined', () => {

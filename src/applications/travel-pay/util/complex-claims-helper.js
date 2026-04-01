@@ -4,6 +4,33 @@ import {
   STATUSES,
 } from '../constants';
 
+// Not exported intentionally — use getAcceptedFileTypes() so the heic extension
+// logic is never accidentally for the base array.
+const BASE_ACCEPTED_FILE_TYPES = Object.freeze([
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.gif',
+  '.bmp',
+  '.tif',
+  '.tiff',
+]);
+
+/**
+ * Returns the list of accepted file types for document uploads.
+ * When the HEIC conversion feature flag is enabled, .heic and .heif are included.
+ * @param {boolean} heicConversionEnabled
+ * @returns {string[]}
+ */
+export function getAcceptedFileTypes(heicConversionEnabled) {
+  return heicConversionEnabled
+    ? [...BASE_ACCEPTED_FILE_TYPES, '.heic', '.heif']
+    : [...BASE_ACCEPTED_FILE_TYPES];
+}
+
 /**
  * Get an expense type object by key
  * @param {string} typeKey - The expense type key (e.g., 'mileage')

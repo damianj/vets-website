@@ -21,10 +21,12 @@ function uploadDocumentHandler() {
     }
 
     const newDocument = {
-      documentId: 'mock-poa-document-id-001',
+      documentId: `mock-doc-${Date.now()}`,
       claimId,
       filename: req.body.fileName || 'proof-of-attendance.pdf',
       mimetype: req.body.contentType || 'application/pdf',
+      // Store the raw base64 so downloadDocumentHandler can return the real file
+      fileData: req.body.fileData || null,
     };
 
     if (!claimsStore[claimId].documents) {
@@ -42,7 +44,15 @@ function uploadDocumentHandler() {
  */
 function deleteDocumentHandler() {
   return (req, res) => {
-    return res.status(200).json({ id: req.params.documentId });
+    const { claimId, documentId } = req.params;
+
+    if (claimsStore[claimId]?.documents) {
+      claimsStore[claimId].documents = claimsStore[claimId].documents.filter(
+        doc => doc.documentId !== documentId,
+      );
+    }
+
+    return res.status(200).json({ id: documentId });
   };
 }
 
@@ -52,8 +62,10 @@ function deleteDocumentHandler() {
  */
 function downloadDocumentHandler() {
   return (req, res) => {
+    const { docId } = req.params;
+
     // Error condition for screenshot-2 from the mock data
-    if (req.params.docId === '12fcfecc-5132-4c16-8a9a-7af07b714cd4') {
+    if (docId === '12fcfecc-5132-4c16-8a9a-7af07b714cd4') {
       return res.status(503).json({
         errors: [
           {
@@ -66,6 +78,22 @@ function downloadDocumentHandler() {
       });
     }
 
+    // Find the stored document across all claims so we can return the actual uploaded file
+    const storedDoc = Object.values(claimsStore)
+      .flatMap(claim => claim.documents || [])
+      .find(doc => doc.documentId === docId);
+
+    if (storedDoc?.fileData) {
+      const buffer = Buffer.from(storedDoc.fileData, 'base64');
+      res.writeHead(200, {
+        'Content-Disposition': `attachment; filename="${storedDoc.filename}"`,
+        'Content-Type': storedDoc.mimetype || 'application/octet-stream',
+        'Content-Length': buffer.length,
+      });
+      return res.end(buffer);
+    }
+
+    // Fall back to the sample file for pre-seeded documents that have no stored data
     const docx = fs.readFileSync(
       'src/applications/travel-pay/services/mocks/sample-decision-letter.docx',
     );

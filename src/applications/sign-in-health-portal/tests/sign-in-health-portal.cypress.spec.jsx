@@ -8,6 +8,10 @@ describe('Sign In Health Portal', () => {
             name: 'portal_notice_interstitial_enabled',
             value: true,
           },
+          {
+            name: 'portal_notice_interstitial_sunset',
+            value: true,
+          },
         ],
       },
     }).as('featureToggles');

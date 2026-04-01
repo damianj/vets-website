@@ -86,15 +86,20 @@ function WhatYouNeedToDo({ claim }) {
                 We accept responses after the request date, but it may delay
                 your claim.
               </p>
-              {filesNeeded.map(item => (
-                <FilesNeeded
-                  key={item.id}
-                  claimId={claim.id}
-                  item={item}
-                  evidenceWaiverSubmitted5103={evidenceWaiverSubmitted5103}
-                  previousPage="status"
-                />
-              ))}
+              {/* add explicit role=list to expose the <ul> as a list for Safari/VoiceOver */}
+              {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
+              <ul className="usa-unstyled-list" role="list">
+                {filesNeeded.map(item => (
+                  <li key={item.id}>
+                    <FilesNeeded
+                      claimId={claim.id}
+                      item={item}
+                      evidenceWaiverSubmitted5103={evidenceWaiverSubmitted5103}
+                      previousPage="status"
+                    />
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </Toggler.Enabled>

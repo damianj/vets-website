@@ -28,6 +28,8 @@ import { titleCase } from '../../utils/formatters';
 
 const ReviewAndConfirm = props => {
   const { attributes: currentReferral } = props.currentReferral;
+  // TODO: wire up real VA/CC determination from referral data
+  const isCommunityCare = true;
   const dispatch = useDispatch();
   const history = useHistory();
   const selectedSlot = useSelector(state => getSelectedSlotStartTime(state));
@@ -188,8 +190,7 @@ const ReviewAndConfirm = props => {
       />
     );
   }
-  const headingStyles =
-    'vads-u-margin--0 vads-u-font-family--sans vads-u-font-weight--bold vads-u-font-size--source-sans-normalized';
+  const headingStyles = 'vads-u-margin-top--0 ';
   return (
     <ReferralLayout
       hasEyebrow
@@ -206,43 +207,7 @@ const ReviewAndConfirm = props => {
         {isAppointmentSuccess && <p data-testid="success-text">success</p>}
         {draftAppointmentInfo?.attributes && (
           <>
-            <div className=" vads-l-grid-container vads-u-padding--0">
-              <div className="vads-l-row">
-                <div className="vads-l-col">
-                  <h2 className={headingStyles}>
-                    <span data-dd-privacy="mask">
-                      {`${titleCase(currentReferral.categoryOfCare)} provider`}
-                    </span>
-                  </h2>
-                </div>
-              </div>
-            </div>
-            <p className="vads-u-margin--0">
-              <span data-dd-privacy="mask">
-                {draftAppointmentInfo.attributes.provider.name}
-              </span>{' '}
-              <br />
-              <span data-dd-privacy="mask">
-                {
-                  draftAppointmentInfo.attributes.provider.providerOrganization
-                    .name
-                }
-              </span>
-            </p>
-            {draftAppointmentInfo.attributes.provider.location.address}
-            {currentReferral.provider?.telephone && (
-              <p className="vads-u-margin--0" data-testid="phone">
-                Phone:{' '}
-                <span data-dd-privacy="mask">
-                  <va-telephone
-                    contact={currentReferral.provider?.telephone}
-                    data-testid="provider-telephone"
-                  />
-                </span>
-              </p>
-            )}
-            <hr className="vads-u-margin-y--2" />
-            <div className=" vads-l-grid-container vads-u-padding--0">
+            <div className="vads-l-grid-container vads-u-padding--0">
               <div className="vads-l-row">
                 <div className="vads-l-col">
                   <h2 className={headingStyles}>Date and time</h2>
@@ -285,6 +250,60 @@ const ReviewAndConfirm = props => {
               </p>
             )}
             <hr className="vads-u-margin-y--2" />
+            <div className="vads-l-grid-container vads-u-padding--0">
+              <div className="vads-l-row">
+                <div className="vads-l-col">
+                  <h2 className={headingStyles}>Details</h2>
+                </div>
+                <div className="vads-l-col vads-u-text-align--right">
+                  <va-link
+                    href={`/my-health/appointments/schedule-referral/provider-selection?id=${
+                      currentReferral.uuid
+                    }`}
+                    label="Edit details"
+                    text="Edit"
+                    data-testid="edit-details-link"
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="vads-u-margin--0">
+              <span data-dd-privacy="mask">
+                {titleCase(currentReferral.categoryOfCare)}
+              </span>
+              <br />
+              {isCommunityCare ? (
+                <>
+                  Community care
+                  <br />
+                  <span data-dd-privacy="mask">
+                    {draftAppointmentInfo.attributes.provider.name}
+                  </span>
+                </>
+              ) : (
+                <>
+                  VA care
+                  <br />
+                  <span data-dd-privacy="mask">
+                    Clinic: Primary Care Clinic
+                  </span>
+                </>
+              )}
+            </p>
+            <p className="vads-u-margin-top--0p5 vads-u-margin-bottom--0p5">
+              <va-icon icon="location_city" size={3} />{' '}
+              <span data-dd-privacy="mask">In-person</span>
+            </p>
+            <p className="vads-u-margin--0">
+              <span data-dd-privacy="mask">
+                {isCommunityCare
+                  ? draftAppointmentInfo.attributes.provider
+                      .providerOrganization.name
+                  : 'Cheyenne VA Medical Center'}
+              </span>
+            </p>
+            {draftAppointmentInfo.attributes.provider.location.address}
+            <hr className="vads-u-margin-y--2" />
             <div className="vads-u-margin-top--4">
               <va-button
                 label="Back"
@@ -299,8 +318,8 @@ const ReviewAndConfirm = props => {
                 data-testid="continue-button"
                 loading={createLoading}
                 class="vads-u-margin-left--2"
-                label="Confirm"
-                text="Confirm"
+                label="Confirm appointment"
+                text="Confirm appointment"
                 uswds
                 onClick={e => {
                   e.preventDefault();

@@ -32,7 +32,9 @@ describe('VAOS Component: RequestedAppointmentsPage', () => {
       localStartTime: startDate,
       pending: true,
     });
-    appointments[0].setLocation(new MockFacilityResponse());
+    appointments[0]
+      .setLocation(new MockFacilityResponse())
+      .setTypeOfCare(TYPE_OF_CARE_IDS.PRIMARY_CARE);
 
     // And developer is using the v2 API
     mockAppointmentsApi({
@@ -78,7 +80,11 @@ describe('VAOS Component: RequestedAppointmentsPage', () => {
       reducers,
     });
 
-    expect(await screen.findByText('Audiology and speech')).to.be.ok;
+    expect(
+      await screen.findByText(
+        'Audiology and speech (including hearing aid support)',
+      ),
+    ).to.be.ok;
     expect(screen.baseElement).to.contain.text('Community care');
     expect(screen.queryByText(/You don’t have any appointments/i)).not.to.exist;
     expect(screen.baseElement).to.contain.text(
@@ -94,7 +100,8 @@ describe('VAOS Component: RequestedAppointmentsPage', () => {
       ...appointment,
       attributes: {
         ...appointment.attributes,
-        serviceType: '160',
+        serviceType: 'primaryCare',
+        typeOfCare: 'Primary care',
         status: 'cancelled',
       },
     };
@@ -113,7 +120,7 @@ describe('VAOS Component: RequestedAppointmentsPage', () => {
     });
 
     // Then it should display the requested appointments
-    expect(await screen.findByText('Primary care')).to.be.ok;
+    expect(await screen.findAllByText('Primary care')).to.have.lengthOf(2);
 
     // And it should display the cancelled appointments
     expect(screen.getByRole('heading', { level: 2, name: 'Canceled requests' }))
@@ -153,7 +160,11 @@ describe('VAOS Component: RequestedAppointmentsPage', () => {
     const links = screen.getAllByRole('listitem');
     expect(links.length).to.equal(3);
     expect(within(links[0]).getByText('Optometry')).to.be.ok;
-    expect(within(links[1]).getByText('Audiology and speech')).to.be.ok;
+    expect(
+      within(links[1]).getByText(
+        'Audiology and speech (including hearing aid support)',
+      ),
+    ).to.be.ok;
     expect(within(links[2]).getByText('Primary care')).to.be.ok;
   });
 

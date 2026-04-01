@@ -458,18 +458,23 @@ describe('ComplexClaimSubmitFlowWrapper', () => {
   });
 
   describe('Loading states', () => {
-    it('shows loading indicator when claim fetch is loading', () => {
+    it('does not show loading indicator when claim fetch is loading mid-flow', () => {
+      // isComplexClaimFetchLoading is intentionally excluded from the isLoading check.
+      // Mid-flow refreshes (e.g. after deleteDocument) set this flag but should not
+      // unmount the active page and cause a visible flash. The spinner is only shown
+      // on the initial load (covered by needsClaimData).
       const initialState = getData({
         complexClaimsEnabled: true,
         isClaimFetchLoading: true,
+        claimData: { claimId },
       });
 
-      const { getByTestId } = renderWithStoreAndRouterHelper(
+      const { queryByTestId } = renderWithStoreAndRouterHelper(
         appointmentId,
         initialState,
       );
 
-      expect(getByTestId('travel-pay-loading-indicator')).to.exist;
+      expect(queryByTestId('travel-pay-loading-indicator')).to.be.null;
     });
 
     it('shows loading indicator when claim data is needed but not present', () => {

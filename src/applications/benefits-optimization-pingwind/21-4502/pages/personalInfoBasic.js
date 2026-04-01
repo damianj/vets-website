@@ -52,7 +52,7 @@ export default {
     [veteranFields.parentObject]: {
       'ui:description': (
         <div>
-          <h3>{P.BASIC_INFO_HEADING}</h3>
+          <h2>{P.BASIC_INFO_HEADING}</h2>
         </div>
       ),
       [veteranFields.fullName]: {

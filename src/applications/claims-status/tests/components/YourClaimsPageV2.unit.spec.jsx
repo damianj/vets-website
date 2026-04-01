@@ -359,7 +359,7 @@ describe('<YourClaimsPageV2>', () => {
       const wrapper = shallow(<YourClaimsPageV2 {...props} />);
       const noClaims = wrapper.find('NoClaims');
       expect(noClaims.length).to.equal(1);
-      expect(noClaims.prop('recordType')).to.equal('in progress records');
+      expect(noClaims.prop('recordType')).to.equal('in-progress records');
       wrapper.unmount();
     });
 
@@ -374,7 +374,7 @@ describe('<YourClaimsPageV2>', () => {
         </Provider>,
       );
       expect(container.textContent).to.include(
-        'Showing 1-10 of 12 in progress records',
+        'Showing 1-10 of 12 in-progress records',
       );
     });
 
@@ -389,9 +389,9 @@ describe('<YourClaimsPageV2>', () => {
         </Provider>,
       );
       expect(container.textContent).to.include(
-        'Showing 1-1 of 1 in progress record',
+        'Showing 1-1 of 1 in-progress record',
       );
-      expect(container.textContent).to.not.include('in progress records');
+      expect(container.textContent).to.not.include('in-progress records');
     });
 
     it('should filter out closed items by default', () => {

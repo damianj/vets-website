@@ -92,4 +92,93 @@ describe('VAOS Component: DetailPageLayout', () => {
       ).not.to.exist;
     });
   });
+  describe('After-visit summary eligibility', () => {
+    it('should display for fulfilled past appt', async () => {
+      const store = createTestStore(initialState);
+      const appointment = new MockAppointment({
+        status: APPOINTMENT_STATUS.fulfilled,
+      })
+        .setApiData(
+          new MockAppointmentResponse({
+            localStartTime: subDays(new Date(), 1),
+            status: APPOINTMENT_STATUS.fulfilled,
+          }).setTravelPayClaim(new MockTravelPayClaim()),
+        )
+        .setIsInPersonVisit(true)
+        .setIsPastAppointment(true)
+        .setLocation(new MockFacility());
+      appointment.start = subDays(new Date(), 1);
+
+      const screen = renderWithStoreAndRouter(
+        <DetailPageLayout data={appointment} facility={facilityData} />,
+        { store, initialState },
+      );
+      expect(screen.baseElement).to.contain.text('After-visit summary');
+    });
+
+    it('should not display for proposed past appt', async () => {
+      const store = createTestStore(initialState);
+      const appointment = new MockAppointment({
+        status: APPOINTMENT_STATUS.proposed,
+      })
+        .setApiData(
+          new MockAppointmentResponse({
+            localStartTime: subDays(new Date(), 1),
+            status: APPOINTMENT_STATUS.proposed,
+          }).setTravelPayClaim(new MockTravelPayClaim()),
+        )
+        .setIsInPersonVisit(true)
+        .setIsPastAppointment(true)
+        .setLocation(new MockFacility());
+      appointment.start = subDays(new Date(), 1);
+
+      const screen = renderWithStoreAndRouter(
+        <DetailPageLayout data={appointment} facility={facilityData} />,
+        { store, initialState },
+      );
+      expect(screen.baseElement).to.not.contain.text('After-visit summary');
+    });
+
+    it('should not display for community care past appt', async () => {
+      const store = createTestStore(initialState);
+      const appointment = new MockAppointment()
+        .setApiData(
+          new MockAppointmentResponse({
+            localStartTime: subDays(new Date(), 1),
+          }).setTravelPayClaim(new MockTravelPayClaim()),
+        )
+        .setIsInPersonVisit(true)
+        .setIsPastAppointment(true)
+        .setLocation(new MockFacility());
+      appointment.vaos.isCommunityCare = true;
+      appointment.start = subDays(new Date(), 1);
+
+      const screen = renderWithStoreAndRouter(
+        <DetailPageLayout data={appointment} facility={facilityData} />,
+        { store, initialState },
+      );
+      expect(screen.baseElement).to.not.contain.text('After-visit summary');
+    });
+
+    it('should not display for claim exam past appt', async () => {
+      const store = createTestStore(initialState);
+      const appointment = new MockAppointment()
+        .setApiData(
+          new MockAppointmentResponse({
+            localStartTime: subDays(new Date(), 1),
+          }).setTravelPayClaim(new MockTravelPayClaim()),
+        )
+        .setIsInPersonVisit(true)
+        .setIsPastAppointment(true)
+        .setIsCompAndPenAppointment(true)
+        .setLocation(new MockFacility());
+      appointment.start = subDays(new Date(), 1);
+
+      const screen = renderWithStoreAndRouter(
+        <DetailPageLayout data={appointment} facility={facilityData} />,
+        { store, initialState },
+      );
+      expect(screen.baseElement).to.not.contain.text('After-visit summary');
+    });
+  });
 });
