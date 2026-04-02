@@ -50,6 +50,7 @@ const MedicareParticipantField = props => {
             value={value}
             checked={value === currentValue}
             label={label}
+            data-dd-privacy="mask"
           />
         ))
       ) : (
@@ -57,6 +58,7 @@ const MedicareParticipantField = props => {
           name={mappedProps.name}
           value={undefined}
           label={MSG_NA}
+          data-dd-privacy="mask"
         />
       )}
     </VaRadio>

@@ -281,10 +281,19 @@ export const userIsDigitalSubmitEligible = formData => {
   );
 };
 
-export const entityAcceptsDigitalPoaRequests = entity => {
+export const entityAcceptsDigitalPoaRequests = (
+  entity,
+  individualAcceptEnabled = false,
+) => {
   const repType = getRepType(entity);
 
   if (repType === 'Organization') {
+    if (individualAcceptEnabled) {
+      return (
+        !!entity?.attributes?.canAcceptDigitalPoaRequests &&
+        !!entity?.attributes?.repsCanAcceptAnyRequest
+      );
+    }
     return !!entity?.attributes?.canAcceptDigitalPoaRequests;
   }
   if (repType === 'VSO Representative') {

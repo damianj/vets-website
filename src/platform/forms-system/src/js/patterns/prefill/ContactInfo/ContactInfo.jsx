@@ -333,11 +333,15 @@ export const ContactInfoBase = ({
             status="success"
             role="alert"
           >
-            <h2 slot="headline">We’ve updated your {text}</h2>
+            <h2 slot="headline">
+              {`We've updated your ${
+                text ? text.charAt(0).toLowerCase() + text.slice(1) : ''
+              }`}
+            </h2>
             <p className="vads-u-margin-y--0">
               {hasFormOnlyUpdate
-                ? 'We’ve made these changes to only this form.'
-                : 'We’ve made these changes to this form and your profile.'}
+                ? "We've made these changes to only this form."
+                : "We've made these changes to this form and your profile."}
             </p>
           </va-alert>,
         );

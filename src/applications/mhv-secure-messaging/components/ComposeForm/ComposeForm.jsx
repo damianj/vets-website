@@ -671,6 +671,9 @@ const ComposeForm = props => {
       }
       if (!category || category === '') {
         setCategoryError(ErrorMessages.ComposeForm.CATEGORY_REQUIRED);
+        datadogRum.addAction('Category validation error', {
+          reason: 'Category required but not selected',
+        });
         messageValid = false;
       }
       if (

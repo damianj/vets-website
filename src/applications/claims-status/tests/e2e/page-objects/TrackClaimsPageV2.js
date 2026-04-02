@@ -320,12 +320,6 @@ class TrackClaimsPageV2 {
     ).should('not.exist');
   }
 
-  verifyClaimEvidence(nthEvidenceSubmission, claimStatus) {
-    cy.get(
-      `.documents-filed-container > ol li:nth-child(${nthEvidenceSubmission}) div > .docs-filed-text`,
-    ).should('contain', `${claimStatus}`);
-  }
-
   claimDetailsTab() {
     cy.get('.tabs li:nth-child(3) > a')
       .click()

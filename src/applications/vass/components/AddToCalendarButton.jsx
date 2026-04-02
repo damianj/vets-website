@@ -16,8 +16,8 @@ import { VASS_PHONE_NUMBER } from '../utils/constants';
  * @returns {JSX.Element}
  */
 export default function AddToCalendarButton({ appointment }) {
-  const startUtc = parseISO(appointment?.startUTC);
-  const endUtc = parseISO(appointment?.endUTC);
+  const startUtc = parseISO(appointment?.startUtc);
+  const endUtc = parseISO(appointment?.endUtc);
 
   const ics = generateICS(
     'Solid Start Phone Call',

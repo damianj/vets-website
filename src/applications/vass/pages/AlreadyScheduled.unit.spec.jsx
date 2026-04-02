@@ -48,9 +48,9 @@ describe('VASS Component: AlreadyScheduled', () => {
   it('should render all content', () => {
     const appointmentData = createAppointmentData({
       appointmentId,
-      startUTC: '2025-05-01T16:00:00.000Z',
+      startUtc: '2025-05-01T16:00:00.000Z',
     });
-    const appointmentDate = new Date(appointmentData.startUTC);
+    const appointmentDate = new Date(appointmentData.startUtc);
     const expectedDate = format(appointmentDate, 'MM/dd/yyyy');
     const expectedTime = format(appointmentDate, 'hh:mm a');
 
@@ -82,7 +82,7 @@ describe('VASS Component: AlreadyScheduled', () => {
 
   it('should navigate to cancel appointment page when cancel button is clicked', async () => {
     const { container, getByTestId } = renderComponent({
-      startUTC: '2025-05-01T16:00:00.000Z',
+      startUtc: '2025-05-01T16:00:00.000Z',
     });
 
     const cancelButton = $(
@@ -98,8 +98,8 @@ describe('VASS Component: AlreadyScheduled', () => {
     });
   });
 
-  it('should render empty date and time when startUTC is not available', () => {
-    const { getByTestId } = renderComponent({ startUTC: null });
+  it('should render empty date and time when startUtc is not available', () => {
+    const { getByTestId } = renderComponent({ startUtc: null });
 
     const dateTimeElement = getByTestId('already-scheduled-date-time');
     expect(dateTimeElement.textContent).to.not.match(/\d{2}\/\d{2}\/\d{4}/);

@@ -104,32 +104,22 @@ class RoutedSavableApp extends React.Component {
         typeof newProps.formConfig?.normalizeReturnUrl === 'function'
           ? newProps.formConfig.normalizeReturnUrl(newProps.returnUrl)
           : newProps.returnUrl;
+      const safeReturnUrl = this.getSafeReturnUrl(newProps, returnUrlToUse);
       const propsWithNormalizedReturnUrl = {
         ...newProps,
-        returnUrl: returnUrlToUse,
+        returnUrl: safeReturnUrl,
       };
 
       if (
         newProps.currentLocation &&
         newProps.currentLocation.pathname.endsWith('resume')
       ) {
-        newProps.router.replace(returnUrlToUse);
+        newProps.router.replace(safeReturnUrl);
       } else if (newProps.formConfig.onFormLoaded) {
         // The onFormLoaded callback should handle navigating to the start of the form
         newProps.formConfig.onFormLoaded(propsWithNormalizedReturnUrl);
       } else {
-        // Check that returnUrl is an active page. If not, return to first page
-        // after intro page
-        const isValidReturnUrl = checkValidPagePath(
-          newProps.routes[newProps.routes.length - 1].pageList,
-          newProps.formData,
-          returnUrlToUse,
-        );
-        newProps.router.push(
-          isValidReturnUrl
-            ? returnUrlToUse
-            : this.getFirstNonIntroPagePath(newProps),
-        );
+        newProps.router.push(safeReturnUrl);
       }
       // Set loadedStatus in redux to not-attempted to not show the loading page
       newProps.setFetchFormStatus(LOAD_STATUSES.notAttempted);
@@ -225,12 +215,42 @@ class RoutedSavableApp extends React.Component {
   };
 
   // eslint-disable-next-line class-methods-use-this
+  getIntroPagePath(props) {
+    return props.routes[props.routes.length - 1].pageList[0].path;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   getFirstNonIntroPagePath(props) {
     return getNextPagePath(
       props.routes[props.routes.length - 1].pageList,
       props.formData,
       `${props.formConfig?.urlPrefix || '/'}introduction`,
     );
+  }
+
+  // Keep resume navigation on active form pages or explicitly allowed
+  // additional non-form routes.
+  getSafeReturnUrl(props, returnUrl) {
+    if (props.isUserVerified === false) {
+      return this.getIntroPagePath(props);
+    }
+
+    const additionalNonFormPaths = getAdditionalNonFormPaths(
+      props.formConfig.additionalRoutes,
+    );
+    const isValidReturnUrl = checkValidPagePath(
+      props.routes[props.routes.length - 1].pageList,
+      props.formData,
+      returnUrl,
+    );
+    const trimmedReturnUrl = returnUrl?.split(/[?#]/)[0].replace(/\/$/, '');
+    const isDirectAccessNonFormPath = additionalNonFormPaths.some(path =>
+      trimmedReturnUrl?.endsWith(path),
+    );
+
+    return isValidReturnUrl || isDirectAccessNonFormPath
+      ? returnUrl
+      : this.getFirstNonIntroPagePath(props);
   }
 
   removeOnbeforeunload = () => {
@@ -254,9 +274,14 @@ class RoutedSavableApp extends React.Component {
     // logging in
     this.shouldRedirectOrLoad = false;
 
-    const firstPagePath =
-      props.routes[props.routes.length - 1].pageList[0].path;
+    const firstPagePath = this.getIntroPagePath(props);
     const firstNonIntroPagePath = this.getFirstNonIntroPagePath(props);
+
+    if (props.isLoggedIn && props.isUserVerified === false) {
+      props.router.replace(firstPagePath);
+      return;
+    }
+
     // If we're logged in and have a saved / pre-filled form, load that
     if (props.isLoggedIn) {
       const currentForm = props.formConfig.formId;
@@ -353,12 +378,12 @@ const mapDispatchToProps = {
   fetchInProgressForm,
 };
 
-export default withRouter(
-  connect(
-    getSaveInProgressState,
-    mapDispatchToProps,
-  )(RoutedSavableApp),
-);
+const ConnectedRoutedSavableApp = connect(
+  getSaveInProgressState,
+  mapDispatchToProps,
+)(RoutedSavableApp);
+
+export default withRouter(ConnectedRoutedSavableApp);
 
 RoutedSavableApp.propTypes = {
   FormApp: PropTypes.any,
@@ -384,6 +409,7 @@ RoutedSavableApp.propTypes = {
     normalizeReturnUrl: PropTypes.func,
     urlPrefix: PropTypes.string,
   }),
+  isUserVerified: PropTypes.bool,
   loadedStatus: PropTypes.string,
   location: PropTypes.object,
   prefillStatus: PropTypes.string,

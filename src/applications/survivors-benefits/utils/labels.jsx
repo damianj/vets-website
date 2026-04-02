@@ -47,6 +47,14 @@ export const separationReasonOptions = {
   OTHER: 'Other',
 };
 
+export const separationReasonOptions2025 = {
+  MEDICAL_FINANCIAL: 'Medical or financial reasons',
+  OTHER: 'Relationship differences or other',
+};
+
+export const getSeparationReasonOptions = use2025Version =>
+  use2025Version ? separationReasonOptions2025 : separationReasonOptions;
+
 export const previousMarriageEndOptions = {
   DEATH: 'Death',
   DIVORCE: 'Divorce',

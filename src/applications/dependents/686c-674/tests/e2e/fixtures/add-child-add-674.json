@@ -1,5 +1,4 @@
 {
-  "vaDependentsNetWorthAndPension": false,
   "view:checkVeteranPension": true,
   "view:additionalEvidenceDescription": {},
   "view:householdIncome": true,

@@ -22,12 +22,12 @@ export const Pending = ({ referenceNumber, requestDate }) => (
     <p className="vads-u-margin-bottom--0">
       If it’s been more than 5 days since you submitted your request and haven’t
       received a response, you can call us at{' '}
-      <va-telephone contact="8778273702" /> (TTY:711).
+      <va-telephone contact="8778273702" />.
     </p>
   </va-alert>
 );
 
 Pending.propTypes = {
   referenceNumber: PropTypes.string.isRequired,
-  requestDate: PropTypes.string.isRequired,
+  requestDate: PropTypes.number.isRequired,
 };

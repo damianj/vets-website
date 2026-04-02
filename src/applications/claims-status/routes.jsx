@@ -14,6 +14,7 @@ import AppealsV2StatusPage from './containers/AppealsV2StatusPage';
 import AppealsV2DetailPage from './containers/AppealsV2DetailPage';
 import AppealInfo from './containers/AppealInfo';
 import ClaimsStatusApp from './containers/ClaimsStatusApp';
+import IntentToFilePage from './containers/IntentToFilePage';
 import OverviewPage from './containers/OverviewPage';
 import Standard5103NoticePage from './containers/Standard5103NoticePage';
 import DocumentRedirectPage from './containers/DocumentRedirectPage';
@@ -64,6 +65,7 @@ const routes = (
         <Route path="overview" element={<OverviewPage />} />
         <Route path="status" element={<ClaimStatusPage />} />
       </Route>
+      <Route path="your-claims/intent-to-file" element={<IntentToFilePage />} />
       <Route path="your-claim-letters" element={<YourClaimLetters />} />
       <Route
         path="your-claim-letters/link"

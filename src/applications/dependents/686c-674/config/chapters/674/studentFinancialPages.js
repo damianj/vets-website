@@ -54,20 +54,17 @@ export const studentEarningsPage = {
     'ui:options': {
       updateSchema: (_formData, schema, _uiSchema, index, _path, fullData) => {
         const itemData = fullData?.studentInformation?.[index];
-        const { vaDependentsNetWorthAndPension } = fullData;
 
         const { veteranInformation } = fullData || {};
         const { isInReceiptOfPension } = veteranInformation || {};
 
-        // When flipper is on, reset if api returns isInReceiptOfPension as
-        // 0 (no) or -1 (unknown) and the user has not confirmed they are in
-        // receipt of pension (view:checkVeteranPension)
-        // When flipper is off, reset if claimsOrReceivesPension is false
-        const resetItemData = vaDependentsNetWorthAndPension
-          ? isInReceiptOfPension === 0 ||
-            (isInReceiptOfPension === -1 &&
-              !fullData?.['view:checkVeteranPension'])
-          : !itemData?.claimsOrReceivesPension;
+        // Reset if api returns isInReceiptOfPension as 0 (no) or -1 (unknown)
+        // and the user has not confirmed they are in receipt of pension
+        // (view:checkVeteranPension)
+        const resetItemData =
+          isInReceiptOfPension === 0 ||
+          (isInReceiptOfPension === -1 &&
+            !fullData?.['view:checkVeteranPension']);
 
         if (resetItemData) {
           itemData.studentEarningsFromSchoolYear = undefined;

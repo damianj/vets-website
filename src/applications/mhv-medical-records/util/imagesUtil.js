@@ -1,10 +1,12 @@
+import { datadogRum } from '@datadog/browser-rum';
 import { formatDateInLocalTimezone, formatNameFirstToLast } from './helpers';
 import {
   areDatesEqualToMinute,
   normalizeProcedureName,
   parseRadiologyReport,
 } from './radiologyUtil';
-import { labTypes, EMPTY_FIELD } from './constants';
+import { labTypes, loincCodes, EMPTY_FIELD } from './constants';
+import * as rumActions from './rumConstants';
 
 /**
  * Convert an SCDF (v2) imaging study record into the frontend shape used by
@@ -35,6 +37,83 @@ export const convertScdfImagingStudy = record => {
  * and an imaging study's date for them to be considered the same study.
  */
 const IMAGING_MATCH_TOLERANCE_MS = 30 * 1000; // 30 seconds
+const NEAR_MISS_TOLERANCE_MS = IMAGING_MATCH_TOLERANCE_MS * 2;
+
+/** Only UHD radiology records are eligible for SCDF imaging study merge. */
+const MERGE_ELIGIBLE_TYPE = loincCodes.UHD_RADIOLOGY;
+
+/**
+ * Compute statistics about the study-to-report merge for Datadog RUM tracking.
+ *
+ * @param {Array} labsList - The original labs list (pre-merge)
+ * @param {Array} imagingStudies - The imaging studies list
+ * @param {Set} matchedImagingIds - IDs of studies that were successfully matched
+ */
+export const computeMergeStats = (
+  labsList,
+  imagingStudies,
+  matchedImagingIds,
+) => {
+  const reportCount = labsList.filter(
+    lab =>
+      lab.type === MERGE_ELIGIBLE_TYPE &&
+      lab.sortDate &&
+      !Number.isNaN(new Date(lab.sortDate).getTime()),
+  ).length;
+  const studyCount = imagingStudies.length;
+  const matchedCount = matchedImagingIds.size;
+  const unmatchedReports = reportCount - matchedCount;
+  const unmatchedStudies = studyCount - matchedCount;
+
+  // For each study, find the distance to the closest radiology report.
+  // Track min/max inline to avoid spread-operator argument-length limits.
+  let minClosestDistanceMs = null;
+  let maxClosestDistanceMs = null;
+  let nearMissCount = 0;
+  imagingStudies.forEach(study => {
+    if (!study.rawDate) return;
+    const studyTime = new Date(study.rawDate).getTime();
+    if (Number.isNaN(studyTime)) return;
+
+    const closestDistance = labsList.reduce((min, lab) => {
+      if (lab.type !== MERGE_ELIGIBLE_TYPE || !lab.sortDate) return min;
+      const labTime = new Date(lab.sortDate).getTime();
+      if (Number.isNaN(labTime)) return min;
+      return Math.min(min, Math.abs(labTime - studyTime));
+    }, Infinity);
+
+    if (closestDistance !== Infinity) {
+      minClosestDistanceMs =
+        minClosestDistanceMs === null
+          ? closestDistance
+          : Math.min(minClosestDistanceMs, closestDistance);
+      maxClosestDistanceMs =
+        maxClosestDistanceMs === null
+          ? closestDistance
+          : Math.max(maxClosestDistanceMs, closestDistance);
+    }
+
+    // Near miss: unmatched study whose closest report is within 2× tolerance
+    if (
+      !matchedImagingIds.has(study.id) &&
+      closestDistance <= NEAR_MISS_TOLERANCE_MS
+    ) {
+      nearMissCount += 1;
+    }
+  });
+
+  return {
+    reportCount,
+    studyCount,
+    matchedCount,
+    unmatchedReports,
+    unmatchedStudies,
+    nearMissCount,
+    minClosestDistanceMs,
+    maxClosestDistanceMs,
+    toleranceMs: IMAGING_MATCH_TOLERANCE_MS,
+  };
+};
 
 /**
  * Merge SCDF imaging study metadata into a labs-and-tests list by matching
@@ -52,35 +131,43 @@ export const mergeImagingStudiesIntoLabs = (
   labsList = [],
   imagingStudies = [],
 ) => {
-  if (!imagingStudies.length) return labsList;
-
   // Track which imaging studies have already been matched so each is used at most once
   const matchedImagingIds = new Set();
 
-  return labsList.map(lab => {
-    if (!lab.sortDate) return lab;
-    const labTime = new Date(lab.sortDate).getTime();
-    if (Number.isNaN(labTime)) return lab;
+  const mergedList = imagingStudies.length
+    ? labsList.map(lab => {
+        if (lab.type !== MERGE_ELIGIBLE_TYPE) return lab;
+        if (!lab.sortDate) return lab;
+        const labTime = new Date(lab.sortDate).getTime();
+        if (Number.isNaN(labTime)) return lab;
 
-    const match = imagingStudies.find(study => {
-      if (matchedImagingIds.has(study.id)) return false;
-      if (!study.rawDate) return false;
-      const studyTime = new Date(study.rawDate).getTime();
-      if (Number.isNaN(studyTime)) return false;
-      return Math.abs(labTime - studyTime) <= IMAGING_MATCH_TOLERANCE_MS;
-    });
+        const match = imagingStudies.find(study => {
+          if (matchedImagingIds.has(study.id)) return false;
+          if (!study.rawDate) return false;
+          const studyTime = new Date(study.rawDate).getTime();
+          if (Number.isNaN(studyTime)) return false;
+          return Math.abs(labTime - studyTime) <= IMAGING_MATCH_TOLERANCE_MS;
+        });
 
-    if (match) {
-      matchedImagingIds.add(match.id);
-      return {
-        ...lab,
-        imagingStudyId: match.id,
-        imagingStudyStatus: match.status,
-        imageCount: match.imageCount || 0,
-      };
-    }
-    return lab;
-  });
+        if (match) {
+          matchedImagingIds.add(match.id);
+          return {
+            ...lab,
+            imagingStudyId: match.id,
+            imagingStudyStatus: match.status,
+            imageCount: match.imageCount || 0,
+          };
+        }
+        return lab;
+      })
+    : labsList;
+
+  const stats = computeMergeStats(labsList, imagingStudies, matchedImagingIds);
+  if (stats.reportCount > 0 || stats.studyCount > 0) {
+    datadogRum.addAction(rumActions.MERGE_IMAGING_STUDIES, stats);
+  }
+
+  return mergedList;
 };
 
 export const buildRadiologyResults = record => {

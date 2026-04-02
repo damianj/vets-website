@@ -242,7 +242,7 @@ const formConfig = {
           uiSchema: veteranStatusInformation.uiSchema,
           schema: veteranStatusInformation.schema,
           depends: formData =>
-            formData?.applicationInfo?.currentlyOnActiveDuty === false,
+            formData?.applicationInfo?.currentlyOnActiveDuty !== true,
         },
         veteranDisabilityCompensationPage: {
           path: 'veteran-disability-compensation',
@@ -250,7 +250,7 @@ const formConfig = {
           uiSchema: veteranDisabilityCompensation.uiSchema,
           schema: veteranDisabilityCompensation.schema,
           depends: formData =>
-            formData?.applicationInfo?.currentlyOnActiveDuty === false,
+            formData?.applicationInfo?.currentlyOnActiveDuty !== true,
         },
       },
     },

@@ -5,6 +5,7 @@ import vapService from '@@vap-svc/reducers';
 import {
   getContent,
   clearReturnState,
+  setReturnState,
 } from 'platform/forms-system/src/js/utilities/data/profile';
 import { TOGGLE_NAMES } from 'platform/utilities/feature-toggles';
 import { renderWithStoreAndRouter } from 'platform/testing/unit/react-testing-library-helpers';
@@ -153,5 +154,78 @@ describe('<ContactInfo>', () => {
 
     expect(container.textContent).to.include('456 Form Avenue');
     expect(getByText('456 Form Avenue, Apt 2')).to.exist;
+  });
+
+  describe('Success alert headline casing', () => {
+    const renderContactInfo = () =>
+      renderWithStoreAndRouter(<ContactInfo {...getData()} />, {
+        initialState: defaultInitialState,
+        reducers: { vapService },
+        path: '/contact-information',
+      });
+
+    afterEach(() => {
+      clearReturnState();
+    });
+
+    it('should display sentence-cased headline after updating home phone number', () => {
+      setReturnState('home-phone', 'updated');
+      const { getByText } = renderContactInfo();
+      // Case-sensitive regex: only matches lowercase 'h', fails if title-cased
+      expect(getByText(/home phone number/, { selector: 'h2' })).to.exist;
+    });
+
+    it('should display sentence-cased headline after updating mobile phone number', () => {
+      setReturnState('mobile-phone', 'updated');
+      const { getByText } = renderContactInfo();
+      expect(getByText(/mobile phone number/, { selector: 'h2' })).to.exist;
+    });
+
+    it('should display sentence-cased headline after updating email address', () => {
+      setReturnState('email', 'updated');
+      const { getByText } = renderContactInfo();
+      expect(getByText(/email address/, { selector: 'h2' })).to.exist;
+    });
+
+    it('should display sentence-cased headline after updating mailing address', () => {
+      setReturnState('address', 'updated');
+      const { getByText } = renderContactInfo();
+      expect(getByText(/mailing address/, { selector: 'h2' })).to.exist;
+    });
+
+    it('should leave a label that is already sentence-cased unchanged', () => {
+      const props = {
+        ...getData(),
+        content: { ...getContent(), homePhone: 'home phone number' },
+      };
+      setReturnState('home-phone', 'updated');
+      const { getByText } = renderWithStoreAndRouter(
+        <ContactInfo {...props} />,
+        {
+          initialState: defaultInitialState,
+          reducers: { vapService },
+          path: '/contact-information',
+        },
+      );
+      expect(getByText(/home phone number/, { selector: 'h2' })).to.exist;
+    });
+
+    it('should render without throwing when text label is falsy', () => {
+      const props = {
+        ...getData(),
+        content: { ...getContent(), homePhone: undefined },
+      };
+      setReturnState('home-phone', 'updated');
+      // Before the guard, undefined.charAt(0) threw a TypeError here
+      const { container } = renderWithStoreAndRouter(
+        <ContactInfo {...props} />,
+        {
+          initialState: defaultInitialState,
+          reducers: { vapService },
+          path: '/contact-information',
+        },
+      );
+      expect(container).to.exist;
+    });
   });
 });

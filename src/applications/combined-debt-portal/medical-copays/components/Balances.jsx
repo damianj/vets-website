@@ -3,40 +3,61 @@ import { getMedicalCenterNameByID } from 'platform/utilities/medical-centers/med
 import PropTypes from 'prop-types';
 import BalanceCard from './BalanceCard';
 import { formatISODateToMMDDYYYY } from '../../combined/utils/helpers';
+import ZeroBalanceCopayCard from './ZeroBalanceCopayCard';
 
 export const Balances = ({ statements, showVHAPaymentHistory = false }) => {
+  const getNormalizedCopayBalance = copay => {
+    return showVHAPaymentHistory
+      ? {
+          facilityName:
+            copay.attributes.facility ||
+            getMedicalCenterNameByID(copay.attributes.facility),
+          remainingBalance: copay.attributes.currentBalance,
+          lastUpdatedAt: formatISODateToMMDDYYYY(
+            copay.attributes.lastUpdatedAt,
+          ),
+          city: copay.attributes.city,
+        }
+      : {
+          facilityName:
+            copay.station.facilityName ||
+            getMedicalCenterNameByID(copay.station.facilityNum),
+          remainingBalance: copay.pHAmtDue,
+          lastUpdatedAt: copay.pSStatementDateOutput,
+          city: copay.station.city,
+        };
+  };
+
   return (
     <>
       <ul className="no-bullets vads-u-padding-x--0">
         {statements?.map((balance, idx) => {
-          const facilityName = showVHAPaymentHistory
-            ? balance.attributes.facility ||
-              getMedicalCenterNameByID(balance.attributes.facility)
-            : balance.station.facilityName ||
-              getMedicalCenterNameByID(balance.station.facilityNum);
+          const {
+            facilityName,
+            remainingBalance,
+            lastUpdatedAt,
+            city,
+          } = getNormalizedCopayBalance(balance);
 
           return (
             <li key={idx} className="vads-u-max-width--none">
-              <BalanceCard
-                id={balance.id}
-                amount={
-                  showVHAPaymentHistory
-                    ? balance.attributes.currentBalance
-                    : balance.pHAmtDue
-                }
-                date={
-                  showVHAPaymentHistory
-                    ? formatISODateToMMDDYYYY(balance.attributes.lastUpdatedAt)
-                    : balance.pSStatementDateOutput
-                }
-                city={
-                  showVHAPaymentHistory
-                    ? balance.attributes?.city
-                    : balance.station.city
-                }
-                facility={facilityName}
-                key={balance.id ? balance.id : `${idx}-${facilityName}`}
-              />
+              {remainingBalance > 0 ? (
+                <BalanceCard
+                  id={balance.id}
+                  amount={remainingBalance}
+                  date={lastUpdatedAt}
+                  city={city}
+                  facility={facilityName}
+                  key={balance.id ? balance.id : `${idx}-${facilityName}`}
+                />
+              ) : (
+                <ZeroBalanceCopayCard
+                  id={balance.id}
+                  facility={facilityName}
+                  city={city}
+                  updatedDate={lastUpdatedAt}
+                />
+              )}
             </li>
           );
         })}

@@ -51,9 +51,49 @@ const DECISION_OPTIONS = {
 };
 
 const POARequestDetailsPage = title => {
-  const poaRequest = useLoaderData();
+  const loaderData = useLoaderData();
   const [error, setError] = useState();
   const [decisionValue, setDecisionValue] = useState();
+  const navigation = useNavigation();
+
+  const poaRequest = loaderData?.error403 ? null : loaderData;
+  const poaRequestSubmission =
+    poaRequest?.powerOfAttorneyFormSubmission?.status;
+
+  useEffect(() => {
+    focusElement('h1');
+  }, []);
+
+  useEffect(
+    () => {
+      document.title = title.title;
+      if (poaRequest) {
+        focusElement('.poa__alert');
+      }
+    },
+    [title, poaRequestSubmission],
+  );
+
+  if (loaderData?.error403) {
+    return (
+      <>
+        <VaBreadcrumbs
+          breadcrumbList={poaDetailsBreadcrumbs}
+          label={DETAILS_BC_LABEL}
+          homeVeteransAffairs={false}
+        />
+        <va-alert status="warning" data-testid="poa-request-details-403">
+          <h2 slot="headline">You can’t review this representation request</h2>
+          <p>
+            Your Veterans Service Organization only allows you to review details
+            of requests where you are the preferred representative. You are not
+            the preferred representative on this request.
+          </p>
+        </va-alert>
+      </>
+    );
+  }
+
   const handleChange = e => {
     e.preventDefault();
     const radioValue = e.detail?.value;
@@ -85,19 +125,6 @@ const POARequestDetailsPage = title => {
   } = poaRequest.powerOfAttorneyForm.authorizations;
   const addressChange =
     poaRequest?.powerOfAttorneyForm.authorizations.addressChange;
-  const poaRequestSubmission =
-    poaRequest?.powerOfAttorneyFormSubmission?.status;
-  const navigation = useNavigation();
-  useEffect(() => {
-    focusElement('h1');
-  }, []);
-  useEffect(
-    () => {
-      document.title = title.title;
-      focusElement('.poa__alert');
-    },
-    [title, poaRequestSubmission],
-  );
 
   const handleSubmit = e => {
     if (!decisionValue) {
@@ -324,10 +351,28 @@ const POARequestDetailsPage = title => {
   );
 };
 
-POARequestDetailsPage.loader = ({ params, request }) => {
-  return api.getPOARequest(params.id, {
-    signal: request.signal,
-  });
+POARequestDetailsPage.loader = async ({ params, request }) => {
+  try {
+    return await api.getPOARequest(params.id, {
+      signal: request.signal,
+      skip403Redirect: true,
+    });
+  } catch (err) {
+    if (err instanceof Response && err.status === 403) {
+      try {
+        await api.checkAuthorized({
+          signal: request.signal,
+          skip403Redirect: true,
+        });
+
+        return { error403: true };
+      } catch {
+        throw err;
+      }
+    }
+
+    throw err;
+  }
 };
 
 POARequestDetailsPage.createDecisionAction = async ({ params, request }) => {

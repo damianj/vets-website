@@ -36,6 +36,17 @@ describe('separationHealthAssessmentUploadV1 page', () => {
   });
 
   describe('uiSchema', () => {
+    it('renders the Separation Health Assessment header', () => {
+      const titleField = uiSchema['view:separationHealthAssessmentUploadTitle'];
+      const { getByRole } = render(<div>{titleField['ui:title']}</div>);
+
+      const heading = getByRole('heading', {
+        level: 3,
+        name: 'Upload your Separation Health Assessment',
+      });
+      expect(heading).to.exist;
+    });
+
     it('restricts SHA file types to pdf and image formats', () => {
       expect(uploadOptions.fileTypes).to.deep.equal([
         'pdf',

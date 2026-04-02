@@ -127,8 +127,8 @@ describe('VASS Schedule Appointment', () => {
       mockAppointmentDetailsApi({
         response: new MockAppointmentDetailsResponse({
           appointmentId: 'abcdef123456',
-          startUTC: secondSlotStart,
-          endUTC: '2025-06-03T14:00:00.000Z',
+          startUtc: secondSlotStart,
+          endUtc: '2025-06-03T14:00:00.000Z',
         }).toJSON(),
         responseCode: 200,
       });
@@ -360,13 +360,13 @@ describe('VASS Schedule Appointment', () => {
   describe('Already Scheduled Appointment', () => {
     beforeEach(() => {
       const appointmentId = 'already-scheduled-appointment-id';
-      const startUTC = '2025-12-20T14:00:00Z';
-      const endUTC = '2025-12-20T14:30:00Z';
+      const startUtc = '2025-12-20T14:00:00Z';
+      const endUtc = '2025-12-20T14:30:00Z';
       mockAppointmentAvailabilityApi({
         response: createAppointmentAlreadyBookedError({
           appointmentId,
-          dtStartUTC: startUTC,
-          dtEndUTC: endUTC,
+          dtStartUtc: startUtc,
+          dtEndUtc: endUtc,
         }),
         responseCode: 409,
       });
@@ -376,8 +376,8 @@ describe('VASS Schedule Appointment', () => {
       mockAppointmentDetailsApi({
         response: new MockAppointmentDetailsResponse({
           appointmentId,
-          startUTC,
-          endUTC,
+          startUtc,
+          endUtc,
         }).toJSON(),
         responseCode: 200,
       });

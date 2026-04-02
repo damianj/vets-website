@@ -381,16 +381,17 @@ export const FORM_21_4502 = {
     REQUIREMENT_VA_REACHED_OUT: 'VA has reached out to you about this benefit',
     REQUIREMENT_AUTOMOBILE:
       'Applying for financial assistance to purchase an automobile (not adaptive equipment only)',
-    NOT_ELIGIBLE_HEADLINE: 'Based on your responses, you may not be eligible',
     NOT_ELIGIBLE_DISABILITY:
-      'Based on your response, you are not currently eligible to complete VA Form 21-4502. Confirm you have applied for service-connected disability benefits through the VA. Select the link to file for disability compensation with the VA.',
-    LINK_DISABILITY_CLAIM: 'File for disability compensation with VA',
+      'Based on your response, you may not currently eligible to complete ',
+    NOT_ELIGIBLE_DISABILITY_EMPHASIS: 'VA Form 21-4502',
+    NOT_ELIGIBLE_DISABILITY_AFTER:
+      '. Confirm you have applied for service-connected disability benefits through the VA. Select the link to file for disability compensation with the VA.',
+    LINK_DISABILITY_CLAIM:
+      'File for disability compensation with VA Form 21-526EZ',
+    OPENS_IN_NEW_TAB: '(opens in a new tab)',
     NOT_ELIGIBLE_ADAPTIVE:
-      'Based on your response, you need VA Form 10-1394 for adaptive equipment. Select the link below to get the correct form.',
+      'If you are applying for financial assistance in purchasing adaptive equipment only for a vehicle you already own, complete VA Form 10-1394 (Application for Adaptive Equipment - Motor Vehicle).',
     LINK_FORM_10_1394: 'VA Form 10-1394',
-    EXIT_OPTIONS:
-      'You can exit this application, save and finish later, or continue if you believe this is the right form for you.',
-    EXIT_APPLICATION: 'Exit application',
     ELIGIBLE_AUTOMOBILE_BEFORE:
       "Based on your responses, you'll file for an automobile or other conveyance using ",
     ELIGIBLE_AUTOMOBILE_AFTER: '.',
@@ -403,7 +404,6 @@ export const FORM_21_4502 = {
     FORM_10_1394_URL: 'https://www.va.gov/forms/10-1394/',
     DISABILITY_CLAIM_URL:
       'https://www.va.gov/disability/file-disability-claim-form-21-526ez/introduction',
-    VA_HOME_URL: 'https://www.va.gov/',
   },
   FORM_CONFIG: {
     TITLE:

@@ -33,11 +33,13 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
             To establish representation with this claimant, review and accept
             the pending representation request.
           </p>
-          <va-link-action
-            href={`/representative/representation-requests/${firstPOA.id}`}
-            text="Review the representation request"
-            type="primary"
-          />
+          {firstPOA?.canAccept !== false && (
+            <va-link-action
+              href={`/representative/representation-requests/${firstPOA.id}`}
+              text="Review the representation request"
+              type="primary"
+            />
+          )}
         </va-alert>
       );
     }

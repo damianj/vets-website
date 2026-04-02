@@ -9,7 +9,10 @@ import { createAppointmentData } from '../utils/appointments';
 describe('VASS Component: AppointmentCard', () => {
   it('renders card sections and actions', () => {
     const appointmentData = createAppointmentData({
-      topics: [{ topicName: 'Benefits' }, { topicName: 'Health care' }],
+      topics: [
+        { topicName: 'Benefits', topicId: '123' },
+        { topicName: 'Health care', topicId: '456' },
+      ],
     });
 
     const { getByTestId } = render(

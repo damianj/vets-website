@@ -27,6 +27,13 @@ const fileUploadUi = ancillaryFormUploadUi(
 );
 
 export const uiSchema = {
+  'view:separationHealthAssessmentUploadTitle': {
+    'ui:title': (
+      <h3 className="vads-u-margin-y--0 vads-u-color--base">
+        Upload your Separation Health Assessment
+      </h3>
+    ),
+  },
   separationHealthAssessmentUploads: {
     ...fileUploadUi,
 
@@ -69,6 +76,10 @@ export const uiSchema = {
 export const schema = {
   type: 'object',
   properties: {
+    'view:separationHealthAssessmentUploadTitle': {
+      type: 'object',
+      properties: {},
+    },
     separationHealthAssessmentUploads: {
       ...getAttachmentsSchema(SHA_ATTACHMENT_ID),
       minItems: 1,

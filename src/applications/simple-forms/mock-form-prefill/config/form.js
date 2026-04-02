@@ -13,9 +13,21 @@ import manifest from '../manifest.json';
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
 
-/** @type {FormConfig} */
-const formConfig = {
-  rootUrl: manifest.rootUrl,
+/**
+ * Creates a formConfig for the mock-form-prefill app.
+ * Accepts an options object to allow the minimal-header variant
+ * to share the same config with a different rootUrl.
+ *
+ * minimalHeaderFormConfigOptions() auto-detects whether the
+ * minimal header DOM is present — it returns {} when it's not,
+ * so it's safe to always spread.
+ *
+ * @param {Object} [options]
+ * @param {string} [options.rootUrl] - Override rootUrl (defaults to manifest.rootUrl)
+ * @returns {FormConfig}
+ */
+export const createFormConfig = ({ rootUrl } = {}) => ({
+  rootUrl: rootUrl || manifest.rootUrl,
   urlPrefix: '/',
   submitUrl: '/v0/api',
   submit: () =>
@@ -42,7 +54,7 @@ const formConfig = {
     breadcrumbList: [
       { href: '/', label: 'VA.gov home' },
       {
-        href: '/mock-form-prefill',
+        href: rootUrl || manifest.rootUrl,
         label: 'Mock form prefill',
       },
     ],
@@ -58,8 +70,6 @@ const formConfig = {
     },
   },
   version: 0,
-  // or prefill-transformer from PR
-  // https://github.com/department-of-veterans-affairs/vets-website/commit/7f49c3bdc4d1aeda2a81f74cd2735e93ff9a55fa#diff-3af1e5e44b3300d11a660f138dcdc67d2a15d1317c96c392139ba2801929fd87R1-R46
   prefillTransformer,
   prefillEnabled: true,
   savedFormMessages: {
@@ -79,8 +89,10 @@ const formConfig = {
       },
     },
   },
-  // getHelp,
   footerContent,
-};
+});
+
+/** @type {FormConfig} */
+const formConfig = createFormConfig();
 
 export default formConfig;

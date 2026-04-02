@@ -1217,13 +1217,13 @@
   resolved "https://registry.yarnpkg.com/@datadog/sketches-js/-/sketches-js-2.1.0.tgz#8c7e8028a5fc22ad102fa542b0a446c956830455"
   integrity sha512-smLocSfrt3s53H/XSVP3/1kP42oqvrkjUPtyaFd1F79ux24oE31BKt+q0c6lsa6hOYrFzsIwyc5GXAI5JmfOew==
 
-"@department-of-veterans-affairs/component-library@56.1.0":
-  version "56.1.0"
-  resolved "https://registry.yarnpkg.com/@department-of-veterans-affairs/component-library/-/component-library-56.1.0.tgz#080909e5102dad9ed3e937d56052cac6bcc18c4b"
-  integrity sha512-cnz3xIQhhT6g0YHorSQ6xM3ftkFPEUIYrioUiZn236LAvQshIPrzEDgXvVuSnPB5G/7+c/+fRq3sOS6RATtPmw==
+"@department-of-veterans-affairs/component-library@56.3.0":
+  version "56.3.0"
+  resolved "https://registry.yarnpkg.com/@department-of-veterans-affairs/component-library/-/component-library-56.3.0.tgz#cb5ce19dfaa07ba54f8f0de0bc5f6f0e5078fd8d"
+  integrity sha512-6JVd1BVPWhrBGVDu2e4cHU07FjgLrSo6nlonPYKaC3Jno+sEu6VgeK1VawJcMrPXGVUA/rNeTYfyl6m/2t06nA==
   dependencies:
-    "@department-of-veterans-affairs/react-components" "28.3.1"
-    "@department-of-veterans-affairs/web-components" "24.1.0"
+    "@department-of-veterans-affairs/react-components" "28.4.0"
+    "@department-of-veterans-affairs/web-components" "24.3.0"
     i18next "25.6.0"
     i18next-browser-languagedetector "8.2.0"
     react-focus-on "3.5.4"
@@ -1246,10 +1246,10 @@
     has-proto "^1.2.0"
     jsx-ast-utils "^3.3.3"
 
-"@department-of-veterans-affairs/react-components@28.3.1":
-  version "28.3.1"
-  resolved "https://registry.npmjs.org/@department-of-veterans-affairs/react-components/-/react-components-28.3.1.tgz#cedb2093573632c2355227f8ff7600d50e403b8b"
-  integrity sha512-7/s+2IStiYQq8rM6YecX+Z4V4gzkmhQ3qqT7AfzT+n7IVX/pSIOChtLKQuT9Cove4wFAfM/mbNFA4llnZ7M6rw==
+"@department-of-veterans-affairs/react-components@28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@department-of-veterans-affairs/react-components/-/react-components-28.4.0.tgz#20a2fb395704b3cbf160a4303bbe5411d3ff6747"
+  integrity sha512-CKS7XGgf1ExmYYaJ7Nsp4bijmH3bemQjCiiEAeoCisu3zGqHZY5NC25o3jrXnGv+YCdcAGRYJh2LtV0FNYCfpA==
   dependencies:
     classnames "2.2.6"
     prop-types "15.6.2"
@@ -1288,10 +1288,10 @@
   dependencies:
     minimist "^1.2.6"
 
-"@department-of-veterans-affairs/web-components@24.1.0":
-  version "24.1.0"
-  resolved "https://registry.yarnpkg.com/@department-of-veterans-affairs/web-components/-/web-components-24.1.0.tgz#7e3bca080b3b720ff9acf96af58b34207991a896"
-  integrity sha512-18w+mfcZDKVlqM9hmNhY/QvMHtGNMFRHuwW/wQ9KSoe8gh9OaZSIWEGHyC91L8P9CZTZ+AuP/w4Sypn9q+7AmA==
+"@department-of-veterans-affairs/web-components@24.3.0":
+  version "24.3.0"
+  resolved "https://registry.yarnpkg.com/@department-of-veterans-affairs/web-components/-/web-components-24.3.0.tgz#cb489d3b31d9a7ff8774883d58cf59642c78efe8"
+  integrity sha512-MDoDv1Qd/T5MWkn0EIbd0WJi/fnDfVBXans2h9oltc1Jj6T04ULnKsXKWR7TSC5s2PD+oTa79RXFpYozS+nD6g==
   dependencies:
     "@stencil/core" "4.20.0"
     aria-hidden "1.1.3"
@@ -4434,7 +4434,7 @@ body-parser@1.19.0, body-parser@1.20.3, body-parser@^1.20.3:
 
 body-scroll-lock@4.0.0-beta.0:
   version "4.0.0-beta.0"
-  resolved "https://registry.npmjs.org/body-scroll-lock/-/body-scroll-lock-4.0.0-beta.0.tgz#4f78789d10e6388115c0460cd6d7d4dd2bbc4f7e"
+  resolved "https://registry.yarnpkg.com/body-scroll-lock/-/body-scroll-lock-4.0.0-beta.0.tgz#4f78789d10e6388115c0460cd6d7d4dd2bbc4f7e"
   integrity sha512-a7tP5+0Mw3YlUJcGAKUqIBkYYGlYxk2fnCasq/FUph1hadxlTRjF+gAcZksxANnaMnALjxEddmSi/H3OR8ugcQ==
 
 bonjour-service@^1.0.11:
@@ -5171,7 +5171,7 @@ chownr@^1.1.1, chownr@^1.1.4:
 
 chromatic@11.0.4:
   version "11.0.4"
-  resolved "https://registry.npmjs.org/chromatic/-/chromatic-11.0.4.tgz#286522287adb43eaed7a7e20ba5374e378f505f1"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-11.0.4.tgz#286522287adb43eaed7a7e20ba5374e378f505f1"
   integrity sha512-v0ChtRee4FTX+YwoHHMG86rqMsJs5Y/aNsII+hHMacol3lXDhAwJkxw48B81LoTU+HumTPjqLaasdxMxrs4Z2w==
 
 chrome-trace-event@^1.0.2:
@@ -9624,7 +9624,7 @@ interpret@^3.1.1:
 
 intersection-observer@0.12.0:
   version "0.12.0"
-  resolved "https://registry.npmjs.org/intersection-observer/-/intersection-observer-0.12.0.tgz#6c84628f67ce8698e5f9ccf857d97718745837aa"
+  resolved "https://registry.yarnpkg.com/intersection-observer/-/intersection-observer-0.12.0.tgz#6c84628f67ce8698e5f9ccf857d97718745837aa"
   integrity sha512-2Vkz8z46Dv401zTWudDGwO7KiGHNDkMv417T5ItcNYfmvHR/1qCTVBO9vwH8zZmQ0WkA/1ARwpysR9bsnop4NQ==
 
 invariant@^2.2.1, invariant@^2.2.2:
@@ -10662,7 +10662,7 @@ levn@^0.4.1:
 
 libphonenumber-js@1.12.7:
   version "1.12.7"
-  resolved "https://registry.npmjs.org/libphonenumber-js/-/libphonenumber-js-1.12.7.tgz#e4372cdee413b64bb1600dfde293a7fdc1ba812a"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.7.tgz#e4372cdee413b64bb1600dfde293a7fdc1ba812a"
   integrity sha512-0nYZSNj/QEikyhcM5RZFXGlCB/mr4PVamnT1C2sKBnDDTYndrvbybYjvg+PMqAndQHlLbwQ3socolnL3WWTUFA==
 
 lilconfig@^2.0.3:
@@ -16739,9 +16739,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vets-json-schema@https://github.com/department-of-veterans-affairs/vets-json-schema.git#f6d1dd604fb790a4d9433a9349d1aaeda726c63f":
-  version "25.2.57"
-  resolved "https://github.com/department-of-veterans-affairs/vets-json-schema.git#f6d1dd604fb790a4d9433a9349d1aaeda726c63f"
+"vets-json-schema@https://github.com/department-of-veterans-affairs/vets-json-schema.git#5e18180aac00b0e15b2e9d3eda414926e8dd1578":
+  version "25.2.59"
+  resolved "https://github.com/department-of-veterans-affairs/vets-json-schema.git#5e18180aac00b0e15b2e9d3eda414926e8dd1578"
   dependencies:
     minimist "^1.2.3"
 

@@ -7,5 +7,9 @@ export const selectFeatureToggles = state => {
     isLoadingFeatureFlags: toggles.loading,
     v2IsEnabled:
       toggles[FEATURE_FLAG_NAMES.appointARepresentativeEnableV2Features],
+    individualAcceptEnabled:
+      toggles[
+        FEATURE_FLAG_NAMES.accreditedRepresentativePortalIndividualAccept
+      ],
   };
 };

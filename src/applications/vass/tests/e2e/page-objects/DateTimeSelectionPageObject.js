@@ -79,16 +79,26 @@ export class DateTimeSelectionPageObject extends PageObject {
   }
 
   /**
-   * Select the first available date on the calendar
+   * Select the first available date on the calendar.
+   * If no date cells are available in the current month view,
+   * navigates to the next month before selecting.
    * @returns {DateTimeSelectionPageObject}
    */
   selectFirstAvailableDate() {
-    cy.findByTestId('vaos-calendar').within(() => {
-      cy.findAllByRole('button')
-        .not('[disabled]')
-        .not('.usa-button-disabled')
-        .first()
-        .click();
+    const dayBtnSelector =
+      'button.vaos-calendar__calendar-day-button:not([disabled])';
+
+    cy.findByTestId('vaos-calendar').then($calendar => {
+      if ($calendar.find(dayBtnSelector).length === 0) {
+        cy.findByTestId('vaos-calendar').within(() => {
+          cy.get('button[aria-label="Next month"]').click();
+        });
+      }
+      cy.findByTestId('vaos-calendar').within(() => {
+        cy.get(dayBtnSelector)
+          .first()
+          .click();
+      });
     });
     return this;
   }

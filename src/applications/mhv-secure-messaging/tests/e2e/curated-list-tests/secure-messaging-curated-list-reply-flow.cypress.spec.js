@@ -99,7 +99,7 @@ describe('SM CURATED LIST REPLY FLOW WITH INTERSTITIAL', () => {
 
     // Fill out and send reply
     PatientReplyPage.getMessageBodyField()
-      .clear()
+      .clear({ force: true })
       .type('Test reply body', { force: true });
 
     PatientReplyPage.clickSendReplyMessageButton(singleMessage);

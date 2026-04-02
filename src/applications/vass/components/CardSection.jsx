@@ -41,7 +41,7 @@ export default function CardSection({
       )}
       {appointmentData && (
         <>
-          <DateTime dateTime={appointmentData.startUTC} />
+          <DateTime dateTime={appointmentData.startUtc} />
           {showAddToCalendarButton && (
             <AddToCalendarButton appointment={appointmentData} />
           )}

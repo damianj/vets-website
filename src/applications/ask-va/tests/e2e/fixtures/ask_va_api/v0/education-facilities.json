@@ -235,7 +235,7 @@
             "type": "institutions",
             "attributes": {
                 "name": "AUSTIN POLICE DEPARTMENT OJT",
-                "facilityCode": "10C02743",
+                "facilityCode": "10902743",
                 "alias": null,
                 "type": "OJT",
                 "city": "AUSTIN",
@@ -299,7 +299,7 @@
                 "institutionRating": null
             },
             "links": {
-                "self": "https://staging-platform-api.va.gov/gids/v0/institutions/10C02743"
+                "self": "https://staging-platform-api.va.gov/gids/v0/institutions/10902743"
             }
         },
         {
@@ -455,7 +455,7 @@
             "type": "institutions",
             "attributes": {
                 "name": "AUSTIN FIRE DEPT OJT",
-                "facilityCode": "10C04843",
+                "facilityCode": "10904843",
                 "alias": null,
                 "type": "OJT",
                 "city": "AUSTIN",
@@ -519,7 +519,7 @@
                 "institutionRating": null
             },
             "links": {
-                "self": "https://staging-platform-api.va.gov/gids/v0/institutions/10C04843"
+                "self": "https://staging-platform-api.va.gov/gids/v0/institutions/10904843"
             }
         },
         {

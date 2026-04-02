@@ -23,7 +23,7 @@ describe('686 household income: schema', () => {
   it('should have view:householdIncome as a string with enum values', () => {
     const viewHouseholdIncome = schema.properties['view:householdIncome'];
     expect(viewHouseholdIncome.type).to.equal('string');
-    expect(viewHouseholdIncome.enum).to.deep.equal(['Y', 'N', '']);
+    expect(viewHouseholdIncome.enum).to.deep.equal(['Y', 'N']);
   });
 });
 
@@ -104,37 +104,6 @@ describe('686 household income: updateSchema logic', () => {
       expect(formData).to.not.have.property('view:householdIncome');
     });
   });
-
-  describe('feature flag behavior', () => {
-    it('should return 3 enum values when feature flag is OFF', () => {
-      const formData = { vaDependentsNetWorthAndPension: false };
-      const result = updateSchema(formData, baseFormSchema);
-      expect(result.properties['view:householdIncome'].enum).to.deep.equal([
-        'Y',
-        'N',
-        '',
-      ]);
-    });
-
-    it('should return 2 enum values when feature flag is ON', () => {
-      const formData = { vaDependentsNetWorthAndPension: true };
-      const result = updateSchema(formData, baseFormSchema);
-      expect(result.properties['view:householdIncome'].enum).to.deep.equal([
-        'Y',
-        'N',
-      ]);
-    });
-
-    it('should return 3 enum values when feature flag is undefined', () => {
-      const formData = {};
-      const result = updateSchema(formData, baseFormSchema);
-      expect(result.properties['view:householdIncome'].enum).to.deep.equal([
-        'Y',
-        'N',
-        '',
-      ]);
-    });
-  });
 });
 
 describe('686 household income: rendering', () => {
@@ -158,7 +127,7 @@ describe('686 household income: rendering', () => {
     expect($$('va-radio', container).length).to.equal(1);
   });
 
-  it('should render 3 radio options when feature flag is OFF', () => {
+  it('should render 2 radio options', () => {
     const { schema: pageSchema, uiSchema: pageUiSchema } = getPage();
 
     const { container } = render(
@@ -167,66 +136,11 @@ describe('686 household income: rendering', () => {
           schema={pageSchema}
           definitions={formConfig.defaultDefinitions}
           uiSchema={pageUiSchema}
-          data={{ vaDependentsNetWorthAndPension: false }}
-        />
-      </Provider>,
-    );
-
-    expect($$('va-radio-option', container).length).to.equal(3);
-  });
-
-  it('should render 2 radio options when feature flag is ON', () => {
-    const { schema: pageSchema, uiSchema: pageUiSchema } = getPage();
-
-    const { container } = render(
-      <Provider store={defaultStore}>
-        <DefinitionTester
-          schema={pageSchema}
-          definitions={formConfig.defaultDefinitions}
-          uiSchema={pageUiSchema}
-          data={{ vaDependentsNetWorthAndPension: true }}
+          data={{}}
         />
       </Provider>,
     );
 
     expect($$('va-radio-option', container).length).to.equal(2);
-  });
-
-  it('should show "This question doesn’t apply to me" option when feature flag is OFF', () => {
-    const { schema: pageSchema, uiSchema: pageUiSchema } = getPage();
-
-    const { container } = render(
-      <Provider store={defaultStore}>
-        <DefinitionTester
-          schema={pageSchema}
-          definitions={formConfig.defaultDefinitions}
-          uiSchema={pageUiSchema}
-          data={{ vaDependentsNetWorthAndPension: false }}
-        />
-      </Provider>,
-    );
-
-    const options = $$('va-radio-option', container);
-    const labels = options.map(opt => opt.getAttribute('label'));
-    expect(labels).to.include('This question doesn’t apply to me');
-  });
-
-  it('should NOT show "This question doesn’t apply to me" option when feature flag is ON', () => {
-    const { schema: pageSchema, uiSchema: pageUiSchema } = getPage();
-
-    const { container } = render(
-      <Provider store={defaultStore}>
-        <DefinitionTester
-          schema={pageSchema}
-          definitions={formConfig.defaultDefinitions}
-          uiSchema={pageUiSchema}
-          data={{ vaDependentsNetWorthAndPension: true }}
-        />
-      </Provider>,
-    );
-
-    const options = $$('va-radio-option', container);
-    const labels = options.map(opt => opt.getAttribute('label'));
-    expect(labels).to.not.include('This question doesn’t apply to me');
   });
 });

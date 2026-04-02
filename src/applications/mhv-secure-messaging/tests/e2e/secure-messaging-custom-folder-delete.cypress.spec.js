@@ -1,7 +1,12 @@
 import SecureMessagingSite from './sm_site/SecureMessagingSite';
 import PatientInboxPage from './pages/PatientInboxPage';
 import PatientMessageCustomFolderPage from './pages/PatientMessageCustomFolderPage';
-import { AXE_CONTEXT, Locators, Data } from './utils/constants';
+import {
+  AXE_CONTEXT,
+  Locators,
+  Data,
+  SHADOW_DOM_FOCUS_TIMEOUT,
+} from './utils/constants';
 import FolderLoadPage from './pages/FolderLoadPage';
 import mockFolders from './fixtures/folder-response.json';
 
@@ -45,7 +50,7 @@ describe('SM DELETE CUSTOM FOLDER', () => {
 
     cy.findByTestId(Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID)
       .shadow()
-      .find('.va-modal-close')
+      .find('.va-modal-close', SHADOW_DOM_FOCUS_TIMEOUT)
       .should(`be.visible`)
       .and(`be.focused`);
     cy.findByTestId(Locators.FOLDERS.FOLDER_REMOVE_DATA_TEST_ID)

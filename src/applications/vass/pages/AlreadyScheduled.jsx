@@ -23,17 +23,17 @@ const AlreadyScheduled = () => {
 
   const [appointmentDate, appointmentTime] = useMemo(
     () => {
-      if (!appointmentData?.startUTC) {
+      if (!appointmentData?.startUtc) {
         return ['', ''];
       }
-      const date = new Date(appointmentData.startUTC);
+      const date = new Date(appointmentData.startUtc);
       const timezone = getBrowserTimezone();
       return [
         formatInTimeZone(date, timezone, 'MM/dd/yyyy'),
         formatInTimeZone(date, timezone, 'hh:mm a'),
       ];
     },
-    [appointmentData?.startUTC],
+    [appointmentData?.startUtc],
   );
 
   const handleCancelAppointment = e => {

@@ -113,6 +113,36 @@ export const pageHooks = {
     });
   },
 
+  'report-a-divorce/:index/former-spouse-income': ({ afterHook }) => {
+    afterHook(() => {
+      cy.get('@testData').then(data => {
+        if (data?.doesLiveWithSpouse?.spouseIncome) {
+          cy.selectYesNoVaRadioOption(
+            'root_reportDivorce_spouseIncome',
+            data.doesLiveWithSpouse.spouseIncome,
+          );
+        }
+        cy.injectAxeThenAxeCheck();
+        cy.clickFormContinue();
+      });
+    });
+  },
+
+  '686-report-dependent-death/:index/dependent-income': ({ afterHook }) => {
+    afterHook(() => {
+      cy.get('@testData').then(data => {
+        if (data?.deaths?.[0]?.deceasedDependentIncome) {
+          cy.selectYesNoVaRadioOption(
+            'root_deceasedDependentIncome',
+            data.deaths[0].deceasedDependentIncome,
+          );
+        }
+        cy.injectAxeThenAxeCheck();
+        cy.clickFormContinue();
+      });
+    });
+  },
+
   'veteran-marriage-history/:index/date-marriage-started': ({ afterHook }) => {
     afterHook(() => {
       cy.get('@testData').then(data => {

@@ -9,6 +9,7 @@ import {
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { getAppUrl } from 'platform/utilities/registry-helpers';
 import { ConfirmationView } from 'platform/forms-system/src/js/components/ConfirmationView';
+import { ConfirmationPageGetHelp } from '../components/ConfirmationPageGetHelp';
 
 const PrintThisConfirmationPage = () => {
   const onPrintPageClick = () => {
@@ -138,8 +139,7 @@ export const ConfirmationPage2 = ({ route }) => {
       <CheckStatus statusURL={statusURL} />
       <ConfirmationView.HowToContact />
       <ConfirmationView.GoBackLink text="Go back to VA.gov" />
-
-      <ConfirmationView.NeedHelp />
+      <ConfirmationPageGetHelp />
     </ConfirmationView>
   );
 };

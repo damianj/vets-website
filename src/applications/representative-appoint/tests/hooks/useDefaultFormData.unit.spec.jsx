@@ -28,6 +28,7 @@ describe('`useDefaultFormData` hook', () => {
         featureToggles: {
           /* eslint-disable camelcase */
           appoint_a_representative_enable_v2_features: false,
+          accredited_representative_portal_individual_accept: false,
         },
       }),
       subscribe: () => {},
@@ -49,6 +50,7 @@ describe('`useDefaultFormData` hook', () => {
       'view:isLoggedIn': false,
       'view:isUserLOA3': false,
       'view:v2IsEnabled': false,
+      'view:individualAcceptEnabled': false,
     };
 
     subject({ mockStore });
@@ -64,6 +66,7 @@ describe('`useDefaultFormData` hook', () => {
       'view:isLoggedIn': true,
       'view:isUserLOA3': true,
       'view:v2IsEnabled': false,
+      'view:individualAcceptEnabled': false,
     };
 
     subject({ mockStore });

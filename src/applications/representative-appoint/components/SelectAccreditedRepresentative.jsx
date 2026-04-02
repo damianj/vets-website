@@ -212,6 +212,7 @@ const SelectAccreditedRepresentative = props => {
               formData?.userIsDigitalSubmitEligible &&
               formData?.['view:v2IsEnabled']
             }
+            individualAcceptEnabled={formData?.['view:individualAcceptEnabled']}
           />
         ))}
       <p className="vads-u-margin-y--4">

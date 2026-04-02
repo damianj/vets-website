@@ -12,6 +12,7 @@ import {
   formatResponseString,
   truncateResponseString,
   removeDoubleBars,
+  toSentenceCase,
 } from '../utils';
 
 const MAX_DESCRIPTION_LENGTH = 186;
@@ -97,11 +98,13 @@ const Result = ({
   const searchResultsUiUpdateEnabled = useSelector(
     state => toggleValues(state)[FEATURE_FLAG_NAMES.searchResultsUiUpdate],
   );
-  const strippedTitle = removeDoubleBars(
-    formatResponseString(result?.title, true),
-  );
 
   if (result?.title && result?.url) {
+    const strippedTitle = removeDoubleBars(
+      formatResponseString(result.title, true),
+    );
+    const displayTitle = toSentenceCase(strippedTitle);
+
     return (
       <li
         key={result.url}
@@ -122,7 +125,7 @@ const Result = ({
           <va-link
             disable-analytics
             href={replaceWithStagingDomain(result.url)}
-            text={strippedTitle}
+            text={displayTitle}
             onClick={onSearchResultClick({
               bestBet: isBestBet,
               index,

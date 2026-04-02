@@ -83,7 +83,7 @@ const BalanceCard = ({ id, amount, facility, city, date }) => {
         <va-icon
           icon="warning"
           size={3}
-          srtext="Important"
+          srtext="Warning"
           class="icon-color--warning vads-u-padding-right--1"
         />
         {isCurrentBalance ? (

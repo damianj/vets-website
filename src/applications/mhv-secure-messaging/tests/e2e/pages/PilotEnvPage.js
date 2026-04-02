@@ -228,15 +228,14 @@ class PilotEnvPage {
   };
 
   selectTriageGroup = (index = 0) => {
-    // Clear existing value and open the dropdown by clicking the toggle button.
-    // Use force:true on interactions to avoid shadow DOM actionability race conditions.
+    // Re-query the shadow DOM each time instead of using a Cypress alias,
+    // because component re-renders replace the inner <input> element.
+    // force:true bypasses actionability checks that can fail during hydration.
     cy.get('va-combo-box')
       .shadow()
       .find('input')
       .should('not.be.disabled')
-      .as('comboInput');
-
-    cy.get('@comboInput').clear({ force: true });
+      .clear({ force: true });
 
     // Click the toggle button to open the dropdown, then verify it opened.
     // If the list is still hidden, click the input to force it open.
@@ -251,7 +250,10 @@ class PilotEnvPage {
       .find('.usa-combo-box__list')
       .then($list => {
         if ($list.css('display') === 'none') {
-          cy.get('@comboInput').click({ force: true });
+          cy.get('va-combo-box')
+            .shadow()
+            .find('input')
+            .click({ force: true });
         }
       });
 

@@ -11,6 +11,7 @@ export const getSaveInProgressState = createStructuredSelector({
   returnUrl: state => state.form.loadedData.metadata.returnUrl,
   formData: getFormData,
   isLoggedIn: state => state.user.login.currentlyLoggedIn,
+  isUserVerified: state => state.user.profile.verified,
   savedForms: state => state.user.profile.savedForms,
   prefillsAvailable: state => state.user.profile.prefillsAvailable,
   profileIsLoading: state => state.user.profile.loading,

@@ -31,7 +31,7 @@ const DEFAULT_OPTS = {
 
   // titleWithNameUI styling
   piiClassNames:
-    'vads-u-color--black vads-u-margin-top--0 mobile-lg:vads-u-font-size--h2 vads-u-font-size--h3 dd-privacy-hidden',
+    'vads-u-color--black vads-u-margin-top--0 mobile-lg:vads-u-font-size--h2 vads-u-font-size--h3 dd-privacy-mask',
 };
 
 /**

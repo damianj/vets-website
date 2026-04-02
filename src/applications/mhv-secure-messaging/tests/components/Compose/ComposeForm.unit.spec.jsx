@@ -358,6 +358,22 @@ describe('Compose form component', () => {
     expect(messageInputError).to.equal('Message body cannot be blank.');
   });
 
+  it('tracks Datadog action when category validation fails on send', async () => {
+    const addActionSpy = sandbox.spy(datadogRum, 'addAction');
+    const screen = setup(initialState, Paths.COMPOSE);
+
+    const sendButton = screen.getByTestId('send-button');
+    fireEvent.click(sendButton);
+
+    await waitFor(() => {
+      expect(
+        addActionSpy.calledWith('Category validation error', {
+          reason: 'Category required but not selected',
+        }),
+      ).to.be.true;
+    });
+  });
+
   it('displays draft page if path is /draft/:id', async () => {
     const customDraftMessage = {
       ...draftMessage,

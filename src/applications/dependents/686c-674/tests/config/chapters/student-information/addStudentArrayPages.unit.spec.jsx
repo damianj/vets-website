@@ -13,6 +13,8 @@ import { addStudentsOptions } from '../../../../config/chapters/674/addStudentsA
 import { isStudentItemIncomplete } from '../../../../config/chapters/674/addStudentsSetup';
 import { calculateStudentAssetTotal } from '../../../../config/chapters/674/helpers';
 
+import { TASK_KEYS } from '../../../../config/constants';
+
 const defaultStore = createCommonStore();
 
 const arrayPath = 'studentInformation';
@@ -478,7 +480,7 @@ describe('674 Add students: Student income', () => {
     );
 
     expect($$('va-radio', container).length).to.equal(1);
-    expect($$('va-radio-option', container).length).to.equal(3);
+    expect($$('va-radio-option', container).length).to.equal(2);
   });
 });
 
@@ -647,7 +649,19 @@ describe('674 Add students: Student education benefits payment start date ', () 
   const {
     schema,
     uiSchema,
+    depends,
   } = formConfig.chapters.report674.pages.addStudentsPartTen;
+
+  const buildData = (programType, tuitionPaidByGov = false) => ({
+    'view:selectable686Options': { [TASK_KEYS.report674]: true },
+    'view:addOrRemoveDependents': { add: true },
+    studentInformation: [
+      {
+        typeOfProgramOrBenefit: programType,
+        tuitionIsPaidByGovAgency: tuitionPaidByGov,
+      },
+    ],
+  });
 
   it('should render', () => {
     const { container } = render(
@@ -665,13 +679,51 @@ describe('674 Add students: Student education benefits payment start date ', () 
 
     expect($$('va-memorable-date', container).length).to.equal(1);
   });
+
+  it('should show page for ch35 program type', () => {
+    const data = buildData('ch35');
+    expect(depends(data, 0)).to.be.true;
+  });
+  it('should show page for Fry program type', () => {
+    const data = buildData('fry');
+    expect(depends(data, 0)).to.be.true;
+  });
+  it('should show page for FECA program type', () => {
+    const data = buildData('feca');
+    expect(depends(data, 0)).to.be.true;
+  });
+  it('should show page if fully funded by government', () => {
+    const data = buildData('none', true);
+    expect(depends(data, 0)).to.be.true;
+  });
+
+  it('should not show page if not fully funded by government and program type is not expected', () => {
+    const data = buildData('ch33');
+    expect(depends(data, 0)).to.be.false;
+  });
+  it('should not show page if not fully funded by government', () => {
+    const data = buildData('none');
+    expect(depends(data, 0)).to.be.false;
+  });
 });
 
 describe('674 Add students: Program name ', () => {
   const {
     schema,
     uiSchema,
+    depends,
   } = formConfig.chapters.report674.pages.addStudentsPartNine;
+
+  const buildData = (programType, tuitionPaidByGov = false) => ({
+    'view:selectable686Options': { [TASK_KEYS.report674]: true },
+    'view:addOrRemoveDependents': { add: true },
+    studentInformation: [
+      {
+        typeOfProgramOrBenefit: programType,
+        tuitionIsPaidByGovAgency: tuitionPaidByGov,
+      },
+    ],
+  });
 
   it('should render', () => {
     const { container } = render(
@@ -688,6 +740,32 @@ describe('674 Add students: Program name ', () => {
     );
 
     expect($$('va-text-input', container).length).to.equal(1);
+  });
+
+  it('should show page for ch35 program type', () => {
+    const data = buildData('ch35');
+    expect(depends(data, 0)).to.be.true;
+  });
+  it('should show page for Fry program type', () => {
+    const data = buildData('fry');
+    expect(depends(data, 0)).to.be.true;
+  });
+  it('should show page for FECA program type', () => {
+    const data = buildData('feca');
+    expect(depends(data, 0)).to.be.true;
+  });
+  it('should show page if fully funded by government', () => {
+    const data = buildData('none', true);
+    expect(depends(data, 0)).to.be.true;
+  });
+
+  it('should not show page if not fully funded by government and program type is not expected', () => {
+    const data = buildData('ch33');
+    expect(depends(data, 0)).to.be.false;
+  });
+  it('should not show page if not fully funded by government', () => {
+    const data = buildData('none');
+    expect(depends(data, 0)).to.be.false;
   });
 });
 

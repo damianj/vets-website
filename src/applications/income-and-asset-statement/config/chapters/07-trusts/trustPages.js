@@ -549,7 +549,6 @@ const supportingDocumentUpload = {
         formNumber: FORM_NUMBER,
         skipUpload: environment.isLocalhost(),
         // server response triggers required validation.
-        // skipUpload needed to bypass in local environment
       }),
       'ui:validations': [
         (errors, fieldData /* files array or single file */) => {

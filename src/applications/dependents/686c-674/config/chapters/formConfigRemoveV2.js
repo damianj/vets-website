@@ -78,8 +78,7 @@ export const reportDivorce = {
       depends: formData =>
         noV3Picklist(formData) &&
         isChapterFieldRequired(formData, TASK_KEYS.reportDivorce) &&
-        isRemovingDependents(formData) &&
-        !formData?.vaDependentsNetWorthAndPension,
+        isRemovingDependents(formData),
       title: 'Divorced spouse’s income',
       path: 'report-a-divorce/former-spouse-income',
       uiSchema: formerSpouseInformationPartThree.uiSchema,
@@ -297,8 +296,7 @@ export const deceasedDependents = {
         depends: formData =>
           noV3Picklist(formData) &&
           isChapterFieldRequired(formData, TASK_KEYS.reportDeath) &&
-          isRemovingDependents(formData) &&
-          !formData?.vaDependentsNetWorthAndPension,
+          isRemovingDependents(formData),
       }),
     })),
   },
@@ -371,8 +369,7 @@ export const reportChildMarriage = {
             formData,
             TASK_KEYS.reportMarriageOfChildUnder18,
           ) &&
-          isRemovingDependents(formData) &&
-          !formData?.vaDependentsNetWorthAndPension,
+          isRemovingDependents(formData),
       }),
     })),
   },
@@ -454,8 +451,7 @@ export const reportChildStoppedAttendingSchool = {
               formData,
               TASK_KEYS.reportChild18OrOlderIsNotAttendingSchool,
             ) &&
-            isRemovingDependents(formData) &&
-            !formData?.vaDependentsNetWorthAndPension,
+            isRemovingDependents(formData),
         }),
       }),
     ),

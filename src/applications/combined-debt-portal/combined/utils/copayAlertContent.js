@@ -23,6 +23,7 @@ export const getCopayAlertContent = (
   copay,
   type,
   shouldShowVHAPaymentHistory = false,
+  hasPreviousStatements = false,
 ) => {
   const statementDate = formatDate(
     shouldShowVHAPaymentHistory
@@ -117,7 +118,7 @@ export const getCopayAlertContent = (
         showCallResourceCenter: true,
         bodyText: (
           <p>
-            Your balance on
+            Your balance on{' '}
             <time
               dateTime={statementDate}
               className="vads-u-margin-x--0p5 vads-u-font-weight--bold"
@@ -147,19 +148,22 @@ export const getCopayAlertContent = (
         bodyText: (
           <>
             <p>
-              Your balance is $0 and was updated on
-              <time dateTime={statementDate} className="vads-u-margin-x--0p5">
-                {statementDate}
-              </time>
-              . You can
-              <a href="#statement-list" className="vads-u-margin--0p5">
-                download your previous statements
-              </a>
+              Your balance is $0 and was updated on{' '}
+              <time dateTime={statementDate}>{statementDate}</time>.{' '}
+              {hasPreviousStatements && (
+                <>
+                  You can{' '}
+                  <a href="#statement-list">
+                    download your previous statements
+                  </a>
+                  .
+                </>
+              )}
             </p>
             <p>
               If you receive new charges, we’ll send you a statement in the mail
-              and update your balance. Learn more about
-              <a href="#need-help" className="vads-u-margin--0p5">
+              and update your balance. Learn more about{' '}
+              <a href="#need-help">
                 what to do if you have questions about your balance
               </a>
               .

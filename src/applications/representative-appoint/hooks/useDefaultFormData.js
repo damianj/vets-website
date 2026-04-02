@@ -15,7 +15,7 @@ export const useDefaultFormData = () => {
   const dispatch = useDispatch();
 
   const { veteranFullName } = formData;
-  const { v2IsEnabled } = featureToggles;
+  const { v2IsEnabled, individualAcceptEnabled } = featureToggles;
 
   const setFormData = dataToSet => dispatch(setData(dataToSet));
 
@@ -25,6 +25,7 @@ export const useDefaultFormData = () => {
         'view:isLoggedIn': isLoggedIn,
         'view:isUserLOA3': isUserLOA3,
         'view:v2IsEnabled': v2IsEnabled,
+        'view:individualAcceptEnabled': individualAcceptEnabled,
       };
 
       setFormData({
@@ -33,6 +34,12 @@ export const useDefaultFormData = () => {
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isLoggedIn, veteranFullName, isUserLOA3, v2IsEnabled],
+    [
+      isLoggedIn,
+      veteranFullName,
+      isUserLOA3,
+      v2IsEnabled,
+      individualAcceptEnabled,
+    ],
   );
 };
