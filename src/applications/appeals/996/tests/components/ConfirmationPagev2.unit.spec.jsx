@@ -60,7 +60,7 @@ describe('ConfirmationPageV2', () => {
     expect(items.length).to.eq(6);
     expect(
       items.map((el, index) => el[index === 3 ? 'innerHTML' : 'textContent']),
-    ).to.deep.equal(['', 'Not answered', '', '', ',  ', '']);
+    ).to.deep.equal(['', 'Not answered', '', '', '', '']);
   });
 
   it('should render the confirmation page with evidence', () => {
@@ -85,27 +85,27 @@ describe('ConfirmationPageV2', () => {
 
     // expect($('va-loading-indicator', container)).to.exist;
     const h2s = $$('h2', container);
-    expect(h2s.length).to.eq(5);
+    expect(h2s.length).to.eq(6);
     expect(h2s.map(el => el.textContent)).to.deep.equal([
       // `You submitted your Board Appeal request on ${date}`,
       'Request a Higher-Level Review', // print only header
       'Your Higher Level Review request submission is in progress',
+      'Print a copy of your Higher-Level Review',
       'What to expect next',
       'How to contact us if you have questions',
       'Your Higher-Level Review request',
     ]);
 
     const h3s = $$('h3', container);
-    expect(h3s.length).to.eq(4); // 5 with PDF download code added
+    expect(h3s.length).to.eq(3); // 4 with PDF download code added
     expect(h3s.map(el => el.textContent)).to.deep.equal([
       // 'Save a PDF copy of your Board Appeal request',
-      'Print this confirmation page',
       'Personal information',
       'Issues for review',
       'Informal conference',
     ]);
     expect($$('h4', container).length).to.eq(0);
-    expect($$('ul', container).length).to.eq(3);
+    expect($$('ul', container).length).to.eq(2);
 
     const items = $$('.dd-privacy-hidden[data-dd-action-name]', container);
     expect(items.length).to.eq(17);
@@ -116,12 +116,12 @@ describe('ConfirmationPageV2', () => {
       ),
     ).to.deep.equal([
       'Michael Thomas Wazowski, Esq.',
-      '●●●–●●–8765V A file number ending with 8 7 6 5',
+      '***–**–8765V A file number ending with 8 7 6 5',
       'February 3, 1990',
       'No',
       '<va-telephone contact="5558001111" extension="2345" not-clickable="true"></va-telephone>',
       'user@example.com',
-      '123 Main StNew York, NY 30012',
+      '123 Main StSuite #1200Box 45678901234New York, NY30012United States',
       'tinnitusDecision date: Disagree with the service connection, the effective date of award, your evaluation of my condition, and this is tinnitus entry',
       'left kneeDecision date: Disagree with the effective date of award',
       'right shoulderDecision date: Disagree with your evaluation of my condition and this is right shoulder entry',

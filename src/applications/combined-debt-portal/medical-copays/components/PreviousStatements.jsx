@@ -1,42 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { showVHAPaymentHistory } from '../../combined/utils/helpers';
 import HTMLStatementLink from './HTMLStatementLink';
 
-const PreviousStatements = ({ selectedId }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
-
-  const copayDetail =
-    useSelector(state => state.combinedPortal.mcp.selectedStatement) || {};
-  const allStatements =
-    useSelector(state => state.combinedPortal.mcp.statements) || [];
-
-  const previousStatements = shouldShowVHAPaymentHistory
-    ? copayDetail?.attributes?.recentStatements || []
-    : (() => {
-        // Legacy logic for old data
-        const selectedCopay = allStatements.find(({ id }) => id === selectedId);
-        const facilityId = selectedCopay?.station?.stationNumber;
-
-        return allStatements
-          .filter(
-            statement =>
-              statement.station?.stationNumber === facilityId &&
-              statement.id !== selectedId,
-          )
-          .sort((a, b) => {
-            const dateA = new Date(a.pSStatementDateOutput);
-            const dateB = new Date(b.pSStatementDateOutput);
-            return dateB - dateA;
-          });
-      })();
-
-  if (previousStatements.length === 0) {
-    return null;
-  }
+const PreviousStatements = ({ previousStatements, isVHA }) => {
+  if (!previousStatements?.length) return null;
 
   return (
     <article data-testid="view-statements" className="vads-u-padding--0">
@@ -55,9 +22,7 @@ const PreviousStatements = ({ selectedId }) => {
           <HTMLStatementLink
             id={statement.id}
             statementDate={
-              shouldShowVHAPaymentHistory
-                ? statement.invoiceDate
-                : statement.pSStatementDateOutput
+              isVHA ? statement.invoiceDate : statement.pSStatementDateOutput
             }
             key={statement.id}
           />
@@ -68,7 +33,8 @@ const PreviousStatements = ({ selectedId }) => {
 };
 
 PreviousStatements.propTypes = {
-  selectedId: PropTypes.string,
+  isVHA: PropTypes.bool,
+  previousStatements: PropTypes.array,
 };
 
 export default PreviousStatements;

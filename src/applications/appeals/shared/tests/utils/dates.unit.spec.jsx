@@ -10,6 +10,7 @@ import {
   getReadableDate,
   getCurrentUTCStartOfDay,
   formatDateToReadableString,
+  formatMonthYearToReadableString,
 } from '../../utils/dates';
 
 const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -181,5 +182,41 @@ describe('formatDateToReadableString', () => {
       const result = formatDateToReadableString(decemberDate);
       expect(result).to.equal('Dec. 10, 2025');
     });
+  });
+});
+
+describe('formatMonthYearToReadableString', () => {
+  it('should return the input for null, undefined, or empty string', () => {
+    expect(formatMonthYearToReadableString(null)).to.be.null;
+    expect(formatMonthYearToReadableString(undefined)).to.be.undefined;
+    expect(formatMonthYearToReadableString('')).to.equal('');
+  });
+
+  it('should return the input when length is not 7', () => {
+    expect(formatMonthYearToReadableString('2025')).to.equal('2025');
+    expect(formatMonthYearToReadableString('2025-01-01')).to.equal(
+      '2025-01-01',
+    );
+  });
+
+  it('should not abbreviate long-form months per VA.gov style guide', () => {
+    expect(formatMonthYearToReadableString('2025-03')).to.equal('March 2025');
+    expect(formatMonthYearToReadableString('2025-04')).to.equal('April 2025');
+    expect(formatMonthYearToReadableString('2025-05')).to.equal('May 2025');
+    expect(formatMonthYearToReadableString('2025-06')).to.equal('June 2025');
+    expect(formatMonthYearToReadableString('2025-07')).to.equal('July 2025');
+  });
+
+  it('should abbreviate short-form months with a period', () => {
+    expect(formatMonthYearToReadableString('2025-01')).to.equal('Jan. 2025');
+    expect(formatMonthYearToReadableString('2025-02')).to.equal('Feb. 2025');
+    expect(formatMonthYearToReadableString('2025-08')).to.equal('Aug. 2025');
+    expect(formatMonthYearToReadableString('2025-10')).to.equal('Oct. 2025');
+    expect(formatMonthYearToReadableString('2025-11')).to.equal('Nov. 2025');
+    expect(formatMonthYearToReadableString('2025-12')).to.equal('Dec. 2025');
+  });
+
+  it('should abbreviate September as Sept. per VA.gov style guide', () => {
+    expect(formatMonthYearToReadableString('2025-09')).to.equal('Sept. 2025');
   });
 });

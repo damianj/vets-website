@@ -374,6 +374,7 @@ const AddFilesForm = ({
           encrypted={encrypted}
           data-dd-privacy="mask"
           data-dd-action-name="file upload input"
+          disablePasswordSubmitButtonPattern
         >
           <VaSelect
             required

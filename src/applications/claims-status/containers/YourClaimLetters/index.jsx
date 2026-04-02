@@ -12,7 +12,7 @@ import WIP from '../../components/WIP';
 import { ITEMS_PER_PAGE } from '../../constants';
 import { isLoadingFeatures, showClaimLettersFeature } from '../../selectors';
 import NoLettersContent from './errorComponents/NoLettersContent';
-import ServerErrorContent from './errorComponents/ServerErrorContent';
+import ServerErrorContent from '../../components/errors/ServerErrorContent';
 import UnauthenticatedContent from './errorComponents/UnauthenticatedContent';
 import { setDocumentTitle } from '../../utils/helpers';
 import { setPageFocus } from '../../utils/page';

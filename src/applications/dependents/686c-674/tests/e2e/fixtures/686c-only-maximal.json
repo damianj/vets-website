@@ -1,5 +1,4 @@
 {
-  "vaDependentsNetWorthAndPension": false,
   "doesLiveWithSpouse": {
     "spouseIncome": "Y",
     "spouseDoesLiveWithVeteran": true,
@@ -138,7 +137,7 @@
   ],
   "childrenToAdd": [
     {
-      "incomeInLastYear": "NA",
+      "incomeInLastYear": "N",
       "marriageEndDescription": "Other",
       "marriageEndDate": "2021-08-18",
       "marriageEndReason": "Other",
@@ -256,7 +255,7 @@
       },
       "remarks": "asdf",
       "benefitPaymentDate": "2021-01-19",
-      "studentIncome": "NA",
+      "studentIncome": "N",
       "fullName": {
         "first": "DAN",
         "last": "DIEFENDORF-MOCK"
@@ -348,7 +347,7 @@
   ],
   "childStoppedAttendingSchool": [
     {
-      "dependentIncome": "NA",
+      "dependentIncome": "N",
       "dateChildLeftSchool": "1991-03-19",
       "fullName": {
         "first": "John",

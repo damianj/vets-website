@@ -60,7 +60,7 @@ describe('VAOS Hook: useOHScheduling', () => {
     setEnvironment(ENVIRONMENTS.VAGOVPROD);
     useSelectorStub.onCall(0).returns(true); // selectFeatureUseVpg
     useSelectorStub.onCall(1).returns({}); // getFormData
-    getTypeOfCareStub.returns({ idV2: 'primaryCare' });
+    getTypeOfCareStub.returns({ idV2: 'amputation' });
 
     const { result } = renderHook(() => useOHScheduling());
 

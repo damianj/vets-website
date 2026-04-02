@@ -168,6 +168,72 @@ describe('Your claims', () => {
 
     cy.axeCheck();
   });
+
+  describe('Intents to file section', () => {
+    context('when cstIntentsToFile feature toggle is enabled', () => {
+      beforeEach(() => {
+        mockFeatureToggles({ cstIntentsToFile: true });
+        mockClaimsEndpoint();
+        mockAppealsEndpoint();
+        mockStemEndpoint();
+
+        cy.login();
+        cy.visit('/track-claims');
+        cy.injectAxe();
+      });
+
+      it('should display the intents to file section heading', () => {
+        cy.findByRole('heading', {
+          name: 'Your intents to file',
+        });
+
+        cy.axeCheck();
+      });
+
+      it('should display the intents to file link with correct href', () => {
+        cy.get('.intent-to-file-section va-link')
+          .should(
+            'have.attr',
+            'href',
+            '/track-claims/your-claims/intent-to-file',
+          )
+          .and(
+            'have.attr',
+            'text',
+            'Review your intents to file or learn how to start one',
+          );
+
+        cy.axeCheck();
+      });
+
+      it('should display the intents to file description text', () => {
+        cy.findByText(
+          'An intent to file sets a potential start date for your VA disability, pension, or Dependency and Indemnity Compensation (DIC) benefits.',
+        );
+
+        cy.axeCheck();
+      });
+    });
+
+    context('when cstIntentsToFile feature toggle is disabled', () => {
+      beforeEach(() => {
+        mockFeatureToggles({ cstIntentsToFile: false });
+        mockClaimsEndpoint();
+        mockAppealsEndpoint();
+        mockStemEndpoint();
+
+        cy.login();
+        cy.visit('/track-claims');
+        cy.injectAxe();
+      });
+
+      it('should not display the intents to file section', () => {
+        cy.get('.intent-to-file-section').should('not.exist');
+
+        cy.axeCheck();
+      });
+    });
+  });
 });
 
 describe('Feature flag: cstClaimsListFilter', () => {

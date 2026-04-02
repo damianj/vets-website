@@ -29,6 +29,9 @@
       "evidenceSubmission": {
         "evidenceType": [
           "none"
+        ],
+        "treatmentLocations": [
+          "VA MEDICAL CENTERS (VAMC) AND COMMUNITY-BASED OUTPATIENT CLINICS (CBOC)"
         ]
       }
     }

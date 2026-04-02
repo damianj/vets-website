@@ -1,14 +1,19 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { parseISO } from 'date-fns';
+import { datadogRum } from '@datadog/browser-rum';
 import {
   buildRadiologyResults,
   convertMhvRadiologyRecord,
   convertCvixRadiologyRecord,
   convertScdfImagingStudy,
   mergeImagingStudiesIntoLabs,
+  computeMergeStats,
   mergeRadiologyLists,
 } from '../../util/imagesUtil';
-import { EMPTY_FIELD } from '../../util/constants';
+import { EMPTY_FIELD, loincCodes } from '../../util/constants';
+
+const RAD_TYPE = loincCodes.UHD_RADIOLOGY;
 
 describe('buildRadiologyResults', () => {
   const REPORT = 'The report.';
@@ -322,8 +327,20 @@ describe('convertScdfImagingStudy', () => {
 });
 
 describe('mergeImagingStudiesIntoLabs', () => {
+  let addActionStub;
+
+  beforeEach(() => {
+    addActionStub = sinon.stub(datadogRum, 'addAction');
+  });
+
+  afterEach(() => {
+    addActionStub.restore();
+  });
+
   it('returns labsList unchanged when imagingStudies is empty', () => {
-    const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:15:00Z' }];
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:15:00Z' },
+    ];
     const result = mergeImagingStudiesIntoLabs(labs, []);
     expect(result).to.equal(labs);
   });
@@ -333,9 +350,14 @@ describe('mergeImagingStudiesIntoLabs', () => {
     expect(result).to.deep.equal([]);
   });
 
-  it('matches records within tolerence window and copies imaging fields', () => {
+  it('matches records within tolerance window and copies imaging fields', () => {
     const labs = [
-      { id: 'lab-1', sortDate: '2025-01-10T09:15:00Z', name: 'CHEST XRAY' },
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:15:00Z',
+        name: 'CHEST XRAY',
+      },
     ];
     const studies = [
       {
@@ -355,7 +377,12 @@ describe('mergeImagingStudiesIntoLabs', () => {
 
   it('defaults imageCount to 0 when imaging study has no imageCount', () => {
     const labs = [
-      { id: 'lab-1', sortDate: '2025-01-10T09:15:00Z', name: 'CHEST XRAY' },
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:15:00Z',
+        name: 'CHEST XRAY',
+      },
     ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:15:20Z', status: 'available' },
@@ -365,7 +392,9 @@ describe('mergeImagingStudiesIntoLabs', () => {
   });
 
   it('does not match records outside the tolerance window', () => {
-    const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
     ];
@@ -374,7 +403,9 @@ describe('mergeImagingStudiesIntoLabs', () => {
   });
 
   it('matches at exactly 30 seconds apart', () => {
-    const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:30Z', status: 'available' },
     ];
@@ -383,7 +414,9 @@ describe('mergeImagingStudiesIntoLabs', () => {
   });
 
   it('does not match at 31 seconds apart', () => {
-    const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
     ];
@@ -393,8 +426,8 @@ describe('mergeImagingStudiesIntoLabs', () => {
 
   it('uses each imaging study at most once (1:1 matching)', () => {
     const labs = [
-      { id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' },
-      { id: 'lab-2', sortDate: '2025-01-10T09:00:25Z' },
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE, sortDate: '2025-01-10T09:00:25Z' },
     ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
@@ -407,8 +440,12 @@ describe('mergeImagingStudiesIntoLabs', () => {
 
   it('skips labs without sortDate', () => {
     const labs = [
-      { id: 'no-date' },
-      { id: 'with-date', sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'no-date', type: RAD_TYPE },
+      {
+        id: 'with-date',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+      },
     ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
@@ -419,14 +456,16 @@ describe('mergeImagingStudiesIntoLabs', () => {
   });
 
   it('skips imaging studies without rawDate', () => {
-    const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
     const studies = [{ id: 'study-1', status: 'available' }];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
   });
 
   it('skips labs with invalid sortDate', () => {
-    const labs = [{ id: 'lab-1', sortDate: 'not-a-date' }];
+    const labs = [{ id: 'lab-1', type: RAD_TYPE, sortDate: 'not-a-date' }];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:00Z', status: 'available' },
     ];
@@ -434,11 +473,33 @@ describe('mergeImagingStudiesIntoLabs', () => {
     expect(result[0]).to.not.have.property('imagingStudyId');
   });
 
+  it('skips non-radiology labs even when timestamps match', () => {
+    const labs = [
+      {
+        id: 'chem-1',
+        type: 'chemistry',
+        sortDate: '2025-01-10T09:00:00Z',
+      },
+      { id: 'rad-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T09:00:05Z',
+        status: 'available',
+        imageCount: 2,
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    expect(result[0]).to.not.have.property('imagingStudyId');
+    expect(result[1].imagingStudyId).to.equal('study-1');
+  });
+
   it('handles multiple labs matching multiple studies', () => {
     const labs = [
-      { id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' },
-      { id: 'lab-2', sortDate: '2025-01-10T14:00:00Z' },
-      { id: 'lab-3', sortDate: '2025-01-11T10:00:00Z' },
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE, sortDate: '2025-01-10T14:00:00Z' },
+      { id: 'lab-3', type: RAD_TYPE, sortDate: '2025-01-11T10:00:00Z' },
     ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:20Z', status: 'available' },
@@ -452,12 +513,172 @@ describe('mergeImagingStudiesIntoLabs', () => {
   });
 
   it('does not mutate the original labs array', () => {
-    const labs = [{ id: 'lab-1', sortDate: '2025-01-10T09:00:00Z' }];
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
     const studies = [
       { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(labs[0]).to.not.have.property('imagingStudyId');
     expect(result[0].imagingStudyId).to.equal('study-1');
+  });
+
+  it('emits a datadogRum action with merge statistics', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE, sortDate: '2025-01-10T14:00:00Z' },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T09:00:20Z',
+        status: 'available',
+        imageCount: 3,
+      },
+    ];
+    mergeImagingStudiesIntoLabs(labs, studies);
+    expect(addActionStub.calledOnce).to.be.true;
+    const [actionName, stats] = addActionStub.firstCall.args;
+    expect(actionName).to.equal('merge_imaging_studies');
+    expect(stats.reportCount).to.equal(2);
+    expect(stats.studyCount).to.equal(1);
+    expect(stats.matchedCount).to.equal(1);
+    expect(stats.unmatchedReports).to.equal(1);
+    expect(stats.unmatchedStudies).to.equal(0);
+    expect(stats.maxClosestDistanceMs).to.equal(20000);
+    expect(stats.minClosestDistanceMs).to.equal(20000);
+    expect(stats.toleranceMs).to.equal(30000);
+  });
+
+  it('emits stats with zero studies when only radiology reports exist', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    mergeImagingStudiesIntoLabs(labs, []);
+    expect(addActionStub.calledOnce).to.be.true;
+    const [, stats] = addActionStub.firstCall.args;
+    expect(stats.reportCount).to.equal(1);
+    expect(stats.studyCount).to.equal(0);
+    expect(stats.matchedCount).to.equal(0);
+  });
+
+  it('does not emit stats when both lists are empty', () => {
+    mergeImagingStudiesIntoLabs([], []);
+    expect(addActionStub.called).to.be.false;
+  });
+});
+
+describe('computeMergeStats', () => {
+  it('computes correct counts for a mix of matched and unmatched', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE, sortDate: '2025-01-10T14:00:00Z' },
+      { id: 'lab-3', type: RAD_TYPE, sortDate: '2025-01-11T10:00:00Z' },
+    ];
+    // study-1 is 20s from lab-1, study-2 is far from all labs
+    const studies = [
+      { id: 'study-1', rawDate: '2025-01-10T09:00:20Z' },
+      { id: 'study-2', rawDate: '2025-01-12T08:00:00Z' },
+    ];
+    const matchedIds = new Set(['study-1']);
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.reportCount).to.equal(3);
+    expect(stats.studyCount).to.equal(2);
+    expect(stats.matchedCount).to.equal(1);
+    expect(stats.unmatchedReports).to.equal(2);
+    expect(stats.unmatchedStudies).to.equal(1);
+    // study-1 closest is lab-1 at 20s, study-2 closest is lab-3 at 22h
+    expect(stats.minClosestDistanceMs).to.equal(20000);
+    expect(stats.maxClosestDistanceMs).to.be.greaterThan(20000);
+    expect(stats.toleranceMs).to.equal(30000);
+  });
+
+  it('returns null distances when there are no reports', () => {
+    const labs = [];
+    const studies = [{ id: 'study-1', rawDate: '2025-01-12T08:00:00Z' }];
+    const matchedIds = new Set();
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.matchedCount).to.equal(0);
+    expect(stats.minClosestDistanceMs).to.be.null;
+    expect(stats.maxClosestDistanceMs).to.be.null;
+  });
+
+  it('counts near misses within 2x tolerance', () => {
+    // Lab at 09:00:00, unmatched study at 09:00:45 (45s away, within 60s = 2x30s)
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [{ id: 'study-1', rawDate: '2025-01-10T09:00:45Z' }];
+    const matchedIds = new Set();
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.nearMissCount).to.equal(1);
+    expect(stats.unmatchedStudies).to.equal(1);
+    expect(stats.minClosestDistanceMs).to.equal(45000);
+  });
+
+  it('does not count distant unmatched studies as near misses', () => {
+    // Lab at 09:00:00, unmatched study at 10:00:00 (3600s away, well outside 60s)
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [{ id: 'study-1', rawDate: '2025-01-10T10:00:00Z' }];
+    const matchedIds = new Set();
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.nearMissCount).to.equal(0);
+  });
+
+  it('tracks min and max closest distances across multiple studies', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE, sortDate: '2025-01-10T14:00:00Z' },
+    ];
+    // study-1 is 5s from lab-1, study-2 is 25s from lab-2
+    const studies = [
+      { id: 'study-1', rawDate: '2025-01-10T09:00:05Z' },
+      { id: 'study-2', rawDate: '2025-01-10T14:00:25Z' },
+    ];
+    const matchedIds = new Set(['study-1', 'study-2']);
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.minClosestDistanceMs).to.equal(5000);
+    expect(stats.maxClosestDistanceMs).to.equal(25000);
+  });
+
+  it('excludes labs without valid sortDate from reportCount', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE },
+      { id: 'lab-3', type: RAD_TYPE, sortDate: 'not-a-date' },
+    ];
+    const studies = [];
+    const matchedIds = new Set();
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.reportCount).to.equal(1);
+  });
+
+  it('excludes non-radiology labs from reportCount', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'chem-1', type: 'chemistry', sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'path-1', type: 'pathology', sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [];
+    const matchedIds = new Set();
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.reportCount).to.equal(1);
   });
 });

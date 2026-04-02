@@ -298,6 +298,35 @@ describe('ArrayBuilderSummaryPage', () => {
     expect(yesNoElement.getAttribute('data-array-path')).to.equal('employers');
   });
 
+  it('should apply negative top margin to description wrapper when no items and no alerts are visible', () => {
+    const { container } = setupArrayBuilderSummaryPage({
+      arrayData: [],
+      urlParams: '',
+      maxItems: 5,
+    });
+
+    const descriptionWrapper = container.querySelector(
+      '.vads-u-margin-top--neg3',
+    );
+    expect(descriptionWrapper).to.exist;
+    expect(descriptionWrapper.querySelector('va-card')).to.not.exist;
+    expect(descriptionWrapper.querySelector('va-alert')).to.not.exist;
+  });
+
+  it('should not apply negative top margin to description wrapper when items are present', () => {
+    const { container } = setupArrayBuilderSummaryPage({
+      arrayData: [{ name: 'Test' }],
+      urlParams: '',
+      maxItems: 5,
+    });
+
+    const descriptionWrapper = container.querySelector(
+      '.vads-u-margin-top--neg1p5',
+    );
+    expect(descriptionWrapper).to.not.exist;
+    expect(container.querySelector('va-card')).to.exist;
+  });
+
   it('should display appropriately with 1 items', () => {
     const { getText, container, getByText } = setupArrayBuilderSummaryPage({
       arrayData: [{ name: 'Test' }],

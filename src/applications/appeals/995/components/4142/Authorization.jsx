@@ -423,14 +423,14 @@ const Authorization = ({
             <strong>Purpose</strong>: Determining my eligibility for benefits,
             and whether you can manage such benefits
           </p>
-          <p className="vads-u-margin-bottom--2">
+          <p className="vads-u-margin-bottom--3">
             Although the information we obtain with this authorization is almost
             never used for any purpose other than those stated in this page, the
             information may be disclosed by VA without your consent if
             authorized by Federal laws such as the Privacy Act.
           </p>
           {privacyModalButton2}
-          <p>
+          <p className="vads-u-margin-top--3">
             <strong>Expires</strong>: This authorization is good for 12 months
             from the date this form is submitted.
           </p>

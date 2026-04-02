@@ -32,6 +32,7 @@ const ACTIVE_TOGGLES = {
   cstClaimsListFilter: 'cst_claims_list_filter',
   cstAlertImprovementsEvidenceRequests:
     'cst_alert_improvements_evidence_requests',
+  cstIntentsToFile: 'cst_intents_to_file',
 };
 
 /**

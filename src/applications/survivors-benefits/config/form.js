@@ -85,6 +85,25 @@ import IncorrectForm from '../containers/IncorrectForm';
 import { transform } from './submit-transformer';
 // import prefillTransformer from './prefill-transformer';
 
+const getSeparationDetailsDepends = formData => {
+  const isSurvivingSpouseSeparatedFromVeteran =
+    formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
+    formData.livedContinuouslyWithVeteran === false;
+
+  if (!isSurvivingSpouseSeparatedFromVeteran) return false;
+
+  const {
+    survivorsBenefitsForm2025VersionEnabled,
+    separationDueToAssignedReasons,
+  } = formData;
+
+  if (survivorsBenefitsForm2025VersionEnabled) {
+    return separationDueToAssignedReasons === 'OTHER';
+  }
+
+  return Boolean(separationDueToAssignedReasons);
+};
+
 /** @type {FormConfig} */
 const formConfig = {
   rootUrl: manifest.rootUrl,
@@ -359,7 +378,7 @@ const formConfig = {
         },
         reasonForSeparation: {
           path: 'household/reason-for-separation',
-          title: 'Reason for separation',
+          title: 'Reason for living apart',
           depends: formData =>
             formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
             formData.livedContinuouslyWithVeteran === false,
@@ -369,10 +388,7 @@ const formConfig = {
         separationDetails: {
           path: 'household/separation-details',
           title: 'Separation details',
-          depends: formData =>
-            formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-            formData.livedContinuouslyWithVeteran === false &&
-            formData.separationDueToAssignedReasons,
+          depends: formData => getSeparationDetailsDepends(formData),
           uiSchema: separationDetails.uiSchema,
           schema: separationDetails.schema,
         },

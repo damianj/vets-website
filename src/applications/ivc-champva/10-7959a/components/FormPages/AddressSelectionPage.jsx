@@ -111,6 +111,7 @@ const AddressSelectionPage = props => {
           label={OPTION_NO_LABEL}
           value={NOT_SHARED}
           checked={currentValue === NOT_SHARED}
+          data-dd-privacy="mask"
         />
         {addressOpts.map(({ label, val }) => (
           <VaRadioOption
@@ -119,7 +120,7 @@ const AddressSelectionPage = props => {
             label={`${OPTION_YES_LABEL} ${label}`}
             value={val}
             checked={val === currentValue}
-            data-dd-privacy="hidden"
+            data-dd-privacy="mask"
           />
         ))}
       </>

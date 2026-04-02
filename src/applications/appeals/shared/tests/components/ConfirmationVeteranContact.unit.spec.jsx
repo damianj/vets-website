@@ -20,7 +20,7 @@ describe('ConfirmationVeteranContact', () => {
     ).to.deep.equal([
       '<va-telephone contact="5558001111" extension="2345" not-clickable="true"></va-telephone>',
       'user@example.com',
-      '123 Main StNew York, NY 30012',
+      '123 Main StSuite #1200Box 4567890New York, NY30012United States',
     ]);
   });
 
@@ -43,7 +43,7 @@ describe('ConfirmationVeteranContact', () => {
       '<va-telephone contact="5558002222" extension="5678" not-clickable="true"></va-telephone>',
       '<va-telephone contact="5558001111" extension="2345" not-clickable="true"></va-telephone>',
       'user@example.com',
-      '123 Main StNew York, NY 30012',
+      '123 Main StSuite #1200Box 4567890New York, NY30012United States',
     ]);
   });
 

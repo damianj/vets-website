@@ -1,58 +1,108 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { expect } from 'chai';
-import { $$ } from '@department-of-veterans-affairs/platform-forms-system/ui';
+import {
+  $,
+  $$,
+} from '@department-of-veterans-affairs/platform-forms-system/ui';
 import { LivingSituation } from '../../components/LivingSituation';
+import {
+  housingRiskTitle,
+  livingSituationTitle,
+  otherHousingRisksLabel,
+  pointOfContactNameLabel,
+  pointOfContactPhoneLabel,
+} from '../../content/livingSituation';
 
 describe('LivingSituation', () => {
-  it('should render the living situation questions', () => {
-    const data = { housingRisk: true };
-    const { container } = render(<LivingSituation data={data} />);
-    expect($$('li', container).length).to.eq(4);
+  describe('when housingRisk is false', () => {
+    it('should render only the housing risk question with No', () => {
+      const data = { housingRisk: false };
+      const { container } = render(<LivingSituation data={data} />);
+
+      const dts = $$('dt', container);
+      const dds = $$('dd', container);
+
+      expect(dts.length).to.equal(1);
+      expect(dts[0].textContent).to.equal(housingRiskTitle);
+      expect(dds[0].textContent).to.equal('No');
+    });
   });
 
-  it('should prevent submission & show error if none & any other option selected', () => {
-    const data = { housingRisk: false };
-    const { container } = render(<LivingSituation data={data} />);
-    expect($$('li', container).length).to.eq(1);
-  });
+  describe('when housingRisk is true', () => {
+    it('should render the proper content when some fields are skipped', () => {
+      const data = {
+        housingRisk: true,
+        livingSituation: { friendOrFamily: true },
+      };
 
-  it('should render the other living situation question with nothing entered', () => {
-    const data = { housingRisk: true, livingSituation: { other: true } };
-    const { container } = render(<LivingSituation data={data} />);
+      const { container } = render(<LivingSituation data={data} />);
 
-    const list = $$('li', container);
-    expect(list.length).to.eq(5);
-    expect(list.map(el => el.textContent)).to.deep.equal([
-      'Are you experiencing homelessness or at risk of becoming homeless?Yes',
-      'Which of these statements best describes your living situation?I have another housing risk not listed here.',
-      'Tell us about other housing risks you’re experiencing.Nothing entered',
-      'Name of your point of contactNothing entered',
-      'Telephone number of your point of contactNothing entered',
-    ]);
-  });
+      const dts = $$('dt', container);
+      const dds = $$('dd', container);
 
-  it('should render the other living situation question', () => {
-    const data = {
-      housingRisk: true,
-      livingSituation: {
-        other: true,
-        friendOrFamily: true,
-      },
-      otherHousingRisks: 'Lorem ipsum',
-      pointOfContactName: 'John Doe',
-      pointOfContactPhone: '8005551212',
-    };
-    const { container } = render(<LivingSituation data={data} />);
+      expect(dts.length).to.equal(4);
+      expect(dts[0].textContent).to.equal(housingRiskTitle);
+      expect(dds[0].textContent).to.equal('Yes');
+      expect(dts[1].textContent).to.equal(livingSituationTitle);
+      expect(dts[2].textContent).to.equal(pointOfContactNameLabel);
+      expect(dds[2].textContent).to.equal('Nothing entered');
+      expect(dts[3].textContent).to.equal(pointOfContactPhoneLabel);
+      expect(dds[3].textContent).to.equal('Nothing entered');
+    });
 
-    const list = $$('li', container);
-    expect(list.length).to.eq(5);
-    expect(list.map(el => el.textContent)).to.deep.equal([
-      'Are you experiencing homelessness or at risk of becoming homeless?Yes',
-      'Which of these statements best describes your living situation?I have another housing risk not listed here and I’m staying with a friend or family member',
-      'Tell us about other housing risks you’re experiencing.Lorem ipsum',
-      'Name of your point of contactJohn Doe',
-      'Telephone number of your point of contact', // number inside va-telephone
-    ]);
+    it('should render "None selected" when no living situations are selected', () => {
+      const data = { housingRisk: true, livingSituation: {} };
+      const { container } = render(<LivingSituation data={data} />);
+
+      const dds = $$('dd', container);
+      expect(dds[1].textContent).to.equal('None selected');
+    });
+
+    it('should render other housing risks when the content is given', () => {
+      const data = {
+        housingRisk: true,
+        livingSituation: { other: true },
+        otherHousingRisks: 'Lorem ipsum',
+      };
+
+      const { container } = render(<LivingSituation data={data} />);
+
+      const dts = $$('dt', container);
+      const dds = $$('dd', container);
+
+      expect(dts.length).to.equal(5);
+      expect(dts[2].textContent).to.equal(otherHousingRisksLabel);
+      expect(dds[2].textContent).to.equal('Lorem ipsum');
+    });
+
+    it('should render "Nothing entered" when otherHousingRisks is empty', () => {
+      const data = {
+        housingRisk: true,
+        livingSituation: { other: true },
+      };
+      const { container } = render(<LivingSituation data={data} />);
+
+      const dds = $$('dd', container);
+      expect(dds[2].textContent).to.equal('Nothing entered');
+    });
+
+    it('should render va-telephone element when pointOfContactPhone is provided', () => {
+      const data = {
+        housingRisk: true,
+        livingSituation: { friendOrFamily: true },
+        pointOfContactName: 'John Doe',
+        pointOfContactPhone: '8005551212',
+      };
+
+      const { container } = render(<LivingSituation data={data} />);
+
+      const dds = $$('dd', container);
+      expect(dds[2].textContent).to.equal('John Doe');
+      expect($('va-telephone', container)).to.exist;
+      expect($('va-telephone', container).getAttribute('contact')).to.equal(
+        '8005551212',
+      );
+    });
   });
 });

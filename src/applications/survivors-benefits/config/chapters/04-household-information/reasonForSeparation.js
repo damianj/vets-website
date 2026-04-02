@@ -3,19 +3,40 @@ import {
   radioUI,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { separationReasonOptions } from '../../../utils/labels';
+import {
+  getSeparationReasonOptions,
+  separationReasonOptions,
+} from '../../../utils/labels';
+
+const getSelectedSeparationReasonOptions = formData =>
+  getSeparationReasonOptions(
+    Boolean(formData?.survivorsBenefitsForm2025VersionEnabled),
+  );
+
+const separationDueToAssignedReasons = radioUI({
+  title: 'What was the reason you lived separately?',
+  labels: separationReasonOptions,
+});
 
 /** @type {PageSchema} */
 export default {
-  title: 'Reason for separation',
-  path: 'household/reason-for-separation',
-  depends: formData => formData.livedContinuouslyWithVeteran === false,
   uiSchema: {
-    ...titleUI('Reason for separation'),
-    separationDueToAssignedReasons: radioUI({
-      title: 'What was the reason for separation?',
-      labels: separationReasonOptions,
-    }),
+    ...titleUI('Reason for living apart'),
+    separationDueToAssignedReasons: {
+      ...separationDueToAssignedReasons,
+      'ui:options': {
+        ...separationDueToAssignedReasons['ui:options'],
+        updateUiSchema: formData => ({
+          'ui:options': {
+            labels: getSelectedSeparationReasonOptions(formData),
+          },
+        }),
+        updateSchema: formData =>
+          radioSchema(
+            Object.keys(getSelectedSeparationReasonOptions(formData)),
+          ),
+      },
+    },
   },
   schema: {
     type: 'object',

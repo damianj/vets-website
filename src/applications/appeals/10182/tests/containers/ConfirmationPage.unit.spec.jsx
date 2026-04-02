@@ -110,7 +110,7 @@ describe('Confirmation page', () => {
         <ConfirmationPage />
       </Provider>,
     );
-    expect($$('ul', container).length).to.eq(4);
+    expect($$('ul', container).length).to.eq(3);
 
     const v2Content = $$('.dd-privacy-hidden[data-dd-action-name]', container);
     expect(v2Content.length).to.eq(10);
@@ -120,7 +120,7 @@ describe('Confirmation page', () => {
       'Not answered', // Homelessness
       '', // Mobile phone
       '', // Email
-      ',  ', // Address
+      '', // Address
       'Not answered', // Extension
       'Not answered', // VA health care benefits
       'test 543Decision date: ', // issues

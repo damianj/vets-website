@@ -2,13 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ConfirmationPdfMessages from './ConfirmationPdfMessages';
 
-export const chapterHeaderClass = [
-  'vads-u-margin-top--2',
-  'vads-u-border-bottom--1px',
-  'vads-u-padding-bottom--0p5',
-  'vads-u-border-color--gray-light',
-].join(' ');
-
 export const ConfirmationSummary = ({ name, downloadUrl }) => (
   <div className="screen-only">
     {downloadUrl && (
@@ -32,11 +25,16 @@ export const ConfirmationSummary = ({ name, downloadUrl }) => (
       </va-summary-box>
     )}
 
-    <h3>Print this confirmation page</h3>
-    <p>
-      {`You can print this page, which includes a summary of the information you submitted in your ${name} request.`}
+    <h2 className="vads-u-margin-y--3">Print a copy of your {name}</h2>
+    <p className="vads-u-margin-y--0">
+      If you’d like to keep a copy of the information on this page, you can
+      print it now.
     </p>
-    <va-button onClick={window.print} text="Print this page" />
+    <va-button
+      class="print-this-page-button vads-u-margin-y--3"
+      onClick={window.print}
+      text={`Print this page for your records `}
+    />
   </div>
 );
 
@@ -50,7 +48,7 @@ export const ConfirmationReturnLink = () => (
     <va-link-action
       disable-analytics
       href="/"
-      text="Go back to VA.gov"
+      text="Go back to VA.gov homepage"
       type="primary"
     />
   </div>

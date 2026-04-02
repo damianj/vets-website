@@ -81,8 +81,7 @@ export default {
         schema: studentIncomePage.schema,
         depends: formData =>
           isChapterFieldRequired(formData, TASK_KEYS.report674) &&
-          isAddingDependents(formData) &&
-          !formData?.vaDependentsNetWorthAndPension,
+          isAddingDependents(formData),
       }),
       addStudentsPartFive: pageBuilder.itemPage({
         title: 'Add one or more students between ages 18 and 23',
@@ -138,8 +137,11 @@ export default {
         depends: (formData, index) =>
           isChapterFieldRequired(formData, TASK_KEYS.report674) &&
           isAddingDependents(formData) &&
-          formData?.studentInformation?.[index]?.tuitionIsPaidByGovAgency ===
-            true,
+          (['ch35', 'fry', 'feca'].includes(
+            formData?.studentInformation?.[index]?.typeOfProgramOrBenefit,
+          ) ||
+            formData?.studentInformation?.[index]?.tuitionIsPaidByGovAgency ===
+              true),
       }),
       addStudentsPartTen: pageBuilder.itemPage({
         title: 'Add one or more students between ages 18 and 23',
@@ -219,10 +221,10 @@ export default {
         path: 'report-674/add-students/:index/additional-student-income',
         uiSchema: claimsOrReceivesPensionPage.uiSchema,
         schema: claimsOrReceivesPensionPage.schema,
-        depends: formData =>
+        depends: (formData, index) =>
           isChapterFieldRequired(formData, TASK_KEYS.report674) &&
           isAddingDependents(formData) &&
-          !formData?.vaDependentsNetWorthAndPension,
+          shouldShowStudentIncomeQuestions({ formData, index }),
       }),
       addStudentsPartEighteen: pageBuilder.itemPage({
         title: 'Add one or more students between ages 18 and 23',

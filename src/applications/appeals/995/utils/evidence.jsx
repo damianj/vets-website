@@ -1,11 +1,18 @@
+import React from 'react';
+import { getCountryObjectFromIso3 } from 'platform/forms/address/helpers';
 import { getIssueName, getSelected } from '../../shared/utils/issues';
 import {
   FORMAT_COMPACT_DATE_FNS,
   FORMAT_YMD_DATE_FNS,
 } from '../../shared/constants';
-import { parseDate } from '../../shared/utils/dates';
+import {
+  parseDate,
+  formatDateToReadableString,
+} from '../../shared/utils/dates';
 import { getPrivateEvidence, getVAEvidence } from './form-data-retrieval';
 import numberToWords from './number-to-words';
+import { capitalizeFirstLetter } from '../../shared/utils';
+import { formatIssueList } from '../../shared/utils/contestableIssueMessages';
 
 export const hasErrors = errors =>
   Object.values(errors).filter(err => (Array.isArray(err) ? err.length : err))
@@ -124,4 +131,110 @@ export const getProviderModalDeleteTitle = locationAndName => {
   }
 
   return `Do you want to keep this location?`;
+};
+
+/**
+ * Used to determine which issue checkboxes were selected
+ * in the array builder flow
+ * @param {Object} issues e.g. { Hypertension: true, Tendonitis: undefined }
+ * @returns ['Hypertension']
+ */
+export const getSelectedIssues = issues => {
+  if (!issues) {
+    return null;
+  }
+
+  return Object.keys(issues).filter(issue => issues[issue]);
+};
+
+/**
+ * Used to render the address for a private provider in the array builder summary
+ * cards and on the confirmation page. The address is rendered a bit differently
+ * on the confirmation page, so an optional parameter is included to control the behavior
+ * @param {Object} address
+ * @param {Boolean} confirmationPage
+ * @returns JSX
+ */
+export const renderAddress = (address, confirmationPage = false) => {
+  const { city, country, street, street2, postalCode, state } = address;
+  const countryName = getCountryObjectFromIso3(country)?.countryName || '';
+
+  return (
+    <p
+      className={`dd-privacy-hidden ${
+        confirmationPage ? 'vads-u-margin-top--0' : ''
+      }`}
+    >
+      {confirmationPage ? '' : 'Mailing address:'}
+      <span className={confirmationPage ? '' : 'vads-u-font-weight--bold'}>
+        {!confirmationPage ? <br /> : null}
+        {street && (
+          <>
+            <span>{street}</span>
+          </>
+        )}
+        {street2 && (
+          <>
+            <br />
+            <span>{street2}</span>
+          </>
+        )}
+        {city && (
+          <>
+            <br />
+            <span>{city}</span>
+          </>
+        )}
+        {state && (
+          <>
+            <span>, {state}</span>
+          </>
+        )}
+        {countryName && (
+          <>
+            <br />
+            <span>{countryName}</span>
+          </>
+        )}
+        {postalCode && (
+          <>
+            <br />
+            <span>{postalCode}</span>
+          </>
+        )}
+      </span>
+    </p>
+  );
+};
+
+/**
+ * Returns a properly formatted list of issues with the first letter capitalized.
+ * Example: given ['hypertension', 'tinnitus', 'tendonitis, left ankle'],
+ * returns "Hypertension; tinnitus; and tendonitis, left ankle"
+ * @param {Array<string>} issues
+ * @returns {string}
+ */
+export const getFormattedIssues = issues => {
+  if (!issues?.length) {
+    return '';
+  }
+
+  if (issues?.length === 1) {
+    return capitalizeFirstLetter(issues[0]);
+  }
+
+  return capitalizeFirstLetter(formatIssueList(issues));
+};
+
+/**
+ * Given a treatment start and end date (such as '2020-01-15'), returns a formatted
+ * date range such as "Jan. 15, 2020 to June 20, 2021"
+ * @param {string} treatmentStart
+ * @param {string} treatmentEnd
+ * @returns string
+ */
+export const getTreatmentRange = (treatmentStart, treatmentEnd) => {
+  return `${formatDateToReadableString(
+    new Date(`${treatmentStart}T12:00:00`),
+  )} to ${formatDateToReadableString(new Date(`${treatmentEnd}T12:00:00`))}`;
 };

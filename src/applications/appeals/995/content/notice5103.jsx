@@ -16,9 +16,11 @@ export const content = {
   error:
     'You need to certify that you have reviewed the notice of evidence needed.',
   label:
-    'I certify that I have reviewed the notice of evidence needed or I received my decision less than 1 year ago.',
+    'I certify that I have reviewed the notice of evidence needed or I received my decision less than 1 year ago',
   update: 'Update page',
   updateLabel: 'Update notice of evidence needed page',
+  confirmationLabel:
+    'Review and acknowledgment of the notice of evidence needed',
   description: (
     <>
       <p className="vads-u-margin-top--3">
@@ -39,8 +41,10 @@ export const content = {
 
 export const reviewField = ({ children }) => (
   <div className="review-row">
-    <dt>{content.label}</dt>
-    <dd>
+    <dt className="vads-u-color--gray-medium vads-u-margin-y--0">
+      {content.label}
+    </dt>
+    <dd className="vads-u-margin-y--0 vads-u-font-weight--bold">
       {children?.props?.formData ? (
         'Yes, I certify'
       ) : (

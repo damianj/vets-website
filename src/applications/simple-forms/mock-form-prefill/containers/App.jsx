@@ -3,10 +3,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import environment from 'platform/utilities/environment';
-import manifest from '../manifest.json';
-import formConfig from '../config/form';
 
-function App({ location, children, isLoggedIn, formData }) {
+function App({ location, children, isLoggedIn, formData, route }) {
+  const { formConfig } = route;
   const isIntroPage = location.pathname === '/introduction';
   const noSaveInProgressData = !formData?.ssn;
 
@@ -16,7 +15,7 @@ function App({ location, children, isLoggedIn, formData }) {
     !isIntroPage &&
     (!isLoggedIn || (isLoggedIn && noSaveInProgressData))
   ) {
-    document.location.replace(manifest.rootUrl);
+    document.location.replace(formConfig.rootUrl);
     return (
       <va-loading-indicator message="Redirecting to introduction page..." />
     );
@@ -42,6 +41,9 @@ App.propTypes = {
   isLoggedIn: PropTypes.bool,
   loadedData: PropTypes.object,
   location: PropTypes.object,
+  route: PropTypes.shape({
+    formConfig: PropTypes.object,
+  }),
 };
 
 export default connect(mapStateToProps)(App);

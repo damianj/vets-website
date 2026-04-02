@@ -9,22 +9,35 @@ import {
   homelessReviewField,
 } from '../../../shared/content/homeless';
 
-describe('reviewField', () => {
-  it('should render value', () => {
-    const Field = homelessReviewField;
+describe('homelessReviewField', () => {
+  const Field = homelessReviewField;
+
+  it('should render "Yes" when the question is answered "Yes"', () => {
     const { container } = render(
       <Field>
-        <div>yes</div>
+        <div formData />
       </Field>,
     );
 
-    expect($('dt', container).textContent).to.contain(homelessRiskTitle);
-    expect($('dd', container).textContent).to.contain('yes');
+    expect($('dt', container).textContent).to.equal(homelessRiskTitle);
+    expect($('dd', container).textContent).to.equal('Yes');
   });
-  it('should render null', () => {
-    const Field = homelessReviewField;
+
+  it('should render "No" when the question is answered "No"', () => {
+    const { container } = render(
+      <Field>
+        <div formData={false} />
+      </Field>,
+    );
+
+    expect($('dt', container).textContent).to.equal(homelessRiskTitle);
+    expect($('dd', container).textContent).to.equal('No');
+  });
+
+  it('should render "Not answered" when the question is skipped', () => {
     const { container } = render(<Field />);
 
-    expect($('dd', container).textContent).to.eq('');
+    expect($('dt', container).textContent).to.equal(homelessRiskTitle);
+    expect($('dd', container).textContent).to.equal('Not answered');
   });
 });

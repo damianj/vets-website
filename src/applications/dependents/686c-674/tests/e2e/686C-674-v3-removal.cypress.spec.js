@@ -110,8 +110,6 @@ const testConfig = createTestConfig(
           features: [
             { name: 'vaDependentsV3', value: true },
             { name: 'va_dependents_v3', value: true },
-            { name: 'vaDependentsNetWorthAndPension', value: false },
-            { name: 'va_dependents_net_worth_and_pension', value: false },
           ],
         },
       });

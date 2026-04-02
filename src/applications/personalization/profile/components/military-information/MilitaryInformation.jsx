@@ -173,7 +173,9 @@ const MilitaryInformationContent = ({ militaryInformation, veteranStatus }) => {
         data={serviceHistory.map(item =>
           transformServiceHistoryEntryIntoTableRow(item),
         )}
-        title="Period of service"
+        title={
+          serviceHistory.length > 1 ? 'Periods of service' : 'Period of service'
+        }
         level={2}
         asList
       />

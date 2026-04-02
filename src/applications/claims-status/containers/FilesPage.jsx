@@ -159,7 +159,6 @@ class FilesPage extends React.Component {
       `#${ANCHOR_LINKS.fileSubmissionsInProgress}`,
       `#${ANCHOR_LINKS.filesWeCouldntReceive}`,
       `#${ANCHOR_LINKS.otherWaysToSendDocuments}`,
-      `#${ANCHOR_LINKS.documentsFiled}`,
       `#${ANCHOR_LINKS.filesReceived}`,
       `#${ANCHOR_LINKS.addFiles}`,
     ];

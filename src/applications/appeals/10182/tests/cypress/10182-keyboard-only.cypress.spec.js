@@ -116,9 +116,7 @@ describe('Notice of Disagreement keyboard only navigation', () => {
       cy.tabToSubmitForm();
 
       // *** Confirmation page
-      // Check confirmation page print button
       verifyUrl('confirmation');
-      cy.get('va-button[text="Print this page"]').should('exist');
     });
   });
 });

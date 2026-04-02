@@ -54,9 +54,8 @@ export const checkAdding674ForPension = (formData = {}) => {
  */
 export const showPensionBackupPath = (formData = {}) => {
   // -1 in prefill indicates pension awards API failed
-  const { veteranInformation: vi, vaDependentsNetWorthAndPension } = formData;
+  const { veteranInformation: vi } = formData;
   return (
-    vaDependentsNetWorthAndPension &&
     vi?.isInReceiptOfPension === -1 &&
     (checkAddingDependentsNot674ForPension(formData) ||
       checkAdding674ForPension(formData))
@@ -82,14 +81,9 @@ export const isVetInReceiptOfPension = (formData = {}) => {
  * @returns {boolean} - True if the questions should be shown, false otherwise, true if feature flag is off
  */
 export const showPensionRelatedQuestions = (formData = {}) => {
-  const { vaDependentsNetWorthAndPension } = formData;
-  if (vaDependentsNetWorthAndPension) {
-    const isInReceiptOfPension = isVetInReceiptOfPension(formData);
-    const isAddingDependents = checkAddingDependentsNot674ForPension(formData);
-    return isAddingDependents && isInReceiptOfPension;
-  }
-  // keep current behavior if feature flag is off
-  return true;
+  const isInReceiptOfPension = isVetInReceiptOfPension(formData);
+  const isAddingDependents = checkAddingDependentsNot674ForPension(formData);
+  return isAddingDependents && isInReceiptOfPension;
 };
 
 /** show674IncomeQuestions determines if the 674 income questions should be shown
@@ -97,14 +91,9 @@ export const showPensionRelatedQuestions = (formData = {}) => {
  * @returns {boolean} - True if the questions should be shown, false otherwise, true if feature flag is off
  */
 export const show674IncomeQuestions = (formData = {}) => {
-  const { vaDependentsNetWorthAndPension } = formData;
-  if (vaDependentsNetWorthAndPension) {
-    const isInReceiptOfPension = isVetInReceiptOfPension(formData);
-    const isAdding674 = checkAdding674ForPension(formData);
-    return isAdding674 && isInReceiptOfPension;
-  }
-  // keep current behavior if feature flag is off
-  return true;
+  const isInReceiptOfPension = isVetInReceiptOfPension(formData);
+  const isAdding674 = checkAdding674ForPension(formData);
+  return isAdding674 && isInReceiptOfPension;
 };
 
 /**
@@ -113,10 +102,5 @@ export const show674IncomeQuestions = (formData = {}) => {
  * @param {number} index - The index of the student in the studentInformation array
  * @returns {boolean} - True if the questions should be shown, false otherwise
  */
-export const shouldShowStudentIncomeQuestions = ({ formData = {}, index }) => {
-  const { vaDependentsNetWorthAndPension, studentInformation } = formData;
-  if (vaDependentsNetWorthAndPension) {
-    return show674IncomeQuestions(formData);
-  }
-  return studentInformation?.[index]?.claimsOrReceivesPension;
-};
+export const shouldShowStudentIncomeQuestions = ({ formData = {} }) =>
+  show674IncomeQuestions(formData);

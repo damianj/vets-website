@@ -1,5 +1,9 @@
 import { expect } from 'chai';
-import { coerceStringValue, addLeadingZero } from '../../utils';
+import {
+  coerceStringValue,
+  addLeadingZero,
+  capitalizeFirstLetter,
+} from '../../utils';
 
 describe('coerceStringValue', () => {
   it('should return the string when value is a string', () => {
@@ -50,5 +54,23 @@ describe('addLeadingZero', () => {
     expect(addLeadingZero('100')).to.equal('00');
     expect(addLeadingZero('123')).to.equal('23');
     expect(addLeadingZero('999')).to.equal('99');
+  });
+});
+
+describe('capitalizeFirstLetter', () => {
+  it('should capitalize the first letter of a lowercase string', () => {
+    expect(capitalizeFirstLetter('hello')).to.equal('Hello');
+  });
+
+  it('should not return a string the same way if it already starts with a capital', () => {
+    expect(capitalizeFirstLetter('Hello')).to.equal('Hello');
+  });
+
+  it('should handle a single character', () => {
+    expect(capitalizeFirstLetter('a')).to.equal('A');
+  });
+
+  it('should only capitalize the first letter and leave the rest unchanged', () => {
+    expect(capitalizeFirstLetter('hYPERTENSION')).to.equal('HYPERTENSION');
   });
 });

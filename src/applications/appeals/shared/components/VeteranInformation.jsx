@@ -29,13 +29,13 @@ const VeteranInformation = ({ formData }) => {
 
   return (
     <>
-      <h3 className="vads-u-margin-y--2">
+      <h2 className="vads-u-margin-y--2">
         Confirm the personal information we have on file for you.
-      </h3>
+      </h2>
       <va-card>
-        <h4 className="vads-u-font-size--h3 vads-u-margin-top--0">
+        <h3 className="vads-u-font-size--h3 vads-u-margin-top--0">
           Personal information
-        </h4>
+        </h3>
         <p className="name">
           <strong>Name:</strong>{' '}
           <span

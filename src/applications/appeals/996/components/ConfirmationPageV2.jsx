@@ -25,7 +25,6 @@ import {
 import { CONFERENCE_TIMES_V2_5 } from '../constants';
 import { formTitle } from '../content/title';
 import {
-  chapterHeaderClass,
   ConfirmationSummary,
   ConfirmationReturnLink,
 } from '../../shared/components/ConfirmationSummary';
@@ -34,6 +33,7 @@ import { ConfirmationTitle } from '../../shared/components/ConfirmationTitle';
 import ConfirmationPersonalInfo from '../../shared/components/ConfirmationPersonalInfo';
 import ConfirmationIssues from '../../shared/components/ConfirmationIssues';
 import { getReadableDateFromTimestamp } from '../../shared/utils/dates';
+import { CHAPTER_HEADER_CLASSES } from '../../shared/constants';
 
 export const ConfirmationPageV2 = () => {
   resetStoredSubTask();
@@ -177,7 +177,7 @@ export const ConfirmationPageV2 = () => {
 
       <ConfirmationIssues data={data} />
 
-      <h3 className={chapterHeaderClass}>Informal conference</h3>
+      <h3 className={CHAPTER_HEADER_CLASSES}>Informal conference</h3>
       {/* Adding a `role="list"` to `ul` with `list-style: none` to work around
           a problem with Safari not treating the `ul` as a list. */}
       {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}

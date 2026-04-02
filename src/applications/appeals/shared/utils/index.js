@@ -18,3 +18,6 @@ export const coerceStringValue = value => {
  * @returns {String}
  */
 export const addLeadingZero = part => `00${part || ''}`.slice(-2);
+
+export const capitalizeFirstLetter = string =>
+  string.charAt(0).toUpperCase() + string.slice(1);

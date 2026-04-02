@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { srSubstitute } from '~/platform/forms-system/src/js/utilities/ui/mask-string';
+import { VALUE_CLASSES } from '../constants';
 
 export const getFullName = (nameObj = {}) => {
   return [nameObj.first || '', nameObj.middle || '', nameObj.last || '']
@@ -11,11 +11,12 @@ export const getFullName = (nameObj = {}) => {
 
 export const renderFullName = (nameObj, actionName = 'Veteran full name') => {
   const fullName = getFullName(nameObj);
+
   return fullName ? (
-    <div className="dd-privacy-hidden" data-dd-action-name={actionName}>
+    <dd className={VALUE_CLASSES} data-dd-action-name={actionName}>
       {fullName}
       {nameObj.suffix ? `, ${nameObj.suffix}` : ''}
-    </div>
+    </dd>
   ) : null;
 };
 
@@ -23,7 +24,7 @@ export const renderFullName = (nameObj, actionName = 'Veteran full name') => {
 // instead of "number ending with 1,234"
 export const maskVafn = number => {
   return srSubstitute(
-    `●●●–●●–${number}`,
+    `***–**–${number}`,
     `V A file number ending with ${number.split('').join(' ')}`,
   );
 };

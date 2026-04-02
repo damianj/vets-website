@@ -3,12 +3,10 @@
 // a problem with Safari not treating the `ul` as a list.
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { getReadableDate } from '../utils/dates';
+import { formatDateToReadableString } from '../utils/dates';
 import { getSelected, getIssueName, getIssueDate } from '../utils/issues';
 import { disagreeWith } from '../utils/areaOfDisagreement';
-
-import { chapterHeaderClass } from './ConfirmationSummary';
+import { CHAPTER_HEADER_CLASSES } from '../constants';
 
 const ConfirmationIssues = ({
   data,
@@ -20,20 +18,23 @@ const ConfirmationIssues = ({
 
   const issuesBlock = (
     <>
-      <div className="issue-block vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm vads-u-margin-top--2 vads-u-font-weight--normal">
+      <p className="issue-block vads-u-margin-bottom--2 vads-u-color--gray vads-u-margin-top--0">
         {`${text}:`}
-      </div>
-      <ul className="remove-bullets issues" role="list">
+      </p>
+      <ul className="vads-u-margin-top--0 remove-bullets issues" role="list">
         {issues?.map((issue, index) => (
           <li
             key={index}
             className="vads-u-margin-bottom--2 dd-privacy-hidden"
             data-dd-action-name="issue name"
           >
-            <strong className="capitalize overflow-wrap-word">
+            <div className="vads-u-margin-bottom--1 capitalize vads-u-font-weight--bold overflow-wrap-word">
               {getIssueName(issue)}
-            </strong>
-            <div>Decision date: {getReadableDate(getIssueDate(issue))}</div>
+            </div>
+            <div>
+              Decision date:{' '}
+              {formatDateToReadableString(new Date(getIssueDate(issue)))}
+            </div>
             {hasAod && <div>{disagreeWith(issue)}</div>}
           </li>
         ))}
@@ -43,7 +44,7 @@ const ConfirmationIssues = ({
 
   return (
     <>
-      <h3 className={chapterHeaderClass}>Issues for review</h3>
+      <h3 className={CHAPTER_HEADER_CLASSES}>Issues for review</h3>
       {children ? (
         <ul className="remove-bullets" role="list">
           {children}

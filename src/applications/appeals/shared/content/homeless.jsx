@@ -10,9 +10,20 @@ export const homelessLabels = {
   N: 'No',
 };
 
-export const homelessReviewField = ({ children }) => (
-  <div className="review-row">
-    <dt>{homelessRiskTitle}</dt>
-    <dd>{children}</dd>
-  </div>
-);
+export const homelessReviewField = ({ children }) => {
+  const formResponse = children?.props?.formData;
+  let displayResponse;
+
+  if (formResponse === undefined) {
+    displayResponse = 'Not answered';
+  } else {
+    displayResponse = formResponse ? 'Yes' : 'No';
+  }
+
+  return (
+    <div className="review-row">
+      <dt>{homelessRiskTitle}</dt>
+      <dd>{displayResponse}</dd>
+    </div>
+  );
+};

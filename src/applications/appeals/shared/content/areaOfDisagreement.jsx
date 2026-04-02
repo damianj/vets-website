@@ -99,8 +99,8 @@ export const AreaOfDisagreementReviewField = props => {
           {defaultEditButton({ label: `Edit ${plainTitle}` })}
         </div>
       </div>
-      <dl className="review">
-        <div className="review-row">
+      <div className="review-row">
+        <dl className="review">
           <dt>What you disagree with</dt>
           <dd
             className="dd-privacy-hidden"
@@ -108,8 +108,8 @@ export const AreaOfDisagreementReviewField = props => {
           >
             {list}
           </dd>
-        </div>
-      </dl>
+        </dl>
+      </div>
     </>
   );
 };

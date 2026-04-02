@@ -3,6 +3,11 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
+import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
+import {
+  mockLighthouseMedicalCopayStatement,
+  createLighthouseLineItems,
+} from '../fixtures/lighthouseMedicalCopayStatement';
 import AccountSummary from '../../components/AccountSummary';
 import StatementAddresses from '../../components/StatementAddresses';
 import StatementCharges from '../../components/StatementCharges';
@@ -14,7 +19,7 @@ const createMockStore = (featureToggleValue = false) => {
   return createStore(() => ({
     featureToggles: {
       loading: false,
-      showVHAPaymentHistory: featureToggleValue,
+      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: featureToggleValue,
     },
   }));
 };
@@ -242,6 +247,34 @@ describe('mcp statement view', () => {
         row.textContent.includes('Total Credits'),
       );
       expect(totalCreditsRow).to.not.exist;
+    });
+
+    it('displays attributes.billNumber in reference column for Lighthouse data', () => {
+      const lineItems = createLighthouseLineItems(1);
+      lineItems[0].datePosted = '2024-05-15';
+      lineItems[0].description = 'VHA charge';
+      lineItems[0].priceComponents = [{ amount: 50.0 }];
+
+      const store = createStore(() => ({
+        featureToggles: {
+          loading: false,
+          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
+        },
+      }));
+
+      const { getByText } = render(
+        <Provider store={store}>
+          <StatementTable
+            charges={lineItems}
+            formatCurrency={mockFormatCurrency}
+            selectedCopay={mockLighthouseMedicalCopayStatement}
+          />
+        </Provider>,
+      );
+
+      expect(
+        getByText(mockLighthouseMedicalCopayStatement.attributes.billNumber),
+      ).to.exist;
     });
   });
 

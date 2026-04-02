@@ -16,7 +16,6 @@ import {
   isDirectReview,
 } from '../utils/helpers';
 import {
-  chapterHeaderClass,
   ConfirmationSummary,
   ConfirmationReturnLink,
 } from '../../shared/components/ConfirmationSummary';
@@ -26,7 +25,7 @@ import ConfirmationPersonalInfo from '../../shared/components/ConfirmationPerson
 import ConfirmationIssues from '../../shared/components/ConfirmationIssues';
 import { getReadableDateFromTimestamp } from '../../shared/utils/dates';
 import { convertBoolResponseToYesNo } from '../../shared/utils/form-data-display';
-// import { NOD_PDF_DOWNLOAD_URL } from '../../shared/constants';
+import { CHAPTER_HEADER_CLASSES } from '../../shared/constants';
 
 export const ConfirmationPageV2 = () => {
   const alertRef = useRef(null);
@@ -247,7 +246,7 @@ export const ConfirmationPageV2 = () => {
         </>
       </ConfirmationIssues>
 
-      <h3 className={chapterHeaderClass}>Board review options</h3>
+      <h3 className={CHAPTER_HEADER_CLASSES}>Board review options</h3>
       {/* Adding a `role="list"` to `ul` with `list-style: none` to work around
           a problem with Safari not treating the `ul` as a list. */}
       {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}

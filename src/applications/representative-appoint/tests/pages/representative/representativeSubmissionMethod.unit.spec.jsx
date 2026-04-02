@@ -215,5 +215,47 @@ describe('<RepresentativeSubmissionMethod>', () => {
         expect(result).to.be.true;
       });
     });
+
+    context('when individualAcceptEnabled is true', () => {
+      it('returns true when both canAcceptDigitalPoaRequests and repsCanAcceptAnyRequest are true', () => {
+        const formData = {
+          'view:v2IsEnabled': true,
+          'view:individualAcceptEnabled': true,
+          'view:selectedRepresentative': {
+            type: 'organization',
+            attributes: {
+              canAcceptDigitalPoaRequests: true,
+              repsCanAcceptAnyRequest: true,
+            },
+          },
+          'view:applicantIsVeteran': 'Yes',
+          identityValidation: { hasIcn: true, hasParticipantId: true },
+        };
+
+        const result = representativeSubmissionMethod.pageDepends(formData);
+
+        expect(result).to.be.true;
+      });
+
+      it('returns false when canAcceptDigitalPoaRequests is true but repsCanAcceptAnyRequest is false', () => {
+        const formData = {
+          'view:v2IsEnabled': true,
+          'view:individualAcceptEnabled': true,
+          'view:selectedRepresentative': {
+            type: 'organization',
+            attributes: {
+              canAcceptDigitalPoaRequests: true,
+              repsCanAcceptAnyRequest: false,
+            },
+          },
+          'view:applicantIsVeteran': 'Yes',
+          identityValidation: { hasIcn: true, hasParticipantId: true },
+        };
+
+        const result = representativeSubmissionMethod.pageDepends(formData);
+
+        expect(result).to.be.false;
+      });
+    });
   });
 });

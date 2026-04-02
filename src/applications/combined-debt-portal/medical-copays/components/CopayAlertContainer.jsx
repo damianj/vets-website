@@ -10,7 +10,7 @@ import {
 } from '../../combined/utils/copayAlertContent';
 import { showVHAPaymentHistory } from '../../combined/utils/helpers';
 
-const CopayAlertContainer = ({ type, copay }) => {
+const CopayAlertContainer = ({ type, copay, hasPreviousStatements }) => {
   const history = useHistory();
   const shouldShowVHAPaymentHistory = useSelector(state =>
     showVHAPaymentHistory(state),
@@ -19,6 +19,7 @@ const CopayAlertContainer = ({ type, copay }) => {
     copay,
     type,
     shouldShowVHAPaymentHistory,
+    hasPreviousStatements,
   );
 
   return (
@@ -61,6 +62,7 @@ const CopayAlertContainer = ({ type, copay }) => {
 
 CopayAlertContainer.propTypes = {
   copay: PropTypes.object,
+  previousStatements: PropTypes.array,
   type: PropTypes.string,
 };
 

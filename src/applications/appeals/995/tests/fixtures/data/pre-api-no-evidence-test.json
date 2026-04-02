@@ -6,6 +6,14 @@
     "view:otherEvidenceInfo": {},
     "view:hasVaEvidence": false,
     "view:vaEvidenceInfo": {},
+    "facilityTypes": {
+      "vamc": true,
+      "cboc": false,
+      "mtf": false,
+      "ccp": false,
+      "vetCenter": false,
+      "nonVa": false
+    },
     "form5103Acknowledged": true,
     "contestedIssues": [{
       "id": null,

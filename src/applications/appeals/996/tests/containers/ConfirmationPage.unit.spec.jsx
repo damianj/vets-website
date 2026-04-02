@@ -133,7 +133,7 @@ describe('Confirmation page', () => {
         <ConfirmationPage />
       </Provider>,
     );
-    expect($$('ul', container).length).to.eq(3);
+    expect($$('ul', container).length).to.eq(2);
     expect(
       $$('.dd-privacy-hidden[data-dd-action-name]', container).length,
     ).to.eq(17);

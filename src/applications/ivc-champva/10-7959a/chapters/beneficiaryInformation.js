@@ -57,7 +57,6 @@ export const applicantMemberNumberSchema = {
         required: content['error--required'],
         pattern: content['error--pattern--member-number'],
       },
-      classNames: ['dd-privacy-hidden'],
     }),
   },
   schema: {

@@ -1,7 +1,7 @@
 {
   "title": "VA.gov Applications Manifest Catalog",
   "description": "Catalog of all applications in src/applications with their manifest.json metadata for reference",
-  "totalApplications": 153,
+  "totalApplications": 154,
   "applications": [
     {
       "directoryPath": "src/applications/_mock-form",
@@ -794,6 +794,12 @@
       "appName": "Mock Form with Prefill",
       "entryName": "mock-form-prefill",
       "rootUrl": "/mock-form-prefill"
+    },
+    {
+      "directoryPath": "src/applications/simple-forms/mock-form-prefill-minimal",
+      "appName": "Mock Form with Prefill (Minimal Header)",
+      "entryName": "mock-form-prefill-minimal",
+      "rootUrl": "/mock-form-prefill-minimal"
     },
     {
       "directoryPath": "src/applications/simple-forms/mock-simple-forms-patterns",

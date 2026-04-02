@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { render } from '@testing-library/react';
@@ -22,6 +23,10 @@ const wizardStorageKey = 'testKey';
 const MockFormApp = ({ children }) => (
   <div className="mock-form-app">{children}</div>
 );
+
+MockFormApp.propTypes = {
+  children: PropTypes.node,
+};
 
 const setup = () => {
   oldAddEventListener = global.window.addEventListener;
@@ -513,6 +518,196 @@ describe('Schemaform <RoutedSavableApp>', () => {
       expect(router.replace.calledWith(normalizedReturnUrl)).to.be.true;
       expect(router.push.called).to.be.false;
     });
+
+    it('routes to first non-intro page on resume when returnUrl is a blocked additional route', () => {
+      const formConfig = {
+        title: 'Testing',
+        additionalRoutes: [
+          {
+            path: 'blocked-path',
+            allowDirectAccess: false,
+          },
+        ],
+      };
+      const currentLocation = { pathname: '/form/resume', search: '' };
+      const routes = [
+        { path: '/' },
+        {
+          pageList: [
+            { path: '/introduction' },
+            { path: '/allowed-first-page' },
+          ],
+        },
+      ];
+      const router = { push: sinon.spy(), replace: sinon.spy() };
+      const setFetchFormStatus = sinon.spy();
+
+      const { rerender } = render(
+        <RoutedSavableApp
+          location={location}
+          formConfig={formConfig}
+          routes={routes}
+          router={router}
+          currentLocation={currentLocation}
+          loadedStatus={LOAD_STATUSES.pending}
+          updateLogInUrl={() => {}}
+          setFetchFormStatus={setFetchFormStatus}
+          formData={{}}
+          savedStatus="notAttempted"
+          FormApp={MockFormApp}
+        >
+          <div className="child" />
+        </RoutedSavableApp>,
+      );
+
+      rerender(
+        <RoutedSavableApp
+          location={location}
+          formConfig={formConfig}
+          routes={routes}
+          router={router}
+          currentLocation={currentLocation}
+          loadedStatus={LOAD_STATUSES.success}
+          returnUrl="/foo/blocked-path"
+          updateLogInUrl={() => {}}
+          setFetchFormStatus={setFetchFormStatus}
+          formData={{}}
+          savedStatus="notAttempted"
+          FormApp={MockFormApp}
+        >
+          <div className="child" />
+        </RoutedSavableApp>,
+      );
+
+      expect(router.replace.calledWith('/allowed-first-page')).to.be.true;
+      expect(router.replace.calledWith('/foo/blocked-path')).to.be.false;
+      expect(router.push.called).to.be.false;
+    });
+
+    it('keeps additional direct-access route when returnUrl includes query/hash', () => {
+      const formConfig = {
+        title: 'Testing',
+        additionalRoutes: [
+          {
+            path: 'status',
+          },
+        ],
+      };
+      const currentLocation = { pathname: '/form/resume', search: '' };
+      const routes = [
+        { path: '/' },
+        {
+          pageList: [
+            { path: '/introduction' },
+            { path: '/allowed-first-page' },
+          ],
+        },
+      ];
+      const router = { push: sinon.spy(), replace: sinon.spy() };
+      const setFetchFormStatus = sinon.spy();
+
+      const { rerender } = render(
+        <RoutedSavableApp
+          location={location}
+          formConfig={formConfig}
+          routes={routes}
+          router={router}
+          currentLocation={currentLocation}
+          loadedStatus={LOAD_STATUSES.pending}
+          updateLogInUrl={() => {}}
+          setFetchFormStatus={setFetchFormStatus}
+          formData={{}}
+          savedStatus="notAttempted"
+          FormApp={MockFormApp}
+        >
+          <div className="child" />
+        </RoutedSavableApp>,
+      );
+
+      rerender(
+        <RoutedSavableApp
+          location={location}
+          formConfig={formConfig}
+          routes={routes}
+          router={router}
+          currentLocation={currentLocation}
+          loadedStatus={LOAD_STATUSES.success}
+          returnUrl="/foo/status?source=sip#section"
+          updateLogInUrl={() => {}}
+          setFetchFormStatus={setFetchFormStatus}
+          formData={{}}
+          savedStatus="notAttempted"
+          FormApp={MockFormApp}
+        >
+          <div className="child" />
+        </RoutedSavableApp>,
+      );
+
+      expect(router.replace.calledWith('/foo/status?source=sip#section')).to.be
+        .true;
+      expect(router.push.called).to.be.false;
+    });
+
+    it('routes unverified users to introduction on resume even with a valid returnUrl', () => {
+      const formConfig = {
+        title: 'Testing',
+      };
+      const currentLocation = { pathname: '/form/resume', search: '' };
+      const routes = [
+        { path: '/' },
+        {
+          pageList: [
+            { path: '/introduction' },
+            { path: '/allowed-first-page' },
+          ],
+        },
+      ];
+      const router = { push: sinon.spy(), replace: sinon.spy() };
+      const setFetchFormStatus = sinon.spy();
+
+      const { rerender } = render(
+        <RoutedSavableApp
+          location={location}
+          formConfig={formConfig}
+          routes={routes}
+          router={router}
+          currentLocation={currentLocation}
+          loadedStatus={LOAD_STATUSES.pending}
+          updateLogInUrl={() => {}}
+          setFetchFormStatus={setFetchFormStatus}
+          formData={{}}
+          isUserVerified={false}
+          savedStatus="notAttempted"
+          FormApp={MockFormApp}
+        >
+          <div className="child" />
+        </RoutedSavableApp>,
+      );
+
+      rerender(
+        <RoutedSavableApp
+          location={location}
+          formConfig={formConfig}
+          routes={routes}
+          router={router}
+          currentLocation={currentLocation}
+          loadedStatus={LOAD_STATUSES.success}
+          returnUrl="/allowed-first-page"
+          updateLogInUrl={() => {}}
+          setFetchFormStatus={setFetchFormStatus}
+          formData={{}}
+          isUserVerified={false}
+          savedStatus="notAttempted"
+          FormApp={MockFormApp}
+        >
+          <div className="child" />
+        </RoutedSavableApp>,
+      );
+
+      expect(router.replace.calledWith('/introduction')).to.be.true;
+      expect(router.replace.calledWith('/allowed-first-page')).to.be.false;
+      expect(router.push.called).to.be.false;
+    });
   });
 
   it('should route to error when failed', () => {
@@ -732,6 +927,71 @@ describe('Schemaform <RoutedSavableApp>', () => {
         false,
       ),
     ).to.be.true;
+  });
+
+  it('should route unverified users to introduction instead of loading a saved form', () => {
+    const formConfig = {
+      title: 'Testing',
+      formId: 'testForm',
+    };
+    const currentLocation = {
+      pathname: 'test',
+      search: '',
+    };
+    const routes = [
+      { path: '/' },
+      {
+        pageList: [
+          { path: '/introduction' },
+          { path: currentLocation.pathname },
+          { path: '/lastPage' },
+        ],
+      },
+    ];
+    const router = {
+      push: sinon.spy(),
+      replace: sinon.spy(),
+    };
+    const fetchInProgressForm = sinon.spy();
+
+    const { rerender } = render(
+      <RoutedSavableApp
+        formConfig={formConfig}
+        routes={routes}
+        router={router}
+        currentLocation={currentLocation}
+        profileIsLoading
+        loadedStatus={LOAD_STATUSES.pending}
+        fetchInProgressForm={fetchInProgressForm}
+        savedForms={[]}
+        prefillsAvailable={[]}
+        FormApp={MockFormApp}
+      >
+        <div className="child" />
+      </RoutedSavableApp>,
+    );
+
+    rerender(
+      <RoutedSavableApp
+        formConfig={formConfig}
+        routes={routes}
+        router={router}
+        currentLocation={currentLocation}
+        profileIsLoading={false}
+        isLoggedIn
+        isUserVerified={false}
+        loadedStatus={LOAD_STATUSES.pending}
+        fetchInProgressForm={fetchInProgressForm}
+        savedForms={[{ form: formConfig.formId }]}
+        prefillsAvailable={[]}
+        FormApp={MockFormApp}
+      >
+        <div className="child" />
+      </RoutedSavableApp>,
+    );
+
+    expect(fetchInProgressForm.called).to.be.false;
+    expect(router.replace.calledWith('/introduction')).to.be.true;
   });
   it('should load a pre-filled form when starting in the middle of a form and logged in', () => {
     const formConfig = {

@@ -4,15 +4,17 @@ import testForm from 'platform/testing/e2e/cypress/support/form-tester';
 import { createTestConfig } from 'platform/testing/e2e/cypress/support/form-tester/utilities';
 
 import { fillDateWebComponentPattern } from './helpers';
+import {
+  SUBMISSION_DATE,
+  SUBMISSION_CONFIRMATION_NUMBER,
+  UPLOAD_IMG_DETAILS,
+} from './helpers/constants';
 
 import mockUser from '../fixtures/mocks/user.json';
 import formConfig from '../../config/form';
 import manifest from '../../manifest.json';
 
 Cypress.config('waitForAnimations', true);
-
-const SUBMISSION_DATE = new Date().toISOString();
-const SUBMISSION_CONFIRMATION_NUMBER = '01e77e8d-79bf-4991-a899-4e2defff11e0';
 
 const mockPrefill = {
   formData: {
@@ -51,6 +53,29 @@ const testConfig = createTestConfig(
               'incomeNetWorthDateRange_to',
               incomeNetWorthDateRange.to,
             );
+            cy.clickFormContinue();
+          });
+        });
+      },
+      'property-and-business/0/document-upload': ({ afterHook }) => {
+        afterHook(() => {
+          cy.get('@testData').then(() => {
+            cy.fillVaFileInput('root_uploadedDocuments', UPLOAD_IMG_DETAILS);
+            cy.wait('@uploadFile');
+            cy.axeCheck();
+            cy.clickFormContinue();
+          });
+        });
+      },
+      'trusts/0/document-upload': ({ afterHook }) => {
+        afterHook(() => {
+          cy.get('@testData').then(() => {
+            cy.fillVaFileInputMultiple(
+              'root_uploadedDocuments',
+              UPLOAD_IMG_DETAILS,
+            );
+            cy.wait('@uploadFile');
+            cy.axeCheck();
             cy.clickFormContinue();
           });
         });
@@ -106,6 +131,9 @@ const testConfig = createTestConfig(
         cy.intercept('GET', '/v0/in_progress_forms/21P-0969', data);
         cy.intercept('PUT', '/v0/in_progress_forms/21P-0969', data);
       });
+      cy.intercept('POST', '/v0/claim_attachments', {
+        data: { attributes: { confirmationCode: '5' } },
+      }).as('uploadFile');
       cy.intercept('POST', `income_and_assets/v0/${formConfig.submitUrl}`, {
         data: {
           id: 'mock-id',

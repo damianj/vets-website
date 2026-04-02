@@ -1,7 +1,5 @@
 import React from 'react';
 
-import readableList from 'platform/forms-system/src/js/utilities/data/readableList';
-
 export const facilityTypeTitle =
   'Select all the types of facilities or providers that treated you';
 
@@ -42,14 +40,33 @@ export const facilityTypeList = formData => {
     ([_key, value]) => value,
   );
 
-  return readableList(
-    selected.map(([key, value]) => {
-      if (key in facilityTypeChoices) {
-        return facilityTypeChoices[key]?.title || facilityTypeChoices[key];
-      }
-      // "Other" value is a string
-      return key === 'other' ? value : 'Unknown facility type choice';
-    }),
+  const facilityList = selected.map(([key, value]) => {
+    if (key in facilityTypeChoices) {
+      return facilityTypeChoices[key]?.title || facilityTypeChoices[key];
+    }
+    // "Other" value is a string
+    return key === 'other' ? value : 'Unknown facility type choice';
+  });
+
+  return (
+    // Adding a `role="list"` to `ul` with `list-style: none` to work around
+    // a problem with Safari not treating the `ul` as a list.
+    // eslint-disable-next-line jsx-a11y/no-redundant-roles
+    <ul
+      className="vads-u-text-align--left vads-u-margin-top--0 remove-bullets"
+      role="list"
+    >
+      {facilityList.map((facility, index) => (
+        <li
+          key={index}
+          className={
+            index < facilityList.length - 1 ? 'vads-u-margin-bottom--1p5' : ''
+          }
+        >
+          {facility}
+        </li>
+      ))}
+    </ul>
   );
 };
 

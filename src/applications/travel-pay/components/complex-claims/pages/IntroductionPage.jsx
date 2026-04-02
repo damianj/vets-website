@@ -20,7 +20,7 @@ import {
   selectAppointment,
   selectComplexClaim,
 } from '../../../redux/selectors';
-import { stripTZOffset } from '../../../util/dates';
+import { stripTZOffset, formatDateTime } from '../../../util/dates';
 import OutOfBoundsAppointmentAlert from '../../alerts/OutOfBoundsAppointmentAlert';
 
 const IntroductionPage = () => {
@@ -31,6 +31,9 @@ const IntroductionPage = () => {
   const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
   const isCommunityCareEnabled = useToggleValue(
     TOGGLE_NAMES.travelPayEnableCommunityCare,
+  );
+  const isV4UpgradeEnabled = useToggleValue(
+    TOGGLE_NAMES.travelPayApptAddV4Upgrade,
   );
 
   const { data: appointment } = useSelector(selectAppointment);
@@ -59,9 +62,15 @@ const IntroductionPage = () => {
       return;
     }
 
-    // If claim already exists, the wrapper will handle redirecting
+    const [formattedDate, formattedTime] = formatDateTime(
+      appointment.localStartTime,
+    );
+
+    // If claim already exists, the wrapper will handle redirecting the page based on the existing claim ID.
+    // This can happen if the user starts the flow, then goes back to the intro page and clicks the button again.
     const existingClaimId =
-      complexClaim?.data?.claimId || appointment?.travelPayClaim?.claim?.id;
+      complexClaim?.claim?.data?.claimId ||
+      appointment?.travelPayClaim?.claim?.id;
 
     if (existingClaimId) {
       dispatch(setExpenseBackDestination('intro'));
@@ -70,15 +79,30 @@ const IntroductionPage = () => {
     }
 
     try {
+      const createComplexClaimParams = isV4UpgradeEnabled
+        ? {
+            appointmentName: `${formattedDate} appointment at ${formattedTime} - ${
+              appointment.location.attributes.name
+            }`,
+            appointmentDateTime: stripTZOffset(appointment.localStartTime),
+            facilityStationNumber: appointment.location.id,
+            facilityName: appointment.location.attributes.name,
+            appointmentType: appointment.isCompAndPen
+              ? 'CompensationAndPensionExamination'
+              : 'Other',
+            isComplete: false,
+          }
+        : {
+            appointmentDateTime: stripTZOffset(appointment.localStartTime),
+            facilityStationNumber: appointment.location.id,
+            appointmentType: appointment.isCompAndPen
+              ? 'CompensationAndPensionExamination'
+              : 'Other',
+            isComplete: false,
+          };
+
       const result = await dispatch(
-        createComplexClaim({
-          appointmentDateTime: stripTZOffset(appointment.localStartTime),
-          facilityStationNumber: appointment.location.id,
-          appointmentType: appointment.isCompAndPen
-            ? 'CompensationAndPensionExamination'
-            : 'Other',
-          isComplete: false,
-        }),
+        createComplexClaim(createComplexClaimParams),
       );
       if (result?.claimId) {
         dispatch(setExpenseBackDestination('intro'));

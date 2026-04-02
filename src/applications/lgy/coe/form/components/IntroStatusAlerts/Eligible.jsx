@@ -8,7 +8,7 @@ export const Eligible = ({ referenceNumber }) => (
   <va-alert status="success" class="vads-u-margin-bottom--4">
     <h2 slot="headline">Review and download your automatic COE</h2>
     <p>
-      We already have the information we need. So you don’t need to submit a
+      We already have the information we need, so you don’t need to submit a
       request for a COE. You can download your COE now.
     </p>
     <p>Reference Number: {referenceNumber}</p>

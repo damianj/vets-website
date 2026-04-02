@@ -188,13 +188,6 @@ class TrackClaimsPage {
     cy.get('.submitted-file-list-item').should('have.length', number);
   }
 
-  verifyClaimEvidence(claimId, claimStatus) {
-    cy.get('.submit-additional-evidence va-alert').should('be.visible');
-    cy.get(
-      `.submitted-file-list-item:nth-child(${claimId}) .submission-status`,
-    ).should('contain', `${claimStatus}`);
-  }
-
   claimDetailsTab() {
     cy.get('.tabs li:nth-child(3) > a')
       .click()

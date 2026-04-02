@@ -130,14 +130,16 @@ const POARequestCard = ({ poaRequest }) => {
             </>
           )}
         </p>
-        <va-link
-          active
-          disable-analytics
-          href={`/representative/representation-requests/${poaRequest.id}`}
-          onClick={recordDatalayerEvent}
-          data-eventname="arp-card"
-          text="View representation request"
-        />
+        {poaRequest.canAccept !== false && (
+          <va-link
+            active
+            disable-analytics
+            href={`/representative/representation-requests/${poaRequest.id}`}
+            onClick={recordDatalayerEvent}
+            data-eventname="arp-card"
+            text="View representation request"
+          />
+        )}
       </va-card>
     </li>
   );

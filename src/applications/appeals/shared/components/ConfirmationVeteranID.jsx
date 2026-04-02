@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { renderFullName, maskVafn } from '../utils/data';
 import { getReadableDate } from '../utils/dates';
+import { LABEL_CLASSES, VALUE_CLASSES } from '../constants';
 
 export const ConfirmationVeteranID = ({
   dob,
@@ -9,36 +10,20 @@ export const ConfirmationVeteranID = ({
   vaFileLastFour,
 }) => (
   <>
-    <li>
-      <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-        Name
-      </div>
-      {renderFullName(userFullName)}
-    </li>
+    <dt className={LABEL_CLASSES}>Name</dt>
+    {renderFullName(userFullName)}
     {vaFileLastFour && (
-      <li>
-        <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-          VA File Number
-        </div>
-        <div
-          className="vads-u-margin-bottom--2 dd-privacy-hidden"
-          data-dd-action-name="VA file number"
-        >
+      <>
+        <dt className={LABEL_CLASSES}>VA file number</dt>
+        <dd className={VALUE_CLASSES} data-dd-action-name="VA file number">
           {maskVafn(vaFileLastFour || '')}
-        </div>
-      </li>
+        </dd>
+      </>
     )}
-    <li>
-      <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-        Date of birth
-      </div>
-      <div
-        className="vads-u-margin-bottom--2 dd-privacy-hidden"
-        data-dd-action-name="date of birth"
-      >
-        {getReadableDate(dob)}
-      </div>
-    </li>
+    <dt className={LABEL_CLASSES}>Date of birth</dt>
+    <dd className={VALUE_CLASSES} data-dd-action-name="date of birth">
+      {getReadableDate(dob)}
+    </dd>
   </>
 );
 

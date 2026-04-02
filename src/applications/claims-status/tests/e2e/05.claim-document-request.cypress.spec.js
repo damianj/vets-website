@@ -9,29 +9,14 @@ import {
   setupUnknownErrorMock,
   setupDuplicateErrorMock,
 } from './file-upload-helpers';
+import { mockFeatureToggles } from './support/helpers/mocks';
 import { SUBMIT_TEXT, ANCHOR_LINKS } from '../../constants';
 
-const setDocumentUploadStatusToggle = enabled => ({
-  data: {
-    type: 'feature_toggles',
-    features: [
-      {
-        name: 'cst_show_document_upload_status',
-        value: enabled,
-      },
-    ],
-  },
-});
-
 // Helper function to set up page navigation and intercepts
-const setupPageAndIntercepts = featureToggleEnabled => {
+const setupPageAndIntercepts = () => {
+  mockFeatureToggles();
   cy.intercept('GET', `/v0/benefits_claims/189685`, claimDetailsOpen).as(
     'detailRequest',
-  );
-  cy.intercept(
-    'GET',
-    '/v0/feature_toggles?*',
-    setDocumentUploadStatusToggle(featureToggleEnabled),
   );
   cy.intercept('GET', '/v0/benefits_claims', claimsList);
 
@@ -154,7 +139,7 @@ describe('When feature toggle cst_5103_update_enabled enabled', () => {
 describe('Document upload', () => {
   describe('Type 1 Error Alert', () => {
     it('should display the type 1 unknown error alert for unknown errors', () => {
-      setupPageAndIntercepts(true);
+      setupPageAndIntercepts();
       setupUnknownErrorMock();
       uploadFileWithDocType('test-document.txt');
       clickSubmitFilesButton();
@@ -171,7 +156,7 @@ describe('Document upload', () => {
     });
 
     it('should display both the message alert and the type 1 unknown error alert when both error types exist', () => {
-      setupPageAndIntercepts(true);
+      setupPageAndIntercepts();
 
       let uploadCount = 0;
       cy.intercept('POST', '/v0/benefits_claims/*/benefits_documents', req => {
@@ -230,7 +215,7 @@ describe('Document upload', () => {
     });
 
     it('should display duplicate error alert with files-received anchor link', () => {
-      setupPageAndIntercepts(true);
+      setupPageAndIntercepts();
       setupDuplicateErrorMock();
       uploadFileWithDocType('test-document.txt');
       clickSubmitFilesButton();
@@ -258,7 +243,7 @@ describe('Document upload', () => {
 
   describe('Successful upload', () => {
     it('navigates the user to the files tab with hash anchor that leads to the file submissions in progress section', () => {
-      const trackClaimsPage = setupPageAndIntercepts(true);
+      const trackClaimsPage = setupPageAndIntercepts();
       // Navigate to the document request page
       trackClaimsPage.verifyDocRequestforDefaultPage();
       // Setup successful upload mock

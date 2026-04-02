@@ -19,7 +19,7 @@ describe('PendingUpload status alert', () => {
     expect(getByText(new RegExp(referenceNumber))).to.exist;
     expect(
       getByText(
-        /You’ll need to upload documents in your VA home loan COE page before we can make a decision on your COE./,
+        /You’ll need to upload documents before we can make a decision on your COE./,
       ),
     ).to.exist;
   });

@@ -5,6 +5,7 @@ import { setLowAuthFormData } from '../slices/formSlice';
 import { setVassToken, getVassToken } from '../../utils/auth';
 import { createInvalidTokenError } from '../../services/mocks/utils/errors';
 import { SERVER_ERROR_CODES } from '../../utils/constants';
+import { normalizeAppointmentTopics } from '../../utils/appointments';
 
 const api = async (url, options, ...rest) => {
   try {
@@ -149,13 +150,20 @@ export const vassApi = createApi({
           return { error: tokenError };
         }
         try {
-          return await api(`/vass/v0/appointment/${appointmentId}`, {
+          const response = await api(`/vass/v0/appointment/${appointmentId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           });
+          // Normalize the appointment topics from the `skillId`/`skillName` format
+          // to the canonical `topicId`/`topicName` format. When the backend migrates
+          // to `topicId`/`topicName`, this can be removed.
+          return {
+            ...response,
+            data: normalizeAppointmentTopics(response.data),
+          };
         } catch ({ errors }) {
           return {
             error: {

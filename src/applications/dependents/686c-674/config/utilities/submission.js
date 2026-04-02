@@ -146,33 +146,24 @@ export function buildSubmissionData(payload) {
     }
   });
 
-  // vaDependentsNetWorthAndPension can be false - check for undefined explicitly
-  if (sourceData.vaDependentsNetWorthAndPension !== undefined) {
-    cleanData.vaDependentsNetWorthAndPension =
-      sourceData.vaDependentsNetWorthAndPension;
-    // Passing networth limit for FDF PDF generation; only include when feature
-    // flag is enabled
-    cleanData.netWorthLimit = sourceData.netWorthLimit;
-  }
+  // Passing networth limit for FDF PDF generation; only include when feature
+  // flag is enabled
+  cleanData.netWorthLimit = sourceData.netWorthLimit;
 
-  // householdIncome is only valid to submit when:
-  // - The pension feature flag is off (legacy: all veterans answered this), OR
-  // - The flag is on AND the veteran is confirmed in receipt of pension
-  // This prevents stale answers collected before the flag was enabled from
-  // reaching the backend for veterans who are not in receipt of pension.
-  const flagOn = sourceData.vaDependentsNetWorthAndPension;
+  // householdIncome is only valid to submit when the veteran is confirmed in
+  // receipt of pension.
   if (
     sourceData.householdIncome !== undefined &&
-    (!flagOn || isVetInReceiptOfPension(sourceData))
+    isVetInReceiptOfPension(sourceData)
   ) {
     cleanData.householdIncome = sourceData.householdIncome;
   }
 
-  // Strip pension-gated student financial fields when flag is on and vet is not in receipt.
-  // These fields may be stale (answered before the flag was enabled) and must not reach
-  // the backend for veterans confirmed to be outside receipt of pension.
-  const shouldStripStudentFinancials =
-    flagOn && !isVetInReceiptOfPension(sourceData);
+  // Strip pension-gated student financial fields when the veteran is not in
+  // receipt of pension. These fields may be stale (answered before the flag was
+  // enabled) and must not reach the backend for veterans confirmed to be
+  // outside receipt of pension.
+  const shouldStripStudentFinancials = !isVetInReceiptOfPension(sourceData);
 
   // Use centralized workflow mappings from dataMappings.js
   const addDataMappings = ADD_WORKFLOW_MAPPINGS;

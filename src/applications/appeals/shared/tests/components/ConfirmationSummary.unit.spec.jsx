@@ -1,52 +1,50 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { expect } from 'chai';
-import {
-  $,
-  $$,
-} from '@department-of-veterans-affairs/platform-forms-system/ui';
-import { mockApiRequest } from 'platform/testing/unit/helpers';
+import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
 import {
   ConfirmationSummary,
   ConfirmationReturnLink,
 } from '../../components/ConfirmationSummary';
 
 describe('ConfirmationSummary', () => {
-  it('should render a page summary without a download summary', () => {
+  it('should render the print section without the download summary', () => {
     const { container } = render(
-      <ConfirmationSummary name="testing1" downloadUrl="" />,
+      <ConfirmationSummary name="Higher-Level Review" downloadUrl="" />,
     );
 
-    const screenContent = $('.screen-only', container);
-    const h3s = $$('h3', screenContent);
-    const ps = $$('p', screenContent);
-
-    expect(h3s.length).to.eq(1);
-    expect(ps.length).to.eq(1);
-    expect($('va-button', container).getAttribute('text')).to.contain(
+    expect($('va-summary-box', container)).to.not.exist;
+    expect($('h2', container).textContent).to.equal(
+      'Print a copy of your Higher-Level Review',
+    );
+    expect($('va-button', container).getAttribute('text')).to.include(
       'Print this page',
     );
   });
 
-  it('should render a page summary with a download summary', () => {
-    mockApiRequest({});
+  it('should render the download summary when downloadUrl is provided', () => {
     const { container } = render(
-      <ConfirmationSummary name="testing2" downloadUrl="test" />,
+      <ConfirmationSummary name="Higher-Level Review" downloadUrl="test" />,
     );
 
-    const screenContent = $('.screen-only', container);
-    expect($$('h3', screenContent).length).to.eq(2);
-    expect($$('p', screenContent).length).to.eq(4);
+    const summaryBox = $('va-summary-box', container);
+    expect(summaryBox).to.exist;
+    expect($('h3[slot="headline"]', summaryBox).textContent).to.equal(
+      'Save a PDF copy of your Higher-Level Review request',
+    );
+    expect($('h2', container).textContent).to.equal(
+      'Print a copy of your Higher-Level Review',
+    );
   });
 });
 
 describe('ConfirmationReturnLink', () => {
-  it('should render page title', () => {
+  it('should render the return link to VA.gov', () => {
     const { container } = render(<ConfirmationReturnLink />);
-    const screenContent = $('.screen-only', container);
-    const link = $('va-link-action', screenContent);
+    const link = $('va-link-action', container);
 
-    expect(link.getAttribute('href')).to.eq('/');
-    expect(link.getAttribute('text')).to.contain('Go back to VA.gov');
+    expect(link).to.exist;
+    expect(link.getAttribute('href')).to.equal('/');
+    expect(link.getAttribute('text')).to.equal('Go back to VA.gov homepage');
   });
 });

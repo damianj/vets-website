@@ -746,43 +746,30 @@ describe('Complex Claims Mileage - Edit', () => {
       stub.restore();
     });
 
-    it('passes description= "Mileage" to updateExpense on continue', async () => {
-      const { container } = renderEditPage(); // use your edit render function
+    it('skips updateExpense when form has no changes', () => {
+      const { container } = renderEditPage();
 
-      // Select required radio options first
-      const departureRadio = $('va-radio[name="departureAddress"]');
-      const tripTypeRadio = $('va-radio[name="tripType"]');
-
-      fireEvent(
-        departureRadio,
-        new CustomEvent('vaValueChange', {
-          detail: { name: 'departureAddress', value: 'home-address' },
-        }),
-      );
-      fireEvent(
-        tripTypeRadio,
-        new CustomEvent('vaValueChange', {
-          detail: { name: 'tripType', value: 'RoundTrip' },
-        }),
-      );
-
-      // Assert options are now checked
-      expect($('va-radio-option[value="home-address"]').hasAttribute('checked'))
-        .to.be.true;
-      expect($('va-radio-option[value="RoundTrip"]').hasAttribute('checked')).to
-        .be.true;
-
-      // Click Continue
+      // Click Continue without changing any values
       const continueBtn = container.querySelector(
         '.travel-pay-button-group va-button[continue]',
       );
       fireEvent.click(continueBtn);
 
-      // Assert updateExpense received correct data
-      const expenseData = stub.firstCall.args[3];
-      expect(expenseData.purchaseDate).to.equal('2024-01-15');
-      expect(expenseData.description).to.equal('Mileage');
-      expect(expenseData.tripType).to.equal('RoundTrip');
+      // updateExpense should not have been called
+      expect(stub.called).to.be.false;
+    });
+
+    it('navigates to review page when form has no changes', () => {
+      const { container } = renderEditPage();
+
+      // Click Continue without changing any values
+      const continueBtn = container.querySelector(
+        '.travel-pay-button-group va-button[continue]',
+      );
+      fireEvent.click(continueBtn);
+
+      // Should still navigate to review page
+      expect($('[data-testid="review-page"]')).to.exist;
     });
   });
 

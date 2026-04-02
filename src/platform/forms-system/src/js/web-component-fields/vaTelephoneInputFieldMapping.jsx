@@ -14,7 +14,7 @@ export default function VaTelephoneInputFieldMapping(props) {
       childrenProps.onChange({
         callingCode: parseInt(payload.callingCode, 10) || null,
         countryCode: payload.countryCode || null,
-        contact: payload.contact,
+        contact: payload.contactRaw,
         isValid: payload.isValid,
         error: payload.error,
         touched: payload.touched,

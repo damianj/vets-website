@@ -314,9 +314,7 @@ describe('Supplemental Claim keyboard only navigation', () => {
       cy.tabToSubmitForm();
 
       // *** Confirmation page
-      // Check confirmation page print button
       cy.url().should('include', 'confirmation');
-      cy.get('va-button[text="Print this page"]').should('exist');
     });
   });
 });

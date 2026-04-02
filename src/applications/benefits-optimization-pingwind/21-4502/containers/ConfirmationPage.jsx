@@ -1,13 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
-import environment from 'platform/utilities/environment';
 
 import { ConfirmationView } from 'platform/forms-system/src/js/components/ConfirmationView';
-
-const DEFAULT_DOWNLOAD_PDF_BASE = `${
-  environment.API_URL
-}/automobile_adaptive_equipment/v0/form4502/`;
 
 const alertContent = confirmationNumber => (
   <>
@@ -32,11 +27,7 @@ export const ConfirmationPage = props => {
     veteranName?.first && veteranName?.last ? veteranName : null;
   const submitDate = submission.timestamp;
   const confirmationNumber = submission.response?.confirmationNumber;
-  const downloadPdfBase =
-    props.route?.formConfig?.downloadPdfUrl || DEFAULT_DOWNLOAD_PDF_BASE;
-  const pdfUrl = confirmationNumber
-    ? `${downloadPdfBase}${confirmationNumber}/download_pdf`
-    : submission.response?.pdfUrl;
+  const pdfUrl = submission.response?.pdfUrl;
 
   return (
     <ConfirmationView

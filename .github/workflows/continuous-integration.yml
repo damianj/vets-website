@@ -1171,6 +1171,12 @@ jobs:
           NODE_PATH: /tmp/node_modules
           CHANGED_FILES: ${{ needs.tests-prep.outputs.changed_file_paths }}
         run: node script/github-actions/find-form-exports.js
+      - name: Log cypress and unit test spec paths
+        run: |
+          echo "=== Cypress Specs ==="
+          echo '${{ steps.testing-folders.outputs.cypress_specs }}' | jq -r '.[] | "  [\(.name)] \(.spec)"'
+          echo "=== Unit Test Specs ==="
+          echo '${{ steps.testing-folders.outputs.unit_test_specs }}' | jq -r '.[] | "  [\(.name)] \(.spec)"'
   run_form-regression_unit_tests:
     name: Forms System Regression - Unit Tests (${{matrix.name}})
     needs: forms-system_regression_check_get_file_paths

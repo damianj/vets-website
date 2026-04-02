@@ -21,6 +21,15 @@
         "updateAddress": "Update your mailing address"
       }
     },
+    "mcp": {
+      "copay-balances": {
+        "zero-balance-card": {
+          "current-balance": "Current balance: <strong>{{ amount }}</strong>",
+          "facility-city": "{{ facility }} - {{ city }}",
+          "no-payment-needed": "You don’t need to make a payment at this time. Your balance is {{ amount }} and was updated on <strong>{{ date }}</strong>."
+        }
+      }
+    },
     "diaryCodes": {
       "statusTypes": {
         "1": {

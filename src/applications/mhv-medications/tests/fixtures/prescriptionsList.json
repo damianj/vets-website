@@ -66,7 +66,7 @@
                 "orderedDate": "2023-07-12T04:00:00.000Z",
                 "quantity": "30",
                 "expirationDate": "2024-07-12T04:00:00.000Z",
-                "dispensedDate": null,
+                "dispensedDate": "2023-07-15T04:00:00.000Z",
                 "stationNumber": "989",
                 "isRefillable": true,
                 "isTrackable": false,
@@ -117,7 +117,7 @@
                 "orderedDate": "2023-07-17T04:00:00.000Z",
                 "quantity": "1",
                 "expirationDate": "2024-07-17T04:00:00.000Z",
-                "dispensedDate": null,
+                "dispensedDate": "2023-07-20T04:00:00.000Z",
                 "stationNumber": "989",
                 "isRefillable": true,
                 "isTrackable": true,
@@ -168,7 +168,7 @@
                 "orderedDate": "2023-07-07T04:00:00.000Z",
                 "quantity": "30",
                 "expirationDate": "2024-07-07T04:00:00.000Z",
-                "dispensedDate": null,
+                "dispensedDate": "2023-07-10T04:00:00.000Z",
                 "stationNumber": "989",
                 "isRefillable": true,
                 "isTrackable": false,
@@ -219,7 +219,7 @@
                 "orderedDate": "2023-07-17T04:00:00.000Z",
                 "quantity": "1",
                 "expirationDate": "2024-07-17T04:00:00.000Z",
-                "dispensedDate": null,
+                "dispensedDate": "2023-07-25T04:00:00.000Z",
                 "stationNumber": "979",
                 "isRefillable": true,
                 "isTrackable": false,
@@ -270,7 +270,7 @@
                 "orderedDate": "2023-07-07T04:00:00.000Z",
                 "quantity": "4",
                 "expirationDate": "2024-07-07T04:00:00.000Z",
-                "dispensedDate": null,
+                "dispensedDate": "2023-07-09T04:00:00.000Z",
                 "stationNumber": "979",
                 "isRefillable": true,
                 "isTrackable": false,
@@ -321,7 +321,7 @@
                 "orderedDate": "2023-07-12T04:00:00.000Z",
                 "quantity": "60",
                 "expirationDate": "2024-07-12T04:00:00.000Z",
-                "dispensedDate": null,
+                "dispensedDate": "2023-08-01T04:00:00.000Z",
                 "stationNumber": "979",
                 "isRefillable": true,
                 "isTrackable": false,
@@ -495,7 +495,7 @@
                 "trackingList": [],
                 "rxRfRecords": [],
                 "tracking": false,
-                "isRenewable": true
+                "isRenewable": false
             },
             "links": {
                 "self": "http://127.0.0.1:3000/my_health/v1/prescriptions/22225375"
@@ -545,7 +545,7 @@
                 "trackingList": [],
                 "rxRfRecords": [],
                 "tracking": false,
-                "isRenewable": true
+                "isRenewable": false
             },
             "links": {
                 "self": "http://127.0.0.1:3000/my_health/v1/prescriptions/22225367"
@@ -595,7 +595,7 @@
                 "trackingList": [],
                 "rxRfRecords": [],
                 "tracking": false,
-                "isRenewable": true
+                "isRenewable": false
             },
             "links": {
                 "self": "http://127.0.0.1:3000/my_health/v1/prescriptions/22217099"

@@ -198,3 +198,39 @@ export const MAX_SELECTED_ERROR =
   'You’ve reached the maximum number of allowed selected issues';
 
 export const NOT_ANSWERED = 'Not answered';
+
+// Confirmation page
+export const LABEL_CLASSES = [
+  'vads-u-margin-bottom--1',
+  'vads-u-margin-top--0',
+  'vads-u-color--base-dark',
+].join(' ');
+export const VALUE_CLASSES = [
+  'vads-u-margin-top--0',
+  'vads-u-margin-bottom--2',
+  'dd-privacy-hidden',
+  'vads-u-font-weight--bold',
+].join(' ');
+export const VALUE_CLASSES_NO_MB = [
+  'vads-u-margin-top--0',
+  'dd-privacy-hidden',
+  'vads-u-font-weight--bold',
+  'vads-u-margin-bottom--0',
+].join(' ');
+export const VALUE_CLASSES_NO_BOLD = [
+  'vads-u-margin-top--0',
+  'vads-u-margin-bottom--2',
+  'dd-privacy-hidden',
+].join(' ');
+export const CHAPTER_HEADER_CLASSES = [
+  'vads-u-margin-top--4',
+  'vads-u-margin-bottom--1p5',
+  'vads-u-border-bottom--1px',
+  'vads-u-padding-bottom--1',
+  'vads-u-border-color--gray-light',
+].join(' ');
+export const SECTION_HEADER_CLASSES = [
+  'vads-u-margin-bottom--2',
+  'vads-u-margin-top--3',
+  'vads-u-color--base-dark',
+].join(' ');

@@ -5,8 +5,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {
-  VaAlert,
-  VaCard,
   VaLink,
   VaRadio,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
@@ -66,18 +64,16 @@ export const EligibilityFormPage = ({
     goForward({ formData: fullData || {} });
   };
 
-  const showAutomobileContent = applyingFor === APPLYING_FOR.automobile;
-  const showAdaptiveEquipmentContent =
-    applyingFor === APPLYING_FOR.adaptiveEquipment;
-  const showNotEligibleContent = vaReachedOut === VA_REACHED_OUT.no;
   const showBenefitQuestion = vaReachedOut === VA_REACHED_OUT.yes;
+  const showAutomobileContent =
+    showBenefitQuestion && applyingFor === APPLYING_FOR.automobile;
+  const showAdaptiveEquipmentContent =
+    showBenefitQuestion && applyingFor === APPLYING_FOR.adaptiveEquipment;
+  const showNotEligibleContent = vaReachedOut === VA_REACHED_OUT.no;
   const showEligibilitySummary =
     showNotEligibleContent ||
     showAutomobileContent ||
     showAdaptiveEquipmentContent;
-  // Not eligible for THIS form: first answer No, OR second answer Adaptive equipment
-  const showNotEligibleAlert =
-    showNotEligibleContent || showAdaptiveEquipmentContent;
 
   return (
     <div className="eligibility-form-page">
@@ -95,7 +91,11 @@ export const EligibilityFormPage = ({
           hint={E.HINT_VA_REACHED_OUT}
           name="va-reached-out"
           onVaValueChange={e => {
-            setVaReachedOut(e.detail?.value || null);
+            const nextValue = e.detail?.value || null;
+            setVaReachedOut(nextValue);
+            if (nextValue !== VA_REACHED_OUT.yes) {
+              setApplyingFor(null);
+            }
           }}
           uswds
           class="vads-u-margin-bottom--3"
@@ -136,10 +136,7 @@ export const EligibilityFormPage = ({
         )}
 
         {showEligibilitySummary && (
-          <VaCard
-            background
-            className="vads-u-margin-top--3 vads-u-margin-bottom--4"
-          >
+          <section className="box vads-u-background-color--gray-lightest vads-u-margin-top--3 vads-u-margin-bottom--4 vads-u-padding--3">
             <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
               {E.SUMMARY_TITLE}
             </h2>
@@ -149,7 +146,7 @@ export const EligibilityFormPage = ({
             <ul className="vads-u-padding-left--0 vads-u-margin-left--3 vads-u-margin-top--0 vads-u-margin-bottom--0 vads-u-list-style--none">
               <RequirementItem
                 met={vaReachedOut === VA_REACHED_OUT.yes}
-                text="VA has reached out to you about this benefit"
+                text={E.REQUIREMENT_VA_REACHED_OUT}
               />
               {showBenefitQuestion && (
                 <RequirementItem
@@ -159,53 +156,35 @@ export const EligibilityFormPage = ({
               )}
             </ul>
 
-            {showNotEligibleAlert && (
-              <VaAlert
-                status="warning"
-                uswds
-                visible
-                className="vads-u-margin-top--3 vads-u-margin-bottom--0"
-              >
-                <h3
-                  slot="headline"
-                  className="vads-u-font-weight--bold vads-u-margin-top--0"
-                >
-                  {E.NOT_ELIGIBLE_HEADLINE}
-                </h3>
-                {showNotEligibleContent ? (
-                  <>
-                    <p className="vads-u-margin-bottom--2">
-                      {E.NOT_ELIGIBLE_DISABILITY}
-                    </p>
-                    <VaLink
-                      href={E.DISABILITY_CLAIM_URL}
-                      text={E.LINK_DISABILITY_CLAIM}
-                      external
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p className="vads-u-margin-bottom--2">
-                      {E.NOT_ELIGIBLE_ADAPTIVE}
-                    </p>
-                    <VaLink
-                      href={E.FORM_10_1394_URL}
-                      text={E.LINK_FORM_10_1394}
-                      external
-                    />
-                  </>
-                )}
-                <p className="vads-u-margin-top--3 vads-u-margin-bottom--0">
-                  {E.EXIT_OPTIONS}
+            {showNotEligibleContent && (
+              <>
+                <p className="vads-u-margin-top--3 vads-u-margin-bottom--2">
+                  {E.NOT_ELIGIBLE_DISABILITY}
+                  <strong>{E.NOT_ELIGIBLE_DISABILITY_EMPHASIS}</strong>
+                  {E.NOT_ELIGIBLE_DISABILITY_AFTER}
                 </p>
-                <div className="vads-u-margin-top--3">
-                  <va-link-action
-                    href={E.VA_HOME_URL}
-                    text={E.EXIT_APPLICATION}
-                    type="secondary"
+                <p className="vads-u-margin-bottom--0">
+                  <VaLink
+                    href={E.DISABILITY_CLAIM_URL}
+                    text={E.LINK_DISABILITY_CLAIM}
+                    external
                   />
-                </div>
-              </VaAlert>
+                </p>
+              </>
+            )}
+
+            {showAdaptiveEquipmentContent && (
+              <>
+                <p className="vads-u-margin-top--3 vads-u-margin-bottom--2">
+                  {E.NOT_ELIGIBLE_ADAPTIVE}
+                </p>
+                <p className="vads-u-margin-bottom--0">
+                  <VaLink
+                    href={E.FORM_10_1394_URL}
+                    text={E.LINK_FORM_10_1394}
+                  />
+                </p>
+              </>
             )}
 
             {showAutomobileContent && (
@@ -215,7 +194,7 @@ export const EligibilityFormPage = ({
                 {E.ELIGIBLE_AUTOMOBILE_AFTER}
               </p>
             )}
-          </VaCard>
+          </section>
         )}
       </div>
 

@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import sinon from 'sinon-v20';
 import { DefinitionTester } from 'platform/testing/unit/schemaform-utils';
-import readableList from 'platform/forms-system/src/js/utilities/data/readableList';
 import { $, $$ } from 'platform/forms-system/src/js/utilities/ui';
 import formConfig from '../../config/form';
 import {
@@ -122,112 +121,119 @@ describe('Supplemental Claims option for facility type page', () => {
 });
 
 describe('facilityTypeList', () => {
-  it('should return single choice text', () => {
-    const data = { vamc: true };
-    expect(facilityTypeList(data)).to.eq(facilityTypeChoices.vamc);
+  const renderList = data => render(<>{facilityTypeList(data)}</>);
+
+  it('should render a single choice as a list item', () => {
+    const { container } = renderList({ vamc: true });
+    const items = $$('li', container);
+
+    expect(items.length).to.equal(1);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vamc);
   });
 
-  it('should return readable list for two choices', () => {
-    const data = { ccp: true, nonVa: true };
-    const result = readableList(
-      Object.keys(data).map(
-        key => facilityTypeChoices[key]?.title || facilityTypeChoices[key],
-      ),
-    );
+  it('should render multiple choices as list items', () => {
+    const { container } = renderList({
+      vetCenter: true,
+      cboc: true,
+      mtf: true,
+    });
+    const items = $$('li', container);
 
-    expect(facilityTypeList(data)).to.eq(result);
+    expect(items.length).to.equal(3);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vetCenter.title);
+    expect(items[1].textContent).to.equal(facilityTypeChoices.cboc);
+    expect(items[2].textContent).to.equal(facilityTypeChoices.mtf);
   });
 
-  it('should return readable list for multiple choices', () => {
-    const data = { vetCenter: true, cboc: true, mtf: true };
-    const result = readableList(
-      Object.keys(data).map(
-        key => facilityTypeChoices[key]?.title || facilityTypeChoices[key],
-      ),
-    );
+  it('should handle an unknown choice gracefully', () => {
+    const { container } = renderList({
+      vamc: true,
+      other: 'testing',
+      other2: true,
+    });
+    const items = $$('li', container);
 
-    expect(facilityTypeList(data)).to.eq(result);
+    expect(items.length).to.equal(3);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vamc);
+    expect(items[1].textContent).to.equal('testing');
+    expect(items[2].textContent).to.equal('Unknown facility type choice');
   });
 
-  it('should handle unknown choice gracefully', () => {
-    const data = { vamc: true, other: 'testing', other2: true };
-    const result = `${
-      facilityTypeChoices.vamc
-    }, testing, and Unknown facility type choice`;
-    expect(facilityTypeList(data)).to.eq(result);
+  it('should render no list items for empty or invalid values', () => {
+    expect($$('li', renderList({}).container).length).to.equal(0);
+    expect($$('li', renderList(null).container).length).to.equal(0);
+    expect($$('li', renderList(undefined).container).length).to.equal(0);
   });
 
-  it('should return empty string for invalid values', () => {
-    const data = {};
-    expect(facilityTypeList(data)).to.eq('');
-    expect(facilityTypeList(null)).to.eq('');
-    expect(facilityTypeList(undefined)).to.eq('');
+  it('should include custom other text when provided', () => {
+    const { container } = renderList({
+      vamc: true,
+      other: 'Custom facility name',
+    });
+    const items = $$('li', container);
+
+    expect(items.length).to.equal(2);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vamc);
+    expect(items[1].textContent).to.equal('Custom facility name');
   });
 
-  it('should include custom "other" text when provided', () => {
-    const data = { vamc: true, other: 'Custom facility name' };
-    const result = facilityTypeList(data);
+  it('should add bottom margin class to all items except the last', () => {
+    const { container } = renderList({ vamc: true, ccp: true, mtf: true });
+    const items = $$('li', container);
 
-    expect(result).to.contain('Custom facility name');
-    expect(result).to.contain(facilityTypeChoices.vamc);
+    expect(items[0].className).to.include('vads-u-margin-bottom--1p5');
+    expect(items[1].className).to.include('vads-u-margin-bottom--1p5');
+    expect(items[2].className).to.not.include('vads-u-margin-bottom--1p5');
   });
 });
 
 describe('facilityTypeReviewField', () => {
-  it('should render single choice in review field', () => {
-    const data = { vamc: true };
-    const { container } = render(<ReviewField formData={data} />);
+  it('should render a single choice in the review field', () => {
+    const { container } = render(<ReviewField formData={{ vamc: true }} />);
+    const items = $$('li', container);
 
-    expect($('dd', container).textContent).to.eq(facilityTypeChoices.vamc);
+    expect(items.length).to.equal(1);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vamc);
   });
 
-  it('should render readable list for two choices in review field', () => {
-    const data = { ccp: true, nonVa: true };
-    const result = readableList(
-      Object.keys(data).map(
-        key => facilityTypeChoices[key]?.title || facilityTypeChoices[key],
-      ),
+  it('should render multiple choices in the review field', () => {
+    const { container } = render(
+      <ReviewField formData={{ vetCenter: true, cboc: true, mtf: true }} />,
     );
+    const items = $$('li', container);
 
-    const { container } = render(<ReviewField formData={data} />);
-
-    expect($('dd', container).textContent).to.eq(result);
+    expect(items.length).to.equal(3);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vetCenter.title);
+    expect(items[1].textContent).to.equal(facilityTypeChoices.cboc);
+    expect(items[2].textContent).to.equal(facilityTypeChoices.mtf);
   });
 
-  it('should render readable list for multiple choices in review field', () => {
-    const data = { vetCenter: true, cboc: true, mtf: true };
-    const result = readableList(
-      Object.keys(data).map(
-        key => facilityTypeChoices[key]?.title || facilityTypeChoices[key],
-      ),
+  it('should handle unknown choice in the review field', () => {
+    const { container } = render(
+      <ReviewField formData={{ vamc: true, other: 'testing', other2: true }} />,
     );
+    const items = $$('li', container);
 
-    const { container } = render(<ReviewField formData={data} />);
-
-    expect($('dd', container).textContent).to.eq(result);
+    expect(items.length).to.equal(3);
+    expect(items[0].textContent).to.equal(facilityTypeChoices.vamc);
+    expect(items[1].textContent).to.equal('testing');
+    expect(items[2].textContent).to.equal('Unknown facility type choice');
   });
 
-  it('should handle unknown choice in review field', () => {
-    const data = { vamc: true, other: 'testing', other2: true };
-    const result = `${
-      facilityTypeChoices.vamc
-    }, testing, and Unknown facility type choice`;
-
-    const { container } = render(<ReviewField formData={data} />);
-
-    expect($('dd', container).textContent).to.eq(result);
-  });
-
-  it('should handle empty data gracefully in review field', () => {
+  it('should handle empty data gracefully in the review field', () => {
     const { container } = render(<ReviewField formData={{}} />);
 
     expect($('dd', container)).to.exist;
+    expect($$('li', container).length).to.equal(0);
   });
 
-  it('should display custom "other" text in review field', () => {
-    const data = { other: 'My custom facility' };
-    const { container } = render(<ReviewField formData={data} />);
+  it('should display custom other text in the review field', () => {
+    const { container } = render(
+      <ReviewField formData={{ other: 'My custom facility' }} />,
+    );
+    const items = $$('li', container);
 
-    expect($('dd', container).textContent).to.contain('My custom facility');
+    expect(items.length).to.equal(1);
+    expect(items[0].textContent).to.equal('My custom facility');
   });
 });

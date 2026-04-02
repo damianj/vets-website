@@ -1,5 +1,4 @@
 {
-  "vaDependentsNetWorthAndPension": true,
   "view:additionalEvidenceDescription": {},
   "spouseSupportingDocuments": [
     {
@@ -47,7 +46,6 @@
       "isEncrypted": false
     }
   ],
-  "householdIncome": false,
   "reportDivorce": {
     "spouseIncome": "N",
     "date": "2019-03-02",
@@ -406,5 +404,7 @@
   "statementOfTruthCertified": true,
   "vaDependentsDuplicateModals": true,
   "vaDependentsV3": true,
+  "view:checkVeteranPension": true,
+  "householdIncome": false,
   "netWorthLimit": 163699
 }

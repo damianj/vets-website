@@ -1,8 +1,14 @@
 import { expect } from 'chai';
+import { render } from '@testing-library/react';
+import { $, $$ } from 'platform/forms-system/src/js/utilities/ui';
 import {
   getIndex,
   getProviderDetailsTitle,
   getProviderModalDeleteTitle,
+  getSelectedIssues,
+  renderAddress,
+  getFormattedIssues,
+  getTreatmentRange,
   evidenceNeedsUpdating,
   removeNonSelectedIssuesFromEvidence,
 } from '../../utils/evidence';
@@ -298,5 +304,113 @@ describe('getProviderModalDeleteTitle', () => {
     expect(getProviderModalDeleteTitle({})).to.contain(
       'Do you want to keep this location?',
     );
+  });
+});
+
+describe('getSelectedIssues', () => {
+  it('should return null when issues is null or undefined', () => {
+    expect(getSelectedIssues(null)).to.be.null;
+    expect(getSelectedIssues(undefined)).to.be.null;
+  });
+
+  it('should return only selected issues', () => {
+    const issues = { Hypertension: true, Tinnitus: false, Migraines: true };
+    const result = getSelectedIssues(issues);
+
+    expect(result).to.deep.equal(['Hypertension', 'Migraines']);
+  });
+
+  it('should return an empty array when no issues are selected', () => {
+    const issues = { Hypertension: false, Tinnitus: undefined };
+    expect(getSelectedIssues(issues)).to.deep.equal([]);
+  });
+
+  it('should return all issues when all are selected', () => {
+    const issues = { Hypertension: true, Tinnitus: true };
+    expect(getSelectedIssues(issues)).to.deep.equal([
+      'Hypertension',
+      'Tinnitus',
+    ]);
+  });
+});
+
+describe('renderAddress', () => {
+  const baseAddress = {
+    street: '123 Main St',
+    street2: 'Suite 100',
+    city: 'Austin',
+    state: 'TX',
+    country: 'USA',
+    postalCode: '78701',
+  };
+
+  it('should render the full address with mailing address label by default', () => {
+    const { container } = render(renderAddress(baseAddress));
+    const p = $('p', container);
+    const spans = $$('span span', p);
+    const numberOfLines = $$('br', p);
+
+    expect(p.textContent).to.include('Mailing address:');
+    expect(numberOfLines.length).to.equal(5);
+    expect(spans[0].textContent).to.equal('123 Main St');
+    expect(spans[1].textContent).to.equal('Suite 100');
+    expect(spans[2].textContent).to.equal('Austin');
+    expect(spans[3].textContent).to.equal(', TX');
+    expect(spans[4].textContent).to.equal('United States');
+    expect(spans[5].textContent).to.equal('78701');
+  });
+
+  it('should not render the mailing address label on the confirmation page', () => {
+    const { container } = render(renderAddress(baseAddress, true));
+    const p = $('p', container);
+
+    expect(p.textContent).to.not.include('Mailing address:');
+    expect(p.className).to.include('vads-u-margin-top--0');
+  });
+
+  it('should not render street2 when it is empty', () => {
+    const address = { ...baseAddress, street2: '' };
+    const { container } = render(renderAddress(address));
+    const spans = $$('span span', container);
+    const numberOfLines = $$('br', container);
+
+    expect(spans.length).to.equal(5);
+    expect(numberOfLines.length).to.equal(4);
+    expect(spans[0].textContent).to.equal('123 Main St');
+    expect(spans[1].textContent).to.equal('Austin');
+  });
+});
+
+describe('getFormattedIssues', () => {
+  it('should capitalize a single issue', () => {
+    const result = getFormattedIssues(['hypertension']);
+    expect(result).to.equal('Hypertension');
+  });
+
+  it('should capitalize the first letter of a formatted list', () => {
+    const result = getFormattedIssues(['hypertension', 'tinnitus']);
+    expect(result).to.equal('Hypertension and tinnitus');
+  });
+
+  it('should handle an empty array', () => {
+    const result = getFormattedIssues([]);
+    expect(result).to.equal('');
+  });
+
+  it('should handle null or undefined', () => {
+    expect(getFormattedIssues(null)).to.equal('');
+    expect(getFormattedIssues(undefined)).to.equal('');
+  });
+});
+
+describe('getTreatmentRange', () => {
+  it('should return a formatted date range', () => {
+    const result = getTreatmentRange('2020-01-15', '2021-06-20');
+    expect(result).to.equal('Jan. 15, 2020 to June 20, 2021');
+  });
+
+  it('should handle same start and end dates', () => {
+    const result = getTreatmentRange('2020-03-10', '2020-03-10');
+    expect(result).to.equal('March 10, 2020 to March 10, 2020');
   });
 });

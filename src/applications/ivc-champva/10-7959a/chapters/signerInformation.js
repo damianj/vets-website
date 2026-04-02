@@ -151,7 +151,6 @@ export const certifierRelationshipSchema = {
       'ui:title': `Describe your relationship to the beneficiary`,
       'ui:webComponentField': VaTextInputField,
       'ui:options': {
-        classNames: ['dd-privacy-hidden'],
         expandUnder: 'certifierRelationship',
         expandUnderCondition: 'other',
         expandedContentFocus: true,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { DBQ_URL } from '../constants';
 
 export const headerCopy = 'Submit your Separation Health Assessment';
 
@@ -18,7 +19,7 @@ export const SeparationHealthAssessmentWarningAlert = () => {
         </p>
         <p>
           <va-link
-            href="https://www.benefits.va.gov/compensation/dbq_publicdbqs.asp"
+            href={DBQ_URL}
             text="Download your Separation Health Assessment"
             external
           />

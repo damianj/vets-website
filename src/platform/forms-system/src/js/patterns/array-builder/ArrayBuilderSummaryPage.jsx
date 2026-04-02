@@ -597,6 +597,14 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
     const titleTextType = `summaryTitle${typeSuffix}`;
     const descriptionTextType = `summaryDescription${typeSuffix}`;
 
+    const showMaxItemsAlert = isMaxItemsReached && !hideMaxItemsAlert;
+    const hasVisibleDescriptionContent =
+      hasArrayItems ||
+      showUpdatedAlert ||
+      showRemovedAlert ||
+      showReviewErrorAlert ||
+      showMaxItemsAlert;
+
     const renderKey = [
       showUpdatedAlert ? 'u1' : 'u0',
       showRemovedAlert ? 'r1' : 'r0',
@@ -604,7 +612,12 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
       isMaxItemsReached ? 'm1' : 'm0',
     ].join('-');
     const UIDescription = (
-      <div key={renderKey}>
+      <div
+        key={renderKey}
+        className={
+          hasVisibleDescriptionContent ? '' : 'vads-u-margin-top--neg3'
+        }
+      >
         <Alerts />
         {hasArrayItems && <Cards />}
       </div>

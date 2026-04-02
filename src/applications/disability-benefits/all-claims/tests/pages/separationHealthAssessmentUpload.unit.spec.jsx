@@ -1,4 +1,6 @@
+import React from 'react';
 import { expect } from 'chai';
+import { render } from '@testing-library/react';
 import { schema, uiSchema } from '../../pages/separationHealthAssessmentUpload';
 
 describe('separationHealthAssessmentUpload page', () => {
@@ -24,10 +26,14 @@ describe('separationHealthAssessmentUpload page', () => {
   });
 
   describe('uiSchema', () => {
-    it('has the expected page title', () => {
-      expect(uiSchema['ui:title']).to.equal(
-        'Upload your Separation Health Assessment',
-      );
+    it('renders the Separation Health Assessment header', () => {
+      const { getByRole } = render(<div>{uiSchema['ui:title']}</div>);
+
+      const heading = getByRole('heading', {
+        level: 3,
+        name: 'Upload your Separation Health Assessment',
+      });
+      expect(heading).to.exist;
     });
 
     it('restricts accepted SHA file types', () => {

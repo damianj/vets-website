@@ -117,8 +117,8 @@ const createNotWithinCohortError = () => {
 
 const createAppointmentAlreadyBookedError = ({
   appointmentId = 'e61e1a40-1e63-f011-bec2-001dd80351ea',
-  dtStartUTC = '2025-12-20T14:00:00Z',
-  dtEndUTC = '2025-12-20T14:30:00Z',
+  dtStartUtc = '2025-12-20T14:00:00Z',
+  dtEndUtc = '2025-12-20T14:30:00Z',
 } = {}) => {
   return {
     errors: [
@@ -127,8 +127,8 @@ const createAppointmentAlreadyBookedError = ({
         detail: 'already scheduled',
         appointment: {
           appointmentId,
-          dtStartUTC,
-          dtEndUTC,
+          dtStartUtc,
+          dtEndUtc,
         },
       },
     ],

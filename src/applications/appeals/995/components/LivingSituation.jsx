@@ -9,63 +9,47 @@ import {
   pointOfContactPhoneLabel,
 } from '../content/livingSituation';
 import { convertBoolResponseToYesNo } from '../../shared/utils/form-data-display';
+import {
+  CHAPTER_HEADER_CLASSES,
+  LABEL_CLASSES,
+  VALUE_CLASSES,
+} from '../../shared/constants';
 
 export const LivingSituation = ({ data } = {}) => (
   <>
-    <li>
-      <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-        {housingRiskTitle}
-      </div>
-      <div
-        className="vads-u-margin-bottom--2 dd-privacy-hidden"
-        data-dd-action-name="has housing risk"
-      >
+    <h3 className={CHAPTER_HEADER_CLASSES}>Living situation</h3>
+    <dl>
+      <dt className={LABEL_CLASSES}>{housingRiskTitle}</dt>
+      <dd className={VALUE_CLASSES} data-dd-action-name="has housing risk">
         {convertBoolResponseToYesNo(data?.housingRisk)}
-      </div>
-    </li>
-    {data.housingRisk && (
-      <>
-        <li>
-          <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-            {livingSituationTitle}
-          </div>
-          <div
-            className="vads-u-margin-bottom--2 dd-privacy-hidden"
-            data-dd-action-name="living situation"
-          >
+      </dd>
+      {data.housingRisk && (
+        <>
+          <dt className={LABEL_CLASSES}>{livingSituationTitle}</dt>
+          <dd className={VALUE_CLASSES} data-dd-action-name="living situation">
             {livingSituationList(data?.livingSituation) || 'None selected'}
-          </div>
-        </li>
-        {data.livingSituation?.other && (
-          <li>
-            <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-              {otherHousingRisksLabel}
-            </div>
-            <div
-              className="vads-u-margin-bottom--2 dd-privacy-hidden"
-              data-dd-action-name="other housing risks"
-            >
-              {data.otherHousingRisks || 'Nothing entered'}
-            </div>
-          </li>
-        )}
-        <li>
-          <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-            {pointOfContactNameLabel}
-          </div>
-          <div
-            className="vads-u-margin-bottom--2 dd-privacy-hidden"
+          </dd>
+          {data.livingSituation?.other && (
+            <>
+              <dt className={LABEL_CLASSES}>{otherHousingRisksLabel}</dt>
+              <dd
+                className={VALUE_CLASSES}
+                data-dd-action-name="other housing risks"
+              >
+                {data.otherHousingRisks || 'Nothing entered'}
+              </dd>
+            </>
+          )}
+          <dt className={LABEL_CLASSES}>{pointOfContactNameLabel}</dt>
+          <dd
+            className={VALUE_CLASSES}
             data-dd-action-name="point of contact full name"
           >
             {data.pointOfContactName || 'Nothing entered'}
-          </div>
-        </li>
-        <li>
-          <div className="vads-u-margin-bottom--0p5 vads-u-color--gray vads-u-font-size--sm">
-            {pointOfContactPhoneLabel}
-          </div>
-          <div
-            className="vads-u-margin-bottom--2 dd-privacy-hidden"
+          </dd>
+          <dt className={LABEL_CLASSES}>{pointOfContactPhoneLabel}</dt>
+          <dd
+            className={VALUE_CLASSES}
             data-dd-action-name="point of contact phone number"
           >
             {data.pointOfContactPhone ? (
@@ -77,10 +61,10 @@ export const LivingSituation = ({ data } = {}) => (
             ) : (
               'Nothing entered'
             )}
-          </div>
-        </li>
-      </>
-    )}
+          </dd>
+        </>
+      )}
+    </dl>
   </>
 );
 

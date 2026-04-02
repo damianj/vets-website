@@ -2,6 +2,11 @@ import { pageNotFoundHeading } from '@department-of-veterans-affairs/platform-si
 
 export const AXE_CONTEXT = '.secure-messaging-container';
 
+// Extended timeout for focus assertions on shadow DOM web components.
+// focusElement() applies focus asynchronously through the shadow DOM,
+// which can exceed the default 4s Cypress retry on slow CI runners.
+export const SHADOW_DOM_FOCUS_TIMEOUT = { timeout: 8000 };
+
 export const Paths = {
   MHV_MAIN: '/my-health/',
   UI_MAIN: '/my-health/secure-messages',

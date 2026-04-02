@@ -60,7 +60,7 @@ describe('ConfirmationPageV2', () => {
       'Not answered',
       '',
       '',
-      ',  ',
+      '',
       'Not answered',
       'Not answered',
       '',
@@ -83,28 +83,28 @@ describe('ConfirmationPageV2', () => {
     );
     // expect($('va-loading-indicator', container)).to.exist;
     const h2s = $$('h2', container);
-    expect(h2s.length).to.eq(5);
+    expect(h2s.length).to.eq(6);
     expect(h2s.map(el => el.textContent)).to.deep.equal([
       // `You submitted your Board Appeal request on ${date}`,
       'Request a Board Appeal', // print only header
       'Your Board Appeal request submission is in progress',
+      'Print a copy of your Board Appeal',
       'What to expect next',
       'How to contact us if you have questions',
       'Your Board Appeal request',
     ]);
 
     const h3s = $$('h3', container);
-    expect(h3s.length).to.eq(5); // 6 with PDF download code added
+    expect(h3s.length).to.eq(4); // 6 with PDF download code added
     expect(h3s.map(el => el.textContent)).to.deep.equal([
       // 'Save a PDF copy of your Board Appeal request',
-      'Print this confirmation page',
       'What happens after the Board agrees to review your case',
       'Personal information',
       'Issues for review',
       'Board review options',
     ]);
     expect($$('h4', container).length).to.eq(0);
-    expect($$('ul', container).length).to.eq(4);
+    expect($$('ul', container).length).to.eq(3);
 
     const reviewInfo = $('.board-review-option-info', container).textContent;
     expect(reviewInfo).to.not.contain(
@@ -119,12 +119,12 @@ describe('ConfirmationPageV2', () => {
       items.map((el, index) => el[index === 4 ? 'innerHTML' : 'textContent']),
     ).to.deep.equal([
       'Michael Thomas Wazowski, Esq.',
-      '●●●–●●–8765V A file number ending with 8 7 6 5',
+      '***–**–8765V A file number ending with 8 7 6 5',
       'February 3, 1990',
       'No',
       '<va-telephone contact="5558001111" extension="2345" not-clickable="true"></va-telephone>',
       'user@example.com',
-      '123 Main StNew York, NY 30012',
+      '123 Main StSuite #1200Box 45678901234New York, NY30012United States',
       'Yes',
       'Lorem ipsum',
       'Yes',

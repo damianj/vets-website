@@ -1,5 +1,5 @@
 import { durationInDays } from '../helpers';
-import { separationReasonOptions } from '../labels';
+import { getSeparationReasonOptions } from '../labels';
 
 export function calculateSeparationDuration(formData) {
   const parsedFormData = JSON.parse(formData);
@@ -24,7 +24,9 @@ export function calculateSeparationDuration(formData) {
     if (parsedFormData?.separationDueToAssignedReasons) {
       // Get the display value from the labels object
       const reasonKey = parsedFormData.separationDueToAssignedReasons;
-      const reasonLabel = separationReasonOptions[reasonKey];
+      const reasonLabel = getSeparationReasonOptions(
+        parsedFormData?.survivorsBenefitsForm2025VersionEnabled,
+      )[reasonKey];
       additionalItems.push(`Reason: ${reasonLabel}`);
     }
 

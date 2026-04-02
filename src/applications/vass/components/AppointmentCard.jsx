@@ -46,7 +46,7 @@ const AppointmentCard = ({
           </p>
         }
       />
-      {appointmentData?.startUTC && (
+      {appointmentData?.startUtc && (
         <CardSection
           data-testid="when-section"
           heading="When"

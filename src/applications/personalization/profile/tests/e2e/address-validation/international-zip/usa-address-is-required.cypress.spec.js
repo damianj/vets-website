@@ -19,7 +19,9 @@ describe('Personal and contact information', () => {
         .find('input')
         .clear();
       addressPage.saveForm();
-      cy.get('va-text-input[label="Zip code"][error="Zip code is required"]');
+      cy.get(
+        'va-text-input[label="Zip code"][error="Enter a valid 5-digit zip code"]',
+      ).should('exist');
     });
   });
 });
