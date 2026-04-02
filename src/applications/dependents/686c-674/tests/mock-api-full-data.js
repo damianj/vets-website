@@ -236,8 +236,6 @@ const responses = {
       features: [
         { name: 'vaDependentsV3', value: true },
         { name: 'va_dependents_v3', value: true },
-        { name: 'vaDependentsNetWorthAndPension', value: true },
-        { name: 'va_dependents_net_worth_and_pension', value: true },
         { name: 'vaDependentsDuplicateModals', value: true },
         { name: 'va_dependents_duplicate_modals', value: true },
         { name: 'manage_dependents', value: true },

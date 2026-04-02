@@ -243,16 +243,16 @@ describe('Add Child Chapter', () => {
         ],
       };
 
-      expect(chapter.pages.addChildIntro.depends(formData, 0)).to.be.true;
-      expect(chapter.pages.addChildRelationshipType.depends(formData, 0)).to.be
+      expect(chapter.pages.addChildIntro.depends(formData)).to.be.true;
+      expect(chapter.pages.addChildRelationshipType.depends(formData)).to.be
         .true;
       expect(
-        chapter.pages.addChildAdditionalInformationPartTwo.depends(formData, 0),
-      ).to.be.true;
+        chapter.pages.addChildAdditionalInformationPartTwo.depends(formData),
+      ).to.be.false;
 
-      expect(chapter.pages.addChildStepchild.depends(formData, 0)).to.be.false;
-      expect(chapter.pages.addChildChildAddressPartOne.depends(formData, 0)).to
-        .be.false;
+      expect(chapter.pages.addChildStepchild.depends(formData)).to.be.false;
+      expect(chapter.pages.addChildChildAddressPartOne.depends(formData)).to.be
+        .true;
       expect(chapter.pages.addChildMarriageEndDetails.depends(formData, 0)).to
         .be.false;
       expect(chapter.pages.disabilityPartTwo.depends(formData, 0)).to.be.false;
@@ -273,11 +273,11 @@ describe('Add Child Chapter', () => {
         ],
       };
 
-      expect(chapter.pages.addChildStepchild.depends(formData, 0)).to.be.true;
-      expect(chapter.pages.addChildChildAddressPartOne.depends(formData, 0)).to
-        .be.true;
-      expect(chapter.pages.addChildChildAddressPartTwo.depends(formData, 0)).to
-        .be.true;
+      expect(chapter.pages.addChildStepchild.depends(formData)).to.be.false;
+      expect(chapter.pages.addChildChildAddressPartOne.depends(formData)).to.be
+        .true;
+      expect(chapter.pages.addChildChildAddressPartTwo.depends(formData)).to.be
+        .true;
       expect(chapter.pages.addChildMarriageEndDetails.depends(formData, 0)).to
         .be.true;
       expect(chapter.pages.disabilityPartTwo.depends(formData, 0)).to.be.true;

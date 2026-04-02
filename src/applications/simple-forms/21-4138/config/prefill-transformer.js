@@ -23,14 +23,15 @@ export default function prefillTransformer(pages, formData, metadata, state) {
           }
         : formData?.fullName,
       dateOfBirth: dateOfBirth || formData?.dateOfBirth,
-      ...(formData?.veteran?.ssn && {
-        idNumber: { ssn: formData.veteran.ssn },
+      ...((formData?.veteran?.ssn || formData?.idNumber?.ssn) && {
+        idNumber: { ssn: formData?.veteran?.ssn || formData?.idNumber?.ssn },
       }),
       veteran: {
         mailingAddress: vet360.mailingAddress || {},
         mobilePhone: vet360.mobilePhone || {},
         homePhone: vet360.homePhone || {},
         email: vet360.email || {},
+        ...(formData?.veteran?.ssn && { ssn: formData.veteran.ssn }),
       },
     },
     metadata,

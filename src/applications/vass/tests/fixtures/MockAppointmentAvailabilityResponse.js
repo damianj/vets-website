@@ -102,20 +102,20 @@ export default class MockAppointmentAvailabilityResponse {
    * @static
    * @param {Object} props - Error properties.
    * @param {string} [props.appointmentId] - The booked appointment ID.
-   * @param {string} [props.dtStartUTC] - Appointment start time.
-   * @param {string} [props.dtEndUTC] - Appointment end time.
+   * @param {string} [props.dtStartUtc] - Appointment start time.
+   * @param {string} [props.dtEndUtc] - Appointment end time.
    * @returns {Object} The error response object.
    * @memberof MockAppointmentAvailabilityResponse
    */
   static createAppointmentAlreadyBookedError({
     appointmentId,
-    dtStartUTC,
-    dtEndUTC,
+    dtStartUtc,
+    dtEndUtc,
   } = {}) {
     return createAppointmentAlreadyBookedError({
       appointmentId,
-      dtStartUTC,
-      dtEndUTC,
+      dtStartUtc,
+      dtEndUtc,
     });
   }
 

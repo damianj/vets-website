@@ -27,9 +27,12 @@ export const schema = {
 
 export const pageDepends = formData => {
   const entity = formData['view:selectedRepresentative'];
+  const individualAcceptEnabled =
+    formData?.['view:individualAcceptEnabled'] || false;
 
   const representativeAcceptsDigitalSubmission = entityAcceptsDigitalPoaRequests(
     entity,
+    individualAcceptEnabled,
   );
 
   return (

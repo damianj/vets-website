@@ -60,7 +60,7 @@
     },
     {
       "rootFolder": "combined-debt-portal",
-      "slackGroup": "<@U0329KDCJ0Y> <@U031KTDNYEP> <@U02HWQYB8G1>"
+      "slackGroup": "<@U09SLS10Z27> <@U031KTDNYEP> <@U09LN8T5MLJ>"
     },
     {
       "rootFolder": "coronavirus-screener",
@@ -86,7 +86,7 @@
     },
     {
       "rootFolder": "dispute-debt",
-      "slackGroup": "<@U022GNYPJ1L>"
+      "slackGroup": "<@U022GNYPJ1L> <@U09SLS10Z27> <@U031KTDNYEP> <@U09LN8T5MLJ>"
     },
     {
       "rootFolder": "ds-playground",
@@ -123,7 +123,7 @@
     },
     {
       "rootFolder": "financial-status-report",
-      "slackGroup": "<@U0329KDCJ0Y> <@U031KTDNYEP> <@U02HWQYB8G1>"
+      "slackGroup": "<@U09SLS10Z27> <@U031KTDNYEP> <@U09LN8T5MLJ>"
     },
     {
       "rootFolder": "fry-dea",

@@ -2,6 +2,46 @@ import { expect } from 'chai';
 import submitTransformer from '../../config/submit-transformer';
 
 describe('Ask VA submit transformer', () => {
+  context('SchoolObj.StateAbbreviation', () => {
+    const schools = [
+      {
+        // Without zip code
+        value: '789 - OAKLAND TECHNICAL HIGH SCHOOL CA',
+        result: {
+          InstitutionName: 'OAKLAND TECHNICAL HIGH SCHOOL',
+          SchoolFacilityCode: '789',
+          StateAbbreviation: 'CA',
+        },
+      },
+      {
+        // With zip code
+        value: '123 - SPRINGFIELD ELEMENTARY SCHOOL IL 62704',
+        result: {
+          InstitutionName: 'SPRINGFIELD ELEMENTARY SCHOOL',
+          SchoolFacilityCode: '123',
+          StateAbbreviation: 'IL',
+        },
+      },
+      {
+        // With extended zip code
+        value: '456 - SHELBYVILLE HIGH SCHOOL MO 63469-1234',
+        result: {
+          InstitutionName: 'SHELBYVILLE HIGH SCHOOL',
+          SchoolFacilityCode: '456',
+          StateAbbreviation: 'MO',
+        },
+      },
+    ];
+
+    it('should parse school name, code, and state from school field', () => {
+      schools.forEach(school => {
+        const result = submitTransformer({ school: school.value });
+
+        expect(result.SchoolObj).to.deep.equal(school.result);
+      });
+    });
+  });
+
   it('should transform data correctly with file(s)', () => {
     const formData = {
       school: '333 - Midvale School for the Gifted',

@@ -21,7 +21,7 @@
   "endCauseExplanation": "Some other cause",
   "remarriageEndCause": "other",
   "claimantHasAdditionalMarriages": true,
-  "separationDueToAssignedReasons": "RELATIONSHIP_DIFFERENCES",
+  "separationDueToAssignedReasons": "MEDICAL_FINANCIAL",
   "separationExplanation": "Some explanation",
   "separationStartDate": "2021-01-01",
   "separationEndDate": "2022-01-01",

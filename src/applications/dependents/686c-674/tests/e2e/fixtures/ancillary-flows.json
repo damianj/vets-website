@@ -1,5 +1,4 @@
 {
-  "vaDependentsNetWorthAndPension": false,
   "view:householdIncome": true,
   "householdIncome": false,
   "view:childStoppedAttendingSchoolMissingInformation": {},
@@ -83,7 +82,7 @@
   ],
   "deaths": [
     {
-      "deceasedDependentIncome": "NA",
+      "deceasedDependentIncome": "N",
       "dependentDeathLocation": {
         "location": {
           "city": "Fakesville",

@@ -1,6 +1,6 @@
 {
-  "vaDependentsNetWorthAndPension": true,
   "netWorthLimit": 163699,
+  "householdIncome": false,
 
   "view:addOrRemoveDependents": {
     "add": true
@@ -224,6 +224,7 @@
       },
       "remarks": "asdf",
       "benefitPaymentDate": "2021-01-19",
+      "claimsOrReceivesPension": true,
       "studentIncome": "N",
       "fullName": {
         "first": "John",

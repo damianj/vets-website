@@ -1280,7 +1280,12 @@ describe('labsAndTestsReducer - SCDF imaging studies', () => {
   it('merges imaging studies into labs list on MERGE_IMAGING_STUDIES', () => {
     const initialState = {
       labsAndTestsList: [
-        { id: 'lab-1', sortDate: '2025-01-10T09:15:00Z', name: 'CHEST XRAY' },
+        {
+          id: 'lab-1',
+          type: 'LP29684-5',
+          sortDate: '2025-01-10T09:15:00Z',
+          name: 'CHEST XRAY',
+        },
         { id: 'lab-2', sortDate: '2025-01-11T10:00:00Z', name: 'BLOOD TEST' },
       ],
       scdfImagingStudies: [

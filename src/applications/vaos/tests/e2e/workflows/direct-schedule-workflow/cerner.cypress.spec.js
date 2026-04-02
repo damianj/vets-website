@@ -50,7 +50,7 @@ describe('VAOS direct schedule flow - Cerner', () => {
         mockEligibilityCCApi({ cceType, isEligible: false });
         mockSchedulingConfigurationApi({
           facilityIds: ['983'],
-          typeOfCareId: 'primaryCare',
+          typeOfCareId: 'amputation',
           isDirect: true,
           isRequest: true,
         });
@@ -64,7 +64,7 @@ describe('VAOS direct schedule flow - Cerner', () => {
 
         TypeOfCarePageObject.assertUrl()
           .assertAddressAlert({ exist: false })
-          .selectTypeOfCare(/Primary care/i)
+          .selectTypeOfCare(/Amputation care/i)
           .clickNextButton();
 
         VAFacilityPageObject.assertUrl().clickNextButton();
@@ -101,7 +101,7 @@ describe('VAOS direct schedule flow - Cerner', () => {
         mockEligibilityCCApi({ cceType, isEligible: false });
         mockSchedulingConfigurationApi({
           facilityIds: ['983', '984'],
-          typeOfCareId: 'primaryCare',
+          typeOfCareId: 'amputation',
           isDirect: true,
           isRequest: true,
         });
@@ -115,7 +115,7 @@ describe('VAOS direct schedule flow - Cerner', () => {
 
         TypeOfCarePageObject.assertUrl()
           .assertAddressAlert({ exist: false })
-          .selectTypeOfCare(/Primary care/i)
+          .selectTypeOfCare(/Amputation care/i)
           .clickNextButton();
 
         VAFacilityPageObject.assertUrl()
@@ -160,7 +160,7 @@ describe('VAOS direct schedule flow - Cerner', () => {
           mockEligibilityCCApi({ cceType, isEligible: false });
           mockSchedulingConfigurationApi({
             facilityIds: ['983'],
-            typeOfCareId: 'primaryCare',
+            typeOfCareId: 'amputation',
             isDirect: true,
             isRequest: true,
           });
@@ -174,7 +174,7 @@ describe('VAOS direct schedule flow - Cerner', () => {
 
           TypeOfCarePageObject.assertUrl()
             .assertAddressAlert({ exist: false })
-            .selectTypeOfCare(/Primary care/i)
+            .selectTypeOfCare(/Amputation care/i)
             .clickNextButton();
 
           VAFacilityPageObject.assertUrl().clickNextButton();

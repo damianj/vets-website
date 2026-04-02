@@ -61,7 +61,6 @@ describe('buildSubmissionData', () => {
       statementOfTruthSignature: 'John Doe',
       statementOfTruthCertified: true,
       householdIncome: false,
-      vaDependentsNetWorthAndPension: true,
       metadata: { version: 1 },
       ...overrides,
     },
@@ -95,7 +94,6 @@ describe('buildSubmissionData', () => {
   it('should handle boolean fields that can be false', () => {
     // When flag is on AND vet IS in receipt of pension, householdIncome should be included
     const payload = createTestData({
-      vaDependentsNetWorthAndPension: true,
       veteranInformation: {
         fullName: { first: 'Veteran', last: 'Name' },
         isInReceiptOfPension: 1, // in receipt - householdIncome should be present
@@ -105,47 +103,28 @@ describe('buildSubmissionData', () => {
     const result = buildSubmissionData(payload);
 
     expect(result.data.householdIncome).to.equal(false);
-    expect(result.data.vaDependentsNetWorthAndPension).to.be.true;
   });
 
-  it('should NOT include householdIncome when flag is on and veteran is not in receipt of pension', () => {
+  it('should NOT include householdIncome when veteran is not in receipt of pension', () => {
     // Regression test: householdIncome answered in a prior session (before the pension flag
     // was enabled) must not be sent to the backend when isInReceiptOfPension is 0.
     const payload = createTestData({
-      vaDependentsNetWorthAndPension: true,
       veteranInformation: {
         fullName: { first: 'Veteran', last: 'Name' },
         isInReceiptOfPension: 0, // API confirmed: not in receipt
       },
-      householdIncome: false, // stale answer from before the flag was turned on
+      // householdIncome: false, // stale answer from before the flag was turned on
     });
     const result = buildSubmissionData(payload);
 
     expect(result.data.householdIncome).to.be.undefined;
-    expect(result.data.vaDependentsNetWorthAndPension).to.be.true;
   });
 
-  it('should include householdIncome when flag is off (legacy behavior)', () => {
-    // When the feature flag is off, householdIncome is always collected from all veterans
-    const payload = createTestData({
-      vaDependentsNetWorthAndPension: false,
-      veteranInformation: {
-        fullName: { first: 'Veteran', last: 'Name' },
-        isInReceiptOfPension: 0,
-      },
-      householdIncome: true,
-    });
-    const result = buildSubmissionData(payload);
-
-    expect(result.data.householdIncome).to.be.true;
-  });
-
-  it('should strip student financial fields when flag is on and veteran is not in receipt of pension', () => {
+  it('should strip student financial fields when veteran is not in receipt of pension', () => {
     // Regression test: student financial fields (earnings, net worth) answered in a prior
     // session (before the pension flag was enabled) must not reach the backend when
     // isInReceiptOfPension is 0 — same stale-data problem as householdIncome.
     const payload = createTestData({
-      vaDependentsNetWorthAndPension: true,
       veteranInformation: {
         fullName: { first: 'Veteran', last: 'Name' },
         isInReceiptOfPension: 0,
@@ -197,67 +176,13 @@ describe('buildSubmissionData', () => {
       .undefined;
   });
 
-  it('should include student financial fields when flag is on and veteran IS in receipt of pension', () => {
+  it('should include student financial fields when veteran IS in receipt of pension', () => {
     // Companion test: when vet IS in receipt of pension the financial fields are valid
     // and must be preserved in the submission.
     const payload = createTestData({
-      vaDependentsNetWorthAndPension: true,
       veteranInformation: {
         fullName: { first: 'Veteran', last: 'Name' },
         isInReceiptOfPension: 1,
-      },
-      'view:addDependentOptions': {
-        addSpouse: false,
-        addChild: false,
-        report674: true,
-        addDisabledChild: false,
-      },
-      studentInformation: [
-        {
-          fullName: { first: 'Student', last: 'Doe' },
-          claimsOrReceivesPension: true,
-          studentEarningsFromSchoolYear: {
-            earningsFromAllEmployment: '5000',
-            annualSocialSecurityPayments: '0',
-            otherAnnuitiesIncome: '0',
-            allOtherIncome: '0',
-          },
-          studentExpectedEarningsNextYear: {
-            earningsFromAllEmployment: '6000',
-            annualSocialSecurityPayments: '0',
-            otherAnnuitiesIncome: '0',
-            allOtherIncome: '0',
-          },
-          studentNetworthInformation: {
-            savings: '1000',
-            securities: '0',
-            realEstate: '0',
-            otherAssets: '0',
-          },
-        },
-      ],
-    });
-    const result = buildSubmissionData(payload);
-
-    expect(result.data.studentInformation).to.be.an('array');
-    expect(result.data.studentInformation[0].claimsOrReceivesPension).to.be
-      .true;
-    expect(result.data.studentInformation[0].studentEarningsFromSchoolYear).to
-      .not.be.undefined;
-    expect(result.data.studentInformation[0].studentExpectedEarningsNextYear).to
-      .not.be.undefined;
-    expect(result.data.studentInformation[0].studentNetworthInformation).to.not
-      .be.undefined;
-  });
-
-  it('should include student financial fields when flag is off (legacy behavior)', () => {
-    // When the feature flag is off, student financial data is collected from all veterans
-    // and must pass through to the backend unchanged.
-    const payload = createTestData({
-      vaDependentsNetWorthAndPension: false,
-      veteranInformation: {
-        fullName: { first: 'Veteran', last: 'Name' },
-        isInReceiptOfPension: 0,
       },
       'view:addDependentOptions': {
         addSpouse: false,
@@ -1247,7 +1172,7 @@ describe('customTransformForSubmit integration', () => {
     expect(data.data).to.deep.equal(transformedMaximalFixture);
   });
 
-  it('should transform maximal data', () => {
+  it('should transform spouse child all fields data', () => {
     const { data } = customTransformForSubmit(formConfig, {
       data: spouseChildAllFieldsFixture,
     });

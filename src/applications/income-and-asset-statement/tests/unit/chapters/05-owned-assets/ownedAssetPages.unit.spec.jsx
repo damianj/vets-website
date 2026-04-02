@@ -47,7 +47,8 @@ describe('owned asset list and loop pages', () => {
         recipientName,
         // eslint-disable-next-line no-unused-vars
         'view:addFormQuestion': _removedViewAddFormQuestion,
-
+        // eslint-disable-next-line no-unused-vars
+        uploadedDocuments,
         ...baseItem
       } = testData.data.ownedAssets[0];
       testOptionsIsItemIncomplete(options, baseItem);

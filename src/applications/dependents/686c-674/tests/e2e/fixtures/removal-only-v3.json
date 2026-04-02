@@ -50,7 +50,6 @@
   },
   "view:additionalEvidenceDescription": {},
   "view:selectable686Options": {},
-  "vaDependentsNetWorthAndPension": true,
   "vaDependentsDuplicateModals": true,
   "vaDependentsV3": true,
   "veteranInformation": {
@@ -63,7 +62,7 @@
     "birthDate": "1976-06-09",
     "ssnLastFour": "0625",
     "vaFileLastFour": "0625",
-    "isInReceiptOfPension": -1
+    "isInReceiptOfPension": 1
   },
   "dependents": {
     "hasDependents": true,
@@ -524,5 +523,7 @@
       "endState": "AK"
     }
   ],
-  "householdIncome": false
+  "householdIncome": false,
+  "childSupportingDocuments": [],
+  "spouseSupportingDocuments": []
 }

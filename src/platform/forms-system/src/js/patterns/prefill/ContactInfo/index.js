@@ -97,7 +97,9 @@ const profileContactInfoPages = ({
 
   if (included.includes(addressKey)) {
     keys.address = addressKey;
-    wrapperProperties[addressKey] = addressSchema || profileAddressSchema;
+    wrapperProperties[addressKey] =
+      addressSchema ||
+      (requiredList.includes(addressKey) ? profileAddressSchema : blankSchema);
     config[`${contactInfoPageKey}EditMailingAddress`] = {
       path: `${contactPath}/edit-mailing-address`,
       CustomPage: props =>

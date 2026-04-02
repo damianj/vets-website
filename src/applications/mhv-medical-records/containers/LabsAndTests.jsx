@@ -334,7 +334,8 @@ const LabsAndTests = () => {
                       </p>
                     </VaAlert>
                   )}
-                  {radRecordsWithImagesReady?.length > 0 &&
+                  {!isAcceleratingLabsAndTests &&
+                    radRecordsWithImagesReady?.length > 0 &&
                     studyJobs?.length > 0 && (
                       <VaAlert
                         status="success"
@@ -355,7 +356,9 @@ const LabsAndTests = () => {
                         />
                       </VaAlert>
                     )}
-                  <ScdfImagesReadyAlert records={scdfRecordsWithImages} />
+                  {isAcceleratingLabsAndTests && (
+                    <ScdfImagesReadyAlert records={scdfRecordsWithImages} />
+                  )}
 
                   <RecordList
                     type={recordType.LABS_AND_TESTS}

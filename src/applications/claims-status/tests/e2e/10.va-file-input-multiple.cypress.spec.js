@@ -1078,6 +1078,14 @@ describe('VA File Input Multiple', () => {
           { force: true },
         );
 
+      // Re-enter password after file replacement (disablePasswordSubmitButtonPattern clears it)
+      // Use force: true since the password field is disabled by disablePasswordSubmitButtonPattern
+      getFileInput(1)
+        .find('va-text-input')
+        .shadow()
+        .find('input')
+        .type('middle-password', { force: true });
+
       // Change file 2 (last): regular to regular
       getFileInput(2)
         .find('input[type="file"]')

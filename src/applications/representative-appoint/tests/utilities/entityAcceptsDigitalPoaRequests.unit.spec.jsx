@@ -4,24 +4,109 @@ import { entityAcceptsDigitalPoaRequests } from '../../utilities/helpers';
 
 describe('entityAcceptsDigitalPoaRequests', () => {
   context('when the representative is an organization', () => {
-    context('when the organization accepts digital submissions', () => {
-      it('returns true', () => {
-        const mockEntity = {
-          type: 'organization',
-          attributes: { canAcceptDigitalPoaRequests: true },
-        };
-        const result = entityAcceptsDigitalPoaRequests(mockEntity);
-        expect(result).to.be.true;
+    context('when individualAcceptEnabled is false (default)', () => {
+      context('when the organization accepts digital submissions', () => {
+        it('returns true', () => {
+          const mockEntity = {
+            type: 'organization',
+            attributes: { canAcceptDigitalPoaRequests: true },
+          };
+          const result = entityAcceptsDigitalPoaRequests(mockEntity);
+          expect(result).to.be.true;
+        });
       });
+      context(
+        'when the organization does not accept digital submissions',
+        () => {
+          it('returns false', () => {
+            const mockEntity = {
+              type: 'organization',
+              attributes: { canAcceptDigitalPoaRequests: false },
+            };
+            const result = entityAcceptsDigitalPoaRequests(mockEntity);
+            expect(result).to.be.false;
+          });
+        },
+      );
     });
-    context('when the organization does not accept digital submissions', () => {
-      it('returns false', () => {
-        const mockEntity = {
-          type: 'organization',
-          attributes: { canAcceptDigitalPoaRequests: false },
-        };
-        const result = entityAcceptsDigitalPoaRequests(mockEntity);
-        expect(result).to.be.false;
+
+    context('when individualAcceptEnabled is true', () => {
+      context(
+        'when canAcceptDigitalPoaRequests and repsCanAcceptAnyRequest are both true',
+        () => {
+          it('returns true', () => {
+            const mockEntity = {
+              type: 'organization',
+              attributes: {
+                canAcceptDigitalPoaRequests: true,
+                repsCanAcceptAnyRequest: true,
+              },
+            };
+            const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+            expect(result).to.be.true;
+          });
+        },
+      );
+
+      context(
+        'when canAcceptDigitalPoaRequests is true but repsCanAcceptAnyRequest is false',
+        () => {
+          it('returns false', () => {
+            const mockEntity = {
+              type: 'organization',
+              attributes: {
+                canAcceptDigitalPoaRequests: true,
+                repsCanAcceptAnyRequest: false,
+              },
+            };
+            const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+            expect(result).to.be.false;
+          });
+        },
+      );
+
+      context(
+        'when canAcceptDigitalPoaRequests is false but repsCanAcceptAnyRequest is true',
+        () => {
+          it('returns false', () => {
+            const mockEntity = {
+              type: 'organization',
+              attributes: {
+                canAcceptDigitalPoaRequests: false,
+                repsCanAcceptAnyRequest: true,
+              },
+            };
+            const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+            expect(result).to.be.false;
+          });
+        },
+      );
+
+      context('when both are false', () => {
+        it('returns false', () => {
+          const mockEntity = {
+            type: 'organization',
+            attributes: {
+              canAcceptDigitalPoaRequests: false,
+              repsCanAcceptAnyRequest: false,
+            },
+          };
+          const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+          expect(result).to.be.false;
+        });
+      });
+
+      context('when repsCanAcceptAnyRequest is missing', () => {
+        it('returns false', () => {
+          const mockEntity = {
+            type: 'organization',
+            attributes: {
+              canAcceptDigitalPoaRequests: true,
+            },
+          };
+          const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+          expect(result).to.be.false;
+        });
       });
     });
   });

@@ -245,6 +245,9 @@ export const veteranFormerMarriageLabels = {
  * Validates that a field contains only ASCII characters (code points 0–127).
  * BGS/RBPS rejects non-ASCII characters in free-text fields.
  * Error message surfaces the exact offending characters so the user knows what to remove.
+ * @param {object} errors - The errors object provided by react-jsonschema-form
+ * @param {string} value - The value of the field being validated
+ * @returns {void}
  */
 export const asciiValidation = (errors, value) => {
   if (!value) return;
@@ -261,6 +264,9 @@ export const asciiValidation = (errors, value) => {
 /**
  * Wraps fullNameNoSuffixUI and appends asciiValidation to first, middle, and last name fields.
  * Use in place of fullNameNoSuffixUI() for any name that will be submitted to BGS.
+ * @param {function|string} formatTitle - The title for the full name field, either a string or a function that returns a string
+ * @param {object} uiOptions - Additional UI options to pass to fullNameNoSuffixUI
+ * @returns {object} UI schema for a full name field with asciiValidation
  */
 export const fullNameNoSuffixWithAsciiUI = (formatTitle, uiOptions) => {
   const base = fullNameNoSuffixUI(formatTitle, uiOptions);
@@ -288,24 +294,4 @@ export const fullNameNoSuffixWithAsciiUI = (formatTitle, uiOptions) => {
       ],
     },
   };
-};
-
-/**
- * Returns the updateUiSchema function for income questions based on feature flag
- * When vaDependentsNetWorthAndPension is ON, hides the hint text (new pension flow)
- * When OFF, shows the hint text (current production)
- * @param {object} formData - The form data
- * @returns {object} - UI schema updates
- */
-export const incomeQuestionUpdateUiSchema = formData => {
-  // Only hide hint when feature flag is ON (new pension flow)
-  if (formData?.vaDependentsNetWorthAndPension) {
-    return {
-      'ui:options': {
-        hint: '',
-      },
-    };
-  }
-  // Keep original hint when flag is OFF (current production)
-  return {};
 };

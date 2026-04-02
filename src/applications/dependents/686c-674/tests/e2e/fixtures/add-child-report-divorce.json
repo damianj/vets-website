@@ -1,9 +1,8 @@
 {
-  "vaDependentsNetWorthAndPension": false,
   "view:householdIncome": true,
   "householdIncome": false,
   "reportDivorce": {
-    "spouseIncome": "NA",
+    "spouseIncome": "Y",
     "date": "2020-04-19",
     "divorceLocation": {
       "location": {

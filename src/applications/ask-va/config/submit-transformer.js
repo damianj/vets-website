@@ -2,10 +2,22 @@ import { relationshipOptionsSomeoneElse } from '../constants';
 
 const getSchoolInfo = school => {
   if (!school) return null;
+
+  // When we get rid of zip code, we can use this simplified regex pattern:
+  //   /^(\d+)\s*-\s*(.+)\s+([A-Z]{2})$/
+  const match = school.match(/^(\d+)\s*-\s*(.+)\s+([A-Z]{2})\b/);
+  if (match) {
+    return { code: match[1], name: match[2].trim(), state: match[3] };
+  }
+
   const schoolInfo = school.split('-');
   const schoolCode = schoolInfo.splice(0, 1);
 
-  return { code: schoolCode[0].trim(), name: schoolInfo.join(' ').trim() };
+  return {
+    code: schoolCode[0].trim(),
+    name: schoolInfo.join(' ').trim(),
+    state: null,
+  };
 };
 
 const getFiles = files => {
@@ -52,6 +64,7 @@ export default function submitTransformer(formData, uploadFiles) {
 
   let schoolName;
   let schoolCode;
+  let schoolState;
 
   // Check if this is a business inquiry - only then prioritize business email
   const isWorkRelated =
@@ -76,10 +89,12 @@ export default function submitTransformer(formData, uploadFiles) {
     if (schoolInfo) {
       schoolName = schoolInfo.name;
       schoolCode = schoolInfo.code;
+      schoolState = schoolInfo.state;
     }
   } else {
     schoolName = formData?.schoolInfo?.schoolName || null;
     schoolCode = formData?.schoolInfo?.schoolFacilityCode || null;
+    schoolState = formData?.schoolInfo?.schoolState || null;
   }
 
   const requireSignIn = formData?.requireSignInLogic
@@ -112,9 +127,10 @@ export default function submitTransformer(formData, uploadFiles) {
       InstitutionName: schoolName,
       SchoolFacilityCode: schoolCode,
       StateAbbreviation:
+        schoolState ||
         formData.stateOfTheSchool ||
         formData.stateOfTheFacility ||
-        formData.stateOrResidency.schoolState,
+        formData.stateOrResidency?.schoolState,
     },
     requireSignIn,
   };

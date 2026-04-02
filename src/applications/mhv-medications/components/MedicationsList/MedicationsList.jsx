@@ -9,6 +9,7 @@ import MedicationsListCard from './MedicationsListCard';
 import {
   ALL_MEDICATIONS_FILTER_KEY,
   rxListSortingOptions,
+  rxListSortingOptionsV2,
 } from '../../util/constants';
 import { getFilterOptions } from '../../util/helpers/getRxStatus';
 import {
@@ -31,13 +32,16 @@ const MedicationsList = props => {
     selectedSortOption,
     updateLoadingStatus,
   } = props;
-  const sortOptionLowercase = rxListSortingOptions[
-    selectedSortOption
-  ]?.LABEL.toLowerCase();
   const totalMedications = pagination.totalEntries;
   const isManagementImprovementsEnabled = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
+  const sortOptions = isManagementImprovementsEnabled
+    ? rxListSortingOptionsV2
+    : rxListSortingOptions;
+  const sortOptionLowercase = sortOptions[
+    selectedSortOption
+  ]?.LABEL.toLowerCase();
 
   const route = isManagementImprovementsEnabled ? `/history` : `/`;
   const perPage = 10;
@@ -120,15 +124,17 @@ const MedicationsList = props => {
       <div className="no-print rx-page-total-info vads-u-border-bottom--2px vads-u-border-color--gray-lighter" />
       <div className="print-only vads-u-margin--0 vads-u-width--full">
         {rxList?.length > 0 &&
-          rxList.map((rx, idx) => <PrescriptionPrintOnly key={idx} rx={rx} />)}
+          rxList.map(rx => (
+            <PrescriptionPrintOnly key={rx.prescriptionId} rx={rx} />
+          ))}
       </div>
       <ul
         className="medications-list-style--none vads-u-margin--0 vads-u-padding--0 vads-u-margin-top--3"
         data-testid="medication-list"
       >
         {rxList?.length > 0 &&
-          rxList.map((rx, idx) => (
-            <li key={idx}>
+          rxList.map(rx => (
+            <li key={rx.prescriptionId}>
               <MedicationsListCard rx={rx} />
             </li>
           ))}

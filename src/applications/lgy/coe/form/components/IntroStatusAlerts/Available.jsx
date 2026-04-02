@@ -35,5 +35,5 @@ export const Available = ({ referenceNumber, requestDate }) => (
 
 Available.propTypes = {
   referenceNumber: PropTypes.string.isRequired,
-  requestDate: PropTypes.string.isRequired,
+  requestDate: PropTypes.number.isRequired,
 };

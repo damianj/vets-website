@@ -62,14 +62,16 @@ const POARequestSearchCard = ({ poaRequest }) => {
               </span>
             )}
           </li>
-          <li>
-            <Link
-              to={`/representation-requests/${poaRequest.id}`}
-              className="vads-c-action-link--gray"
-            >
-              View POA request
-            </Link>
-          </li>
+          {poaRequest.canAccept !== false && (
+            <li>
+              <Link
+                to={`/representation-requests/${poaRequest.id}`}
+                className="vads-c-action-link--gray"
+              >
+                View POA request
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </li>

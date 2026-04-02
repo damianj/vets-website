@@ -27,19 +27,19 @@ export default class MockAppointmentDetailsResponse {
    */
   constructor({
     appointmentId = 'abcdef123456',
-    startUTC = '2025-12-24T10:00:00Z',
-    endUTC = '2025-12-24T10:30:00Z',
+    startUtc = '2025-12-24T10:00:00Z',
+    endUtc = '2025-12-24T10:30:00Z',
     agentId = '353dd0fc-335b-ef11-bfe3-001dd80a9f48',
     agentNickname = 'Agent Smith',
     appointmentStatusCode = 1,
-    appointmentStatus = 'Confirmed',
+    appointmentStatus = 'Active',
     cohortStartUtc = '2025-12-01T00:00:00Z',
     cohortEndUtc = '2026-02-28T23:59:59Z',
   } = {}) {
     this.data = createAppointmentDetailsResponse({
       appointmentId,
-      startUTC,
-      endUTC,
+      startUtc,
+      endUtc,
       agentId,
       agentNickname,
       appointmentStatusCode,

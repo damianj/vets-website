@@ -1,7 +1,13 @@
 import SecureMessagingSite from '../sm_site/SecureMessagingSite';
 import PatientInboxPage from '../pages/PatientInboxPage';
 import mockSentMessages from '../fixtures/sentResponse/sent-messages-response.json';
-import { AXE_CONTEXT, Locators, Data, Alerts } from '../utils/constants';
+import {
+  AXE_CONTEXT,
+  Locators,
+  Data,
+  Alerts,
+  SHADOW_DOM_FOCUS_TIMEOUT,
+} from '../utils/constants';
 import FolderLoadPage from '../pages/FolderLoadPage';
 import PatientMessageSentPage from '../pages/PatientMessageSentPage';
 import PatientFilterPage from '../pages/PatientFilterPage';
@@ -125,7 +131,10 @@ describe('SM FILTER ERROR', () => {
 
   it('focuses on relevant error', () => {
     cy.get(Locators.BUTTONS.FILTER).click();
-    cy.get(Locators.BLOCKS.FILTER_KEYWORD_INPUT).should('be.focused');
+    cy.get(
+      Locators.BLOCKS.FILTER_KEYWORD_INPUT,
+      SHADOW_DOM_FOCUS_TIMEOUT,
+    ).should('be.focused');
     cy.get(Locators.BLOCKS.FILTER_KEYWORD_INPUT)
       .invoke('attr', 'error')
       .then(errorAttr => {

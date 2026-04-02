@@ -204,7 +204,7 @@ const ClaimantOverviewPage = () => {
                   information or act on their behalf until you establish
                   representation.
                 </p>
-                <a href="/representative/help">
+                <a href="/representative/help#establishing-representation">
                   Learn about establishing representation
                 </a>
               </va-alert>
@@ -292,10 +292,14 @@ const ClaimantOverviewPage = () => {
                 <div className="vads-grid-col-11">
                   <ul className="poa-request-details__list poa-request-details__list--info">
                     <ClaimantDetailRow
-                      label="Social Security number"
+                      label={
+                        <span className="claimant-detail-row__label--ssn">
+                          Last 4 digits of Social Security Number
+                        </span>
+                      }
                       value={
                         claimant?.veteranSsn
-                          ? `***-**-${String(claimant.veteranSsn).slice(-4)}`
+                          ? String(claimant.veteranSsn).slice(-4)
                           : '—'
                       }
                     />

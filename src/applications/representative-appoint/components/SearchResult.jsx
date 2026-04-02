@@ -15,6 +15,7 @@ const SearchResult = ({
   handleSelectRepresentative,
   loadingPOA,
   userIsDigitalSubmitEligible,
+  individualAcceptEnabled,
 }) => {
   const { id } = representative.data;
   const {
@@ -59,6 +60,7 @@ const SearchResult = ({
 
     const digitalSubmission = entityAcceptsDigitalPoaRequests(
       representative?.data,
+      individualAcceptEnabled,
     );
 
     if (digitalSubmission) {
@@ -199,6 +201,7 @@ SearchResult.propTypes = {
   distance: PropTypes.string,
   email: PropTypes.string,
   handleSelectRepresentative: PropTypes.func,
+  individualAcceptEnabled: PropTypes.bool,
   loadingPOA: PropTypes.bool,
   location: PropTypes.object,
   phone: PropTypes.string,

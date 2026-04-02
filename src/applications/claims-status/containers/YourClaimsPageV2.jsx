@@ -43,6 +43,7 @@ import { setPageFocus } from '../utils/page';
 import { groupClaimsByDocsNeeded, setDocumentTitle } from '../utils/helpers';
 import ClaimsFilter from '../components/ClaimsFilter';
 import ClaimLetterSection from '../components/claim-letters/ClaimLetterSection';
+import IntentToFileSection from '../components/IntentToFileSection';
 import { Type2FailureAnalyticsProvider } from '../contexts/Type2FailureAnalyticsContext';
 
 class YourClaimsPageV2 extends React.Component {
@@ -300,6 +301,7 @@ class YourClaimsPageV2 extends React.Component {
               </div>
             )}
             {content}
+            <IntentToFileSection />
             <ClaimLetterSection />
             {cstClaimsListFilterEnabled ? (
               <>

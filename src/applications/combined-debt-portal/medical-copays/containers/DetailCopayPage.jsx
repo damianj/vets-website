@@ -45,6 +45,28 @@ const DetailCopayPage = ({ match }) => {
     ? copayDetail
     : allStatements?.find(({ id }) => id === selectedId);
 
+  const previousStatements = shouldShowVHAPaymentHistory
+    ? copayDetail?.attributes?.recentStatements || []
+    : (() => {
+        // Legacy logic for old data
+        const facilityId = selectedCopay?.pSFacilityNum;
+
+        return allStatements
+          .filter(
+            statement =>
+              statement.pSFacilityNum === facilityId &&
+              statement.id !== selectedId,
+          )
+          .sort((a, b) => {
+            const dateA = new Date(a.pSStatementDateOutput);
+            const dateB = new Date(b.pSStatementDateOutput);
+            return dateB - dateA;
+          });
+      })();
+
+  const hasPreviousStatements =
+    previousStatements && previousStatements.length > 0;
+
   const copayAttributes = useMemo(
     () => {
       if (!selectedCopay?.id) return DEFAULT_COPAY_ATTRIBUTES;
@@ -82,9 +104,24 @@ const DetailCopayPage = ({ match }) => {
   useEffect(
     () => {
       if (!selectedCopay?.id) return;
-      setAlert(copayAttributes.IS_CURRENT_DATE ? 'status' : 'past-due-balance');
+      const balance = shouldShowVHAPaymentHistory
+        ? selectedCopay?.attributes?.currentBalance
+        : selectedCopay?.pHAmtDue;
+      if (balance === 0) {
+        setAlert('zero-balance');
+      } else {
+        setAlert(
+          copayAttributes.IS_CURRENT_DATE ? 'status' : 'past-due-balance',
+        );
+      }
     },
-    [selectedCopay?.id, copayAttributes],
+    [
+      selectedCopay?.id,
+      selectedCopay?.attributes?.currentBalance,
+      selectedCopay?.pHAmtDue,
+      copayAttributes,
+      shouldShowVHAPaymentHistory,
+    ],
   );
 
   useEffect(
@@ -181,7 +218,11 @@ const DetailCopayPage = ({ match }) => {
           {copayAttributes.TITLE}
         </h1>
         <div>
-          <CopayAlertContainer type={alert} copay={selectedCopay} />
+          <CopayAlertContainer
+            type={alert}
+            copay={selectedCopay}
+            hasPreviousStatements={hasPreviousStatements}
+          />
         </div>
         <div className="vads-u-margin-y--4">
           <h2 className="vads-u-margin-top--0 vads-u-font-size--h3">
@@ -253,7 +294,12 @@ const DetailCopayPage = ({ match }) => {
             fullName={fullName}
           />
         </div>
-        <PreviousStatements selectedId={selectedId} />
+        {hasPreviousStatements && (
+          <PreviousStatements
+            previousStatements={previousStatements}
+            isVHA={shouldShowVHAPaymentHistory}
+          />
+        )}
         <StatementAddresses
           data-testid="statement-addresses"
           copay={selectedCopay}

@@ -488,6 +488,9 @@ export const OH_ENABLED_TYPES_OF_CARE = [
   // 'moveProgram',
   // 'ophthalmology',
   // 'optometry',
+  'outpatientMentalHealth',
+  'primaryCare',
+  'primaryCareMentalHealth',
   // 'socialWork',
 ];
 

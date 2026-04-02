@@ -19,7 +19,7 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
     ? charges.map(item => ({
         date: item.datePosted,
         description: item.description,
-        reference: item.billingReference,
+        reference: selectedCopay.attributes.billNumber,
         amount: item.priceComponents?.[0]?.amount ?? 0,
         provider: item.providerName,
         details: [],
@@ -178,6 +178,28 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   );
 };
 
+/** Medical copays v1 `attributes` (Invoice / list item response). */
+const v1NullableString = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.oneOf([null]),
+]);
+
+const medicalCopayV1Attributes = PropTypes.shape({
+  url: v1NullableString,
+  facility: PropTypes.string,
+  facilityId: PropTypes.string,
+  city: PropTypes.string,
+  currentBalance: PropTypes.number,
+  externalId: PropTypes.string,
+  invoiceDate: PropTypes.string,
+  lastUpdatedAt: v1NullableString,
+  latestBillingRef: PropTypes.string,
+  previousBalance: PropTypes.number,
+  previousUnpaidBalance: PropTypes.number,
+  /** Used for billing reference column when present on the resource. */
+  billNumber: PropTypes.string,
+});
+
 StatementTable.propTypes = {
   formatCurrency: PropTypes.func.isRequired,
   charges: PropTypes.arrayOf(
@@ -197,6 +219,7 @@ StatementTable.propTypes = {
     }),
   ),
   selectedCopay: PropTypes.shape({
+    attributes: medicalCopayV1Attributes,
     pHNewBalance: PropTypes.number,
     pHPrevBal: PropTypes.number,
     pHTotCredits: PropTypes.number,

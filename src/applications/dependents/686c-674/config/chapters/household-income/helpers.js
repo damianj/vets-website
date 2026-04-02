@@ -35,15 +35,10 @@ export const whatAreAssets = (
 
 /**
  * Returns the net worth description text based on feature flag
- * @param {boolean} featureFlag - vaDependentsNetWorthAndPension feature flag
  * @returns {string} Net worth description text
  */
-export const netWorthDescription = (featureFlag = false) => {
-  if (featureFlag) {
-    return 'Because you currently receive VA pension benefits, we need to know your net worth. Your net worth includes your assets, your annual income, and the assets and income of your dependents (including your spouse if you are married).';
-  }
-  return "If you currently receive VA pension benefits, we need to know your net worth. Your net worth includes your assets and your annual income. If you're married, include the value of your spouse's assets and annual income too.";
-};
+export const netWorthDescription = () =>
+  'Because you currently receive VA pension benefits, we need to know your net worth. Your net worth includes your assets, your annual income, and the assets and income of your dependents (including your spouse if you are married).';
 
 /**
  * @typedef {object} StudentNetworthTitleProps

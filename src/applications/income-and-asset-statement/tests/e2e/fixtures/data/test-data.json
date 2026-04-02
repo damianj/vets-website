@@ -52,7 +52,7 @@
         "grossMonthlyIncome": 2500,
         "ownedPortionValue": 100000,
         "assetType": "BUSINESS",
-        "view:addFormQuestion": false
+        "view:addFormQuestion": true
       },
       {
         "recipientRelationship": "CHILD",
@@ -105,7 +105,7 @@
         "monthlyMedicalReimbursementAmount": 0.0,
         "trustEstablishedForVeteransChild": false,
         "haveAuthorityOrControlOfTrust": true,
-        "view:addFormQuestion": false
+        "view:addFormQuestion": true
       }
     ],
     "view:isAddingAnnuities": true,

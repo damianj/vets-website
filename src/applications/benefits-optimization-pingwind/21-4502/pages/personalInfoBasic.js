@@ -19,6 +19,16 @@ import { veteranFields, FORM_21_4502 } from '../definitions/constants';
 const { PERSONAL_INFO: P, COMMON } = FORM_21_4502;
 
 const veteranFullNameUI = fullNameNoSuffixUI();
+const veteranFullNameSchema = {
+  ...fullNameNoSuffixSchema,
+  properties: {
+    ...fullNameNoSuffixSchema.properties,
+    middle: {
+      type: 'string',
+      maxLength: 1,
+    },
+  },
+};
 
 const validateDateOfBirth = (errors, value) => {
   const { day, month, year } = parseISODate(value);
@@ -124,7 +134,7 @@ export default {
       [veteranFields.parentObject]: {
         type: 'object',
         properties: {
-          [veteranFields.fullName]: fullNameNoSuffixSchema,
+          [veteranFields.fullName]: veteranFullNameSchema,
           [veteranFields.dateOfBirth]: { type: 'string' },
           [veteranFields.ssn]: ssnSchema,
           [veteranFields.vaFileNumber]: { type: 'string', maxLength: 20 },

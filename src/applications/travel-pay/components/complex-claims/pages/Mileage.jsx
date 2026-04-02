@@ -64,6 +64,7 @@ const Mileage = () => {
   const previousHasChangesRef = useRef(false);
 
   const [formState, setFormState] = useState({});
+  const [previousFormState, setPreviousFormState] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showTripTypeError, setShowTripTypeError] = useState(false);
   const [showDepartureAddressError, setShowDepartureAddresError] = useState(
@@ -126,6 +127,7 @@ const Mileage = () => {
           tripType: TRIP_TYPES.ROUND_TRIP.value,
         };
         setFormState(initialState);
+        setPreviousFormState(initialState);
         initialFormStateRef.current = initialState;
       }
     },
@@ -171,8 +173,11 @@ const Mileage = () => {
       tripType: formState.tripType,
     };
 
+    const isFormChanged =
+      JSON.stringify(previousFormState) !== JSON.stringify(formState);
+
     try {
-      if (isEditMode) {
+      if (isEditMode && isFormChanged) {
         await dispatch(
           updateExpense(
             claimId,
@@ -181,7 +186,7 @@ const Mileage = () => {
             expenseData,
           ),
         );
-      } else {
+      } else if (!isEditMode) {
         await dispatch(
           createExpense(claimId, EXPENSE_TYPES.Mileage.apiRoute, expenseData),
         );

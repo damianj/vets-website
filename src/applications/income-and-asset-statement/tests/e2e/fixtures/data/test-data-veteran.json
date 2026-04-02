@@ -45,7 +45,8 @@
         "assetType": "BUSINESS",
         "grossMonthlyIncome": 4000,
         "ownedPortionValue": 3500,
-        "recipientRelationship": "VETERAN"
+        "recipientRelationship": "VETERAN",
+        "view:addFormQuestion": true
       }
     ],
     "view:isAddingRoyalties": true,
@@ -93,7 +94,8 @@
         "annualReceivedIncome": 5000,
         "trustType": "IRREVOCABLE",
         "establishedDate": "2005-01-17",
-        "marketValueAtEstablishment": 122000
+        "marketValueAtEstablishment": 122000,
+        "view:addFormQuestion": true
       }
     ],
     "view:isAddingAnnuities": true,

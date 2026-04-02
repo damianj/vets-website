@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import appendQuery from 'append-query';
 
+import environment from 'platform/utilities/environment';
 import recordEvent from 'platform/monitoring/record-event';
 import { toggleLoginModal } from 'platform/site-wide/user-nav/actions';
 import {
@@ -15,7 +16,6 @@ import {
 import { AUTH_LEVEL, getAuthError } from 'platform/user/authentication/errors';
 import { setupProfileSession } from 'platform/user/profile/utilities';
 import { apiRequest } from 'platform/utilities/api';
-import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 
 import { generateReturnURL } from 'platform/user/authentication/utilities';
 import { OAUTH_EVENTS } from 'platform/utilities/oauth/constants';
@@ -56,9 +56,11 @@ function AuthApp({ location }) {
   const isPortalNoticeInterstitialEnabled = useSelector(
     store => store?.featureToggles?.portalNoticeInterstitialEnabled,
   );
-  const isSignInDisableUserInteractionEnabled = useSelector(
-    store => store?.featureToggles?.signInDisableUserInteraction,
-  );
+
+  // Remove after testing
+  // const isSignInDisableUserInteractionEnabled = useSelector(
+  //   store => store?.featureToggles?.signInDisableUserInteraction,
+  // );
 
   const handleAuthError = (error, codeOverride) => {
     const { errorCode: detailedErrorCode } = getAuthError(
@@ -248,16 +250,16 @@ function AuthApp({ location }) {
 
   useEffect(
     () => {
-      if (hasError || !isSignInDisableUserInteractionEnabled) return undefined;
+      if (hasError || environment.isProduction()) return undefined;
 
       // Prevent user interaction while waiting for authentication
       document.body.style.pointerEvents = 'none';
       document.body.style.cursor = 'not-allowed';
 
       const blockKeydown = e => e.preventDefault();
-      document.body.addEventListener('keydown', blockKeydown);
+      document.addEventListener('keydown', blockKeydown, true);
 
-      // Inform AT users that navigation is temporarily unavailable
+      // Inform SR users that navigation is temporarily unavailable
       const liveRegion = document.createElement('div');
       liveRegion.setAttribute('aria-live', 'polite');
       liveRegion.setAttribute('aria-atomic', 'true');
@@ -269,11 +271,11 @@ function AuthApp({ location }) {
       return () => {
         document.body.style.pointerEvents = '';
         document.body.style.cursor = '';
-        document.body.removeEventListener('keydown', blockKeydown);
+        document.removeEventListener('keydown', blockKeydown, true);
         document.body.removeChild(liveRegion);
       };
     },
-    [hasError, isSignInDisableUserInteractionEnabled],
+    [hasError],
   );
 
   const openLoginModal = () => {

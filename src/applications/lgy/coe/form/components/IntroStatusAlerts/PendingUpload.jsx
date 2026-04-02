@@ -10,8 +10,7 @@ export const PendingUpload = ({ referenceNumber, requestDate }) => (
     </p>
     <p className="vads-u-margin-top--0">Reference Number: {referenceNumber}</p>
     <p>
-      You’ll need to upload documents in your VA home loan COE page before we
-      can make a decision on your COE.
+      You’ll need to upload documents before we can make a decision on your COE.
     </p>
     <va-link-action
       href="/housing-assistance/home-loans/check-coe-status/"
@@ -23,5 +22,5 @@ export const PendingUpload = ({ referenceNumber, requestDate }) => (
 
 PendingUpload.propTypes = {
   referenceNumber: PropTypes.string.isRequired,
-  requestDate: PropTypes.string.isRequired,
+  requestDate: PropTypes.number.isRequired,
 };

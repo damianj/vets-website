@@ -14,7 +14,6 @@ export default {
     ...PAGE_TITLE,
     'view:sharesAddressWith': addressSelectionUI({
       title: INPUT_LABEL,
-      classNames: 'dd-privacy-hidden',
       destinationKey: 'sponsorAddress',
       sourceKeys: ['applicants.applicantAddress', 'certifierAddress'],
     }),

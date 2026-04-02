@@ -10,6 +10,10 @@ import { expect } from 'chai';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
+import {
+  mockLighthouseMedicalCopayStatement,
+  createLighthouseLineItems,
+} from '../fixtures/lighthouseMedicalCopayStatement';
 import StatementTable from '../../components/StatementTable';
 import { showVHAPaymentHistory } from '../../../combined/utils/helpers';
 import StatementCharges from '../../components/StatementCharges';
@@ -21,16 +25,6 @@ const createCharges = count => {
     pDDatePostedOutput: '10/01/2023',
     pDRefNo: `REF${i + 1}`,
     pDTransAmt: 10.0,
-  }));
-};
-
-const createVHACharges = count => {
-  return Array.from({ length: count }, (_, i) => ({
-    datePosted: '2023-10-01',
-    description: `Charge ${i + 1}`,
-    billingReference: `REF${i + 1}`,
-    priceComponents: [{ amount: 10.0 }],
-    providerName: 'Test Provider',
   }));
 };
 
@@ -58,14 +52,14 @@ describe('Feature Toggle Data Confirmation', () => {
       },
     };
 
-    const charges = createVHACharges(15);
+    const charges = createLighthouseLineItems(15);
     const store = createMockStore(true);
     const { container } = render(
       <Provider store={store}>
         <StatementTable
           charges={charges}
           formatCurrency={mockFormatCurrency}
-          selectedCopay={{}}
+          selectedCopay={mockLighthouseMedicalCopayStatement}
         />
       </Provider>,
     );
@@ -83,7 +77,7 @@ describe('Feature Toggle Data Confirmation', () => {
       within(firstRow).getByTestId('statement-description'),
     ).to.contain.text('Charge 1');
     expect(within(firstRow).getByTestId('statement-reference')).to.have.text(
-      'REF1',
+      mockLighthouseMedicalCopayStatement.attributes.billNumber,
     );
     expect(
       within(firstRow).getByTestId('statement-transaction-amount'),

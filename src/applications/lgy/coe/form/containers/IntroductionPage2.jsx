@@ -11,25 +11,15 @@ import { IntroStatusAlert } from '../components/IntroStatusAlert';
 const ProcessList = () => {
   return (
     <va-process-list>
-      <va-process-list-item header="Check your eligibility">
+      <va-process-list-item header="Learn about eligibility">
         <p className="vads-u-margin-bottom--0">
-          Make sure you meet our eligibility requirements before you request a
-          COE.
+          Eligibility is based on specific requirements. You can review them, or
+          apply and we’ll determine eligibility from your application.
         </p>
         <va-link
           href="/housing-assistance/home-loans/eligibility/"
-          text="Find out if you’re eligible for VA home loan programs"
+          text="Learn about eligibility for VA home loan programs"
         />
-        <p>
-          If you’ve already submitted a COE, don’t request a new one unless one
-          of these cases applies to you:
-        </p>
-        <ul>
-          <li>Our VA home loan case management team recommends it</li>
-          <li>You need to fix an error on your COE</li>
-          <li>You need to update the information on your COE</li>
-          <li>You need to request a restoration of entitlement</li>
-        </ul>
       </va-process-list-item>
       <va-process-list-item header="Gather your information">
         <p>Here’s what you’ll need to request a COE:</p>
@@ -39,16 +29,17 @@ const ProcessList = () => {
             birth, mailing address, and contact information.
           </li>
           <li>
-            The property location and dates of past VA loans (if you have or had
-            a VA-backed loan).
+            If you have or had a VA-backed loan on any properties you still own,
+            you’ll need to provide the property addresses and dates you received
+            the loans.
           </li>
           <li>
-            Based on your service, you’ll need to submit specific documents with
-            your COE request.
+            Based on your service, you may need to submit specific documents
+            with your COE request.
             <div>
               <va-link
                 href="/housing-assistance/home-loans/how-to-request-coe/"
-                text="Review which documents you’ll need"
+                text="Review which documents you may need"
               />
             </div>
           </li>
@@ -64,18 +55,12 @@ const ProcessList = () => {
           You can print this message for your records.
         </p>
         <va-additional-info trigger="What happens after you submit your request">
-          <div>
-            <p className="vads-u-margin-top--0 vads-u-margin-bottom--2p5">
-              After submitting your request, you’ll get a confirmation message.
-              It’ll include details about your next steps. We may contact you if
-              we have questions or need more information.
-            </p>
-            <p className="vads-u-margin-top--2p5 vads-u-margin-bottom--0p5">
-              We process requests in the order we receive them. If you qualify
-              for a COE, we’ll notify you by email about how you can get your
-              COE document.
-            </p>
-          </div>
+          <p className="vads-u-margin-top--0 vads-u-margin-bottom--2p5">
+            After submitting your request, you’ll get a confirmation message.
+            It’ll include details about your next steps. We process requests in
+            the order we receive them and may contact you if we have questions
+            or need more information.
+          </p>
         </va-additional-info>
       </va-process-list-item>
     </va-process-list>
@@ -114,9 +99,8 @@ export const IntroductionPage2 = ({ route }) => {
   const childContent = (
     <>
       <p className="vads-u-font-family--serif vads-u-font-size--lg vads-u-margin-bottom--4">
-        Use VA Form 26-1880 to apply for a VA home loan COE. You’ll need to
-        bring the COE to your lender to prove that you qualify for a VA home
-        loan.
+        Use the digital VA Form 26-1880 to apply for a VA home loan COE. Or,
+        your lender can obtain a COE from the VA on your behalf.
       </p>
       {hasStatusAlert && (
         <IntroStatusAlert

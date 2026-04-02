@@ -15,6 +15,7 @@ const getAge = (y, m = 0) => {
 export default {
   'view:addOrRemoveDependents': { remove: true },
   useV2: true,
+  householdIncome: false,
   veteranContactInformation: {
     veteranAddress: {
       country: 'USA',
@@ -26,7 +27,6 @@ export default {
     phoneNumber: '2023336688',
     emailAddress: 'vets.gov.user80@gmail.com',
   },
-  vaDependentsNetWorthAndPension: true,
   isV3RemovalFlow: true,
   veteranInformation: {
     fullName: { first: 'Pauline', last: 'Foster', middle: 'E' },
@@ -34,7 +34,7 @@ export default {
     birthDate: '1976-06-09',
     ssnLastFour: '0625',
     vaFileLastFour: '0625',
-    isInReceiptOfPension: -1,
+    isInReceiptOfPension: 1,
   },
   dependents: {
     hasDependents: true,

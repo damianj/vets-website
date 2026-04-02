@@ -147,7 +147,6 @@ function App({
     TOGGLE_NAMES,
   } = useFeatureToggle();
   useFormFeatureToggleSync([
-    'vaDependentsNetWorthAndPension',
     'vaDependentsDuplicateModals',
     'vaDependentsV3',
     'vaDependentsNoSsn',

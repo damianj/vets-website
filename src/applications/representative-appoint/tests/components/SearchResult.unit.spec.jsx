@@ -262,6 +262,93 @@ describe('SearchResult Component', () => {
     });
   });
 
+  context('when individualAcceptEnabled is true', () => {
+    context('when the organization has both flags true', () => {
+      it('displays digital submission methods', () => {
+        const representative = {
+          data: {
+            id: 1,
+            type: 'organization',
+            attributes: {
+              name: 'Test Organization',
+              addressLine1: '123 Main St',
+              city: '',
+              stateCode: '',
+              zipCode: '',
+              canAcceptDigitalPoaRequests: true,
+              repsCanAcceptAnyRequest: true,
+            },
+          },
+        };
+
+        useV2FeatureVisibilityStub = sinon
+          .stub(useV2FeatureToggle, 'default')
+          .returns(false);
+
+        const { container } = render(
+          <SearchResult
+            representative={representative}
+            query={{}}
+            handleSelectRepresentative={() => {}}
+            loadingPOA={false}
+            userIsDigitalSubmitEligible
+            individualAcceptEnabled
+          />,
+        );
+
+        const digitalSubmissionMethods = container.querySelector(
+          '[data-testid="submission-methods-with-digital"]',
+        );
+
+        expect(digitalSubmissionMethods).to.exist;
+      });
+    });
+
+    context(
+      'when canAcceptDigitalPoaRequests is true but repsCanAcceptAnyRequest is false',
+      () => {
+        it('displays non digital submission methods', () => {
+          const representative = {
+            data: {
+              id: 1,
+              type: 'organization',
+              attributes: {
+                name: 'Test Organization',
+                addressLine1: '123 Main St',
+                city: '',
+                stateCode: '',
+                zipCode: '',
+                canAcceptDigitalPoaRequests: true,
+                repsCanAcceptAnyRequest: false,
+              },
+            },
+          };
+
+          useV2FeatureVisibilityStub = sinon
+            .stub(useV2FeatureToggle, 'default')
+            .returns(false);
+
+          const { container } = render(
+            <SearchResult
+              representative={representative}
+              query={{}}
+              handleSelectRepresentative={() => {}}
+              loadingPOA={false}
+              userIsDigitalSubmitEligible
+              individualAcceptEnabled
+            />,
+          );
+
+          const nonDigitalSubmissionMethods = container.querySelector(
+            '[data-testid="submission-methods-without-digital"]',
+          );
+
+          expect(nonDigitalSubmissionMethods).to.exist;
+        });
+      },
+    );
+  });
+
   context('when v2 is not enabled', () => {
     const formData = {
       'view:v2IsEnabled': false,

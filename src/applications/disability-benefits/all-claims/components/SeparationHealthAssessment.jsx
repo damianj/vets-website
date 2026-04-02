@@ -8,10 +8,10 @@ import {
 import FormNavButtons from 'platform/forms-system/src/js/components/FormNavButtons';
 import _ from 'platform/utilities/data';
 import { scrollToFirstError } from 'platform/utilities/scroll';
-import { DBQ_URL } from '../constants';
 import { checkValidations } from '../utils/submit';
 import { getBddShaUploads } from '../utils';
 import { renderFileList } from '../content/evidenceRequest';
+import { SeparationHealthAssessmentWarningAlert } from '../content/separationHealthAssessmentWarningAlert';
 
 const selectionField = 'view:hasSeparationHealthAssessment';
 const missingSelectionErrorMessage = 'You must provide a response';
@@ -112,23 +112,7 @@ export const SeparationHealthAssessment = ({
   return (
     <>
       <h3>Your Separation Health Assessment</h3>
-      <VaAlert status="warning" uswds visible>
-        <h3 slot="headline">Submit your Separation Health Assessment</h3>
-        <p>
-          You must submit a Separation Health Assessment (self-assessment, also
-          called "Part A"). It will help us process your claim faster.
-        </p>
-        <p>
-          This will also ensure your submission isn’t excluded from the Benefits
-          Delivery at Discharge (BDD) program.
-        </p>
-        <p>
-          <a href={DBQ_URL} target="_blank" rel="noreferrer">
-            Download your Separation Health Assessment (opens in new tab)
-          </a>
-          .
-        </p>
-      </VaAlert>
+      <SeparationHealthAssessmentWarningAlert />
       <VaModal
         clickToClose
         modalTitle="Your uploaded Separation Health Assessment will be deleted"

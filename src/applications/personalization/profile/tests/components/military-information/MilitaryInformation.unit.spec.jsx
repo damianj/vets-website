@@ -269,6 +269,8 @@ describe('MilitaryInformation', () => {
         ),
       ).to.exist;
       expect(view.getByText(/We’re sorry for this issue./i)).to.exist;
+      expect(view.queryByRole('heading', { name: /periods? of service/i })).to
+        .not.exist;
     });
   });
   describe('when a 403 error occurs', () => {
@@ -338,6 +340,37 @@ describe('MilitaryInformation', () => {
 
       expect(view.getByRole('heading', { name: 'Service history information' }))
         .to.exist;
+    });
+  });
+
+  describe('Periods of Service heading', () => {
+    it('should render "Periods of service" when there are multiple entries in the service history', () => {
+      initialState = createBasicInitialState();
+      view = renderWithProfileReducers(<MilitaryInformation />, {
+        initialState,
+      });
+
+      expect(view.getByRole('heading', { name: 'Periods of service' })).to
+        .exist;
+    });
+
+    it('should render "Period of service" when there is only one entry in the service history', () => {
+      initialState = createBasicInitialState();
+      initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory = [
+        {
+          branchOfService: 'Air Force',
+          beginDate: '2009-04-12',
+          endDate: '2013-04-11',
+          periodOfServiceTypeCode: 'A',
+          periodOfServiceTypeText: 'Active duty member',
+          characterOfDischargeCode: 'A',
+        },
+      ];
+      view = renderWithProfileReducers(<MilitaryInformation />, {
+        initialState,
+      });
+
+      expect(view.getByRole('heading', { name: 'Period of service' })).to.exist;
     });
   });
 });

@@ -233,7 +233,9 @@ describe('Editing', () => {
     fireEvent.click(await view.findByTestId('save-edit-button'));
 
     const homePhoneInput = $('va-text-input[label^="Home phone"]');
-    expect(homePhoneInput.error).to.contain('This field should be at least 10');
+    expect(homePhoneInput.error).to.contain(
+      'Enter a 10-digit phone number (with or without dashes)',
+    );
   });
 
   it('validates a phone number that has letters in the field', async () => {
@@ -247,6 +249,8 @@ describe('Editing', () => {
     fireEvent.click(await view.findByTestId('save-edit-button'));
 
     const homePhoneInput = $('va-text-input[label^="Home phone"]');
-    expect(homePhoneInput.error).to.eq('Enter a 10 digit phone number');
+    expect(homePhoneInput.error).to.equal(
+      'Enter a 10-digit phone number (with or without dashes)',
+    );
   });
 });

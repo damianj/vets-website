@@ -206,6 +206,27 @@ describe('Survivors Benefits Form config', () => {
       expect(separationDetails.depends(noSeparationReason)).not.to.be.ok;
     });
 
+    it('should show separationDetails for the reduced 2025 separation option', () => {
+      const { householdInformation } = formConfig.chapters;
+      const { separationDetails } = householdInformation.pages;
+
+      const matching2025Selection = {
+        survivorsBenefitsForm2025VersionEnabled: true,
+        claimantRelationship: 'SURVIVING_SPOUSE',
+        livedContinuouslyWithVeteran: false,
+        separationDueToAssignedReasons: 'OTHER',
+      };
+      const medicalOnly2025Selection = {
+        survivorsBenefitsForm2025VersionEnabled: true,
+        claimantRelationship: 'SURVIVING_SPOUSE',
+        livedContinuouslyWithVeteran: false,
+        separationDueToAssignedReasons: 'MEDICAL_FINANCIAL',
+      };
+
+      expect(separationDetails.depends(matching2025Selection)).to.be.true;
+      expect(separationDetails.depends(medicalOnly2025Selection)).to.be.false;
+    });
+
     it('should show remarriage pages when remarried after veteran death', () => {
       const { householdInformation } = formConfig.chapters;
       const { pages } = householdInformation;

@@ -2276,6 +2276,7 @@ const responses = {
         { name: 'cst_5103_update_enabled', value: false }, // <-- controls access to ask-va-to-decide and 5103-evidence-notice routes
         { name: 'cst_claims_list_filter', value: true },
         { name: 'cst_alert_improvements_evidence_requests', value: true },
+        { name: 'cst_intents_to_file', value: true },
       ],
     },
   },

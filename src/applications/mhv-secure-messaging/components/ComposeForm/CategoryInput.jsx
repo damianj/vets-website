@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { VaSelect } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useDispatch } from 'react-redux';
+import { datadogRum } from '@datadog/browser-rum';
 import { Categories } from '../../util/inputContants';
 import { updateDraftInProgress } from '../../actions/threadDetails';
 
@@ -17,13 +18,20 @@ const CategoryInput = props => {
   const dispatch = useDispatch();
 
   const categoryChangeHandler = e => {
-    setCategory(e.detail.value);
+    const selectedValue = e.detail.value;
+    setCategory(selectedValue);
     dispatch(
       updateDraftInProgress({
-        category: e.detail.value,
+        category: selectedValue,
       }),
     );
-    if (e.detail.value) setCategoryError(null);
+    if (selectedValue) {
+      setCategoryError(null);
+      const selectedCategory = Categories[selectedValue];
+      datadogRum.addAction(
+        `Category selected - ${selectedCategory?.label || selectedValue}`,
+      );
+    }
     setUnsavedNavigationError();
   };
 
